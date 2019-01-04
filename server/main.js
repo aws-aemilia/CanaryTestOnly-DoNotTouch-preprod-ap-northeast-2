@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const config = require('./config');
 const redShiftClient = config.db.get();
+const { execSync } = require('child_process');
 
 const app = express();
 
@@ -15,6 +16,11 @@ app.get('/api/metrics/builds/failed', (req, res) => {
             res.end(JSON.stringify(data));
         }
     });
+});
+
+app.get('/api/logs', (req, res) => {
+    const stdout = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.395333095307.user/ReadOnlyLogs');
+    res.end(stdout);
 });
 
 // Handles any requests that don't match the ones above
