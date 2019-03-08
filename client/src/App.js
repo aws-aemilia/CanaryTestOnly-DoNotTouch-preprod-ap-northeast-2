@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
 import Home from './pages/home';
-import List from './pages/list';
+import Failures from './pages/failures';
+import Builds from './pages/builds';
+import Logs from './pages/logs';
 
 class App extends Component {
   render() {
@@ -10,10 +12,12 @@ class App extends Component {
       <div>
         <Switch>
           <Route exact path='/' component={Home}/>
-          <Route path='/list' component={List}/>
+          <Route path='/failures' component={Failures}/>
+          <Route path='/builds/:region/:project' component={Builds}/>
+          <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>
         </Switch>
       </div>
-    )
+    );
     return (
       <Switch>
         <App/>

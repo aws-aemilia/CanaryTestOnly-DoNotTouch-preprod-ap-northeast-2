@@ -17,6 +17,7 @@ package.AWSAmplifyTools = {
     build-tools = {
         1.0 = {
             NoOpBuild = 1.0;
+            BrazilTools = 2.2;	    
         };
     };
 

@@ -3,7 +3,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
 import _ from 'lodash';
 
-class List extends Component {
+class Failures extends Component {
   // Initialize the state
   constructor(props){
     super(props);
@@ -19,7 +19,7 @@ class List extends Component {
 
   // Retrieves the list of items from the Express app
   getList = () => {
-    fetch('/api/metrics/builds/failed')
+      fetch('/api/metrics/builds/failed')
     .then(async res => {
       const json = await res.json();
 
@@ -36,7 +36,7 @@ class List extends Component {
       });
     })
     .then(list => this.setState({ list }))
-  }
+  };
 
   render() {
     const { list } = this.state;
@@ -51,28 +51,18 @@ class List extends Component {
           dataField: 'count',
           order: 'desc'
       }];
-      const expandRow = {
-          renderer: row => {
-              const expandColumns = [
-                  {dataField: 'timestamp', text: 'Timestamp'},
-                  {dataField: 'jobid', text: 'Job ID'},
-                  {dataField: 'buildtimeminutes', text: 'Build Time'},
-              ];
-
-            return (
-              <div>
-                  <BootstrapTable keyField='id' data={ row.items } columns={ expandColumns }/>
-              </div>
-          )}
+      const rowEvents = {
+          onClick: (e, row, rowIndex) => {
+              window.location.href = `/builds/${row.region}/${row.appid}`;
+          }
       };
-
 
     return (
       <div className="App">
         <h1>List of Items</h1>
         {/* Check to see if any items are found*/}
         {list.length ? (
-            <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } expandRow={ expandRow } defaultSorted={ defaultSorted }/>
+            <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
         ) : (
           <div>
             <h2>No List Items Found</h2>
@@ -84,4 +74,4 @@ class List extends Component {
   }
 }
 
-export default List;
+export default Failures;
