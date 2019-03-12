@@ -8,7 +8,8 @@ class Failures extends Component {
   constructor(props){
     super(props);
     this.state = {
-      list: []
+        list: [],
+        loading: true
     }
   }
 
@@ -19,7 +20,9 @@ class Failures extends Component {
 
   // Retrieves the list of items from the Express app
   getList = () => {
-      fetch('/api/metrics/builds/failed')
+      const { match: { params } } = this.props;
+      const url = params['accountId'] ? `/api/metrics/builds/failed?accountId=${params['accountId']}` : '/api/metrics/builds/failed';
+      fetch(url)
     .then(async res => {
       const json = await res.json();
 
@@ -39,7 +42,7 @@ class Failures extends Component {
   };
 
   render() {
-    const { list } = this.state;
+    const { list, loading } = this.state;
     const columns = [
         {dataField: 'timestamp', text: 'First Build', sort: true},
         {dataField: 'appid', text: 'App ID'},
@@ -59,14 +62,17 @@ class Failures extends Component {
 
     return (
       <div className="App">
-        <h1>List of Items</h1>
-        {/* Check to see if any items are found*/}
-        {list.length ? (
+        <h3>Build Failure Count by Account ID</h3>
+        {list && list.length ? (
             <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
         ) : (
-          <div>
-            <h2>No List Items Found</h2>
-          </div>
+            loading ? (
+                    <h4>Loading...</h4>
+                ) : (
+                    <div>
+                        <h4>Nothing found</h4>
+                    </div>
+                )
         )
       }
       </div>

@@ -8,7 +8,8 @@ class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      list: []
+        list: [],
+        loading: true
     }
   }
 
@@ -31,7 +32,8 @@ class List extends Component {
   };
 
   render() {
-    const { list } = this.state;
+    const { list, loading } = this.state;
+      const { match: { params } } = this.props;
     const columns = [
         {dataField: 'startTime', text: 'First Build', sort: true},
         {dataField: 'id', text: 'Build ID'},
@@ -50,14 +52,17 @@ class List extends Component {
 
     return (
       <div className="App">
-        <h1>List of Items</h1>
-        {/* Check to see if any items are found*/}
-        {list.length ? (
+        <h3>Builds for Project: {params['project']}</h3>
+        {list && list.length ? (
             <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
         ) : (
-          <div>
-            <h2>No List Items Found</h2>
-          </div>
+            loading ? (
+                <h4>Loading...</h4>
+            ) : (
+                <div>
+                    <h4>Nothing found</h4>
+                </div>
+            )
         )
       }
       </div>

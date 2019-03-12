@@ -11,12 +11,22 @@ const app = express();
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.get('/api/metrics/builds/failed', (req, res) => {
-    redShiftClient.query('select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' order by timestamp desc limit 500', {}, function(err, data){
-        if(err) throw err;
-        else{
-            res.end(JSON.stringify(data));
-        }
-    });
+    if (req.param('accountId')){
+        redShiftClient.query(`select * from main where accountid = '${req.param('accountId')}'`, {}, function(err, data){
+            if(err) throw err;
+            else{
+                res.end(JSON.stringify(data));
+            }
+        });
+    } else {
+        redShiftClient.query('select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' order by timestamp desc limit 500', {}, function(err, data){
+            if(err) throw err;
+            else{
+                res.end(JSON.stringify(data));
+            }
+        });
+    }
+
 });
 
 app.get('/api/builds', (req, res) => {
@@ -54,7 +64,28 @@ app.listen(config.port);
 console.log('App is listening on port ' + config.port);
 
 function setAWSConfig(region) {
-    const material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.395333095307.user/ReadOnlyLogs').toString();
+    let material = null;
+    switch (region) {
+        case 'eu-west-1':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.565036926641.user/ReadOnlyLogs').toString();
+            break;
+        case 'us-east-1':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.073653171576.user/ReadOnlyLogs').toString();
+            break;
+        case 'us-west-2':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.395333095307.user/ReadOnlyLogs').toString();
+            break;
+        case 'eu-west-2':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential  com.amazon.credentials.isengard.499901155257.user/ReadOnlyLogs').toString();
+            break;
+        case 'ap-southeast-2':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.711974673587.user/ReadOnlyLogs').toString();
+            break;
+        case 'us-east-2':
+            material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.499901155257.user/ReadOnlyLogs ').toString();
+            break;
+    }
+
     const creds= new aws.Credentials();
     creds.accessKeyId = material.split('\n')[0];
     creds.secretAccessKey = material.split('\n')[1];

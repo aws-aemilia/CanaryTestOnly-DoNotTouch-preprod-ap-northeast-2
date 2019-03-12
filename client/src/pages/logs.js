@@ -12,7 +12,8 @@ class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      list: []
+      list: [],
+        loading: true
     }
   }
 
@@ -33,15 +34,15 @@ class List extends Component {
   };
 
   render() {
-    const { list } = this.state;
+    const { list, loading } = this.state;
 
     console.log(JSON.stringify(list));
 
     return (
       <div className="App">
-        <h1>List of Items</h1>
+        <h3>Logs</h3>
         {/* Check to see if any items are found*/}
-        {list.length ? (
+        {list && list.length ? (
             <AceEditor
                 theme="dracula"
                 name="ace_logs"
@@ -57,9 +58,13 @@ class List extends Component {
                 showPrintMargin={false}
             />
         ) : (
-          <div>
-            <h2>No List Items Found</h2>
-          </div>
+            loading ? (
+                <h4>Loading...</h4>
+            ) : (
+                <div>
+                    <h4>Nothing found</h4>
+                </div>
+            )
         )
       }
       </div>
