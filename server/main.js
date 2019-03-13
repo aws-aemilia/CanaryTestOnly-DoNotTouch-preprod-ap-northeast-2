@@ -12,12 +12,33 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.get('/api/metrics/builds/failed', (req, res) => {
     if (req.param('accountId')){
-        redShiftClient.query(`select * from main where accountid = '${req.param('accountId')}'`, {}, function(err, data){
+        redShiftClient.query(`select * from main where accountid = '${req.param('accountId')}' order by timestamp desc`, {}, function(err, data){
             if(err) throw err;
             else{
                 res.end(JSON.stringify(data));
             }
         });
+    } else if (req.param('appId')) {
+        redShiftClient.query(`select * from main where appid = '${req.param('appId')}' order by timestamp desc`, {}, function (err, data) {
+            if (err) throw err;
+            else {
+                res.end(JSON.stringify(data));
+            }
+        });
+    } else if (req.param('days')) {
+        redShiftClient.query(`select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param('days')} day';`, {}, function (err, data) {
+            if (err) throw err;
+            else {
+                res.end(JSON.stringify(data));
+            }
+        });
+    } else if (req.param('daysFrom') && req.param('daysTo')) {
+            redShiftClient.query(`select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param('daysFrom')} day' and timestamp < current_date - interval '${req.param('daysTo')} day' order by timestamp desc;`, {}, function(err, data){
+                if(err) throw err;
+                else{
+                    res.end(JSON.stringify(data));
+                }
+            });
     } else {
         redShiftClient.query('select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' order by timestamp desc limit 500', {}, function(err, data){
             if(err) throw err;
@@ -29,19 +50,29 @@ app.get('/api/metrics/builds/failed', (req, res) => {
 
 });
 
-app.get('/api/builds', (req, res) => {
+app.get('/api/builds', async (req, res) => {
     setAWSConfig(req.query['region']);
-
     const codebuild = new aws.CodeBuild();
-    codebuild.listBuildsForProject({'projectName': req.query['project']}, function(err, data) {
-        if (err) res.end(JSON.stringify(err)); // an error occurred
-        else {
-            codebuild.batchGetBuilds({'ids': data['ids']}, function(err, data) {
-                if (err) res.end(JSON.stringify(err)); // an error occurred
-                else     res.end(JSON.stringify(data));           // successful response
-            });
+    let builds = [];
+
+    try {
+        let buildIds = await codebuild.listBuildsForProject({'projectName': req.query['project']}).promise();
+        let codebuildBuilds = await codebuild.batchGetBuilds({'ids': buildIds['ids']}).promise();
+        let token = buildIds.nextToken;
+
+        builds = builds.concat(codebuildBuilds.builds);
+        while (token) {
+            let buildIds = await codebuild.listBuildsForProject({'projectName': req.query['project'], 'nextToken': token}).promise();
+            let codebuildBuilds = await codebuild.batchGetBuilds({'ids': buildIds['ids']}).promise();
+            builds = builds.concat(codebuildBuilds.builds);
+
+            token = (token !== buildIds.nextToken) ? buildIds.nextToken : null;
         }
-    });
+
+        res.end(JSON.stringify({'builds': builds}));
+    } catch (err) {
+        res.end(JSON.stringify({'error': err}));
+    }
 });
 
 app.get('/api/logs', (req, res) => {
