@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
-import _ from 'lodash';
+import NavBar from '../components/navbar';
 
 class List extends Component {
   // Initialize the state
@@ -9,7 +9,8 @@ class List extends Component {
     super(props);
     this.state = {
         list: [],
-        loading: true
+        loading: true,
+        error: false
     }
   }
 
@@ -27,12 +28,16 @@ class List extends Component {
 
         console.log(JSON.stringify(json));
 
-        this.setState({'list': json['builds']});
+        if (json['builds']) {
+            this.setState({'list': json['builds']});
+        } else {
+            this.setState({'error': true});
+        }
     });
   };
 
   render() {
-    const { list, loading } = this.state;
+    const { list, loading, error } = this.state;
       const { match: { params } } = this.props;
     const columns = [
         {dataField: 'startTime', text: 'First Build', sort: true},
@@ -52,19 +57,27 @@ class List extends Component {
 
     return (
       <div className="App">
-        <h3>Builds for Project: {params['project']}</h3>
-        {list && list.length ? (
-            <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
-        ) : (
-            loading ? (
-                <h4>Loading...</h4>
-            ) : (
-                <div>
-                    <h4>Nothing found</h4>
-                </div>
-            )
-        )
-      }
+          <NavBar/>
+          {list && list.length ? (
+              <BootstrapTable bootstrap4 striped hover keyField='appid' data={list} columns={columns}
+                              defaultSorted={defaultSorted} rowEvents={rowEvents}/>
+          ) : (
+              loading && !error ? (
+                  <div className="spinner-grow text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                  </div>
+              ) : (
+                  <div>
+                  </div>
+              )
+          )
+          }
+        {error ? (
+        <div className="alert alert-danger" role="alert">
+            Error: Project no longer exists
+        </div>
+            ) : (<div/>)
+        }
       </div>
     );
   }

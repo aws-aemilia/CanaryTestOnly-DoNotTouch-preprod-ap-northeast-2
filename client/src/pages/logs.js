@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
-import _ from 'lodash';
-import brace from 'brace';
+import '../App.css'
 import AceEditor from 'react-ace';
+import NavBar from '../components/navbar';
 
 import 'brace/theme/dracula';
 
@@ -40,7 +39,7 @@ class List extends Component {
 
     return (
       <div className="App">
-        <h3>Logs</h3>
+        <NavBar/>
         {/* Check to see if any items are found*/}
         {list && list.length ? (
             <AceEditor
@@ -53,13 +52,15 @@ class List extends Component {
                         return acc + event.message
                     }
                 })}
-                width={1024}
+                width={'100%'}
                 height={768}
                 showPrintMargin={false}
             />
         ) : (
             loading ? (
-                <h4>Loading...</h4>
+                <div className="spinner-grow text-primary" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
             ) : (
                 <div>
                     <h4>Nothing found</h4>

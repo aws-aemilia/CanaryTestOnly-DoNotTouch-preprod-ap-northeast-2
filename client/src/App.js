@@ -12,7 +12,9 @@ class App extends Component {
       <div>
         <Switch>
           <Route exact path='/' component={Home}/>
-          <Route path='/failures/:accountId' component={Failures}/>
+          <Route path='/failures/account/:accountId' component={Failures}/>
+          <Route path='/failures/app/:appId' component={Failures}/>
+          <Route path='/failures/days/:days' component={Failures}/>
             <Route path='/failures' component={Failures}/>
           <Route path='/builds/:region/:project' component={Builds}/>
           <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>

@@ -2,29 +2,47 @@ import React, { Component } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
 import _ from 'lodash';
+import NavBar from '../components/navbar';
 
 class Failures extends Component {
   // Initialize the state
   constructor(props){
     super(props);
     this.state = {
-        list: [],
-        loading: true
+        list: null,
+        loading: true,
+        days: null,
+        error: false
     }
   }
 
-  // Fetch the list on first mount
   componentDidMount() {
     this.getList();
   }
 
-  // Retrieves the list of items from the Express app
   getList = () => {
       const { match: { params } } = this.props;
-      const url = params['accountId'] ? `/api/metrics/builds/failed?accountId=${params['accountId']}` : '/api/metrics/builds/failed';
+      let url = null;
+
+      const days = params['days'] ? params['days'] : 7;
+      this.setState({ 'days': days});
+
+      if (params['accountId']) {
+          url = `/api/metrics/builds/failed?accountId=${params['accountId']}`;
+      } else if (params['appId']) {
+          url = `/api/metrics/builds/failed?appId=${params['appId']}`;
+      } else {
+          url = '/api/metrics/builds/failed?days=' + days;
+      }
+
       fetch(url)
     .then(async res => {
       const json = await res.json();
+
+      if (json.rows.length <= 0) {
+          this.setState({ 'error': true, 'loading': false });
+          return;
+      }
 
       return Object.entries(_.groupBy(json.rows, 'appid')).map(item => {
         return {
@@ -41,8 +59,12 @@ class Failures extends Component {
     .then(list => this.setState({ list }))
   };
 
+  updateDays(days) {
+      this.setState({ 'days': days, 'loading': true, 'list': [] }, this.getList);
+  }
+
   render() {
-    const { list, loading } = this.state;
+    const { list, loading, error } = this.state;
     const columns = [
         {dataField: 'timestamp', text: 'First Build', sort: true},
         {dataField: 'appid', text: 'App ID'},
@@ -62,19 +84,28 @@ class Failures extends Component {
 
     return (
       <div className="App">
-        <h3>Build Failure Count by Account ID</h3>
+        <NavBar/>
         {list && list.length ? (
-            <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
+            <div>
+                <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
+            </div>
         ) : (
             loading ? (
-                    <h4>Loading...</h4>
+                <div className="spinner-grow text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
                 ) : (
                     <div>
-                        <h4>Nothing found</h4>
                     </div>
                 )
         )
       }
+          {error ? (
+              <div className="alert alert-danger" role="alert">
+                  No Builds Found
+              </div>
+          ) : (<div/>)
+          }
       </div>
     );
   }
