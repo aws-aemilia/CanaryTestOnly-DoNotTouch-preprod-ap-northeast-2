@@ -3,6 +3,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
 import _ from 'lodash';
 import NavBar from '../components/navbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCrosshairs } from '@fortawesome/free-solid-svg-icons'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 class Failures extends Component {
   // Initialize the state
@@ -13,7 +16,7 @@ class Failures extends Component {
         loading: true,
         days: null,
         error: false
-    }
+    };
   }
 
   componentDidMount() {
@@ -59,35 +62,45 @@ class Failures extends Component {
     .then(list => this.setState({ list }))
   };
 
-  updateDays(days) {
-      this.setState({ 'days': days, 'loading': true, 'list': [] }, this.getList);
-  }
+    onTargetClick (row) {
+        window.location.href = `/builds/${row.region}/${row.appid}`;
+    }
+
+    onUserClick(row) {
+        window.location.href = `https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=${row.accountid}`;
+    }
+
+  actionFormatter = (cell, row) => {
+      return (
+        <div>
+            <div style={{display: 'inline-block', cursor: 'pointer'}} onClick={()=> this.onTargetClick(row)}><FontAwesomeIcon icon={faCrosshairs}/></div>
+            &nbsp;
+            <div style={{display: 'inline-block', cursor: 'pointer'}} onClick={()=> this.onUserClick(row)}><FontAwesomeIcon icon={faUser}/></div>
+        </div>
+      );
+    };
 
   render() {
     const { list, loading, error } = this.state;
     const columns = [
         {dataField: 'timestamp', text: 'First Build', sort: true},
         {dataField: 'appid', text: 'App ID'},
-        {dataField: 'count', text: 'Count', sort: true},
+        {dataField: 'count', text: 'Failures', sort: true},
         {dataField: 'accountid', text: 'Account ID', sort: true},
-        {dataField: 'region', text: 'Region'}
+        {dataField: 'region', text: 'Region'},
+        {formatter: this.actionFormatter}
       ];
       const defaultSorted = [{
           dataField: 'count',
           order: 'desc'
       }];
-      const rowEvents = {
-          onClick: (e, row, rowIndex) => {
-              window.location.href = `/builds/${row.region}/${row.appid}`;
-          }
-      };
 
     return (
       <div className="App">
         <NavBar/>
         {list && list.length ? (
             <div>
-                <BootstrapTable bootstrap4 striped hover keyField='appid' data={ list } columns={ columns } defaultSorted={ defaultSorted } rowEvents={rowEvents}/>
+                <BootstrapTable bootstrap4 striped keyField='appid' condensed={true} data={ list } columns={ columns } defaultSorted={ defaultSorted }/>
             </div>
         ) : (
             loading ? (
