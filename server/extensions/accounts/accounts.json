@@ -1,0 +1,138 @@
+{
+  "0_documentation": {
+    "accountId": "The 12 digit AWS Account ID for the account",
+    "alias": "Friendly name used to refer to this account (think name input in ssh-with-role)",
+    "key": "This is the identifier you use for the account config, format: $domain.$realm.$service.$relativeId",
+    "region": "The primary region where resources in this account are stored. Must be a valid AWS region",
+    "region_partition": "This is ARN region partition (https://tiny.amazon.com/a51f4mku), this is usually a boundary of admin tools etc",
+    "stage": "The deployment stage this account supports - alpha, beta, gamma, prod",
+    "type": "The type of service supported by this account - service (single service stack - used in alphas), general (service account), canary, console"
+  },
+  "accounts": {
+    "beta.us-west-2.aemilia": {
+      "accountId": "033345365959",
+      "alias": "beta",
+      "region": "us-west-2",
+      "region_partition": "aws",
+      "stage": "beta",
+      "type": "service"
+    },
+
+    "gamma.us-west-2.aemilia": {
+      "accountId": "457974620857",
+      "alias": "gamma-pdx",
+      "region": "us-west-2",
+      "region_partition": "aws",
+      "stage": "gamma",
+      "type": "service"
+    },
+
+    "gamma.us-east-1.aemilia": {
+      "accountId": "396176200477",
+      "alias": "gamma-iad",
+      "region": "us-east-1",
+      "region_partition": "aws",
+      "stage": "gamma",
+      "type": "service"
+    },
+
+    "prod.us-west-2.aemilia": {
+      "accountId": "395333095307",
+      "alias": "prod-pdx",
+      "region": "us-west-2",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.us-east-1.aemilia": {
+      "accountId": "073653171576",
+      "alias": "prod-iad",
+      "region": "us-east-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.us-east-2.aemilia": {
+      "accountId": "264748200621",
+      "alias": "prod-cmh",
+      "region": "us-east-2",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.eu-west-1.aemilia": {
+      "accountId": "565036926641",
+      "alias": "prod-dub",
+      "region": "eu-west-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.ap-southeast-2.aemilia": {
+      "accountId": "711974673587",
+      "alias": "prod-syd",
+      "region": "ap-southeast-2",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.eu-west-2.aemilia": {
+      "accountId": "499901155257",
+      "alias": "prod-lhr",
+      "region": "eu-west-2",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.ap-northeast-1.aemilia": {
+      "accountId": "550167628141",
+      "alias": "prod-nrt",
+      "region": "ap-northeast-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.ap-southeast-1.aemilia": {
+      "accountId": "148414518837",
+      "alias": "prod-sin",
+      "region": "ap-southeast-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.ap-northeast-2.aemilia": {
+      "accountId": "024873182396",
+      "alias": "prod-icn",
+      "region": "ap-northeast-2",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.ap-south-1.aemilia": {
+      "accountId": "801187164913",
+      "alias": "prod-bom",
+      "region": "ap-south-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+
+    "prod.eu-central-1.aemilia": {
+      "accountId": "644397351177",
+      "alias": "prod-fra",
+      "region": "eu-central-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    }
+  }
+}
