@@ -15,10 +15,10 @@ class NavBar extends Component {
     }
 
     handleSubmitSearch(event) {
-        if (this.state.search.length >= 14) {
-            window.location.href = `/failures/app/${this.state.search}`;
-        } else {
+        if (this.state.search.match(/[0-9]/g).length === this.state.search.length) {
             window.location.href = `/failures/account/${this.state.search}`;
+        } else {
+            window.location.href = `/failures/app/${this.state.search}`;
         }
 
         event.preventDefault();
