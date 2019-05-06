@@ -2,7 +2,7 @@
 // @name         Pipelines Deploy Counter
 // @description  Add button to count deploys for teams
 // @namespace    https://code.amazon.com/packages/AWSAmplifyTools/
-// @version      0.1
+// @version      0.2
 // @author       anatonie@
 // @match        https://pipelines.amazon.com
 // @run-at       document-end
