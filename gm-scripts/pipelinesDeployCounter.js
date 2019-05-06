@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Pipelines Deploy Counter
-// @namespace    http://tampermonkey.net/
+// @description  Add button to count deploys for teams
+// @namespace    https://code.amazon.com/packages/AWSAmplifyTools/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @author       anatonie@
 // @match        https://pipelines.amazon.com
 // @run-at       document-end
 // @require      https://code.jquery.com/jquery-3.2.1.min.js
@@ -103,7 +103,6 @@
           const dateDiff = 1000 * 60 * 60 * 24 * 7;
           const currentDate = new Date();
           const oldDate = new Date(currentDate.getTime() - dateDiff);
-          console.log('https://pipelines.amazon.com' + href + '/statistics?from=' + toDateString(oldDate) + '&to=' + toDateString(currentDate) + '&offset=');
           req({
             url: 'https://pipelines.amazon.com' + href + '/statistics?from=' + toDateString(oldDate) + '&to=' + toDateString(currentDate) + '&offset=',
             method: 'GET',
