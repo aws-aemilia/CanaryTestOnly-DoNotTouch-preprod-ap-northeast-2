@@ -127,6 +127,7 @@ app.post('/api/builds', async (req, res) => {
     } catch (err) {
         console.log('error calling codebuild');
         console.log(err);
+        res.status(400);
         res.end(JSON.stringify({'error': err}));
     }
 });
