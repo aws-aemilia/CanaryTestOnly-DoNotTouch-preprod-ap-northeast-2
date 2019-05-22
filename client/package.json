@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "aws-amplify": "^1.1.26",
+    "aws-amplify-react": "^2.3.6",
     "bootstrap": "^4.3.1",
     "lodash": "^4.17.11",
     "npm": "^6.9.0",
@@ -12,12 +17,15 @@
     "react-bootstrap": "^1.0.0-beta.5",
     "react-bootstrap-table-next": "^2.0.0",
     "react-dom": "^16.7.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.15",
-    "@fortawesome/free-solid-svg-icons": "^5.7.2",
-    "@fortawesome/react-fontawesome": "^0.1.4",
     "react-plotly.js": "^2.3.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.2"
+    "react-scripts": "2.1.2",
+    "aws-sdk": "2.45.0",
+    "aws-sign-web": "^1.4.0",
+    "axios": "^0.16.0",
+    "axios-retry": "^3.0.0",
+    "exports-loader": "^0.7.0",
+    "url-search-params-polyfill": "^6.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,7 +36,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://heutsr.aka.corp.amazon.com:3001/",
+  "proxy": "https://727r6gx20j.execute-api.us-west-2.amazonaws.com/latest/",
   "browserslist": [
     ">0.2%",
     "not dead",

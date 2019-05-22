@@ -1,21 +1,29 @@
-const { execSync } = require('child_process');
-const aws = require('aws-sdk');
 const accountsList = require('./accounts.json').accounts;
 const accounts = {};
-Object.keys(accountsList).forEach((key) => accounts[accountsList[key].region] = accountsList[key].accountId);
+Object.keys(accountsList)
+  // .filter((key) => key.indexOf('prod') >= 0)
+  .forEach((key) => {
+    const accountId = accountsList[key].accountId;
+    const stage = accountsList[key].stage;
+    const region = accountsList[key].region;
+    if (!accounts[stage]) {
+        accounts[stage] = {};
+    }
+    accounts[stage][region] = accountId;
+});
 
 module.exports = {
-    setAWSConfig: (credRegion, sdkRegion) => {
-        if (accounts[credRegion] === undefined) {
-            throw new Error('Unsupported region');
+    getAccountId: (stage, region) => {
+        if (accounts[stage] === undefined || accounts[stage][region] === undefined) {
+            throw new Error('Unsupported stage/region');
         }
-
-        const material = execSync('/apollo/bin/env -e envImprovement retrieve-material-set-credential com.amazon.credentials.isengard.' + accounts[credRegion] + '.user/ReadOnlyLogs').toString();
-
-        const creds= new aws.Credentials();
-        creds.accessKeyId = material.split('\n')[0];
-        creds.secretAccessKey = material.split('\n')[1];
-
-        aws.config.update({region: sdkRegion ? sdkRegion : credRegion, credentials: creds});
+        return accounts[stage][region];
+    },
+    getRegions: () => {
+        const regions = {};
+        Object.keys(accounts).forEach((stage) => {
+            regions[stage] = Object.keys(accounts[stage]);
+        });
+        return regions;
     }
 };

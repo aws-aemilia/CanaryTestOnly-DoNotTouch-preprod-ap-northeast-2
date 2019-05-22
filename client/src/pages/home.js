@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import 'bootstrap/dist/css/bootstrap.css'
 import NavBar from '../components/navbar';
 import Plot from 'react-plotly.js';
 import _ from "lodash";
+import Ajax from '../ajax';
 
 
 class Home extends Component {
@@ -15,25 +17,33 @@ class Home extends Component {
       'succeedsMonth': null,
       'datesMonth': null,
       'loadingWeek': true,
-      'loadingMonth': true
+      'loadingMonth': true,
+      'weekAccounts': null,
+      'monthAccounts': null
     };
   }
 
   async componentDidMount() {
-    await this.getFailureCountForWeek();
-    await this.getFailureCountForMonth();
+    this.getAllBuilds();
+    this.getFailureCountForWeek();
+    this.getFailureCountForMonth();
   }
 
   async getFailureCountForWeek() {
     let failuresWeek = [];
     let succeedsWeek = [];
     let datesWeek = [];
+    let weekBuilds = [];
 
     for (let i=6; i>=0; i--) {
       let count = await this.getFailureCountForDays(2 + i, 1 + i);
-      let passCount = await this.getSuccessCountForDays(2 + i, 1 + i);
+      let {builds, passCount} = await this.getSuccessCountForDays(2 + i, 1 + i);
       failuresWeek.push(count);
       succeedsWeek.push(passCount);
+        weekBuilds = [
+            ...weekBuilds,
+            builds
+        ];
 
       var d = new Date();
       d.setDate(d.getDate()- (1 + i));
@@ -46,18 +56,29 @@ class Home extends Component {
       'datesWeek': datesWeek,
       'loadingWeek': false
     });
+
+      let accounts = [];
+      weekBuilds.forEach((result) => result.rows.forEach(({accountid}) => accounts.indexOf(accountid) >= 0 ? undefined : accounts.push(accountid)));
+      this.setState({
+        weekAccounts: accounts.length
+      });
   }
 
   async getFailureCountForMonth() {
     let failuresMonth = [];
     let succeedsMonth = [];
     let datesMonth = [];
+    let monthBuilds = [];
 
     for (let i=30; i>=0; i--) {
       let count = await this.getFailureCountForDays(2 + i, 1 + i);
-      let passCount = await this.getSuccessCountForDays(2 + i, 1 + i);
+      let {builds, passCount} = await this.getSuccessCountForDays(2 + i, 1 + i);
       failuresMonth.push(count);
       succeedsMonth.push(passCount);
+      monthBuilds = [
+          ...monthBuilds,
+          builds
+      ];
 
       var d = new Date();
       d.setDate(d.getDate()- (1 + i));
@@ -70,25 +91,40 @@ class Home extends Component {
       'datesMonth': datesMonth,
       'loadingMonth': false
     });
+
+    let accounts = [];
+    monthBuilds.forEach((result) => result.rows.forEach(({accountid}) => accounts.indexOf(accountid) >= 0 ? undefined : accounts.push(accountid)));
+
+    this.setState({
+      monthAccounts: accounts.length
+    });
   }
 
   async getFailureCountForDays(from, to) {
-    const res = await fetch(`/api/metrics/builds/failed?daysFrom=${from}&daysTo=${to}`);
-    const json = await res.json();
-    return Object.entries(_.groupBy(json.rows, 'appid')).length;
+    const {data} = await Ajax().fetch(`/api/metrics/builds/failed?daysFrom=${from}&daysTo=${to}`);
+    return Object.entries(_.groupBy(data.rows, 'appid')).length;
   }
 
   async getSuccessCountForDays(from, to) {
-    const res = await fetch(`/api/metrics/builds/succeed?daysFrom=${from}&daysTo=${to}`);
-    const json = await res.json();
-    return Object.entries(_.groupBy(json.rows, 'appid')).length;
+    const {data} = await Ajax().fetch(`/api/metrics/builds/succeed?daysFrom=${from}&daysTo=${to}`);
+    return {builds: data, passCount: Object.entries(_.groupBy(data.rows, 'appid')).length};
+  }
+
+  async getAllBuilds() {
+    const {data} = await Ajax().fetch(`/api/metrics/builds/succeed`);
+    console.log(data);
+    // return {builds: data, passCount: Object.entries(_.groupBy(data.rows, 'appid')).length};
   }
 
   render() {
-    const { failuresWeek, datesWeek, datesMonth, failuresMonth, loadingWeek, loadingMonth, succeedsWeek, succeedsMonth } = this.state;
+    const { failuresWeek, datesWeek, datesMonth, failuresMonth, succeedsWeek, succeedsMonth, weekAccounts, monthAccounts } = this.state;
     return (
     <div className="App">
       <NavBar/>
+      <div>
+        <div>Unique week accounts: {weekAccounts}</div>
+        <div>Unique month accounts: {monthAccounts}</div>
+      </div>
       <div>
         <Plot
             data={[

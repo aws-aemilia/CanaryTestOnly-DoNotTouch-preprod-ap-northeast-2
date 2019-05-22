@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
-import Home from "../pages/home";
+import Ajax from "../ajax";
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {search: ''};
+        this.state = {search: '', username: ''};
 
         this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
+    }
+
+    componentWillMount() {
+      Ajax().fetch({
+        method: 'GET',
+        url: '/username'
+      })
+        .then((result) => this.setState({username: result.data}))
+        .catch((err) => console.log(err));
     }
 
     handleChangeSearch(event) {
@@ -27,7 +36,7 @@ class NavBar extends Component {
     render() {
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a className="navbar-brand" href="/">AC Analytics</a>
+                <a className="navbar-brand" href="/">AC Analytics {this.state.username && ' - Welcome ' + this.state.username}</a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +59,9 @@ class NavBar extends Component {
                                 <a className="dropdown-item" href="/failures/days/30">Last 30 Days</a>
                             </div>
                         </li>
+                      <li className="nav-item active">
+                        <a className="nav-link" href="/metering">Metering <span className="sr-only">(current)</span></a>
+                      </li>
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
                         <input className="form-control mr-sm-2" type="search" placeholder="Account / App ID" aria-label="Account / App ID" onChange={this.handleChangeSearch}/>

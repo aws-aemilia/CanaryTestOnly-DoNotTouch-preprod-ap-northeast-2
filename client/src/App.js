@@ -5,6 +5,7 @@ import Home from './pages/home';
 import Failures from './pages/failures';
 import Builds from './pages/builds';
 import Logs from './pages/logs';
+import Metering from './pages/metering';
 
 class App extends Component {
   render() {
@@ -18,6 +19,7 @@ class App extends Component {
             <Route path='/failures' component={Failures}/>
           <Route path='/builds/:region/:project' component={Builds}/>
           <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>
+          <Route path='/metering' component={Metering}/>
         </Switch>
       </div>
     );

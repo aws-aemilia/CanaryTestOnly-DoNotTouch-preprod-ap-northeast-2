@@ -3,7 +3,8 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.css'
 import NavBar from '../components/navbar';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCrosshairs, faUser} from "@fortawesome/free-solid-svg-icons";
+import {faCrosshairs} from "@fortawesome/free-solid-svg-icons";
+import Ajax from '../ajax';
 
 class List extends Component {
   // Initialize the state
@@ -22,29 +23,37 @@ class List extends Component {
   }
 
   // Retrieves the list of items from the Express app
-  getBuilds = () => {
+  getBuilds = async () => {
       const { match: { params } } = this.props;
-    fetch(`/api/builds?region=${params['region']}&project=${params['project']}`)
-    .then(async res => {
-        const json = await res.json();
+      let builds = [];
+      const requestParams = {
+        region: params['region'],
+        project: params['project'],
+        token: ''
+      };
+      try {
+        do {
 
-        if (json['builds']) {
-            const builds = json['builds'].map(item => {
-                return {
-                    'startTime': item.startTime,
-                    'id': item.id,
-                    'buildStatus': item.buildStatus,
-                    'branch': item.environment.environmentVariables.find(element => element.name === 'AWS_BRANCH').value,
-                    'buildId': item.environment.environmentVariables.find(element => element.name === 'AWS_JOB_ID').value,
-                    'logs': item.logs
-                };
-            });
-
-            this.setState({'list': builds});
-        } else {
-            this.setState({'error': true});
-        }
-    });
+          const {data: json} = await Ajax().post(`/api/builds`, requestParams);
+          if (json['builds']) {
+            builds = [
+              ...builds,
+              ...json['builds'].map(item => ({
+                'startTime': item.startTime,
+                'id': item.id,
+                'buildStatus': item.buildStatus,
+                'branch': item.environment.environmentVariables.find(element => element.name === 'AWS_BRANCH').value,
+                'buildId': item.environment.environmentVariables.find(element => element.name === 'AWS_JOB_ID').value,
+                'logs': item.logs
+              }))
+            ]
+          }
+          requestParams.token = json.token;
+        } while (requestParams.token);
+        this.setState({'list': builds});
+      } catch (error) {
+        this.setState({error});
+      }
   };
 
     onTargetClick (row) {

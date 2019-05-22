@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import '../App.css'
 import AceEditor from 'react-ace';
 import NavBar from '../components/navbar';
+import Ajax from '../ajax';
 
 import 'brace/theme/dracula';
 
@@ -24,12 +25,8 @@ class List extends Component {
   // Retrieves the list of items from the Express app
   getBuilds = () => {
       const { match: { params } } = this.props;
-      fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
-    .then(async res => {
-        const json = await res.json();
-
-        this.setState({'list': json['events']});
-    });
+      Ajax().fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
+    .then(async ({data: json}) => this.setState({'list': json['events']}));
   };
 
   render() {

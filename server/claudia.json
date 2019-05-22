@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "awsamplify-tools-executor",
+    "name": "awsamplify-tools",
+    "region": "us-west-2"
+  },
+  "api": {
+    "id": "ex012oiylc"
+  }
+}

@@ -6,6 +6,7 @@ import NavBar from '../components/navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrosshairs } from '@fortawesome/free-solid-svg-icons'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import Ajax from '../ajax';
 
 class Failures extends Component {
   // Initialize the state
@@ -38,15 +39,12 @@ class Failures extends Component {
           url = '/api/metrics/builds/failed?days=' + days;
       }
 
-      fetch(url)
-    .then(async res => {
-      const json = await res.json();
-
+      Ajax().fetch(url)
+    .then(async ({data: json}) => {
       if (json.rows.length <= 0) {
           this.setState({ 'error': true, 'loading': false });
           return;
       }
-
       return Object.entries(_.groupBy(json.rows, 'appid')).map(item => {
         return {
           count: _.uniqBy(item[1], 'jobid').length,
