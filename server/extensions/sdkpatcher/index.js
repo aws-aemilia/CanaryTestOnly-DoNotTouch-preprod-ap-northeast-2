@@ -38,7 +38,7 @@ const getStsClient = () => {
     }
     return stsClient;
 };
-const patchSdk = async (stage, region, sdk) => {
+const patchSdk = async (stage, region, sdk, sdkRegion) => {
     const client = getStsClient();
     const accountId = getAccountId(stage, region);
     const RoleArn = roles.find((role) => role.indexOf(accountId) >= 0);
@@ -57,6 +57,7 @@ const patchSdk = async (stage, region, sdk) => {
         accessKeyId: data.Credentials.AccessKeyId,
         secretAccessKey: data.Credentials.SecretAccessKey,
         sessionToken: data.Credentials.SessionToken,
+        region: sdkRegion ? sdkRegion : region
       });
     } catch (e) {
         console.log(e);
