@@ -1,6 +1,6 @@
 let event;
 
 module.exports = {
-  getEvent: () => event,
-  setEvent: (newEvent) => event = newEvent
+    getEvent: () => event,
+    setEvent: (newEvent) => event = newEvent
 };

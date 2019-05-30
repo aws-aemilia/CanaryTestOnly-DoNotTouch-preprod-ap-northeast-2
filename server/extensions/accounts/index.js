@@ -1,16 +1,16 @@
 const accountsList = require('./accounts.json').accounts;
 const accounts = {};
 Object.keys(accountsList)
-  // .filter((key) => key.indexOf('prod') >= 0)
-  .forEach((key) => {
-    const accountId = accountsList[key].accountId;
-    const stage = accountsList[key].stage;
-    const region = accountsList[key].region;
-    if (!accounts[stage]) {
-        accounts[stage] = {};
-    }
-    accounts[stage][region] = accountId;
-});
+// .filter((key) => key.indexOf('prod') >= 0)
+    .forEach((key) => {
+        const accountId = accountsList[key].accountId;
+        const stage = accountsList[key].stage;
+        const region = accountsList[key].region;
+        if (!accounts[stage]) {
+            accounts[stage] = {};
+        }
+        accounts[stage][region] = accountId;
+    });
 
 module.exports = {
     getAccountId: (stage, region) => {

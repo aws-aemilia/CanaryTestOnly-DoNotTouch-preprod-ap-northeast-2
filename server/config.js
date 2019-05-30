@@ -2,12 +2,12 @@ const Redshift = require('node-redshift');
 
 module.exports = {
     name: 'awsamplify-tools',
-    hostname : 'http://localhost',
+    hostname: 'http://localhost',
     version: '1.0.0',
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 3001,
     db: {
-        get : function () {
+        get: function () {
             const client = {
                 user: 'awsuser',
                 database: 'dev',
@@ -17,6 +17,6 @@ module.exports = {
             };
 
             return new Redshift(client, {});
-		}
+        }
     }
 };

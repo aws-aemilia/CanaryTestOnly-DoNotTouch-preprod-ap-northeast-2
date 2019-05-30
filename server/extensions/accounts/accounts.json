@@ -17,7 +17,6 @@
       "stage": "beta",
       "type": "service"
     },
-
     "gamma.us-west-2.aemilia": {
       "accountId": "457974620857",
       "alias": "gamma-pdx",
@@ -26,7 +25,6 @@
       "stage": "gamma",
       "type": "service"
     },
-
     "gamma.us-east-1.aemilia": {
       "accountId": "396176200477",
       "alias": "gamma-iad",
@@ -35,7 +33,6 @@
       "stage": "gamma",
       "type": "service"
     },
-
     "prod.us-west-2.aemilia": {
       "accountId": "395333095307",
       "alias": "prod-pdx",
@@ -44,7 +41,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.us-east-1.aemilia": {
       "accountId": "073653171576",
       "alias": "prod-iad",
@@ -53,7 +49,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.us-east-2.aemilia": {
       "accountId": "264748200621",
       "alias": "prod-cmh",
@@ -62,7 +57,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.eu-west-1.aemilia": {
       "accountId": "565036926641",
       "alias": "prod-dub",
@@ -71,7 +65,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.ap-southeast-2.aemilia": {
       "accountId": "711974673587",
       "alias": "prod-syd",
@@ -80,7 +73,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.eu-west-2.aemilia": {
       "accountId": "499901155257",
       "alias": "prod-lhr",
@@ -89,7 +81,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.ap-northeast-1.aemilia": {
       "accountId": "550167628141",
       "alias": "prod-nrt",
@@ -98,7 +89,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.ap-southeast-1.aemilia": {
       "accountId": "148414518837",
       "alias": "prod-sin",
@@ -107,7 +97,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.ap-northeast-2.aemilia": {
       "accountId": "024873182396",
       "alias": "prod-icn",
@@ -116,7 +105,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.ap-south-1.aemilia": {
       "accountId": "801187164913",
       "alias": "prod-bom",
@@ -125,7 +113,6 @@
       "stage": "prod",
       "type": "service"
     },
-
     "prod.eu-central-1.aemilia": {
       "accountId": "644397351177",
       "alias": "prod-fra",
