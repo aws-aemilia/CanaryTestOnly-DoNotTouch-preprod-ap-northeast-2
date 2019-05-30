@@ -17,10 +17,10 @@ export default class extends Component {
             loading: false,
             message: '',
             type: '',
-            empty: false,
             getError: undefined,
             deleteError: undefined,
-            showAccounts: false
+            showAccounts: false,
+            lastResultLength: undefined
         };
     }
 
@@ -39,6 +39,9 @@ export default class extends Component {
                     maxLines={messageText.split('\n').length + 2}
                     width={'100%'}
                     showPrintMargin={false}
+                    editorProps={{
+                        $blockScrolling: Infinity
+                    }}
                 />
                 <Button
                     style={{margin: '1rem 0'}}
@@ -105,7 +108,7 @@ export default class extends Component {
         }));
         const accounts = [];
         messages.forEach((message) => {
-            if (accounts.indexOf(messages.accountId) < 0) {
+            if (accounts.indexOf(message.accountId) < 0) {
                 accounts.push(message.accountId);
             }
         });
@@ -117,8 +120,8 @@ export default class extends Component {
                         stage={this.state.stage}
                         region={this.state.region}
                         loading={this.state.loading}
-                        onStageChange={(stage) => this.setState({stage, region: ''})}
-                        onRegionChange={(region) => this.setState({region})}
+                        onStageChange={(stage) => this.setState({stage, region: '', messages: [], notFoundMessages: [], foundMessages: []})}
+                        onRegionChange={(region) => this.setState({region, messages: [], notFoundMessages: [], foundMessages: []})}
                     >
                         <DropdownButton
                             title={'Type' + (this.state.type ? ' - ' + this.state.type : '')}
@@ -131,7 +134,7 @@ export default class extends Component {
                                 <Dropdown.Item
                                     key={type}
                                     eventKey={index}
-                                    onSelect={() => this.setState({type})}
+                                    onSelect={() => this.setState({type, messages: [], notFoundMessages: [], foundMessages: []})}
                                 >
                                     {type}
                                 </Dropdown.Item>
@@ -141,25 +144,32 @@ export default class extends Component {
                             variant="primary"
                             disabled={!this.state.stage || !this.state.region || !this.state.type || this.state.loading}
                             onClick={async () => {
-                                this.setState({loading: true, empty: false});
+                                this.setState({loading: true});
                                 const {data} = await Ajax().fetch('/metering/get?stage=' + this.state.stage + '&region=' + this.state.region + '&type=' + this.state.type);
                                 this.setState({
-                                    notFoundMessages: data.notFoundMessages ? data.notFoundMessages : [],
-                                    foundMessages: data.foundMessages ? data.foundMessages : [],
-                                    messages: data.messages ? data.messages : [],
-                                    empty: !data.messages,
-                                    loading: false
+                                    notFoundMessages: this.mergeMessages(data.notFoundMessages ? data.notFoundMessages : [], this.state.notFoundMessages),
+                                    foundMessages: this.mergeMessages(data.foundMessages ? data.foundMessages : [], this.state.foundMessages),
+                                    messages: this.mergeMessages(data.messages ? data.messages : [], this.state.messages),
+                                    loading: false,
+                                    lastResultLength: data.messages ? data.messages.length : 0
                                 });
                             }}
                         >
                             Get records
                         </Button>
+                        {messages.length > 0 && <div><b>Changing the stage/region/queue will clear the tables</b></div>}
                     </StageRegionSelector>
-                    {messages.length >= 10 && <div>10 messages were found in the queue, there could be more.</div>}
-                    {accounts.length > 0 &&
-                    <div>There are <b>{accounts.length}</b> unique accounts <Button variant="primary"
-                                                                                    onClick={() => this.setState({showAccounts: !this.state.showAccounts})}>Show
-                        accounts</Button></div>}
+                    {this.state.lastResultLength >= 10 && <div style={{margin: '1rem 0'}}>10 messages were found in the queue, there could be more.</div>}
+                    {this.state.lastResultLength === 0 && <div style={{margin: '1rem 0'}}>No messages found in queue. There could be messages in flight, please wait a few then try again</div>}
+                    {accounts.length > 0 && <div>
+                        <div>There are <b>{accounts.length}</b> unique accounts</div>
+                        <div>There are <b>{messages.length}</b> total messages</div>
+                        <Button
+                            variant="primary"
+                            onClick={() => this.setState({showAccounts: !this.state.showAccounts})}>
+                            Show accounts
+                        </Button>
+                    </div>}
                     {this.state.showAccounts && <div>
                         <AceEditor
                             theme="dracula"
@@ -169,6 +179,9 @@ export default class extends Component {
                             maxLines={accounts.length + 1}
                             width={'100%'}
                             showPrintMargin={false}
+                            editorProps={{
+                                $blockScrolling: Infinity
+                            }}
                         />
                     </div>}
                     {this.state.type === 'REMO' && messagesAvailable && <div>
@@ -188,9 +201,6 @@ export default class extends Component {
                         <BootstrapTable bootstrap4 striped keyField='MD5OfBody' condensed={true} data={messages}
                                         columns={columns} expandRow={this.expandRow}/>
                     </div>}
-                    {this.state.empty &&
-                    <div>No messages found in queue. There could be messages in flight, please wait a few then try
-                        again</div>}
                     {this.state.deleteError && <div>
                         Error during delete
                         <AceEditor
@@ -199,10 +209,26 @@ export default class extends Component {
                             value={JSON.stringify(this.state.deleteError, null, 4)}
                             width={'100%'}
                             showPrintMargin={false}
+                            editorProps={{
+                                $blockScrolling: Infinity
+                            }}
                         />
                     </div>}
                 </div>
             </div>
         )
+    }
+    mergeMessages = (existingMessages, newMessages) => {
+        const md5s = [];
+        return [
+            ...existingMessages,
+            ...newMessages
+        ].filter(({MD5OfBody}) => {
+            if (md5s.indexOf(MD5OfBody) < 0) {
+                md5s.push(MD5OfBody);
+                return true;
+            }
+            return false;
+        })
     }
 }
