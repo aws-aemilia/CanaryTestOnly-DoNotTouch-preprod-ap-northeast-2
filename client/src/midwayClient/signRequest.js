@@ -1,4 +1,4 @@
-import { AwsSigner } from 'aws-sign-web';
+import {AwsSigner} from 'aws-sign-web';
 
 
 export default function (request, credentials, service) {
@@ -11,10 +11,10 @@ export default function (request, credentials, service) {
     // the request may fail if credentials themselves are expired
     // If no cached credentials, return credential error
     return credentials.getPromise()
-    .then(() => signRequest(request, credentials, service))
-    .catch(error => ((credentials.secretAccessKey && credentials.accessKeyId) ?
-        signRequest(request, credentials, service) :
-        Promise.reject(error)));
+        .then(() => signRequest(request, credentials, service))
+        .catch(error => ((credentials.secretAccessKey && credentials.accessKeyId) ?
+            signRequest(request, credentials, service) :
+            Promise.reject(error)));
 }
 
 function signRequest(request, credentials, service) {
@@ -25,7 +25,7 @@ function signRequest(request, credentials, service) {
         secretAccessKey: credentials.secretAccessKey,
         sessionToken: credentials.sessionToken,
     })
-    .sign(request);
+        .sign(request);
 
     Object.assign(request.headers, headers);
     return request;

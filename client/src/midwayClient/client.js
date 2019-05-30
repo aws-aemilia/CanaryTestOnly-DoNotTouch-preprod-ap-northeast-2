@@ -14,7 +14,7 @@ export default class MidwayIdentityJavaScriptClient {
     constructor(configuration) {
         validateConfiguration(configuration, REQUIRED_CONFIGURATION_KEYS);
 
-        const httpClient = axios.create({ baseURL: configuration.httpEndpoint });
+        const httpClient = axios.create({baseURL: configuration.httpEndpoint});
         const credentials = new MidwayIdentityCredentialProvider({
             region: configuration.region,
             cognitoIdentityPoolId: configuration.cognitoIdentityPoolId,
@@ -23,14 +23,16 @@ export default class MidwayIdentityJavaScriptClient {
 
         httpClient.interceptors.request.use(request => signRequest(request, credentials, service));
         httpClient.credentials = credentials;
-        axiosRetry(httpClient, { retries: CLIENT_RETRY_COUNT });
+        axiosRetry(httpClient, {retries: CLIENT_RETRY_COUNT});
         return Object.assign(this, httpClient);
     }
 }
 
 function validateConfiguration(configuration, requiredKeys) {
     const errorMessage = `Failed to validate client configuration. ${JSON.stringify(configuration)} must be an object containing ${requiredKeys}`;
-    if (typeof configuration !== 'object') { throw new Error(errorMessage); }
+    if (typeof configuration !== 'object') {
+        throw new Error(errorMessage);
+    }
 
     requiredKeys.forEach((key) => {
         if (configuration[key] === undefined) {
