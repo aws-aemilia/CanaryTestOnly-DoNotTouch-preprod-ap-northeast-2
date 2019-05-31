@@ -221,8 +221,8 @@ export default class extends Component {
     mergeMessages = (existingMessages, newMessages) => {
         const md5s = [];
         return [
-            ...existingMessages,
-            ...newMessages
+            ...newMessages,
+            ...existingMessages
         ].filter(({MD5OfBody}) => {
             if (md5s.indexOf(MD5OfBody) < 0) {
                 md5s.push(MD5OfBody);
