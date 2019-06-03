@@ -1,30 +1,21 @@
 This package is deployed to 718161700038 using claudia
 
-To install claudia:
+## To stand up local stack ##
+
+1. Get the creds using Isengard
+    1. To do so, open Isengard
+    1. Search the above accountId 
+    1. Click the icon next to the "Admin" link
+    1. Copy and paste the section "AWS CLI on Linux or macOS" into terminal
+1. To install claudia:
 ```
 npm install claudia -g
 ```
-
-To update the stack first get temporary credentials from Isengard
-
-* To do so, open Isengard
-* Search the above accountId 
-* Click the icon next to the "Admin" link
-* Copy and paste the section "AWS CLI on Linux or macOS" into terminal
-
-Then run
-```
-claudia update --config claudia.prod.json
-```
-
-To stand up local stack
-
-1. Get the creds using the above steps
-1. Run the create command. **Update the name to have your username**
+3. Run the create command. **Update the name to have your username**
 ```
 claudia create --name amplifytools-USERNAME --config claudia.alpha.json --region us-west-2 --handler lambda.handler --deploy-proxy-api
 ```
-1. Enable IAM auth on your API
+4. Enable IAM auth on your API
     1. Open the API Gateway console (using Isengard)
     1. Open your API (has the name you specified above)
     1. Under resources, update both "Any"s to use IAM auth
@@ -50,7 +41,7 @@ claudia create --name amplifytools-USERNAME --config claudia.alpha.json --region
 REACT_APP_API_ENDPOINT=https://STACKID.execute-api.us-west-2.amazonaws.com/latest
 ```
 
-To update your local stack
+## Update local stack ##
 ```
 claudia update --config claudia.alpha.json
 ```
