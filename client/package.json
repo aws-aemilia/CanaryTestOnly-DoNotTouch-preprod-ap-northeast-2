@@ -38,7 +38,6 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "https://727r6gx20j.execute-api.us-west-2.amazonaws.com/latest/",
   "browserslist": [
     ">0.2%",
     "not dead",
