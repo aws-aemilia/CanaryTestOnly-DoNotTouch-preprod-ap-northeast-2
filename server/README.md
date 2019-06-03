@@ -1,5 +1,7 @@
 This package is deployed to 718161700038 using claudia
 
+Production stack is updated automatically when a change is pushed.
+
 ## To stand up local stack ##
 
 1. Get the creds using Isengard
