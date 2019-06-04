@@ -3,7 +3,7 @@ import {Route, Switch, withRouter} from 'react-router-dom';
 import NavBar from '../../components/navbar';
 import Ajax from "../../ajax";
 import Metering from './metering';
-import CWLogs from './cwlogs';
+import Impact from './impact';
 
 class OnCall extends Component {
     constructor(props) {
@@ -27,8 +27,8 @@ class OnCall extends Component {
                     <Switch>
                         <Route path={this.props.match.path + '/metering'}
                                render={(props) => <Metering {...props} regions={this.state.regions}/>}/>
-                        <Route path={this.props.match.path + '/CWLogs'}
-                               render={(props) => <CWLogs {...props} regions={this.state.regions}/>}/>
+                        <Route path={this.props.match.path + '/impact'}
+                               render={(props) => <Impact {...props} regions={this.state.regions}/>}/>
                     </Switch>
                 </Switch>
             </div>
