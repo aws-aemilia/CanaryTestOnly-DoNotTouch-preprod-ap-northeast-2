@@ -143,12 +143,35 @@ app.get('/api/logs', async (req, res) => {
             'logStreamName': req.query['logStreamName']
         }, function (err, data) {
             if (err) res.end(JSON.stringify(err)); // an error occurred
-            else res.end(JSON.stringify(data));           // successful response
+            else res.end(JSON.stringify(data)); // successful response
         });
     } catch (err) {
         res.end(JSON.stringify({'error': err}));
     }
 
+});
+
+app.get('/api/logsbyprefix', async (req, res) => {
+    try {
+        const cloudwatchlogs = await patchSdk('prod', req.query['region'], aws.CloudWatchLogs);
+
+        let nextToken = undefined;
+        let builds = [];
+        do {
+            let result = await cloudwatchlogs.describeLogStreams({
+                'logGroupName': req.query['logGroupName'],
+                'logStreamNamePrefix': req.query['logStreamNamePrefix'],
+                'limit': 50,
+                nextToken
+            }).promise();
+
+            builds = builds.concat(result.logStreams);
+        } while (!!nextToken);
+
+        res.end(JSON.stringify(builds));
+    } catch (err) {
+        res.end(JSON.stringify({'error': err}));
+    }
 });
 
 app.get('/api/cachemeta', async (req, res) => {

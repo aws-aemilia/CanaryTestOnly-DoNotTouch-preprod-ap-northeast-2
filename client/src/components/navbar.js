@@ -56,6 +56,7 @@ class NavBar extends Component {
                                 Build Failures
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <Link className="dropdown-item" to="/failureAnalysis">Analysis</Link>
                                 <Link className="dropdown-item" to="/failures/days/1">Last Day</Link>
                                 <Link className="dropdown-item" to="/failures/days/7">Last 7 Days</Link>
                                 <Link className="dropdown-item" to="/failures/days/30">Last 30 Days</Link>
