@@ -1,6 +1,97 @@
 import * as React from 'react';
 import {ButtonToolbar, DropdownButton, Dropdown} from "react-bootstrap";
 
+const regionMapByAirport = {
+    iad: {
+        selector: 'Northern Virginia',
+        region: 'us-east-1'
+    },
+    sfo: {
+        selector: 'Northern California',
+        region: 'us-west-1'
+    },
+    pdx: {
+        selector: 'Oregon',
+        region: 'us-west-2'
+    },
+    cmh: {
+        selector: 'Columbus, Ohio',
+        region: 'us-east-2'
+    },
+    yul: {
+        selector: 'Montreal Quebec Canada',
+        region: 'ca-central-1'
+    },
+    bom: {
+        selector: 'Mumbai, India',
+        region: 'ap-south-1'
+    },
+    icn: {
+        selector: 'Seoul, South Korea',
+        region: 'ap-northeast-2'
+    },
+    sin: {
+        selector: 'Singapore',
+        region: 'ap-southeast-1'
+    },
+    syd: {
+        selector: 'Sydney, Austrailia',
+        region: 'ap-southeast-2'
+    },
+    nrt: {
+        selector: 'Tokyo, Japan',
+        region: 'ap-northeast-1'
+    },
+    fra: {
+        selector: 'Frankfurt, Germany',
+        region: 'eu-central-1'
+    },
+    dub: {
+        selector: 'Dublin, Ireland',
+        region: 'eu-west-1'
+    },
+    lhr: {
+        selector: 'London, England',
+        region: 'eu-west-2',
+    },
+    gru: {
+        selector: 'Sao Paulo, Brazil',
+        region: 'sa-east-1'
+    },
+    bjs: {
+        selector: 'Beijing, China',
+        region: 'cn-north-1'
+    },
+    zhy: {
+        selector: 'Zhongwei, Ningxia, China',
+        region: 'cn-northwest-1'
+    },
+    pdt: {
+        selector: 'GovCloud',
+        region: 'govcloud'
+    },
+    arn: {
+        selector: 'Sweden',
+        region: 'eu-north-1'
+    },
+    hkg: {
+        selector: 'Hong Kong',
+        region: 'ap-east-1'
+    },
+    cdg: {
+        selector: 'Paris, France',
+        region: 'eu-west-3'
+    },
+    kix: {
+        selector: 'Japan',
+        region: 'ap-northeast-3'
+    }
+};
+const regionMapByRegion = {};
+
+Object.keys(regionMapByAirport).forEach((airport) => regionMapByRegion[regionMapByAirport[airport].region] = airport);
+console.log(regionMapByRegion);
+
 class StageRegionSelector extends React.Component {
     render() {
         const regions = this.props.regions;
@@ -42,7 +133,7 @@ class StageRegionSelector extends React.Component {
                                 eventKey={index}
                                 onSelect={() => onRegionChange(region)}
                             >
-                                {region}
+                                {region} ({regionMapByRegion[region].toUpperCase()})
                             </Dropdown.Item>
                         ))}
                     </DropdownButton>
