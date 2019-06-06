@@ -25,7 +25,11 @@ class MidwayClient {
 let ajax;
 const getAjax = () => {
     if (!ajax) {
-        ajax = new MidwayClient('https://ex012oiylc.execute-api.us-west-2.amazonaws.com/latest', config.cognitoIdentityPoolId, config.region)
+        ajax = new MidwayClient(
+            process.env.REACT_APP_API_ENDPOINT ? process.env.REACT_APP_API_ENDPOINT : 'https://ex012oiylc.execute-api.us-west-2.amazonaws.com/latest',
+            config.cognitoIdentityPoolId,
+            config.region
+        )
     }
     return ajax;
 };

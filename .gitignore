@@ -26,3 +26,5 @@ yarn-error.log*
 node-scripts/creds.json
 client/.env
 *.iml
+
+server/claudia.alpha.json

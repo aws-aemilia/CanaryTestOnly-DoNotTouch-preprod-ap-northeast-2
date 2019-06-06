@@ -15,7 +15,7 @@ const allowedUsers = [
     'dangred',
     'lisirui',
     'heutsr',
-    'snimakon',
+    'snimakom',
     'shufakan',
     'hzhenmin'
 ];
