@@ -90,7 +90,6 @@ const regionMapByAirport = {
 const regionMapByRegion = {};
 
 Object.keys(regionMapByAirport).forEach((airport) => regionMapByRegion[regionMapByAirport[airport].region] = airport);
-console.log(regionMapByRegion);
 
 class StageRegionSelector extends React.Component {
     render() {

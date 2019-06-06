@@ -7,9 +7,29 @@ import FailureAnalysis from './pages/failureAnalysis';
 import Builds from './pages/builds';
 import Logs from './pages/logs';
 import OnCall from './pages/oncall';
+import Ajax from "./ajax";
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {username: undefined, error: undefined};
+    }
+
+    componentWillMount() {
+        Ajax().fetch({
+            method: 'GET',
+            url: '/username'
+        })
+            .then((result) => this.setState({username: result.data}))
+            .catch((err) => this.setState({error: err}));
+    }
     render() {
+        if (this.state.error) {
+            return <div>There was an error processing your request</div>;
+        }
+        if (!this.state.username) {
+            return null;
+        }
         const App = () => (
             <div>
                 <Switch>

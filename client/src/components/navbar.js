@@ -5,19 +5,10 @@ import Ajax from "../ajax";
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {search: '', username: ''};
+        this.state = {search: ''};
 
         this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
-    }
-
-    componentWillMount() {
-        Ajax().fetch({
-            method: 'GET',
-            url: '/username'
-        })
-            .then((result) => this.setState({username: result.data}))
-            .catch((err) => console.log(err));
     }
 
     handleChangeSearch(event) {
