@@ -8,6 +8,8 @@ const fs = require("fs-extra");
 
 const region = "us-east-1";
 const tableName = "prod-us-east-1-App";
+const messagesFileName = "distroMessages.json";
+const impactedAppsFileName = "impactedApps.json";
 
 const credentials = new aws.Credentials(credsFile.credentials);
 aws.config.update({
@@ -20,7 +22,7 @@ const dynamo = new aws.DynamoDB();
 async function main() {
 
   // Read distribution messages
-  const distributionMessages = fs.readJSONSync("distroMessages.json");
+  const distributionMessages = fs.readJSONSync(messagesFileName);
   const appIds = [];
 
   // Load AppIds
@@ -55,7 +57,7 @@ async function main() {
   const uniqueAppIdsSet = new Set(affectedAppIds);
   const uniqueAppIds = [...uniqueAppIdsSet];
 
-  fs.writeFileSync("impactedApps.json", uniqueAppIds, "utf8");
+  fs.writeFileSync(impactedAppsFileName, uniqueAppIds, "utf8");
 }
 
 main();
