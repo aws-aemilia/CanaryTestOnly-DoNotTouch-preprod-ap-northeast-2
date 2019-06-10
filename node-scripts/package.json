@@ -9,9 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@amzn/sim-client": "*",
     "@amzn/odin": "*",
+    "@amzn/sim-client": "*",
     "aws-sdk": "^2.441.0",
+    "crypto-js": "^3.1.9-1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
   }
