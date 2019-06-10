@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Link, withRouter} from 'react-router-dom';
-import Ajax from "../ajax";
 
 class NavBar extends Component {
     constructor(props) {
@@ -60,6 +59,7 @@ class NavBar extends Component {
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <Link className="dropdown-item" to="/oncall/metering">Metering</Link>
+                                <Link className="dropdown-item" to="/oncall/lambdaedge">Lambda@Edge FileConfig</Link>
                                 <Link className="dropdown-item" to="/oncall/impact">Customer impact</Link>
                             </div>
                         </li>
