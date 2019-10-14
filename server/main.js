@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
 const aws = require('aws-sdk');
+const proxy = require('http-proxy-middleware');
 const accounts = require('./extensions/accounts');
 const businessMetrics = require('./extensions/businessMetrics');
 const {getEvent} = require('./event');
@@ -12,13 +13,13 @@ const Metering = require('./extensions/metering');
 const allowedUsers = [
     'anatonie',
     'loganch',
-    'dangred',
     'lisirui',
-    'heutsr',
     'snimakom',
     'shufakan',
     'hzhenmin',
-    'nsswamin'
+    'nsswamin',
+    'haoyujie',
+    'litwjaco'
 ];
 
 const app = express();
@@ -47,9 +48,20 @@ app.use((req, res, next) => {
             next();
         }
     } else {
-        next();
+        // next();
+        res.send(200);
     }
 });
+
+const proxyOptions = {
+    target: 'https://oncall-api.corp.amazon.com', // target host
+    // changeOrigin: true, // needed for virtual hosted sites
+    // ws: true, // proxy websockets
+    pathRewrite: {
+        '^/proxy/oncall': '/' // remove base path
+    }
+};
+app.use('/proxy/oncall', proxy(proxyOptions));
 
 app.get('/username', async (req, res) => res.send(username));
 
@@ -227,17 +239,7 @@ app.get('/cwlogs/groups', async (req, res) => {
 });
 
 app.post('/cwlogs/events/filter', async (req, res) => {
-    const stage = req.body['stage'];
-    const region = req.body['region'];
-    const sdkRegion = req.body['sdkRegion'];
-    const params = {
-        logGroupName: req.body['logGroupName'],
-        endTime: req.body['endTime'],
-        filterPattern: req.body['filterPattern'],
-        // limit: 'NUMBER_VALUE',
-        nextToken: req.body['nextToken'],
-        startTime: req.body['startTime']
-    };
+    const {stage, region, sdkRegion, ...params} = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.filterLogEvents(params).promise();
@@ -251,17 +253,7 @@ app.post('/cwlogs/events/filter', async (req, res) => {
 });
 
 app.post('/cwlogs/events/get', async (req, res) => {
-    const stage = req.body['stage'];
-    const region = req.body['region'];
-    const sdkRegion = req.body['sdkRegion'];
-    const params = {
-        logGroupName: req.body['logGroupName'],
-        logStreamName: req.body['logStreamName'],
-        endTime: req.body['endTime'],
-        nextToken: req.body['nextToken'],
-        startFromHead: req.body['startFromHead'],
-        startTime: req.body['startTime']
-    };
+    const {stage, region, sdkRegion, ...params} = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.getLogEvents(params).promise();
