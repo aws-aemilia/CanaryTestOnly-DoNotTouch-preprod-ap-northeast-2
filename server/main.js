@@ -15,11 +15,10 @@ const allowedUsers = [
     'loganch',
     'lisirui',
     'snimakom',
-    'shufakan',
-    'hzhenmin',
     'nsswamin',
     'haoyujie',
-    'litwjaco'
+    'litwjaco',
+    'donkahn'
 ];
 
 const app = express();
