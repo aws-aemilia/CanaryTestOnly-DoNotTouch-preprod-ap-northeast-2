@@ -2,7 +2,7 @@ This package is deployed to 718161700038 using claudia
 
 Production stack is updated automatically when a change is pushed.
 
-## To stand up local stack ##
+## To stand up your own development stack ##
 
 1. Get the creds using Isengard
     1. To do so, open Isengard
@@ -48,4 +48,5 @@ REACT_APP_API_ENDPOINT=https://STACKID.execute-api.us-west-2.amazonaws.com/lates
 claudia update --config claudia.alpha.json
 ```
     
-
+## Setup local frontend for development
+See [client/README.md](https://code.amazon.com/packages/AWSAmplifyTools/blobs/mainline/--/client/README.md)
