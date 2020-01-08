@@ -31,11 +31,12 @@ claudia create --name amplifytools-USERNAME --config claudia.alpha.json --region
     1. Go to roles and select your role
     1. Add "AmplifyBusinessMetricsGetCredentials" policy
     1. Add "AmazonAPIGatewayInvokeFullAccess" policy
+    1. Add "AWSLambdaVPCAccessExecutionRole" policy
 1. Update your lambda
     1. Open lambda console and open your lambda
     1. Change timeout to 30 seconds
     1. Change memory to 256mb
-    1. Cange VPC to "Celsus-Internal"
+    1. Change VPC to "Celsus-Internal"
     1. Add "LambdaSubnet1" and "LambdaSubnet2"
     1. Add "awsamplify-tools" security groups
 1. Finally add the endpoint to /client/.env
