@@ -71,6 +71,7 @@ app.post('/metering/delete', Metering.deleteMessage);
 app.get('/metering/get', Metering.getMessages);
 
 app.get('/api/metrics/builds/failed', async (req, res) => {
+    console.log('app lookup request params: ', req.params)
     let query = '';
     if (req.param('accountId')) {
         query = `select * from main where accountid = '${req.param('accountId')}' order by timestamp desc`;
