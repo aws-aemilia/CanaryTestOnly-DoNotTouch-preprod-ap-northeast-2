@@ -4,7 +4,6 @@ const aws = require('aws-sdk');
 let client;
 
 async function setClient() {
-    console.log("setClient called")
     const clusterId = 'amplify-business-metrics-prod'
     const dbUser = 'awsuser'
     const dbName = 'dev'
@@ -25,15 +24,11 @@ async function setClient() {
             host: clusterId + '.c2w5sisfl82n.us-west-2.redshift.amazonaws.com',
             ssl: true
         };
-        console.log('setting client using connection options: ', connection)
         client = new Redshift(connection, {});
-        console.log('redshift client now setup: ', client)
-    } catch(err) {
-        console.error('error: ', err)
-        throw new Error('Error establishing connection: ' + err)
-
+    } catch(e) {
+        console.error('Error establishing connection: ', e)
+        throw new Error('Error establishing connection: ' + e)
     }
-    console.log('creds: ', ret)
 }
 
 const execute = (query) => new Promise(async (resolve, reject) => {
@@ -42,23 +37,13 @@ const execute = (query) => new Promise(async (resolve, reject) => {
         console.log('no client established yet, setting up client')
         try {
             await setClient();
-        } catch (error) {
-            return reject({message: 'Error setting redshift client', error});
+        } catch (e) {
+            console.error('Error setting Redshift client', e)
+            return reject({message: 'Error setting Redshift client', e});
         }
     }
-    console.log('calling query with client and query: ', client, query)
-    // client.query(query, {})
-    //     .then((data) => {
-    //         console.log('query returned data: ', data)
-    //         return resolve(data)
-    //     })
-    //     .catch(err => {
-    //         console.error('Error executing query', err)
-    //         return reject({message: 'Error executing query', err})
-    //     })
 
-    client.query(query, {}, function (error, data) { //PROBLEM IS HERE
-        console.log('called client.query with client')
+    client.query(query, {}, function (error, data) {
         if (error) {
             console.error('Error executing query', error)
             return reject({message: 'Error executing query', error})
