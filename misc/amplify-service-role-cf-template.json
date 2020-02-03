@@ -1,0 +1,34 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "b651c9a6-e72f-4ace-8d7d-1a86d882fd79": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 544,
+                    "y": 221
+                },
+                "z": 0
+            }
+        }
+    },
+    "Resources": {
+        "IAMR3RA0M": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"gamma.amplify.amazonaws.com\",\"amplify.amazonaws.com\"]},\"Action\":\"sts:AssumeRole\"}]}",
+                "Description": "Amplify Console backend deployment service role",
+                "RoleName": "AmplifyBackendDeploymentsRole",
+                "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AdministratorAccess"]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b651c9a6-e72f-4ace-8d7d-1a86d882fd79"
+                }
+            }
+        }
+    }
+}
