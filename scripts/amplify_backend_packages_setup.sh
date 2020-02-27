@@ -33,6 +33,7 @@ function download_and_build_package() {
 
             # 💥Need to set this to false in order to deploy locally - NEVER CHECK IN THIS CHANGE! 💥 #
             sed -i 's/"enableCloudTrail": "true"/"enableCloudTrail": "false"/g' build.json
+            sed -i 's/"enableTagging": true/"enableTagging": false/g' build.json
             cd ../../
         fi
 
