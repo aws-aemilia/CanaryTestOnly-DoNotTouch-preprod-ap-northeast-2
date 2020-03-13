@@ -14,6 +14,24 @@ ACCOUNT_ID="YOUR_ACCOUNT_ID_HERE" # e.g. 123456789123
 USER_ALIAS="YOUR_ALIAS_HERE" # e.g. bradruof - not sure what is your alias?  Check https://phonetool.amazon.com/ --- (redirects to) ---> https://phonetool.amazon.com/users/<YOUR_ALIAS_HERE>
 RAINBOW_MODE="no" # Wonder what happens if you change this to 'yes'... 🌈.
 
+IS_MAC=''  # empty-string means this is a non-Mac (assume Linux)
+if [ "$(uname)" == "Darwin" ]; then
+    IS_MAC='1'
+fi
+
+# https://ed.gs/2016/01/26/os-x-sed-invalid-command-code/
+# Mac OS X and Linux usually have different versions of sed installed.
+# This forks the command based on the current platform.
+function sed_dash_i() {
+    if [ IS_MAC ]; then
+        echo 'Mac sed -i'
+        sed -i "" "$@"
+    else
+        echo 'Linux sed -i'
+        sed -i "$@"
+    fi
+}
+
 # $1 = The message: "Deploy <service>: BEGIN"
 # $2 = Workspace name:
 # $3 = Package name: 
@@ -24,6 +42,9 @@ function download_and_build_package() {
             echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
             brazil ws --create -n $2 -vs $4
             cd $2
+            if [ IS_MAC ]; then
+                echo "`yes|brazil setup platform-support`" # yes + pipefail = :-( swallow non-0 exit statuses just here
+            fi
             brazil ws --use -p $3
 
         # Update the model package for Control Plane
@@ -32,8 +53,8 @@ function download_and_build_package() {
             cd "src/AemiliaControlPlaneLambdaModel"
 
             # 💥Need to set this to false in order to deploy locally - NEVER CHECK IN THIS CHANGE! 💥 #
-            sed -i 's/"enableCloudTrail": "true"/"enableCloudTrail": "false"/g' build.json
-            sed -i 's/"enableTagging": true/"enableTagging": false/g' build.json
+            sed_dash_i 's/"enableCloudTrail": "true"/"enableCloudTrail": "false"/g' build.json
+            sed_dash_i 's/"enableTagging": true/"enableTagging": false/g' build.json
             cd ../../
         fi
 
@@ -51,8 +72,8 @@ function download_and_build_package() {
         brazil-recursive-cmd "brazil-build"
     fi
 
-    sed -i "s/YOUR_ACCOUNT_ID_HERE/$(echo ${ACCOUNT_ID})/g" SAMToolkit.devenv
-    sed -i "s/YOUR_ALIAS_HERE/$(echo ${USER_ALIAS})/g" SAMToolkit.devenv
+    sed_dash_i "s/YOUR_ACCOUNT_ID_HERE/$(echo ${ACCOUNT_ID})/g" SAMToolkit.devenv
+    sed_dash_i "s/YOUR_ALIAS_HERE/$(echo ${USER_ALIAS})/g" SAMToolkit.devenv
 
     echo -e "${GREEN}Deploy $3: SUCCESS${NC}"l
     cd ../../..
