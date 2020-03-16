@@ -21,7 +21,8 @@ const allowedUsers = [
     'donkahn',
     'bradruof',
     'guerarda',
-    'rjabhi'
+    'rjabhi',
+    'rugary'
 ];
 
 const app = express();
