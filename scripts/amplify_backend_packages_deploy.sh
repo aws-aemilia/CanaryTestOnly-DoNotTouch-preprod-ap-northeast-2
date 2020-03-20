@@ -30,11 +30,12 @@ echo -e "${YELLOW}If you haven't run that tool - run it first and cd into the 'A
 set -x #echo commands
 
 ##### Deployment order matters ##### -->  do the SAM (local) deployment
-deploy_local_package "Setup webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda"
+deploy_local_package "Deploy webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda"
 deploy_local_package "Deploy dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda"
 deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda"
 deploy_local_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda"
 deploy_local_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool"
 #deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄
+download_and_build_package "Deploy pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute"
 
 echo -e "${GREEN}ALL ITEMS COMPLETE. SCRIPT END.${NC}"

@@ -16,6 +16,7 @@ RAINBOW_MODE="no" # Wonder what happens if you change this to 'yes'... 🌈.
 
 IS_MAC=''  # empty-string means this is a non-Mac (assume Linux)
 if [ "$(uname)" == "Darwin" ]; then
+    echo "We detected you are running on a MAC"
     IS_MAC='1'
 fi
 
@@ -23,7 +24,7 @@ fi
 # Mac OS X and Linux usually have different versions of sed installed.
 # This forks the command based on the current platform.
 function sed_dash_i() {
-    if [ IS_MAC ]; then
+    if [ IS_MAC = '1' ]; then
         echo 'Mac sed -i'
         sed -i "" "$@"
     else
@@ -56,6 +57,12 @@ function download_and_build_package() {
             sed_dash_i 's/"enableCloudTrail": "true"/"enableCloudTrail": "false"/g' build.json
             sed_dash_i 's/"enableTagging": true/"enableTagging": false/g' build.json
             cd ../../
+        fi
+
+        # Remove integration tests YML files for Pioneer
+        if [ "$2/src/$3" = "AWSMobilePioneerExecute/src/AWSMobilePioneerExecute" ]; then
+            rm "src/$3/configuration/cloudFormation/integrationTestBucket.template.yml"
+            rm "src/$3/configuration/cloudFormation/modifiedHydraInvocationRole.template.yml"
         fi
 
         cd "src/$3"
@@ -94,10 +101,11 @@ cd AMPLIFY
 
 ##### Deployment order matters ##### --> # download packages and update SAM files
 download_and_build_package "Setup webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda/development"
-download_and_build_package "Deploy dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda/development"
-download_and_build_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda/development"
-download_and_build_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda" "AemiliaWorkersLambda/development"
-download_and_build_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool" "AemiliaWarmingPoolInfrastructure/development"
-#download_and_build_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄 - Amazon Linux 2 x86_64
+download_and_build_package "Setup dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda/development"
+download_and_build_package "Setup control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda/development"
+download_and_build_package "Setup workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda" "AemiliaWorkersLambda/development"
+download_and_build_package "Setup warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool" "AemiliaWarmingPoolInfrastructure/development"
+#download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄 - Amazon Linux 2 x86_64
+download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
 
 echo -e "${GREEN}ALL ITEMS COMPLETE. SCRIPT END.${NC}"
