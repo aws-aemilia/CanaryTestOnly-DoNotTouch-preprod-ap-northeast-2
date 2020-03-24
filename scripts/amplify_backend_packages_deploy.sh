@@ -30,12 +30,20 @@ echo -e "${YELLOW}If you haven't run that tool - run it first and cd into the 'A
 set -x #echo commands
 
 ##### Deployment order matters ##### -->  do the SAM (local) deployment
-deploy_local_package "Deploy webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda"
-deploy_local_package "Deploy dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda"
-deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda"
-deploy_local_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda"
-deploy_local_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool"
+
+# Step 1: Sem-Automated Deploy this first
+#deploy_local_package "Deploy webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda"
+#deploy_local_package "Deploy dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda"
+#deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda"
+#deploy_local_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda"
+#deploy_local_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool"
+
+# Step 2: Manual
 #deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄
-download_and_build_package "Deploy pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute"
+
+# Step 3: Semi-Automated Deploy this last
+#deploy_local_package "Deploy pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute"
+#deploy_local_package "Deploy container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda"
+#deploy_local_package "Deploy containers: BEGIN" "AemiliaContainers" "AemiliaContainer"
 
 echo -e "${GREEN}ALL ITEMS COMPLETE. SCRIPT END.${NC}"

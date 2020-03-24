@@ -39,14 +39,40 @@ function sed_dash_i() {
 # $4 = Versionset name:
 function download_and_build_package() {
     echo -e echo -e "${GREEN}Setup $3: BEGIN${NC}"
-        if [[ ! -d "$2/src/$3" ]]; then
-            echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
-            brazil ws --create -n $2 -vs $4
-            cd $2
-            if [ IS_MAC ]; then
-                echo "`yes|brazil setup platform-support`" # yes + pipefail = :-( swallow non-0 exit statuses just here
-            fi
-            brazil ws --use -p $3
+    if [[ ! -d "$2/src/$3" ]]; then
+        echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
+        brazil ws --create -n $2 -vs $4
+        cd $2
+        if [ IS_MAC ]; then
+            echo "`yes|brazil setup platform-support`" # yes + pipefail = :-( swallow non-0 exit statuses just here
+        fi
+
+        brazil ws --use -p $3
+
+        # Pipeline/Versionset is "Containers" but package is "Container"
+        if [ "$2/src/$3" = "AemiliaContainers/src/AemiliaContainer" ]; then
+            brazil ws --use -p "AemiliaContainerNode10"
+
+            # Modify Node10 package
+            originalText='RUN gpg --keyserver hkp:\/\/pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB \&\& \\'
+            newText='RUN curl -sSL https:\/\/rvm.io\/mpapis.asc \| gpg --import - \&\& curl -sSL https:\/\/rvm.io\/pkuczynski.asc \| gpg --import - \&\& \\'
+            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainerNode10/configuration/Dockerfile.template
+            
+            # Modify Container package
+            originalText="arn:aws:iam::288275683263:root"
+            newText="arn:aws:iam::$(echo ${ACCOUNT_ID}):root"
+            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
+
+            originalText="033345365959"
+            newText="$(echo ${ACCOUNT_ID})"
+            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
+
+            # Remove everything after "ImageDeployer:"
+            sed_dash_i "/ImageDeployer:/,$ d" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
+
+            # Remove hydra role
+            rm src/AemiliaContainer/configuration/cloudFormation/modifiedHydraInvocationRole.template.yml
+        fi
 
         # Update the model package for Control Plane
         if [ "$2/src/$3" = "AemiliaControlPlaneLambda/src/AemiliaControlPlaneLambda" ]; then
@@ -107,5 +133,7 @@ download_and_build_package "Setup workers lambda: BEGIN" "AemiliaWorkersLambda" 
 download_and_build_package "Setup warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool" "AemiliaWarmingPoolInfrastructure/development"
 #download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄 - Amazon Linux 2 x86_64
 download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
+download_and_build_package "Setup container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda" "AemiliaContainerLambda/development"
+download_and_build_package "Setup Containers: BEGIN" "AemiliaContainers" "AemiliaContainer" "AemiliaContainers/development"
 
 echo -e "${GREEN}ALL ITEMS COMPLETE. SCRIPT END.${NC}"
