@@ -24,7 +24,7 @@ fi
 # Mac OS X and Linux usually have different versions of sed installed.
 # This forks the command based on the current platform.
 function sed_dash_i() {
-    if [ IS_MAC = '1' ]; then
+    if [ "$IS_MAC" = '1' ]; then
         echo 'Mac sed -i'
         sed -i "" "$@"
     else
@@ -43,7 +43,7 @@ function download_and_build_package() {
         echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
         brazil ws --create -n $2 -vs $4
         cd $2
-        if [ IS_MAC ]; then
+        if [ "$IS_MAC" = '1' ]; then
             echo "`yes|brazil setup platform-support`" # yes + pipefail = :-( swallow non-0 exit statuses just here
         fi
 
