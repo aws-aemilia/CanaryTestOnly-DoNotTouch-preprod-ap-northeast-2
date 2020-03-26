@@ -8,7 +8,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Deploy a local version of the AWS Amplify Console service
-# See https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/DevelopmentRunbook/#HUsingdeployscript
+# See (originally based off this): https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/DevelopmentRunbook/#HUsingdeployscript
+# See Also: https://quip-amazon.com/cL01AS85sm3A/Progress-notes-on-getting-Local-Development-to-work
+
 # TODO update the following values
 ACCOUNT_ID="YOUR_ACCOUNT_ID_HERE" # e.g. 123456789123
 USER_ALIAS="YOUR_ALIAS_HERE" # e.g. bradruof - not sure what is your alias?  Check https://phonetool.amazon.com/ --- (redirects to) ---> https://phonetool.amazon.com/users/<YOUR_ALIAS_HERE>
@@ -91,6 +93,13 @@ function download_and_build_package() {
             rm "src/$3/configuration/cloudFormation/modifiedHydraInvocationRole.template.yml"
         fi
 
+        # Change account in ImageDeployerExecutionPolicy from beta to personal account
+        if [ "$2/src/$3" = "AemiliaContainerLambda/src/AemiliaContainerLambda" ]; then
+            originalText="033345365959"
+            newText="$(echo ${ACCOUNT_ID})"
+            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainerLambda/configuration/cloudFormation/deploy.template.yml
+        fi
+
         cd "src/$3"
     else
         cd "$2/src/$3"
@@ -103,6 +112,12 @@ function download_and_build_package() {
         brazil-recursive-cmd "brazil-build-rainbow"
     else
         brazil-recursive-cmd "brazil-build"
+    fi
+
+    # For JS packages we need to run brazil-build + brazil-build release
+    if [ "$2/src/$3" = "AWSMobilePioneerExecute/src/AWSMobilePioneerExecute" ]; then
+        brazil-build
+        brazil-build "release"
     fi
 
     sed_dash_i "s/YOUR_ACCOUNT_ID_HERE/$(echo ${ACCOUNT_ID})/g" SAMToolkit.devenv
