@@ -1,25 +1,30 @@
 #!/bin/bash
 # Iterates over all functions and provide the option to delete all versions of each function
-# except for the last $VERSIONS_TO_KEEP versions (default 3)
 # this is a modified version of https://code.amazon.com/packages/MoroccoServiceUsefulScripts/blobs/mainline/--/GarbageCollection/cleanup_old_lambda_versions.sh
 
-usage() {
-  echo "Usage: $0 [aws_profile [aws_region] [number_of_versions_to_keep]]"
-}
+# Arguments:
+# Region (default us-west-2)
+# Number of Versions to Keep (default 3)
 
-AWS_PROFILE=${2:-default}
-AWS_REGION=${3:-${AWS_REGION:-us-west-2}}
-VERSIONS_TO_KEEP=${4:-3}
-# echo "Using AWS Profile ${AWS_PROFILE}"
-
+AWS_REGION=${1:-${AWS_REGION:-us-west-2}}
+VERSIONS_TO_KEEP=${2:-3}
+code_storage=0
 set -eu
+
+get_code_storage() {
+  code_storage=$(aws lambda list-functions --function-version ALL --query 'sum(Functions[*].CodeSize)' --region $AWS_REGION)
+  code_storage=$(($code_storage / 1024 / 1024 / 1024))
+  echo "Current Lambda code storage in $AWS_REGION: $code_storage GB"
+}
 
 delete_lambdas() {
   echo "===="
-  echo "Iterating through functions in $AWS_REGION to delete any versions older than last $VERSIONS_TO_KEEP using AWS Profile $AWS_PROFILE"
+  echo "Iterating through functions in $AWS_REGION to delete any versions older than last $VERSIONS_TO_KEEP"
+  echo "Calculating storage usage in $AWS_REGION, if you have many functions/versions this could take a minute..."
+  get_code_storage
   echo "===="
-  sleep 1
-  lambdas=$(aws --profile "$AWS_PROFILE" --region ${AWS_REGION} lambda list-functions --no-paginate --query "Functions[*].FunctionName" | jq -r '.[]')
+  sleep 2
+  lambdas=$(aws --region ${AWS_REGION} lambda list-functions --no-paginate --query "Functions[*].FunctionName" | jq -r '.[]')
   [[ ! ${lambdas[@]} ]] && echo "No Lambdas found." && exit 1
   echo "Lambdas found:"
   echo "${lambdas}"
@@ -31,13 +36,14 @@ delete_lambdas() {
     echo "Lambda: ${lambda}"
     delete_old_versions $lambda
   done
+  get_code_storage
 }
 
 delete_old_versions() {
   # https://stackoverflow.com/questions/28055346/bash-unbound-variable-array-script-s3-bash
   declare -a versions
   
-  version_arns=$(aws --profile "$AWS_PROFILE" --region ${AWS_REGION} lambda list-versions-by-function --no-paginate --function-name $1 \
+  version_arns=$(aws --region ${AWS_REGION} lambda list-versions-by-function --no-paginate --function-name $1 \
     --query "Versions[?ends_with(FunctionArn, \`LATEST\`) == \`false\`].FunctionArn"  | jq -r '.[]')
   [[ ! ${version_arns[@]} ]] && echo "No versions found, skipping" && return
 
@@ -64,11 +70,12 @@ delete_old_versions() {
           then
             echo "Deleting version $version_num";
             # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            # aws --profile "$AWS_PROFILE" --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           else
             echo "Skipping version $version_num";
           fi
         done
+        get_code_storage
         break
         ;;
       n|no)
