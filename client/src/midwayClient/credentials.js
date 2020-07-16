@@ -1,5 +1,5 @@
 /* eslint-disable */
-import AWS from 'exports-loader?AWS!aws-sdk/lib/credentials/cognito_identity_credentials';
+import AWS from 'aws-sdk';
 /* eslint-enable */
 import tokenRetriever from './tokenRetriever';
 

@@ -8,6 +8,7 @@ import Builds from './pages/builds';
 import Logs from './pages/logs';
 import OnCall from './pages/oncall';
 import Ajax from "./ajax";
+import Insights from "./pages/insights"
 
 class App extends Component {
     constructor(props) {
@@ -43,6 +44,7 @@ class App extends Component {
                     <Route path='/builds/:region/:project' component={Builds}/>
                     <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>
                     <Route path='/oncall' component={OnCall}/>
+                    <Route path='/insights' component={Insights}/>
                 </Switch>
             </div>
         );

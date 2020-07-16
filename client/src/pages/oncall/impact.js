@@ -173,6 +173,9 @@ class Impact extends React.Component {
             {
                 dataField: 'logGroupName',
                 text: 'Name',
+                headerStyle: () => {
+                    return { 'white-space': 'nowrap', width: '100px' };
+                },
                 headerFormatter: () => this.state.group ? <span style={{lineHeight: '38px'}}>Log group</span> : (
                     <Form.Control
                         type="text"

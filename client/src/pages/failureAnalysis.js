@@ -7,7 +7,6 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCrosshairs} from '@fortawesome/free-solid-svg-icons'
 import {faUser} from '@fortawesome/free-solid-svg-icons'
 import Ajax from '../ajax';
-import {forEach} from "react-bootstrap/es/utils/ElementChildren";
 
 class Failures extends Component {
     // Initialize the state

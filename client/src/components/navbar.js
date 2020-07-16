@@ -63,6 +63,9 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/oncall/impact">Customer impact</Link>
                             </div>
                         </li>
+                        <li>
+                            <Link className="nav-link" to="/insights">Insights </Link>
+                        </li>
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
                         <input className="form-control mr-sm-2" type="search" placeholder="Account / App ID"
