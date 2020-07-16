@@ -52,7 +52,7 @@ const patchSdk = async (stage, region, sdk, sdkRegion) => {
     };
     try {
         const data = await client.assumeRole(params).promise();
-        console.log('successfully assumed role');
+        console.log('successfully assumed role of: '+ RoleArn);
         return new sdk({
             accessKeyId: data.Credentials.AccessKeyId,
             secretAccessKey: data.Credentials.SecretAccessKey,

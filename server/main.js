@@ -1,94 +1,123 @@
-const express = require('express');
+const express = require("express");
 const bodyParser = require("body-parser");
-const path = require('path');
-const aws = require('aws-sdk');
-const proxy = require('http-proxy-middleware');
-const accounts = require('./extensions/accounts');
-const businessMetrics = require('./extensions/businessMetrics');
-const {getEvent} = require('./event');
-const patchSdk = require('./extensions/sdkpatcher');
-const {getAccountId} = require('./extensions/accounts');
-const Metering = require('./extensions/metering');
+const path = require("path");
+const aws = require("aws-sdk");
+const proxy = require("http-proxy-middleware");
+const accounts = require("./extensions/accounts");
+const businessMetrics = require("./extensions/businessMetrics");
+const { getEvent } = require("./event");
+const patchSdk = require("./extensions/sdkpatcher");
+const { getAccountId } = require("./extensions/accounts");
+const Metering = require("./extensions/metering");
+const {
+    queryAllRegions,
+    queryOneRegion,
+} = require("./extensions/insightsHelper");
 
 const allowedUsers = [
-    'anatonie',
-    'loganch',
-    'lisirui',
-    'snimakom',
-    'nsswamin',
-    'haoyujie',
-    'litwjaco',
-    'donkahn',
-    'bradruof',
-    'guerarda',
-    'rjabhi',
-    'rugary',
-    'jffranzo',
-    'weikding'
+    "anatonie",
+    "loganch",
+    "lisirui",
+    "snimakom",
+    "nsswamin",
+    "haoyujie",
+    "litwjaco",
+    "donkahn",
+    "bradruof",
+    "guerarda",
+    "rjabhi",
+    "rugary",
+    "jffranzo",
+    "weikding",
 ];
 
 const app = express();
 let username;
 
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-    res.append('Access-Control-Allow-Origin', ['*']);
-    res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
-    const options = 'OPTIONS';
+    res.append("Access-Control-Allow-Origin", ["*"]);
+    res.append(
+        "Access-Control-Allow-Headers",
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+    );
+    const options = "OPTIONS";
     if (req.method !== options) {
         username = undefined;
         const event = getEvent();
-        if (event.requestContext && event.requestContext.identity && event.requestContext.identity.cognitoAuthenticationProvider) {
-            const cognitoAuthenticationProvider = event.requestContext.identity.cognitoAuthenticationProvider;
-            const parts = cognitoAuthenticationProvider.split(':');
+        if (
+            event.requestContext &&
+            event.requestContext.identity &&
+            event.requestContext.identity.cognitoAuthenticationProvider
+        ) {
+            const cognitoAuthenticationProvider =
+                event.requestContext.identity.cognitoAuthenticationProvider;
+            const parts = cognitoAuthenticationProvider.split(":");
             username = parts[parts.length - 1];
         }
+        console.log("request is not options, username: " + username)
         if (!username || allowedUsers.indexOf(username) < 0) {
             res.status(403);
-            res.json({message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found`})
+            res.json({
+                message: username
+                    ? `Unauthorized: User ${username} is unauthorized`
+                    : `Unauthorized: Midway identifier not found`,
+            });
         } else {
             next();
         }
     } else {
         // next();
+        console.log("request is options, username: " + username)
         res.send(200);
     }
 });
 
 const proxyOptions = {
-    target: 'https://oncall-api.corp.amazon.com', // target host
+    target: "https://oncall-api.corp.amazon.com", // target host
     // changeOrigin: true, // needed for virtual hosted sites
     // ws: true, // proxy websockets
     pathRewrite: {
-        '^/proxy/oncall': '/' // remove base path
-    }
+        "^/proxy/oncall": "/", // remove base path
+    },
 };
-app.use('/proxy/oncall', proxy(proxyOptions));
+app.use("/proxy/oncall", proxy(proxyOptions));
 
-app.get('/username', async (req, res) => res.send(username));
+app.get("/username", async (req, res) => res.send(username));
 
-app.get('/regions', (req, res) => res.json(accounts.getRegions()));
+app.get("/regions", (req, res) => res.json(accounts.getRegions()));
 
-app.post('/metering/delete', Metering.deleteMessage);
+app.post("/metering/delete", Metering.deleteMessage);
 
-app.get('/metering/get', Metering.getMessages);
+app.get("/metering/get", Metering.getMessages);
 
-app.get('/api/metrics/builds/failed', async (req, res) => {
-    console.log('app lookup request params: ', req.params)
-    let query = '';
-    if (req.param('accountId')) {
-        query = `select * from main where accountid = '${req.param('accountId')}' order by timestamp desc`;
-    } else if (req.param('appId')) {
-        query = `select * from main where appid = '${req.param('appId')}' order by timestamp desc`;
-    } else if (req.param('days')) {
-        query = `select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param('days')} day';`;
-    } else if (req.param('daysFrom') && req.param('daysTo')) {
-        query = `select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param('daysFrom')} day' and timestamp < current_date - interval '${req.param('daysTo')} day' order by timestamp desc;`;
+app.get("/api/metrics/builds/failed", async (req, res) => {
+    console.log("app lookup request params: ", req.params);
+    let query = "";
+    if (req.param("accountId")) {
+        query = `select * from main where accountid = '${req.param(
+            "accountId"
+        )}' order by timestamp desc`;
+    } else if (req.param("appId")) {
+        query = `select * from main where appid = '${req.param(
+            "appId"
+        )}' order by timestamp desc`;
+    } else if (req.param("days")) {
+        query = `select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param(
+            "days"
+        )} day';`;
+    } else if (req.param("daysFrom") && req.param("daysTo")) {
+        query = `select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' and timestamp > current_date - interval '${req.param(
+            "daysFrom"
+        )} day' and timestamp < current_date - interval '${req.param(
+            "daysTo"
+        )} day' order by timestamp desc;`;
     } else {
-        query = 'select * from main where jobstatus = \'FAILED\' and failedstep = \'BUILD\' order by timestamp desc limit 500';
+        query =
+            "select * from main where jobstatus = 'FAILED' and failedstep = 'BUILD' order by timestamp desc limit 500";
     }
     if (query) {
         try {
@@ -100,22 +129,33 @@ app.get('/api/metrics/builds/failed', async (req, res) => {
         }
     } else {
         res.status(400);
-        res.end('Invalid request');
+        res.end("Invalid request");
     }
 });
 
-app.get('/api/metrics/builds/succeed', async (req, res) => {
-    let query = '';
-    if (req.param('accountId')) {
-        query = `select * from main where accountid = '${req.param('accountId')}' and jobid is not null order by timestamp desc`;
-    } else if (req.param('appId')) {
-        query = `select * from main where appid = '${req.param('appId')}' and jobid is not null order by timestamp desc`;
-    } else if (req.param('days')) {
-        query = `select * from main where timestamp > current_date - interval '${req.param('days')} day and jobid is not null';`;
-    } else if (req.param('daysFrom') && req.param('daysTo')) {
-        query = `select * from main where timestamp > current_date - interval '${req.param('daysFrom')} day' and timestamp < current_date - interval '${req.param('daysTo')} day' and jobid is not null order by timestamp desc;`;
+app.get("/api/metrics/builds/succeed", async (req, res) => {
+    let query = "";
+    if (req.param("accountId")) {
+        query = `select * from main where accountid = '${req.param(
+            "accountId"
+        )}' and jobid is not null order by timestamp desc`;
+    } else if (req.param("appId")) {
+        query = `select * from main where appid = '${req.param(
+            "appId"
+        )}' and jobid is not null order by timestamp desc`;
+    } else if (req.param("days")) {
+        query = `select * from main where timestamp > current_date - interval '${req.param(
+            "days"
+        )} day and jobid is not null';`;
+    } else if (req.param("daysFrom") && req.param("daysTo")) {
+        query = `select * from main where timestamp > current_date - interval '${req.param(
+            "daysFrom"
+        )} day' and timestamp < current_date - interval '${req.param(
+            "daysTo"
+        )} day' and jobid is not null order by timestamp desc;`;
     } else {
-        query = 'select * from main where jobid is not null order by timestamp desc limit 500';
+        query =
+            "select * from main where jobid is not null order by timestamp desc limit 500";
     }
     if (query) {
         try {
@@ -127,154 +167,223 @@ app.get('/api/metrics/builds/succeed', async (req, res) => {
         }
     } else {
         res.status(400);
-        res.end('Invalid request');
+        res.end("Invalid request");
     }
 });
 
-app.post('/api/builds', async (req, res) => {
+app.post("/api/builds", async (req, res) => {
     try {
-        const codebuild = await patchSdk('prod', req.body.region, aws.CodeBuild);
+        const codebuild = await patchSdk(
+            "prod",
+            req.body.region,
+            aws.CodeBuild
+        );
         let builds = [];
 
-        let buildIds = await codebuild.listBuildsForProject({
-            'projectName': req.body.project,
-            'nextToken': req.body.token ? req.body.token : undefined
-        }).promise();
-        let codebuildBuilds = await codebuild.batchGetBuilds({'ids': buildIds['ids']}).promise();
+        let buildIds = await codebuild
+            .listBuildsForProject({
+                projectName: req.body.project,
+                nextToken: req.body.token ? req.body.token : undefined,
+            })
+            .promise();
+        let codebuildBuilds = await codebuild
+            .batchGetBuilds({ ids: buildIds["ids"] })
+            .promise();
         let token = buildIds.nextToken;
 
         builds = builds.concat(codebuildBuilds.builds);
 
-        res.end(JSON.stringify({'builds': builds, token}));
+        res.end(JSON.stringify({ builds: builds, token }));
     } catch (err) {
-        console.log('error calling codebuild');
+        console.log("error calling codebuild");
         console.log(err);
         res.status(400);
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ error: err }));
     }
 });
 
-app.get('/api/logs', async (req, res) => {
+app.get("/api/logs", async (req, res) => {
     try {
-        const cloudwatchlogs = await patchSdk('prod', req.query['region'], aws.CloudWatchLogs);
-        cloudwatchlogs.getLogEvents({
-            'logGroupName': req.query['logGroupName'],
-            'logStreamName': req.query['logStreamName']
-        }, function (err, data) {
-            if (err) res.end(JSON.stringify(err)); // an error occurred
-            else res.end(JSON.stringify(data)); // successful response
-        });
+        const cloudwatchlogs = await patchSdk(
+            "prod",
+            req.query["region"],
+            aws.CloudWatchLogs
+        );
+        cloudwatchlogs.getLogEvents(
+            {
+                logGroupName: req.query["logGroupName"],
+                logStreamName: req.query["logStreamName"],
+            },
+            function (err, data) {
+                if (err) res.end(JSON.stringify(err));
+                // an error occurred
+                else res.end(JSON.stringify(data)); // successful response
+            }
+        );
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ error: err }));
     }
-
 });
 
-app.get('/api/logsbyprefix', async (req, res) => {
+app.get("/api/logsbyprefix", async (req, res) => {
     try {
-        const cloudwatchlogs = await patchSdk('prod', req.query['region'], aws.CloudWatchLogs);
+        const cloudwatchlogs = await patchSdk(
+            "prod",
+            req.query["region"],
+            aws.CloudWatchLogs
+        );
 
         let nextToken = undefined;
         let builds = [];
         do {
-            let result = await cloudwatchlogs.describeLogStreams({
-                'logGroupName': req.query['logGroupName'],
-                'logStreamNamePrefix': req.query['logStreamNamePrefix'],
-                'limit': 50,
-                nextToken
-            }).promise();
+            let result = await cloudwatchlogs
+                .describeLogStreams({
+                    logGroupName: req.query["logGroupName"],
+                    logStreamNamePrefix: req.query["logStreamNamePrefix"],
+                    limit: 50,
+                    nextToken,
+                })
+                .promise();
 
             builds = builds.concat(result.logStreams);
         } while (!!nextToken);
 
         res.end(JSON.stringify(builds));
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ error: err }));
     }
 });
 
-app.get('/api/cachemeta', async (req, res) => {
+app.get("/api/cachemeta", async (req, res) => {
     try {
-        const appId = req.query['appId'];
-        const branchName = req.query['branchName'];
-        const region = req.query['region'];
+        const appId = req.query["appId"];
+        const branchName = req.query["branchName"];
+        const region = req.query["region"];
         accounts.setAWSConfig(region);
         const params = {
-            Bucket: 'aws-amplify-prod-' + region + '-artifacts',
-            Key: appId + '/' + branchName + '/BUILD/cache.tar'
+            Bucket: "aws-amplify-prod-" + region + "-artifacts",
+            Key: appId + "/" + branchName + "/BUILD/cache.tar",
         };
-        await patchSdk('prod', region, aws.S3).headObject(params, function (err, data) {
+        await patchSdk("prod", region, aws.S3).headObject(params, function (
+            err,
+            data
+        ) {
             if (err) {
-                console.log('error in s3');
+                console.log("error in s3");
                 console.log(err);
-                res.end(JSON.stringify({'error': err}))
+                res.end(JSON.stringify({ error: err }));
             } else {
                 console.log(data);
-                res.end(JSON.stringify(data))
+                res.end(JSON.stringify(data));
             }
         });
     } catch (err) {
-        console.log('error');
-        res.end(JSON.stringify({'error': err}))
+        console.log("error");
+        res.end(JSON.stringify({ error: err }));
     }
 });
 
-app.get('/cwlogs/groups', async (req, res) => {
-    const stage = req.query['stage'];
-    const region = req.query['region'];
-    const sdkRegion = req.query['sdkRegion'];
+app.get("/cwlogs/groups", async (req, res) => {
+    const stage = req.query["stage"];
+    const region = req.query["region"];
+    const sdkRegion = req.query["sdkRegion"];
     try {
-        const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
+        const client = await patchSdk(
+            stage,
+            region,
+            aws.CloudWatchLogs,
+            sdkRegion
+        );
         let nextToken = undefined;
         let logGroups = [];
         do {
-            const result = await client.describeLogGroups({limit: 50, nextToken}).promise();
+            const result = await client
+                .describeLogGroups({ limit: 50, nextToken })
+                .promise();
             nextToken = result.nextToken;
-            logGroups = [
-                ...logGroups,
-                ...result.logGroups
-            ]
+            logGroups = [...logGroups, ...result.logGroups];
         } while (!!nextToken);
         res.json(logGroups);
     } catch (e) {
-        console.log('error getting cloudwatch log groups');
+        console.log("error getting cloudwatch log groups");
         console.log(e);
         res.status(400);
         res.json(e);
     }
 });
 
-app.post('/cwlogs/events/filter', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+app.post("/cwlogs/events/filter", async (req, res) => {
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
-        const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
+        const client = await patchSdk(
+            stage,
+            region,
+            aws.CloudWatchLogs,
+            sdkRegion
+        );
         const result = await client.filterLogEvents(params).promise();
         res.json(result);
     } catch (e) {
-        console.log('error filtering cloudwatch log events');
+        console.log("error filtering cloudwatch log events");
         console.log(e);
         res.status(400);
         res.json(e);
     }
 });
 
-app.post('/cwlogs/events/get', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+app.post("/cwlogs/events/get", async (req, res) => {
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
-        const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
+        const client = await patchSdk(
+            stage,
+            region,
+            aws.CloudWatchLogs,
+            sdkRegion
+        );
         const result = await client.getLogEvents(params).promise();
         res.json(result);
     } catch (e) {
-        console.log('error getting cloudwatch log events');
+        console.log("error getting cloudwatch log events");
         console.log(e);
         res.status(400);
         res.json(e);
+    }
+});
+
+app.post("/insights", async (req, res) => {
+    const { stage, region, time, timeRange, eventType } = req.body;
+    let accounts = [];
+    console.log(req.body)
+    if (region === "global") {
+        try {
+            accounts = await queryAllRegions(stage, time, timeRange, eventType);
+            res.send(accounts);
+        } catch (error) {
+            res.status(500);
+            console.log(error.message + error.stack)
+            res.json(error);
+        }
+    } else {
+        try {
+            accounts = await queryOneRegion(
+                stage,
+                region,
+                time,
+                timeRange,
+                eventType
+            );
+            res.send(accounts);
+        } catch (error) {
+            res.status(500);
+            console.log(error.message + error.stack)
+            res.json(error);
+        }
     }
 });
 
 // Handles any requests that don't match the ones above
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/../client/build/index.html'));
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname + "/../client/build/index.html"));
 });
 
 // app.listen(config.port);
