@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "beta-QueryResultLambda"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-j01tispo6jq0"
+s3_prefix = "beta-QueryResultLambda"
+region = "us-west-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Stage=\"beta\""
+

@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Hosting Insights tool lambda function
+
+Mappings:
+  RoleArn:
+    us-west-2:
+      beta : "arn:aws:iam::033345365959:root"
+      gamma : "arn:aws:iam::457974620857:root"
+      prod : "arn:aws:iam::395333095307:root"
+    us-east-1:
+      gamma : "arn:aws:iam::396176200477:root"
+      prod : "arn:aws:iam::073653171576:root"
+    us-east-2:
+      prod : "arn:aws:iam::264748200621:root"
+    eu-west-1:
+      prod : "arn:aws:iam::565036926641:root"
+    ap-southeast-2:
+      prod : "arn:aws:iam::711974673587:root"
+    eu-west-2:
+      prod : "arn:aws:iam::499901155257:root"
+    ap-northeast-1:
+      prod : "arn:aws:iam::550167628141:root"
+    ap-southeast-1:
+      prod : "arn:aws:iam::148414518837:root"
+    ap-northeast-2:
+      prod : "arn:aws:iam::024873182396:root"
+    ap-south-1:
+      prod : "arn:aws:iam::801187164913:root"
+    eu-central-1:
+      prod : "arn:aws:iam::644397351177:root"
+    sa-east-1:
+      prod : "arn:aws:iam::137144400800:root"
+    us-west-1:
+      prod : "arn:aws:iam::214290359175:root"
+    ca-central-1:
+      prod : "arn:aws:iam::824930503114:root"
+    eu-west-3:
+      prod : "arn:aws:iam::693207358157:root"
+    eu-north-1:
+      prod : "arn:aws:iam::315276288780:root"
+
+Parameters:
+  Stage: {Type: String, Default: 'beta'}
+
+Resources:
+  InsightsAthenaQueryResultBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${Stage}-${AWS::Region}-athena-results-hosting-insights
+
+  InsightsAthenaQueryResultBucketPolicy: 
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref InsightsAthenaQueryResultBucket
+      PolicyDocument: 
+        Statement: 
+          - 
+            Action: "*"
+            Effect: "Allow"
+            Resource: 
+              - !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Ref InsightsAthenaQueryResultBucket
+                  - "/*"
+              - !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Ref InsightsAthenaQueryResultBucket
+            Principal: 
+              AWS : !FindInMap [ RoleArn, !Ref AWS::Region, !Ref Stage]
+
+  InsightsAthenaQueryResultS3Trigger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub aws-amplify-${Stage}-${AWS::Region}-InsightsAthenaQueryResultS3Trigger
+      Handler: src/handlers/AthenaQueryResultHandler.handler
+      Runtime: nodejs12.x
+      MemorySize: 512
+      Timeout: 900
+      Environment:
+          Variables:
+            INSIGHTS_QUERY_HISTORY_S3: aws-amplify-hosting-insights-query-history
+            STAGE: !Sub "${Stage}"
+            REGION: !Sub "${AWS::Region}"
+      Role:
+        Fn::GetAtt:
+          - LambdaRole
+          - Arn
+      Events:
+        S3NewObjectEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref InsightsAthenaQueryResultBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: ".csv"
+
+  LambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [lambda.amazonaws.com]
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action: 
+              - 's3:*'
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - sts:AssumeRole
+            Resource: "*"
+          Version: '2012-10-17'
+        PolicyName: lambdaRoleQueryResult
+    Type: AWS::IAM::Role
+
+              

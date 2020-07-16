@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "QueryHistoryLambda"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-j01tispo6jq0"
+s3_prefix = "QueryHistoryLambda"
+region = "us-west-2"
+capabilities = "CAPABILITY_NAMED_IAM"
+

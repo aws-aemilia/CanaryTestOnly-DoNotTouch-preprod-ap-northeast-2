@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Hosting Insights tool lambda function
+
+Resources:
+  AmplifyInsightsToolDDBTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: "query"
+        AttributeType: "S"
+      - AttributeName: "stageRegion"
+        AttributeType: "S"
+      KeySchema:
+      - AttributeName: "query"
+        KeyType: "HASH"
+      - AttributeName: "stageRegion"
+        KeyType: "RANGE"
+      TableName: "hosting-insights-query-history-table"
+   
+  InsightsQueryHistoryBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub aws-amplify-hosting-insights-query-history
+  
+  InsightsQueryHistoryS3Trigger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: InsightsQueryHistoryS3Trigger
+      Handler: src/handlers/queryHistoryS3Stream.handler
+      Runtime: nodejs12.x
+      MemorySize: 512
+      Timeout: 900
+      Environment:
+          Variables:
+            AMPLIFY_INSIGHTS_TOOL_DDB: !Ref AmplifyInsightsToolDDBTable
+      Role: 
+        Fn::GetAtt:
+          - LambdaRole
+          - Arn
+      Events:
+        S3NewObjectEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref InsightsQueryHistoryBucket
+            Events: s3:ObjectCreated:*
+  
+  LambdaRole:
+    Properties:
+      RoleName: QueryHistoryLambda-executor
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [lambda.amazonaws.com]
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action: 
+              - 's3:*'
+            Resource: !Sub arn:aws:s3:::aws-amplify-hosting-insights-query-history/*
+          - Effect: Allow
+            Action: 
+              - 'dynamodb:*'
+            Resource: "*"
+          Version: '2012-10-17'
+        PolicyName: lambdaRoleQueryHistory
+    Type: AWS::IAM::Role

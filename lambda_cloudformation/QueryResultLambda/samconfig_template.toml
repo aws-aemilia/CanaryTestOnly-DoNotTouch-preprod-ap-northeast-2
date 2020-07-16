@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "STACK_NAME_HERE"
+s3_bucket =  "S3_BUCKET_NAME_HERE"
+s3_prefix = "QueryResultLambda"
+region = "REGION_HERE"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "STAGE_OVERRIDE_HERE"
+
