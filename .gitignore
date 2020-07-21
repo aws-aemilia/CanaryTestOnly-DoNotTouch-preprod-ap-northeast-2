@@ -28,3 +28,4 @@ client/.env
 *.iml
 
 server/claudia.alpha.json
+package-lock.json
