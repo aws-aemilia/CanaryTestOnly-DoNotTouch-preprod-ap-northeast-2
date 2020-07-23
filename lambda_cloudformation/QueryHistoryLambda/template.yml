@@ -24,6 +24,11 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub aws-amplify-hosting-insights-query-history
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref HostingInsightsCMK
   
   InsightsQueryHistoryBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -57,6 +62,19 @@ Resources:
           Condition:
             'Null':
               s3:x-amz-server-side-encryption: 'true'
+
+  HostingInsightsCMK:
+    Type: AWS::KMS::Key
+    Properties: 
+      Enabled: true
+      KeyPolicy: 
+        Statement:
+        - Sid: Enable IAM User Permissions
+          Effect: Allow
+          Principal:
+              AWS: arn:aws:iam::643036967432:root
+          Action: kms:*
+          Resource: "*"
               
   InsightsQueryHistoryS3Trigger:
     Type: AWS::Serverless::Function
