@@ -115,6 +115,7 @@ exports.handler = async function (event, context) {
             Body: tempJson,
             Bucket: query_history_s3_bucket,
             Key: stage + "-" + region + "/" + queryTime + "/" + eventType,
+            ServerSideEncryption: 'aws:kms'
         };
         await history_s3.putObject(params).promise();
     } catch (error) {
