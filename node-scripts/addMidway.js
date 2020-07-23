@@ -9,12 +9,7 @@ const main = async () => {
     const resp = await client.createOpenIDConnectProvider({
         Url: 'https://midway-auth.amazon.com',
         ClientIDList: [
-            'heutsr.aka.corp.amazon.com:3000',
-            'anatonie.aka.corp.amazon.com:3000',
-            'midway.d24ura5wmohq0l.amplifyapp.com',
-            'oncall.console.amplify.aws.a2z.com',
-            'analytics.console.amplify.aws.a2z.com',
-            'alpha.console.amplify.aws.a2z.com:3000'
+            'oncall-dev.console.amplify.aws.a2z.com'
         ],
         ThumbprintList: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280']
     }).promise();

@@ -25,6 +25,39 @@ Resources:
     Properties:
       BucketName: !Sub aws-amplify-hosting-insights-query-history
   
+  InsightsQueryHistoryBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref InsightsQueryHistoryBucket
+      PolicyDocument: 
+        Statement:
+        - Sid: DenyIncorrectEncryptionHeader
+          Effect: Deny
+          Principal: "*"
+          Action: s3:PutObject
+          Resource: 
+            - !Join
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref InsightsQueryHistoryBucket
+                    - "/*"
+          Condition:
+            StringNotEquals:
+              s3:x-amz-server-side-encryption: aws:kms
+        - Sid: DenyUnEncryptedObjectUploads
+          Effect: Deny
+          Principal: "*"
+          Action: s3:PutObject
+          Resource: 
+            - !Join
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref InsightsQueryHistoryBucket
+                    - "/*"
+          Condition:
+            'Null':
+              s3:x-amz-server-side-encryption: 'true'
+              
   InsightsQueryHistoryS3Trigger:
     Type: AWS::Serverless::Function
     Properties:

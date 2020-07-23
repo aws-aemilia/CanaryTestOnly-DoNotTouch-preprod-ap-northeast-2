@@ -64,7 +64,7 @@ class NavBar extends Component {
                             </div>
                         </li>
                         <li>
-                            <Link className="nav-link" to="/insights">Insights </Link>
+                            <Link className="nav-link" to="/insights">Insights</Link>
                         </li>
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>

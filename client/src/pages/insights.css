@@ -1,0 +1,9 @@
+.expandRow {
+    overflow: scroll;
+    height: auto;
+    max-height: 300px;
+}
+
+.result-table {
+    margin: 1rem;
+}

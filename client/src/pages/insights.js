@@ -7,6 +7,7 @@ import DateTimePicker from "react-datetime-picker";
 import Spinner from "react-bootstrap/Spinner";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
+import "./insights.css"
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 
@@ -26,19 +27,19 @@ class Insights extends Component {
             loading: false,
             timeout: false,
         };
+    }
+    
+    componentDidMount(){
         this.getRegions();
     }
 
     getRegions = async () => {
-        // To change to Ajax.fetch module
         const { data: regions } = await Ajax().fetch("/regions");
         this.setState({ regions });
     };
 
     getAccountId = async () => {
-        this.setState({ accounts: [] });
-        this.setState({ loading: true });
-        this.setState({ timeout: false });
+        this.setState({ accounts: [], timeout:false, loading: true });
         
         if (
             this.state.time != null &&
@@ -69,16 +70,13 @@ class Insights extends Component {
             });
             this.setState({ loading: false, accounts });
         } catch (error) {
-            this.setState({ timeout: true });
-            this.setState({ loading: false });
-            this.setState({ error });
+            this.setState({ timeout: true, loading: false, error });
         }
     };
 
     handleTimeRangeChange = async (timeRange) => {
         const now = new Date();
-        this.setState({ time: now });
-        this.setState({ timeRange });
+        this.setState({ time: now, timeRange });
         if (timeRange === "H") {
             this.setState({ timePickerFormat: "MMM/dd/y hh a" });
         } else if (timeRange === "D") {
@@ -98,11 +96,11 @@ class Insights extends Component {
         } else {
             return (
                 <Spinner
-                    as="span"
                     animation="border"
-                    size="lg"
-                    role="status"
                     aria-hidden="true"
+                    as="span"
+                    role="status"
+                    size="lg"
                 />
             );
         }
@@ -117,13 +115,13 @@ class Insights extends Component {
         };
 
         const columns = [
-            {
+            {   
+                formatter: formatter,
                 dataField: "accountId",
                 text: "Account Id",
                 headerStyle: () => {
                     return { width: "10%" };
                 },
-                formatter: formatter,
             },
             {
                 dataField: "appId.length",
@@ -143,11 +141,12 @@ class Insights extends Component {
         const expandRow = {
             renderer: (row) => {
                 const items = [];
-                for (let i = 0; i < row.appId.length; i++) {
-                    items.push(<li key={i}>{`${row.appId[i]} `}</li>);
-                }
+                row.appId.forEach((appId) => {
+                    items.push(<li key={appId}>{`${appId}`}</li>);
+                })
+
                 return (
-                    <div style={{ overflow: "scroll", height: "auto", maxHeight: '300px' }}>
+                    <div className = "expandRow">
                         <span className="badge badge-primary">App IDs: </span>
                         <ul>{items}</ul>
                     </div>
@@ -189,37 +188,36 @@ class Insights extends Component {
                 <NavBar />
                 <div>
                     <InsightsToolSelector
-                        regions={this.state.regions}
-                        stage={this.state.stage}
-                        region={this.state.region}
                         loading={this.state.loading}
+                        regions={this.state.regions}
+                        region={this.state.region}
+                        stage={this.state.stage}
                         timeRange={this.state.timeRange}
-                        onStageChange={(stage) =>
-                            this.setState({ stage, region: "" })
-                        }
-                        onRegionChange={(region) => this.setState({ region })}
                         onErrorCodeChange={(errorCode) =>
                             errorCode.length > 0 ? this.setState({ eventType : "E-" + errorCode }) : this.setState({ eventType : ""})
                         }
-                        onPatternChange={(pattern) =>
-                            pattern.length > 0 ?  this.setState({ eventType : "P-" + pattern }) : this.setState({ eventType : ""})
+                        onRegionChange={(region) => this.setState({ region })}
+                        onStageChange={(stage) =>
+                            this.setState({ stage, region: "" })
                         }
                         onTimeRangeChange={(timeRange) =>
                             this.handleTimeRangeChange(timeRange)
+                        }
+                        onPatternChange={(pattern) =>
+                            pattern.length > 0 ?  this.setState({ eventType : "P-" + pattern }) : this.setState({ eventType : ""})
                         }
                     >
                         {this.state.timePickerFormat && (
                             <div>
                                 <div className="input-group date">
                                     <DateTimePicker
+                                        disableClock={true}
+                                        disableCalendar={true}
+                                        format={this.state.timePickerFormat}
                                         onChange={(time) =>
                                             this.setState({ time })
                                         }
-                                        // inline
-                                        format={this.state.timePickerFormat}
                                         value={this.state.time}
-                                        disableClock={true}
-                                        disableCalendar={true}
                                     />
                                 </div>
                                 <span className="badge badge-pill badge-primary">
@@ -234,26 +232,26 @@ class Insights extends Component {
                                 <div>
                                     {!this.state.loading && (
                                         <Button
-                                            variant="info"
                                             disabled={
                                                 !this.state.stage ||
                                                 !this.state.region ||
                                                 this.state.loading
                                             }
                                             onClick={this.getAccountId}
+                                            variant="info"
                                         >
                                             Get Data
                                         </Button>
                                     )}
 
                                     {this.state.loading && (
-                                        <Button variant="info" disabled>
+                                        <Button disabled variant="info">
                                             <Spinner
-                                                as="span"
                                                 animation="border"
-                                                size="sm"
-                                                role="status"
                                                 aria-hidden="true"
+                                                as="span"
+                                                role="status"
+                                                size="sm"
                                             />
                                         </Button>
                                     )}
@@ -262,13 +260,11 @@ class Insights extends Component {
                     </InsightsToolSelector>
                 </div>
                 {this.state.timeout && (
-                    <div>
-                        <Alert variant={"danger"}>
-                            Slow query! Query is running in the background. Please try again later to retrieve results 
-                        </Alert>
-                    </div>
+                    <Alert variant={"danger"}>
+                        Slow query! Query is running in the background. Please try again later to retrieve results 
+                    </Alert>
                 )}
-                <div style={{ margin: "1rem" }}>
+                <div className="result-table">
                     <h4>
                         Total:&nbsp;
                         {!this.state.loading && (
@@ -278,11 +274,11 @@ class Insights extends Component {
                         )}
                         {this.state.loading && (
                             <Spinner
-                                as="span"
                                 animation="border"
-                                size="sm"
-                                role="status"
                                 aria-hidden="false"
+                                as="span"
+                                role="status"
+                                size="sm"
                             />
                         )}
                         &nbsp;impacted accounts
@@ -290,16 +286,16 @@ class Insights extends Component {
                     <div>
                         <BootstrapTable
                             bootstrap4
-                            keyField="accountId"
-                            data={this.state.accounts}
-                            loading={true}
-                            expandRow={expandRow}
                             columns={columns}
+                            condensed
+                            data={this.state.accounts}
+                            defaultSorted={defaultSorted}
+                            expandRow={expandRow}
+                            hover
+                            keyField="accountId"
+                            loading={true}
                             noDataIndication={this._setTableOption()}
                             pagination={paginationFactory(paginationOption)}
-                            defaultSorted={defaultSorted}
-                            hover
-                            condensed
                         />
                     </div>
                 </div>

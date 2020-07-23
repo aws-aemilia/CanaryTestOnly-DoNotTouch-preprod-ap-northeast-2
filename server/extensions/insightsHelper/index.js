@@ -20,7 +20,6 @@ module.exports = {
         const query = queryTime + "/" + eventType;
 
         // Query all regions
-        let queryExecutionIds = {};
         for (let region of regionList) {
             const stageRegion = stage + "-" + region;
             const ddb_params = {
@@ -35,7 +34,7 @@ module.exports = {
             let metaData = await client_ddb.get(ddb_params).promise();
             if (metaData.Item !== undefined && metaData.Item !== null) {
                 // Data cached in hosting insights query history table
-                queryExecutionIds.region = { QueryExecutionId: "-1" };
+                continue;
             } else {
                 // Query Athena
                 const athena_params = {
@@ -57,11 +56,7 @@ module.exports = {
                 };
 
                 const client_athena = await patchSdk(stage, region, aws.Athena);
-                const queryExecutionId = await client_athena
-                    .startQueryExecution(athena_params)
-                    .promise();
-                queryExecutionIds.region = queryExecutionId;
-                console.log("athena query execution id: " + queryExecutionId)
+                client_athena.startQueryExecution(athena_params).promise();
             }
         }
 
@@ -77,18 +72,6 @@ module.exports = {
             };
             while (true) {
                 await new Promise((r) => setTimeout(r, 1000));
-                const client_athena = await patchSdk(stage, region, aws.Athena);
-                // Wait query process complete
-                if (queryExecutionIds.region.QueryExecutionId != "-1") {
-                    const queryExecutionResult = await client_athena
-                        .getQueryExecution(queryExecutionIds.region)
-                        .promise();
-                    if (
-                        queryExecutionResult.QueryExecution.Status.State !=
-                        "SUCCEEDED"
-                    )
-                        continue;
-                }
 
                 // Get S3 object key from DDB hosting insights history table
                 let metaData = await client_ddb.get(ddb_params).promise();
