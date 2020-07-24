@@ -26,7 +26,16 @@ function deploy_local_package() {
     cd "$2/src/$3"
 
     brazil-build-tool-exec sam package
-    brazil-build-tool-exec sam deploy
+    if [[ "$3" == "AemiliaContainer" ]]; then 
+        echo -e "${GREEN}Deleting aemilia-build-image repository images from ECR...${NC}"
+        aws ecr list-images --repository-name aemilia-build-image --query "imageIds[].imageDigest" --output text | xargs -i aws ecr batch-delete-image --repository-name aemilia-build-image --image-ids imageDigest={}
+        echo -e "${GREEN}Deleting aemilia-build-image repository from ECR${NC}"
+        aws ecr delete-repository --repository-name aemilia-build-image
+        brazil-build-tool-exec sam deploy
+        brazil-build-tool-exec sam package
+    else
+        brazil-build-tool-exec sam deploy
+    fi
     echo -e "${GREEN}Deploy SUCCESS${NC}"l
     cd ../../..
 }
