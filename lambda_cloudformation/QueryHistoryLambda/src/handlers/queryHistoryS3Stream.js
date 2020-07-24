@@ -6,8 +6,9 @@ exports.handler = async function(event, context) {
     const record = event.Records[0];
 	const object = record.s3.object;
     const key = decodeURIComponent(object.key.replace(/\+/g, " "));
-    const stageRegion = key.split("/")[0];
-    const query = key.slice(stageRegion.length+1)
+    const prefix = key.split("/")[0];
+    const stageRegion = key.split("/")[1];
+    const query = key.slice(prefix.length + stageRegion.length + 2)
 
     // Put query result object key(S3 location reference) to DDB hosting insights tool history table 
     try {
