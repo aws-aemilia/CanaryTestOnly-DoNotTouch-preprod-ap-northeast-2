@@ -124,9 +124,9 @@ const patternQueryHelper = (timeRange, time, pattern) => {
         "httpversion",
         "filestatus",
     ];
-    let patternMatchQuery = `location LIKE` + ` '%${pattern}%' ESCAPE '\\'`
+    let patternMatchQuery = `LOWER(location) LIKE` + ` '%${pattern}%' ESCAPE '\\'`
     logDataFields_String.forEach((attribute) => {
-        patternMatchQuery = patternMatchQuery + ` OR ` + attribute + ` LIKE '%${pattern}%' ESCAPE '\\'`
+        patternMatchQuery = patternMatchQuery + ` OR ` + `LOWER(${attribute})` + ` LIKE '%${pattern}%' ESCAPE '\\'`
     })
 
     // Pattern contains number only, search all data fields
@@ -140,7 +140,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     if (timeRange === "S") {
         // Query format : Year-Month-Day-Hour-Minute-Second
         queryTime = year + "-" + month + "-" + day + "-" + hour + "-" + minute + "-" + second;
-        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -149,7 +149,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "m") {
         // Query format : Year-Month-Day-Hour-Minute
         queryTime = year + "-" + month + "-" + day + "-" + hour + "-" + minute;
-        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -158,7 +158,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "H") {
         // Query format : Year-Month-Day-Hour
         queryTime = year + "-" + month + "-" + day + "-" + hour;
-        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -167,7 +167,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "D") {
         // Query format : Year-Month-Day
         queryTime = year + "-" + month + "-" + day;
-        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}'
@@ -175,7 +175,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "M") {
         // Query format : Year-Month
         queryTime = year + "-" + month;
-        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}'
                         AND (${patternMatchQuery})`;

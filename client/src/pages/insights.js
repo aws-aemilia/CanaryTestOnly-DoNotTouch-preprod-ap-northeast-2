@@ -203,9 +203,10 @@ class Insights extends Component {
                         onTimeRangeChange={(timeRange) =>
                             this.handleTimeRangeChange(timeRange)
                         }
-                        onPatternChange={(pattern) =>
+                        onPatternChange={(pattern) => {
+                            pattern = pattern.toLowerCase();
                             pattern.length > 0 ?  this.setState({ eventType : "P-" + pattern }) : this.setState({ eventType : ""})
-                        }
+                        }}
                     >
                         {this.state.timePickerFormat && (
                             <div>
