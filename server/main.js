@@ -314,8 +314,9 @@ app.post("/insights/queryOutput", async (req, res) => {
     const { stage, time, timeRange, eventType } = req.body;
     try {
         await fetchQueryOutput(stage, time, timeRange, eventType);
-        res.download('/tmp/result.csv');
-        fs.unlinkSync('/tmp/result.csv')
+        res.download('/tmp/result.csv', () => {
+            fs.unlinkSync("/tmp/result.csv");
+        });
     } catch (error) {
         res.status(500);
         console.log(error.message + error.stack)
