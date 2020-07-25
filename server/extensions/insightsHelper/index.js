@@ -3,6 +3,7 @@ const accountInfo = require("../accounts");
 const patchSdk = require("../sdkpatcher");
 const aws = require("aws-sdk");
 const mapAppIdToAccountId = require("./mapAccountId");
+const fs = require('fs');
 
 const client_ddb = new aws.DynamoDB.DocumentClient();
 const client_S3 = new aws.S3();
@@ -181,5 +182,26 @@ module.exports = {
             let accounts = mapAppIdToAccountId(accountsInfo);
             return accounts;
         }
+    },
+    
+    fetchQueryOutput: async (stage, time, timeRange, eventType) => {
+        let regionList = accountInfo.getRegions()[stage];
+        const [queryTime, queryType, queryContent] = queryHelper(
+            timeRange,
+            time,
+            eventType
+        );
+        const query = queryTime + "/" + eventType;
+        for (let region of regionList) {
+            const stageRegion = stage + "-" + region;
+            const s3_params = {
+                Bucket: "aws-amplify-hosting-insights-query-history",
+                Key: "QueryOutput/" + stageRegion + '/' + query + '.csv',
+            };
+
+            const data = await client_S3.getObject(s3_params).promise();
+            fs.writeFileSync("/tmp/result.csv", data.Body, { flag: "a+" });
+        }
+        return;
     },
 };

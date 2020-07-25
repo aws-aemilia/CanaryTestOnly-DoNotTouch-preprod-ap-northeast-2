@@ -4,6 +4,7 @@ const path = require('path');
 const aws = require('aws-sdk');
 const proxy = require('http-proxy-middleware');
 const accounts = require('./extensions/accounts');
+const fs = require('fs');
 const businessMetrics = require('./extensions/businessMetrics');
 const {getEvent} = require('./event');
 const patchSdk = require('./extensions/sdkpatcher');
@@ -12,6 +13,7 @@ const Metering = require('./extensions/metering');
 const {
     queryAllRegions,
     queryOneRegion,
+    fetchQueryOutput,
 } = require("./extensions/insightsHelper");
 
 const allowedUsers = [
@@ -277,7 +279,7 @@ app.post('/cwlogs/events/get', async (req, res) => {
     }
 });
 
-app.post("/insights", async (req, res) => {
+app.post("/insights/accountInfo", async (req, res) => {
     const { stage, region, time, timeRange, eventType } = req.body;
     let accounts = [];
     console.log(req.body)
@@ -305,6 +307,19 @@ app.post("/insights", async (req, res) => {
             console.log(error.message + error.stack)
             res.json(error);
         }
+    }
+});
+
+app.post("/insights/queryOutput", async (req, res) => {
+    const { stage, time, timeRange, eventType } = req.body;
+    try {
+        await fetchQueryOutput(stage, time, timeRange, eventType);
+        res.download('/tmp/result.csv');
+        fs.unlinkSync('/tmp/result.csv')
+    } catch (error) {
+        res.status(500);
+        console.log(error.message + error.stack)
+        res.json(error);
     }
 });
 
