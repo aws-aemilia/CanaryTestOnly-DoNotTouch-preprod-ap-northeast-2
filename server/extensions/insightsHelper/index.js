@@ -198,7 +198,7 @@ module.exports = {
                 Bucket: "aws-amplify-hosting-insights-query-history",
                 Key: "QueryOutput/" + stageRegion + '/' + query + '.csv',
             };
-
+            console.log(s3_params.Key);
             const data = await client_S3.getObject(s3_params).promise();
             fs.writeFileSync("/tmp/result.csv", data.Body, { flag: "a+" });
         }
