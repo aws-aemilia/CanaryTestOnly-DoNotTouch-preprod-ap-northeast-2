@@ -140,7 +140,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     if (timeRange === "S") {
         // Query format : Year-Month-Day-Hour-Minute-Second
         queryTime = year + "-" + month + "-" + day + "-" + hour + "-" + minute + "-" + second;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -149,7 +149,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "m") {
         // Query format : Year-Month-Day-Hour-Minute
         queryTime = year + "-" + month + "-" + day + "-" + hour + "-" + minute;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -158,7 +158,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "H") {
         // Query format : Year-Month-Day-Hour
         queryTime = year + "-" + month + "-" + day + "-" + hour;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
@@ -167,7 +167,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "D") {
         // Query format : Year-Month-Day
         queryTime = year + "-" + month + "-" + day;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}'
@@ -175,7 +175,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "M") {
         // Query format : Year-Month
         queryTime = year + "-" + month;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}'
                         AND (${patternMatchQuery})`;
