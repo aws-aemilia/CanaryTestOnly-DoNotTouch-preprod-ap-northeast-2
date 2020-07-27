@@ -49,7 +49,7 @@ exports.handler = async function (event, context) {
             Key: objectKey,
         };
         originCSV = result_s3.getObject(params).createReadStream();
-        // csvFile = await result_s3.getObject(params).promise();
+        csvFile = await result_s3.getObject(params).promise();
     } catch (error) {
         console.log(error);
         return;
@@ -127,17 +127,17 @@ exports.handler = async function (event, context) {
     console.log("Successfully put query result to " + query_history_s3_bucket)
 
     // Put Athena query output csv to query history S3 bucket
-    // try {
-    //     const params = {
-    //         Body: csvFile.Body,
-    //         Bucket: query_history_s3_bucket,
-    //         Key: "QueryOutput/"+ stage + "-" + region + "/" + queryTime + "/" + eventType + ".csv",
-    //         ServerSideEncryption: 'aws:kms'
-    //     };
-    //     await history_s3.putObject(params).promise();
-    // } catch (error) {
-    //     console.log(error);
-    //     return;
-    // }
-    // console.log("Successfully put Athena query output csv to " + query_history_s3_bucket)
+    try {
+        const params = {
+            Body: csvFile.Body,
+            Bucket: query_history_s3_bucket,
+            Key: "QueryOutput/"+ stage + "-" + region + "/" + queryTime + "/" + eventType + ".csv",
+            ServerSideEncryption: 'aws:kms'
+        };
+        await history_s3.putObject(params).promise();
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+    console.log("Successfully put Athena query output csv to " + query_history_s3_bucket)
 };
