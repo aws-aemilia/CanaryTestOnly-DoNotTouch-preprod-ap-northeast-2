@@ -184,16 +184,18 @@ module.exports = {
         }
     },
     
-    fetchQueryOutput: async (stage, time, timeRange, eventType) => {
-        let regionList = accountInfo.getRegions()[stage];
+    fetchQueryOutput: async (stage, region, time, timeRange, eventType) => {
+        let regionList =
+            (region === "global") ? accountInfo.getRegions()[stage] : [region];
         const [queryTime, queryType, queryContent] = queryHelper(
             timeRange,
             time,
             eventType
         );
         const query = queryTime + "/" + eventType;
-        for (let region of regionList) {
-            const stageRegion = stage + "-" + region;
+        
+        for (let current_region of regionList) {
+            const stageRegion = stage + "-" + current_region;
             const s3_params = {
                 Bucket: "aws-amplify-hosting-insights-query-history",
                 Key: "QueryOutput/" + stageRegion + '/' + query + '.csv',

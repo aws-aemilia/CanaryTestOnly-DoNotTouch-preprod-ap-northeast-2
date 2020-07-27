@@ -311,9 +311,9 @@ app.post("/insights/accountInfo", async (req, res) => {
 });
 
 app.post("/insights/queryOutput", async (req, res) => {
-    const { stage, time, timeRange, eventType } = req.body;
+    const { stage, region, time, timeRange, eventType } = req.body;
     try {
-        await fetchQueryOutput(stage, time, timeRange, eventType);
+        await fetchQueryOutput(stage, region, time, timeRange, eventType);
         res.download('/tmp/result.csv', () => {
             fs.unlinkSync("/tmp/result.csv");
         });
