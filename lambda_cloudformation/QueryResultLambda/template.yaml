@@ -75,7 +75,7 @@ Resources:
   InsightsAthenaQueryResultS3Trigger:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub aws-amplify-${Stage}-${AWS::Region}-InsightsAthenaQueryResultS3Trigger
+      FunctionName: !Sub aws-amplify-${Stage}-${AWS::Region}-InsightsAthenaQueryResult
       Handler: src/handlers/AthenaQueryResultHandler.handler
       Runtime: nodejs12.x
       MemorySize: 512

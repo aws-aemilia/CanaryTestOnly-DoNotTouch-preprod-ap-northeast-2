@@ -3,9 +3,9 @@ version = 0.1
 [default.deploy]
 [default.deploy.parameters]
 stack_name = "prod-QueryResultLambda"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-84hyntz8n79r"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-wd04vm4kviqj"
 s3_prefix = "prod-QueryResultLambda"
-region = "us-west-2"
+region = "eu-central-1"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Stage=\"prod\""
 
