@@ -42,7 +42,7 @@ Mappings:
       prod : "arn:aws:iam::315276288780:root"
 
 Parameters:
-  Stage: {Type: String, Default: 'beta'}
+  Stage: {Type: String, Default: 'prod'}
 
 Resources:
   InsightsAthenaQueryResultBucket:
