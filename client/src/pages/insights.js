@@ -64,14 +64,14 @@ class Insights extends Component {
         // Call API to fetch account ID data
         try {
             const { data: accounts } = await Ajax().post("/insights/accountInfo", params);
-            // Ajax().post("/insights/QueryOutput", params, {responseType: 'blob'})
-            // .then(function(response) {
-            //     let blob = new Blob([response.data], { type: 'contentType' })
-            //     let link = document.createElement('a')
-            //     link.href = window.URL.createObjectURL(blob)
-            //     link.download = 'result.csv'
-            //     link.click()
-            // })
+            Ajax().post("/insights/QueryOutput", params, {responseType: 'blob'})
+            .then(function(response) {
+                let blob = new Blob([response.data], { type: 'contentType' })
+                let link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'result.csv'
+                link.click()
+            })
             // Change region display format
             accounts.forEach((element) => {
                 element.regions = element.regions.join(", ");
