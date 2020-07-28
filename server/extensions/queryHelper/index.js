@@ -92,6 +92,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     // Replace special character
     pattern = pattern.replace("%","\\%")
     pattern = pattern.replace("_","\\_")
+    pattern = pattern.replace("'","''")
 
     // Generate query
     const logDataFields_Num = [
@@ -123,9 +124,9 @@ const patternQueryHelper = (timeRange, time, pattern) => {
         // "httpversion",
         // "filestatus",
     ];
-    let patternMatchQuery = `LOWER(location) LIKE` + ` "%${pattern}%" ESCAPE '\\'`
+    let patternMatchQuery = `LOWER(location) LIKE` + ` '%${pattern}%' ESCAPE '\\'`
     logDataFields_String.forEach((attribute) => {
-        patternMatchQuery = patternMatchQuery + ` OR ` + `LOWER(${attribute})` + ` LIKE "%${pattern}%" ESCAPE '\\'`
+        patternMatchQuery = patternMatchQuery + ` OR ` + `LOWER(${attribute})` + ` LIKE '%${pattern}%' ESCAPE '\\'`
     })
 
     // Pattern contains number only, search all data fields
