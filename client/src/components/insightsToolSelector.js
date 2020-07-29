@@ -6,7 +6,6 @@ const regionMapByRegion = {};
 
 const errorCodeContent = {
     "5XX": "5XX - Server errors",
-    "4XX": "4XX - Client errors",
     "500": "500 - Internal server error",
     "502": "502 - Bad gateway",
     "503": "503 - Service unavailable",
