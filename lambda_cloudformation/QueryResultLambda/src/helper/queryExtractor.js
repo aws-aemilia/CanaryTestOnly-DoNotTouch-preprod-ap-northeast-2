@@ -37,9 +37,9 @@ const patternQueryExtractor = (queryContent) => {
     let queryTime = time.join("-");
 
     // Replace special character
-    pattern = pattern.replace("\\%","%")
-    pattern = pattern.replace("\\_","_")
-    pattern = pattern.replace("''","'")
+    pattern = pattern.replace("\\%","%");
+    pattern = pattern.replace("\\_","_");
+    pattern = pattern.replace("''","'");
     let eventType = "P-" + pattern;
     return [queryTime, eventType]
 }
