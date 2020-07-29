@@ -92,6 +92,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     // Replace special character
     pattern = pattern.replace("%","\\%")
     pattern = pattern.replace("_","\\_")
+    pattern = pattern.replace("'","''")
 
     // Generate query
     const logDataFields_Num = [
