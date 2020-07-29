@@ -32,13 +32,14 @@ const errorCodeQueryExtractor = (queryContent) => {
 const patternQueryExtractor = (queryContent) => {
     // Retrieve params from query content
     const timePart = queryContent.split('(')[0];
-    const time = timePart.match(/(\d+)/g)
-    let pattern = queryContent.match(/'%.*?%'/)[0].slice(2,-2)
+    const time = timePart.match(/(\d+)/g);
+    let pattern = queryContent.match(/'%.*?%'/)[0].slice(2,-2);
     let queryTime = time.join("-");
 
     // Replace special character
-    pattern = pattern.replace("\\%","%")
-    pattern = pattern.replace("\\_","_")
+    pattern = pattern.replace("\\%","%");
+    pattern = pattern.replace("\\_","_");
+    pattern = pattern.replace("''","'");
     let eventType = "P-" + pattern;
     return [queryTime, eventType]
 }

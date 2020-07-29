@@ -97,6 +97,11 @@ Resources:
           Properties:
             Bucket: !Ref InsightsQueryHistoryBucket
             Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: "AccountInfo/"
   
   LambdaRole:
     Properties:

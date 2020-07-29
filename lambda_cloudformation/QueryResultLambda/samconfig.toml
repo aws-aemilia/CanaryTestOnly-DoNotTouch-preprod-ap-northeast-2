@@ -2,10 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "gamma-QueryResultLambda"
+stack_name = "prod-QueryResultLambda"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-l48ff4adf8fi"
-s3_prefix = "gamma-QueryResultLambda"
+s3_prefix = "prod-QueryResultLambda"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "Stage=\"gamma\""
+parameter_overrides = "Stage=\"prod\""
 
