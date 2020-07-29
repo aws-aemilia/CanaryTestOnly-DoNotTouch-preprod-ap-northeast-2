@@ -204,6 +204,16 @@ module.exports = {
             const data = await client_S3.getObject(s3_params).promise();
             fs.writeFileSync("/tmp/result.csv", data.Body, { flag: "a+" });
         }
+
+        const file = fs.readFileSync('/tmp/result.csv');
+        const params = {
+            Bucket: "aws-amplify-hosting-insights-query-history",
+            Key: query + '.csv',
+            Body: file,
+            ServerSideEncryption: 'aws:kms'
+        };
+        await client_S3.upload(params).promise();
+
         return;
     },
 };
