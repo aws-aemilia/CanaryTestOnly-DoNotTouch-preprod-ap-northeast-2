@@ -15,6 +15,7 @@ const {
     queryOneRegion,
     fetchQueryOutput,
 } = require("./extensions/insightsHelper");
+const queryHelper = require("./extensions/queryHelper");
 
 const allowedUsers = [
     'anatonie',
@@ -317,6 +318,36 @@ app.post("/insights/queryOutput", async (req, res) => {
         res.download('/tmp/result.csv', () => {
             fs.unlinkSync("/tmp/result.csv");
         });
+    } catch (error) {
+        res.status(500);
+        console.log(error.message + error.stack)
+        res.json(error);
+    }
+});
+
+app.post("/insights/clear", async (req, res) => {
+    const { stage, region, time, timeRange, eventType } = req.body;
+    let regionList = (region === "global") ? accounts.getRegions()[stage] : [region];
+    const [queryTime, queryType, queryContent] = queryHelper(
+        timeRange,
+        time,
+        eventType
+    );
+    const query = queryTime + "/" + eventType;
+    const ddb = new aws.DynamoDB.DocumentClient();
+    try {
+        for (let current_region of regionList) {
+            const params = {
+                TableName: "hosting-insights-query-history-table",
+                Key: {
+                    query: query,
+                    stageRegion: stage + "-" + current_region,
+                },
+            };
+            await ddb.delete(params).promise();
+        }
+        res.status(200);
+        res.end();
     } catch (error) {
         res.status(500);
         console.log(error.message + error.stack)

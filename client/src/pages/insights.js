@@ -82,6 +82,37 @@ class Insights extends Component {
         }
     };
 
+    clearCache = async () => {
+        this.setState({ accounts: [], timeout:false, loading: true });
+        
+        if (
+            this.state.time != null &&
+            this.state.timeRange !== "S" &&
+            this.state.timeRange !== "m"
+        )
+            this.state.time.setMinutes(0, 0, 0);
+
+        const UTCtime =
+            this.state.time.getTime() / 1000 -
+            this.state.time.getTimezoneOffset() * 60;
+
+        // Define the query parameter
+        const params = {
+            stage: this.state.stage,
+            region: this.state.region,
+            time: UTCtime,
+            timeRange: this.state.timeRange,
+            eventType: this.state.eventType,
+        };
+
+        try {
+            await Ajax().post("/insights/clear", params);
+            this.setState({ loading: false })
+        } catch (error) {
+            this.setState({ loading: false, error });
+        }
+    };
+
     handleTimeRangeChange = async (timeRange) => {
         const now = new Date();
         this.setState({ time: now, timeRange });
@@ -202,7 +233,9 @@ class Insights extends Component {
                         stage={this.state.stage}
                         timeRange={this.state.timeRange}
                         onErrorCodeChange={(errorCode) =>
-                            errorCode.length > 0 ? this.setState({ eventType : "E-" + errorCode }) : this.setState({ eventType : ""})
+                            errorCode.length > 0
+                                ? this.setState({ eventType: "E-" + errorCode })
+                                : this.setState({ eventType: "" })
                         }
                         onRegionChange={(region) => this.setState({ region })}
                         onStageChange={(stage) =>
@@ -213,7 +246,9 @@ class Insights extends Component {
                         }
                         onPatternChange={(pattern) => {
                             pattern = pattern.toLowerCase();
-                            pattern.length > 0 ?  this.setState({ eventType : "P-" + pattern }) : this.setState({ eventType : ""})
+                            pattern.length > 0
+                                ? this.setState({ eventType: "P-" + pattern })
+                                : this.setState({ eventType: "" });
                         }}
                     >
                         {this.state.timePickerFormat && (
@@ -266,11 +301,44 @@ class Insights extends Component {
                                     )}
                                 </div>
                             )}
+
+                        {this.state.region &&
+                            this.state.eventType &&
+                            this.state.timeRange && (
+                                <div>
+                                    {!this.state.loading && (
+                                        <Button
+                                            disabled={
+                                                !this.state.stage ||
+                                                !this.state.region ||
+                                                this.state.loading
+                                            }
+                                            onClick={this.clearCache}
+                                            variant="info"
+                                        >
+                                            Clear Cache
+                                        </Button>
+                                    )}
+
+                                    {this.state.loading && (
+                                        <Button disabled variant="info">
+                                            <Spinner
+                                                animation="border"
+                                                aria-hidden="true"
+                                                as="span"
+                                                role="status"
+                                                size="sm"
+                                            />
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
                     </InsightsToolSelector>
                 </div>
                 {this.state.timeout && (
                     <Alert variant={"danger"}>
-                        Slow query! Query is running in the background. Please try again later to retrieve results 
+                        Slow query! Query is running in the background. Please
+                        try again later to retrieve results
                     </Alert>
                 )}
                 <div className="result-table">
