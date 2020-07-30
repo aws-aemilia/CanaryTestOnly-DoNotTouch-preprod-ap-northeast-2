@@ -63,7 +63,7 @@ class Insights extends Component {
 
         // Call API to fetch account ID data
         try {
-            const { data: accounts } = await Ajax().post("/insights", params);
+            const { data: accounts } = await Ajax().post("/insights/accountInfo", params);
             // Change region display format
             accounts.forEach((element) => {
                 element.regions = element.regions.join(", ");
@@ -71,6 +71,37 @@ class Insights extends Component {
             this.setState({ loading: false, accounts });
         } catch (error) {
             this.setState({ timeout: true, loading: false, error });
+        }
+    };
+
+    clearCache = async () => {
+        this.setState({ accounts: [], timeout:false, loading: true });
+        
+        if (
+            this.state.time != null &&
+            this.state.timeRange !== "S" &&
+            this.state.timeRange !== "m"
+        )
+            this.state.time.setMinutes(0, 0, 0);
+
+        const UTCtime =
+            this.state.time.getTime() / 1000 -
+            this.state.time.getTimezoneOffset() * 60;
+
+        // Define the query parameter
+        const params = {
+            stage: this.state.stage,
+            region: this.state.region,
+            time: UTCtime,
+            timeRange: this.state.timeRange,
+            eventType: this.state.eventType,
+        };
+
+        try {
+            await Ajax().post("/insights/clear", params);
+            this.setState({ loading: false })
+        } catch (error) {
+            this.setState({ loading: false, error });
         }
     };
 
@@ -242,6 +273,38 @@ class Insights extends Component {
                                             variant="info"
                                         >
                                             Get Data
+                                        </Button>
+                                    )}
+
+                                    {this.state.loading && (
+                                        <Button disabled variant="info">
+                                            <Spinner
+                                                animation="border"
+                                                aria-hidden="true"
+                                                as="span"
+                                                role="status"
+                                                size="sm"
+                                            />
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+
+                        {this.state.region &&
+                            this.state.eventType &&
+                            this.state.timeRange && (
+                                <div>
+                                    {!this.state.loading && (
+                                        <Button
+                                            disabled={
+                                                !this.state.stage ||
+                                                !this.state.region ||
+                                                this.state.loading
+                                            }
+                                            onClick={this.clearCache}
+                                            variant="info"
+                                        >
+                                            Clear Cache
                                         </Button>
                                     )}
 
