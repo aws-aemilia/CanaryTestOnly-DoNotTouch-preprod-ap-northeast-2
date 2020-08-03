@@ -208,6 +208,10 @@ class Insights extends Component {
         const paginationOption = {
             sizePerPageList: [
                 {
+                    text: "20",
+                    value: 20,
+                },
+                {
                     text: "50",
                     value: 50,
                 },
@@ -215,12 +219,8 @@ class Insights extends Component {
                     text: "100",
                     value: 100,
                 },
-                {
-                    text: "200",
-                    value: 200,
-                },
             ],
-            sizePerPage: 50,
+            sizePerPage: 20,
         };
         return (
             <div>
