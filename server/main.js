@@ -303,7 +303,7 @@ app.post("/insights/accountInfo", async (req, res) => {
             res.send(accounts);
         } catch (error) {
             res.status(500);
-            console.log(error.message + error.stack)
+            console.log(error.message, error.stack)
             res.json(error);
         }
     }
@@ -319,6 +319,7 @@ app.post("/insights/clear", async (req, res) => {
     );
     const query = queryTime + "/" + eventType;
     const ddb = new aws.DynamoDB.DocumentClient();
+    let ddbPromisesArray = [];
     try {
         for (let current_region of regionList) {
             const params = {
@@ -328,13 +329,14 @@ app.post("/insights/clear", async (req, res) => {
                     stageRegion: stage + "-" + current_region,
                 },
             };
-            await ddb.delete(params).promise();
+            ddbPromisesArray.push(ddb.delete(params).promise());
         }
+        await Promise.all(ddbPromisesArray);
         res.status(200);
         res.end();
     } catch (error) {
         res.status(500);
-        console.log(error.message + error.stack)
+        console.log(error.message, error.stack)
         res.json(error);
     }
 });
