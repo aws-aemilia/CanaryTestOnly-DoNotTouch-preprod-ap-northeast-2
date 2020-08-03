@@ -45,8 +45,11 @@ class Insights extends Component {
             this.state.time != null &&
             this.state.timeRange !== "S" &&
             this.state.timeRange !== "m"
-        )
-            this.state.time.setMinutes(0, 0, 0);
+        ) {
+            const selectedTime = this.state.time;
+            const timeWithoutSecondMinute = selectedTime.setMinutes(0, 0, 0);
+            this.setState({ time: timeWithoutSecondMinute });
+        }
 
         const UTCtime =
             this.state.time.getTime() / 1000 -
@@ -81,12 +84,11 @@ class Insights extends Component {
             this.state.time != null &&
             this.state.timeRange !== "S" &&
             this.state.timeRange !== "m"
-        ) { 
-            const selectedTime = this.state.time
-            const timeWithoutSecondMinute = selectedTime.setMinutes(0, 0, 0)
-            this.setState({time : timeWithoutSecondMinute });
+        ) {
+            const selectedTime = this.state.time;
+            const timeWithoutSecondMinute = selectedTime.setMinutes(0, 0, 0);
+            this.setState({ time: timeWithoutSecondMinute });
         }
-
 
         const UTCtime =
             this.state.time.getTime() / 1000 -
