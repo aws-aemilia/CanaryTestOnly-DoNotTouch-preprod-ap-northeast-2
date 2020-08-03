@@ -89,8 +89,11 @@ class Insights extends Component {
             this.state.time != null &&
             this.state.timeRange !== "S" &&
             this.state.timeRange !== "m"
-        )
-            this.state.time.setMinutes(0, 0, 0);
+        ){  
+            const currentTime = this.state.time;
+            const timeWithoutMinuteSecond = currentTime.setMinutes(0, 0, 0);
+            this.setState({ time : timeWithoutMinuteSecond});
+        }
 
         const UTCtime =
             this.state.time.getTime() / 1000 -
