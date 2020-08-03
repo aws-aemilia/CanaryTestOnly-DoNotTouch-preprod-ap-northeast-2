@@ -120,6 +120,46 @@
       "region_partition": "aws",
       "stage": "prod",
       "type": "service"
+    },
+    "prod.sa-east-1.aemilia": {
+      "accountId": "068675532419",
+      "alias": "prod-gru",
+      "region": "sa-east-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.us-west-1.aemilia": {
+      "accountId": "214290359175",
+      "alias": "prod-sfo",
+      "region": "us-west-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.ca-central-1.aemilia": {
+      "accountId": "824930503114",
+      "alias": "prod-yul",
+      "region": "ca-central-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.eu-west-3.aemilia": {
+      "accountId": "693207358157",
+      "alias": "prod-cdg",
+      "region": "eu-west-3",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.eu-north-1.aemilia": {
+      "accountId": "315276288780",
+      "alias": "prod-arn",
+      "region": "eu-north-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
     }
   }
 }

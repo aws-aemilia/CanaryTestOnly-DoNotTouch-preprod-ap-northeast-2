@@ -31,7 +31,7 @@ Mappings:
     eu-central-1:
       prod : "arn:aws:iam::644397351177:root"
     sa-east-1:
-      prod : "arn:aws:iam::137144400800:root"
+      prod : "arn:aws:iam::068675532419:root"
     us-west-1:
       prod : "arn:aws:iam::214290359175:root"
     ca-central-1:
