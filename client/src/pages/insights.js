@@ -47,7 +47,7 @@ class Insights extends Component {
             this.state.timeRange !== "m"
         ) {
             const selectedTime = this.state.time;
-            const timeWithoutSecondMinute = selectedTime.setMinutes(0, 0, 0);
+            const timeWithoutSecondMinute = new Date(selectedTime.setMinutes(0, 0, 0));
             this.setState({ time: timeWithoutSecondMinute });
         }
 
@@ -86,7 +86,7 @@ class Insights extends Component {
             this.state.timeRange !== "m"
         ) {
             const selectedTime = this.state.time;
-            const timeWithoutSecondMinute = selectedTime.setMinutes(0, 0, 0);
+            const timeWithoutSecondMinute = new Date(selectedTime.setMinutes(0, 0, 0));
             this.setState({ time: timeWithoutSecondMinute });
         }
 
