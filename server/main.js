@@ -13,6 +13,7 @@ const {
     queryAllRegions,
     queryOneRegion,
 } = require("./extensions/insightsHelper");
+const queryHelper = require("./extensions/queryHelper");
 
 const allowedUsers = [
     'anatonie',
@@ -277,7 +278,7 @@ app.post('/cwlogs/events/get', async (req, res) => {
     }
 });
 
-app.post("/insights", async (req, res) => {
+app.post("/insights/accountInfo", async (req, res) => {
     const { stage, region, time, timeRange, eventType } = req.body;
     let accounts = [];
     console.log(req.body)
@@ -302,9 +303,41 @@ app.post("/insights", async (req, res) => {
             res.send(accounts);
         } catch (error) {
             res.status(500);
-            console.log(error.message + error.stack)
+            console.log(error.message, error.stack)
             res.json(error);
         }
+    }
+});
+
+app.post("/insights/clear", async (req, res) => {
+    const { stage, region, time, timeRange, eventType } = req.body;
+    let regionList = (region === "global") ? accounts.getRegions()[stage] : [region];
+    const [queryTime, queryType, queryContent] = queryHelper(
+        timeRange,
+        time,
+        eventType
+    );
+    const query = queryTime + "/" + eventType;
+    const ddb = new aws.DynamoDB.DocumentClient();
+    let ddbPromisesArray = [];
+    try {
+        for (let current_region of regionList) {
+            const params = {
+                TableName: "hosting-insights-query-history-table",
+                Key: {
+                    query: query,
+                    stageRegion: stage + "-" + current_region,
+                },
+            };
+            ddbPromisesArray.push(ddb.delete(params).promise());
+        }
+        await Promise.all(ddbPromisesArray);
+        res.status(200);
+        res.end();
+    } catch (error) {
+        res.status(500);
+        console.log(error.message, error.stack)
+        res.json(error);
     }
 });
 

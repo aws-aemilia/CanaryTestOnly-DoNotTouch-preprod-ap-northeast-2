@@ -42,7 +42,7 @@ Mappings:
       prod : "arn:aws:iam::315276288780:root"
 
 Parameters:
-  Stage: {Type: String, Default: 'beta'}
+  Stage: {Type: String, Default: 'prod'}
 
 Resources:
   InsightsAthenaQueryResultBucket:
@@ -75,7 +75,7 @@ Resources:
   InsightsAthenaQueryResultS3Trigger:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub aws-amplify-${Stage}-${AWS::Region}-InsightsAthenaQueryResultS3Trigger
+      FunctionName: !Sub aws-amplify-${Stage}-${AWS::Region}-InsightsAthenaQueryResult
       Handler: src/handlers/AthenaQueryResultHandler.handler
       Runtime: nodejs12.x
       MemorySize: 512
