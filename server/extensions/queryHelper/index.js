@@ -61,7 +61,7 @@ const errorCodeQueryHelper = (timeRange, time, errorCode) => {
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
-                        AND hour = '${hour}'
+                        AND time LIKE '${hour}%'
                         AND status >= ${errorCodeStart}
                         AND status <= ${errorCodeEnd}`;
     } else if (timeRange === "D") {
@@ -163,7 +163,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
-                        AND hour = '${hour}'
+                        AND time LIKE '${hour}%'
                         AND (${patternMatchQuery})`;
     } else if (timeRange === "D") {
         // Query format : Year-Month-Day
