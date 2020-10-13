@@ -6,10 +6,10 @@
 # populate target_accounts.txt with one service account id per line
 # for each account, the script will call fluxo api to cut one ticket for every region to request the limit increase, which should be approved automatically by Lambda's bot
 
-# usage: PASS=<pass> ./increaste_lambda_tps.sh
+# usage: PASS=<pass> ./increase_lambda_tps.sh
 # materialset: com.aws.mobilehub.fluxo
 
-# History of accounts for which this script has been run here (copy tts_created.log contents there any time you run this):
+# To audit history:
 # https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/ServiceLimits/LambdaConcurrency
 
 #!/bin/bash
