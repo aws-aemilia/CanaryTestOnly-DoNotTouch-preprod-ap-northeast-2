@@ -8,6 +8,7 @@
 
 AWS_REGION=${1:-${AWS_REGION:-us-west-2}}
 VERSIONS_TO_KEEP=${2:-3}
+export AWS_PAGER=""
 code_storage=0
 set -eu
 
@@ -62,7 +63,9 @@ delete_old_versions() {
   while true ; do
     case "$DELETE" in
       y|yes)
+        aliases=$(aws --region ${AWS_REGION} lambda list-aliases --no-paginate --function-name $1)
         for version_arn in ${version_arns[@]}; do
+          
           version_num=$(echo $version_arn | grep -Eo "[0-9]+$")
           # WARNING - gaps in function versions may not be taken into account
           # for example, if the function has only versions 1, 2, 3, and 7, then versions 2 and 3 will be deleted if $VERSIONS_TO_KEEP is set to 3
@@ -70,7 +73,7 @@ delete_old_versions() {
           then
             echo "Deleting version $version_num";
             # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+            aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           else
             echo "Skipping version $version_num";
           fi
