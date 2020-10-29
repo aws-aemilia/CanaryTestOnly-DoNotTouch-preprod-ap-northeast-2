@@ -65,6 +65,7 @@ if [[ `uname -r` != *"amzn2"* ]]; then
   echo -e "${RED}Since you aren't on AL2 if you want to deploy AemiliaEdgeLambda deploy it manually before proceeding or <Ctrl-C>.${NC}"
 else
   deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda"
+  deploy_local_package "Deploy edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda"
 fi
 
 # Step 3: Semi-Automated Deploy this last
