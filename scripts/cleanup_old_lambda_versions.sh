@@ -73,7 +73,7 @@ delete_old_versions() {
           then
             echo "Deleting version $version_num";
             # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           else
             echo "Skipping version $version_num";
           fi
