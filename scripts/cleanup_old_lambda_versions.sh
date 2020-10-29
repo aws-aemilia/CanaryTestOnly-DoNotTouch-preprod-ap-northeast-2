@@ -1,5 +1,5 @@
 #!/bin/bash
-# Iterates over all functions and provide the option to delete all versions of each function
+# Iterates over all functions and delete all versions of each function before $VERIONS_TO_KEEP
 # this is a modified version of https://code.amazon.com/packages/MoroccoServiceUsefulScripts/blobs/mainline/--/GarbageCollection/cleanup_old_lambda_versions.sh
 
 # Arguments:
@@ -20,6 +20,7 @@ get_code_storage() {
 
 delete_lambdas() {
   echo "===="
+  echo "Make sure you're following the two-person rule if in a production environment!"
   echo "Iterating through functions in $AWS_REGION to delete any versions older than last $VERSIONS_TO_KEEP"
   echo "Calculating storage usage in $AWS_REGION, if you have many functions/versions this could take a minute..."
   get_code_storage
@@ -36,6 +37,7 @@ delete_lambdas() {
     echo "===="
     echo "Lambda: ${lambda}"
     delete_old_versions $lambda
+    echo "Done deleting old versions of lambda function: ${lambda}"
   done
   get_code_storage
 }
@@ -58,38 +60,26 @@ delete_old_versions() {
   echo "${version_arns}"
   echo "versions to keep:"
   echo $(seq $((newest_version_to_delete + 1)) $highest_version)
-  printf "Would you like to delete all versions up to and including version $newest_version_to_delete? Make sure you're following the two-person rule if in a production environment. (y/n): "
-  read DELETE
-  while true ; do
-    case "$DELETE" in
-      y|yes)
-        aliases=$(aws --region ${AWS_REGION} lambda list-aliases --no-paginate --function-name $1)
-        for version_arn in ${version_arns[@]}; do
-          
-          version_num=$(echo $version_arn | grep -Eo "[0-9]+$")
-          # WARNING - gaps in function versions may not be taken into account
-          # for example, if the function has only versions 1, 2, 3, and 7, then versions 2 and 3 will be deleted if $VERSIONS_TO_KEEP is set to 3
-          if [[ $version_num -le $newest_version_to_delete ]]
-          then
-            echo "Deleting version $version_num";
-            # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
-          else
-            echo "Skipping version $version_num";
-          fi
-        done
-        get_code_storage
-        break
-        ;;
-      n|no)
-        echo "Okay. Nothing deleted."
-        break
-        ;;
-      *)
-        echo "Didn't recognize your response. Please answer yes or no."
-        read -p "Do you want to delete the above listed functions? " DELETE
-        ;;
-    esac
+  echo "Deleting all versions up to and including version $newest_version_to_delete"
+  
+  aliases=$(aws --region ${AWS_REGION} lambda list-aliases --no-paginate --function-name $1)
+  for version_arn in ${version_arns[@]}; do
+    version_num=$(echo $version_arn | grep -Eo "[0-9]+$")
+    # WARNING - gaps in function versions may not be taken into account
+    # for example, if the function has only versions 1, 2, 3, and 7, then versions 2 and 3 will be deleted if $VERSIONS_TO_KEEP is set to 3
+    if [[ $version_num -le $newest_version_to_delete ]]
+    then
+      if echo $aliases | grep -q \"$version_num\"
+      then
+        echo "Version ${version_num} has an alias referencing it, skipping"
+      else
+        echo "Deleting version $version_num";
+        # Commented out by default to encourage testing expected output first - uncomment when ready to delete
+        aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+      fi
+    else
+      echo "Skipping version $version_num";
+    fi
   done
 }
 
