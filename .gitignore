@@ -30,3 +30,5 @@ client/.env
 server/claudia.alpha.json
 *.snap
 package-lock.json
+# Local stack deployment
+AMPLIFY

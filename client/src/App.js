@@ -25,6 +25,7 @@ class App extends Component {
             .catch((err) => this.setState({error: err}));
     }
     render() {
+        console.log("Hello")
         if (this.state.error) {
             return <div>There was an error processing your request</div>;
         }
