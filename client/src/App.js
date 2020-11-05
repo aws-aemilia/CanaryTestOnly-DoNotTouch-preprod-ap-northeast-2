@@ -8,7 +8,7 @@ import Builds from './pages/builds';
 import Logs from './pages/logs';
 import OnCall from './pages/oncall';
 import Ajax from "./ajax";
-import Insights from "./pages/insights"
+import Insights from "./pages/insights";
 
 class App extends Component {
     constructor(props) {
