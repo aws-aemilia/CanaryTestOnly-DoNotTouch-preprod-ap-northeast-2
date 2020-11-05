@@ -45,8 +45,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
-    res.append('Access-Control-Allow-Headers', '*');
-    res.append('Access-Control-Allow-Credentials', 'true');
+    res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
     const options = 'OPTIONS';
     if (req.method !== options) {
         username = undefined;
