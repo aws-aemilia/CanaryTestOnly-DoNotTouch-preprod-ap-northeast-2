@@ -47,7 +47,8 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-            const data = await Ajax().fetch(`/customerinfo?stage=${this.state.stage}&region=${this.region}&query=${this.search}`);
+            const response = await Ajax().fetch(`/customerinfo?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+            const {data} = response;
             // const jsonData = await data.json();
             console.log(data);
             // const formatData = jsonData.reduce((acc, curr) => {
