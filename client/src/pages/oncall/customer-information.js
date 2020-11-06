@@ -36,10 +36,20 @@ class CustomerInformation extends Component {
         });
     }
 
+    // Define the query parameter
+//     getAppId(){
+//     const params = {
+//         stage: this.state.stage,
+//         region: this.state.region,
+//         search: this.state.search,
+//     };
+// }
+
     async getApiData() {
         try {
-            const data = await fetch(`https://5fa28fdaba0736001613bd4c.mockapi.io/api/v1/users?search=${this.state.search}`);
+            const data = Ajax().post("/api/customerinfo", {stage: "prod", region: "us-west-2", query: "d10ltbfu432nhv"} );
             const jsonData = await data.json();
+            console.log(jsonData);
             const formatData = jsonData.reduce((acc, curr) => {
                 return Object.assign(acc, curr)
             }, {});
@@ -63,10 +73,10 @@ class CustomerInformation extends Component {
                     stage={this.state.stage}
                     region={this.state.region}
                     loading={this.state.loading}
-                    onStageChange={(stage) => this.setState({stage, region: ''})}
-                    onRegionChange={(region) => this.setState({region})}
+                    onStageChange={(stage) => this.setState({ stage, region: '' })}
+                    onRegionChange={(region) => this.setState({ region })}
                 >
-                    <Search searchDataChanged={this.searchDataChanged}/>
+                    <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
                 <h4 style={this.tagStyle}>App Table</h4>
                 <Table data={this.state.data} />

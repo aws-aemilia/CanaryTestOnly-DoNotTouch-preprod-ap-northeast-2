@@ -6,9 +6,9 @@ const proxy = require('http-proxy-middleware');
 const accounts = require('./extensions/accounts');
 const fs = require('fs');
 const businessMetrics = require('./extensions/businessMetrics');
-const {getEvent} = require('./event');
+const { getEvent } = require('./event');
 const patchSdk = require('./extensions/sdkpatcher');
-const {getAccountId} = require('./extensions/accounts');
+const { getAccountId } = require('./extensions/accounts');
 const Metering = require('./extensions/metering');
 const {
     queryAllRegions,
@@ -57,7 +57,7 @@ app.use((req, res, next) => {
         }
         if (!username || allowedUsers.indexOf(username) < 0) {
             res.status(403);
-            res.json({message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found`})
+            res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
         } else {
             next();
         }
@@ -149,17 +149,17 @@ app.post('/api/builds', async (req, res) => {
             'projectName': req.body.project,
             'nextToken': req.body.token ? req.body.token : undefined
         }).promise();
-        let codebuildBuilds = await codebuild.batchGetBuilds({'ids': buildIds['ids']}).promise();
+        let codebuildBuilds = await codebuild.batchGetBuilds({ 'ids': buildIds['ids'] }).promise();
         let token = buildIds.nextToken;
 
         builds = builds.concat(codebuildBuilds.builds);
 
-        res.end(JSON.stringify({'builds': builds, token}));
+        res.end(JSON.stringify({ 'builds': builds, token }));
     } catch (err) {
         console.log('error calling codebuild');
         console.log(err);
         res.status(400);
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 });
 
@@ -174,7 +174,7 @@ app.get('/api/logs', async (req, res) => {
             else res.end(JSON.stringify(data)); // successful response
         });
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 
 });
@@ -198,7 +198,7 @@ app.get('/api/logsbyprefix', async (req, res) => {
 
         res.end(JSON.stringify(builds));
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 });
 
@@ -216,7 +216,7 @@ app.get('/api/cachemeta', async (req, res) => {
             if (err) {
                 console.log('error in s3');
                 console.log(err);
-                res.end(JSON.stringify({'error': err}))
+                res.end(JSON.stringify({ 'error': err }))
             } else {
                 console.log(data);
                 res.end(JSON.stringify(data))
@@ -224,7 +224,7 @@ app.get('/api/cachemeta', async (req, res) => {
         });
     } catch (err) {
         console.log('error');
-        res.end(JSON.stringify({'error': err}))
+        res.end(JSON.stringify({ 'error': err }))
     }
 });
 
@@ -237,7 +237,7 @@ app.get('/cwlogs/groups', async (req, res) => {
         let nextToken = undefined;
         let logGroups = [];
         do {
-            const result = await client.describeLogGroups({limit: 50, nextToken}).promise();
+            const result = await client.describeLogGroups({ limit: 50, nextToken }).promise();
             nextToken = result.nextToken;
             logGroups = [
                 ...logGroups,
@@ -254,7 +254,7 @@ app.get('/cwlogs/groups', async (req, res) => {
 });
 
 app.post('/cwlogs/events/filter', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.filterLogEvents(params).promise();
@@ -268,7 +268,7 @@ app.post('/cwlogs/events/filter', async (req, res) => {
 });
 
 app.post('/cwlogs/events/get', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.getLogEvents(params).promise();
@@ -356,6 +356,28 @@ app.post("/insights/clear", async (req, res) => {
         console.log(error.message, error.stack)
         res.json(error);
     }
+});
+
+app.post("/api/customerinfo", async (req, res) => {
+    const { stage, region, query } = res.body;
+    const ddb = new aws.DynamoDB.DocumentClient();
+    const documentClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        "TableName": `${stage}-${region}-App`,
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId"
+        },
+        "ScanIndexForward": true
+    };
+
+    const result = await documentClient.query(params).promise();
+    res.json(result.Items[0]);
+
+
 });
 
 // Handles any requests that don't match the ones above
