@@ -47,7 +47,7 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-            const data = Ajax().post("/api/customerinfo", {stage: "prod", region: "us-west-2", query: "d10ltbfu432nhv"} );
+            const data = Ajax().post("/customerinfo");
             const jsonData = await data.json();
             console.log(jsonData);
             const formatData = jsonData.reduce((acc, curr) => {
