@@ -372,7 +372,7 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
-app.post("/customerinfo", async (req, res) => {
+app.get("/customerinfo", async (req, res) => {
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
     const documentClient = new aws.DynamoDB.DocumentClient();
@@ -391,8 +391,10 @@ app.post("/customerinfo", async (req, res) => {
     try {
         const result = await documentClient.query(params).promise();
         res.json(result.Items[0]);
+        console.log("res.json worked")
     } catch (e) {
         res.send(e);
+        console.log("res.json did not work")
     }
 
 

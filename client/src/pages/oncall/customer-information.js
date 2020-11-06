@@ -51,6 +51,7 @@ class CustomerInformation extends Component {
             const {data} = response;
             // const jsonData = await data.json();
             console.log(data);
+            console.log("data fetch")
             // const formatData = jsonData.reduce((acc, curr) => {
             //     return Object.assign(acc, curr)
             // }, {});
@@ -59,6 +60,7 @@ class CustomerInformation extends Component {
             });
         } catch (error) {
             console.log(error);
+            console.log("data fetch fail")
             this.setState({
                 data: {}
             })
