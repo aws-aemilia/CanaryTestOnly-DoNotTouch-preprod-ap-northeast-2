@@ -159,6 +159,7 @@ if [[ `uname -r` != *"amzn2"* ]]; then
 else
   download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" "AemiliaEdgeLambda/development"
 fi
+download_and_build_package "Setup edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda/development"
 download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
 download_and_build_package "Setup container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda" "AemiliaContainerLambda/development"
 download_and_build_package "Setup Containers: BEGIN" "AemiliaContainers" "AemiliaContainer" "AemiliaContainers/development"
