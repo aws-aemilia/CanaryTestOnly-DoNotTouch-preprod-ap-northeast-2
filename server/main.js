@@ -359,25 +359,23 @@ app.post("/insights/clear", async (req, res) => {
 });
 
 app.post("/customerinfo", async (req, res) => {
-    // const { stage, region, query } = res.body;
+    const { stage, region, query } = res.body;
     // const ddb = new aws.DynamoDB.DocumentClient();
-    // const documentClient = new AWS.DynamoDB.DocumentClient();
-    // const params = {
-    //     "TableName": `${stage}-${region}-App`,
-    //     "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
-    //     "ExpressionAttributeValues": {
-    //         ":pkey": query
-    //     },
-    //     "ExpressionAttributeNames": {
-    //         "#DYNOBASE_appId": "appId"
-    //     },
-    //     "ScanIndexForward": true
-    // };
+    const documentClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        "TableName": `${stage}-${region}-App`,
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId"
+        },
+        "ScanIndexForward": true
+    };
 
-    // const result = await documentClient.query(params).promise();
-    // res.json(result.Items[0]);
-    res.json({hello : "world"});
-
+    const result = await documentClient.query(params).promise();
+    res.json(result.Items[0]);
 
 });
 
