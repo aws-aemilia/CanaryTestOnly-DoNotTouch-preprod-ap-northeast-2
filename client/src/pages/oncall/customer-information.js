@@ -47,14 +47,14 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-            const data = Ajax().get(`/customerinfo?stage=${this.state.stage}&region=${this.region}&query=${this.search}`);
-            const jsonData = await data.json();
-            console.log(jsonData);
-            const formatData = jsonData.reduce((acc, curr) => {
-                return Object.assign(acc, curr)
-            }, {});
+            const data = await Ajax().fetch(`/customerinfo?stage=${this.state.stage}&region=${this.region}&query=${this.search}`);
+            // const jsonData = await data.json();
+            console.log(data);
+            // const formatData = jsonData.reduce((acc, curr) => {
+            //     return Object.assign(acc, curr)
+            // }, {});
             this.setState({
-                data: formatData,
+                data
             });
         } catch (error) {
             console.log(error);
