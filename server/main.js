@@ -374,8 +374,13 @@ app.post("/customerinfo", async (req, res) => {
         "ScanIndexForward": true
     };
 
-    const result = await documentClient.query(params).promise();
-    res.json(result.Items[0]);
+    try {
+        const result = await documentClient.query(params).promise();
+        res.json(result.Items[0]);
+    } catch (e) {
+        res.send(e);
+    }
+
 
 });
 
