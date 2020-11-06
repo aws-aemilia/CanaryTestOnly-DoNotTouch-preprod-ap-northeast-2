@@ -17,6 +17,16 @@ const {
 } = require("./extensions/insightsHelper");
 const queryHelper = require("./extensions/queryHelper");
 
+if(process.env.NODE_ENV == "development") {
+
+    let credentials = new aws.SharedIniFileCredentials({ profile: "brandon-aws" });
+    aws.config.credentials = credentials;
+    aws.config.region = "us-west-2";
+
+}
+
+
+
 const allowedUsers = [
     'anatonie',
     'loganch',
@@ -43,29 +53,33 @@ let username;
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-    res.append('Access-Control-Allow-Origin', ['*']);
-    res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
-    const options = 'OPTIONS';
-    if (req.method !== options) {
-        username = undefined;
-        const event = getEvent();
-        if (event.requestContext && event.requestContext.identity && event.requestContext.identity.cognitoAuthenticationProvider) {
-            const cognitoAuthenticationProvider = event.requestContext.identity.cognitoAuthenticationProvider;
-            const parts = cognitoAuthenticationProvider.split(':');
-            username = parts[parts.length - 1];
-        }
-        if (!username || allowedUsers.indexOf(username) < 0) {
-            res.status(403);
-            res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
+if(process.env.NODE_ENV !== "development") {
+    app.use((req, res, next) => {
+        res.append('Access-Control-Allow-Origin', ['*']);
+        res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+        const options = 'OPTIONS';
+        if (req.method !== options) {
+            username = undefined;
+            const event = getEvent();
+            if (event.requestContext && event.requestContext.identity && event.requestContext.identity.cognitoAuthenticationProvider) {
+                const cognitoAuthenticationProvider = event.requestContext.identity.cognitoAuthenticationProvider;
+                const parts = cognitoAuthenticationProvider.split(':');
+                username = parts[parts.length - 1];
+            }
+            if (!username || allowedUsers.indexOf(username) < 0) {
+                res.status(403);
+                res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
+            } else {
+                next();
+            }
         } else {
-            next();
+            // next();
+            res.send(200);
         }
-    } else {
-        // next();
-        res.send(200);
-    }
-});
+    });
+
+}
+
 
 const proxyOptions = {
     target: 'https://oncall-api.corp.amazon.com', // target host
@@ -358,10 +372,10 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
-app.post("/customerinfo", async (req, res) => {
-    const { stage, region, query } = res.body;
+app.get("/customerinfo", async (req, res) => {
+    const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
-    const documentClient = new AWS.DynamoDB.DocumentClient();
+    const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
