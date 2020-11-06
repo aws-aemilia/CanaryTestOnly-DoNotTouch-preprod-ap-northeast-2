@@ -372,7 +372,7 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
-app.get("/customerinfo", async (req, res) => {
+app.post("/customerinfo", async (req, res) => {
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
     const documentClient = new aws.DynamoDB.DocumentClient();
