@@ -377,7 +377,7 @@ app.get("/customerinfo", async (req, res) => {
 
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
-    //const documentClient = new aws.DynamoDB.DocumentClient();
+    // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
@@ -391,16 +391,15 @@ app.get("/customerinfo", async (req, res) => {
     };
 
     try {
-        const client = await patchSdk(stage, region, aws.DynamoDB);
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log(result)
-        res.json(result.Items[0]);
         console.log("res.json worked")
         res.status(200);
+        res.json(result.Items[0]);
     } catch (e) {
         res.status(500);
         console.log(error.message, error.stack)
-        res.json(error);
         res.send(e);
         console.log("res.json did not work")
     }
@@ -408,7 +407,8 @@ app.get("/customerinfo", async (req, res) => {
 
 });
 
-// // ddb call for appId table
+
+// ddb call for appId table
 // app.get("/customerinfo", async (req, res) => {
 
 //     const { stage, region, query } = req.query;
@@ -427,6 +427,7 @@ app.get("/customerinfo", async (req, res) => {
 //     };
 
 //     try {
+//         const client = await patchSdk(stage, region, aws.DynamoDB);
 //         const result = await documentClient.query(params).promise();
 //         res.json(result.Items[0]);
 //         console.log("res.json worked")
