@@ -372,10 +372,12 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
+
 app.get("/customerinfo", async (req, res) => {
+
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
-    const documentClient = new aws.DynamoDB.DocumentClient();
+    //const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
@@ -389,16 +391,83 @@ app.get("/customerinfo", async (req, res) => {
     };
 
     try {
-        const result = await documentClient.query(params).promise();
+        const client = await patchSdk(stage, region, aws.DynamoDB);
+        const result = await client.query(params).promise();
+        console.log(result)
         res.json(result.Items[0]);
         console.log("res.json worked")
+        res.status(200);
     } catch (e) {
+        res.status(500);
+        console.log(error.message, error.stack)
+        res.json(error);
         res.send(e);
         console.log("res.json did not work")
     }
 
 
 });
+
+// // ddb call for appId table
+// app.get("/customerinfo", async (req, res) => {
+
+//     const { stage, region, query } = req.query;
+//     // const ddb = new aws.DynamoDB.DocumentClient();
+//     const documentClient = new aws.DynamoDB.DocumentClient();
+//     const params = {
+//         "TableName": `${stage}-${region}-App`,
+//         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+//         "ExpressionAttributeValues": {
+//             ":pkey": query
+//         },
+//         "ExpressionAttributeNames": {
+//             "#DYNOBASE_appId": "appId"
+//         },
+//         "ScanIndexForward": true
+//     };
+
+//     try {
+//         const result = await documentClient.query(params).promise();
+//         res.json(result.Items[0]);
+//         console.log("res.json worked")
+//     } catch (e) {
+//         res.send(e);
+//         console.log("res.json did not work")
+//     }
+
+
+// });
+
+// // ddb call for branch table
+// app.get("/customerinfo", async (req, res) => {
+//     const { stage, region, query } = req.query;
+//     // const ddb = new aws.DynamoDB.DocumentClient();
+//     const documentClient2 = new aws.DynamoDB.DocumentClient();
+//     const params = {
+//         "TableName": `${stage}-${region}-Branch`,
+//         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+//         "ExpressionAttributeValues": {
+//             ":pkey": query
+//         },
+//         "ExpressionAttributeNames": {
+//             "#DYNOBASE_appId": "appId"
+//         },
+//         "ScanIndexForward": true
+//     };
+
+//     // error fetching ddb data on deployed app happpening here
+//     try {
+//         const result = await documentClient2.query(params).promise();
+//         res.json(result.Items[0]);
+//         console.log("res.json worked")
+//     } catch (e) {
+//         res.send(e);
+//         // running search on deployed version gives this log in cloudwatch logs
+//         console.log("res.json did not work")
+//     }
+
+
+// });
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
