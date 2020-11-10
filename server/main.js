@@ -397,6 +397,8 @@ app.get("/customerinfo", async (req, res) => {
         console.log("res.json worked");
         res.status(200);
         res.json(result.Item);
+        console.log(res.json);
+        console.log(res.json(result.Item));
     } catch (e) {
         console.log("res.json did not work");
         console.error(e);
