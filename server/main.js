@@ -393,21 +393,32 @@ app.get("/customerinfo", async (req, res) => {
     try {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
-        const result = await client.get(params).promise();
-        // const response = await client.get({Key: "${appId}", TableName: `${stage}-${region}-App`});
+        const response = await client.get({Key: {"appId": `${query}`}, TableName: `${stage}-${region}-App`}).promise();
+        res.json(response.Item)
+     } catch(e) {
+        res.status(500)
+        console.error(e); 
+        res.send("internal service error")
+     }
+
+    // try {
+    //     // client should pass credentials
+    //     const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+    //     const result = await client.get(params).promise();
+    //     // const response = await client.get({Key: "${appId}", TableName: `${stage}-${region}-App`});
         
-        console.log("res.json worked");
-        res.status(200);
-        // res.json(result.Item);
-        res.json(result.Item);
-        console.log(res.json);
-        console.log(res.json(result.Item));
-    } catch (e) {
-        console.log("res.json did not work");
-        console.error(e);
-        res.status(500);
-        res.send("Internal Service Error");
-    }
+    //     console.log("res.json worked");
+    //     res.status(200);
+    //     // res.json(result.Item);
+    //     res.json(result.Item);
+    //     console.log(res.json);
+    //     console.log(res.json(result.Item));
+    // } catch (e) {
+    //     console.log("res.json did not work");
+    //     console.error(e);
+    //     res.status(500);
+    //     res.send("Internal Service Error");
+    // }
 });
 
 
