@@ -393,16 +393,15 @@ app.get("/customerinfo", async (req, res) => {
     try {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
-        // const result = await client.get(params);
-        const response = await client.get({Key: "${appId}", TableName: `${stage}-${region}-App`});
+        const result = await client.get(params).promise();
+        // const response = await client.get({Key: "${appId}", TableName: `${stage}-${region}-App`});
         
         console.log("res.json worked");
         res.status(200);
         // res.json(result.Item);
         res.json(response.Item);
-        console.log(res.json(result.Item));
         console.log(res.json);
-        
+        console.log(res.json(result.Item));
     } catch (e) {
         console.log("res.json did not work");
         console.error(e);
