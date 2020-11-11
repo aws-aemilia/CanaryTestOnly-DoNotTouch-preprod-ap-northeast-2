@@ -394,6 +394,7 @@ app.get("/customerinfo", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const response = await client.get({Key: {"appId": `${query}`}, TableName: `${stage}-${region}-App`}).promise();
+        console.log(response);
         res.json(response.Item)
      } catch(e) {
         res.status(500)
