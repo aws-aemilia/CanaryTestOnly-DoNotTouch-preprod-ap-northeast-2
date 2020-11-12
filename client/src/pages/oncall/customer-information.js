@@ -108,7 +108,7 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>App Table</h4>
                 <Table dataApp={this.state.dataApp} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
-                <Table dataApp={this.state.dataBranch} />
+                <Table dataBranch={this.state.dataBranch} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 <Table dataApp={this.state.dataApp} />
                 <h4 style={this.tagStyle}>Domain Table</h4>
