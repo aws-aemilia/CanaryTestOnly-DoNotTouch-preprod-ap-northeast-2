@@ -380,16 +380,14 @@ app.get("/customerinfoApp", async (req, res) => {
     // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
-        "ExpressionAttributeNames": {
-            '#name': "name"
-        },
         "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, originKey, platform, repository, updateTime",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId"
+            "#DYNOBASE_appId": "appId",
+            "#name": "name"
         },
         "ScanIndexForward": true
     };
