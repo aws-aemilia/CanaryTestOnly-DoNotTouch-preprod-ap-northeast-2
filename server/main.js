@@ -380,6 +380,7 @@ app.get("/customerinfo", async (req, res) => {
     // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
+        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
