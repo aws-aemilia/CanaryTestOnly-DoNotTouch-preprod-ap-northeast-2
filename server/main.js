@@ -373,45 +373,13 @@ app.post("/insights/clear", async (req, res) => {
 });
 
 
-app.get("/appcustomerinfo", async (req, res) => {
+app.get("/customerinfo", async (req, res) => {
 
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
     // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
-        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
-        "ExpressionAttributeValues": {
-            ":pkey": query
-        },
-        "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId"
-        },
-        "ScanIndexForward": true
-    };
-
-    try {
-        // client should pass credentials
-        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
-        const result = await client.query(params).promise();
-        console.log("res.json worked");
-        res.status(200);
-        res.json(result.Items[0]);
-    } catch (e) {
-        console.log("res.json did not work");
-        console.error(e);
-        res.status(500);
-        res.send("Internal Service Error");
-    }
-});
-
-app.get("/branchcustomerinfo", async (req, res) => {
-
-    const { stage, region, query } = req.query;
-    // const ddb = new aws.DynamoDB.DocumentClient();
-    // const documentClient = new aws.DynamoDB.DocumentClient();
-    const params = {
-        "TableName": `${stage}-${region}-Branch`,
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
