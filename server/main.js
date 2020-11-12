@@ -372,6 +372,7 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
+// ddb query to get customer data from App table
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
     const params = {
@@ -384,6 +385,42 @@ app.get("/customerinfoApp", async (req, res) => {
         "ExpressionAttributeNames": {
             "#DYNOBASE_appId": "appId",
             "#name": "name"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Branch table
+app.get("/customerinfoBranch", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    // go through each branch and retrieve data from specific appId
+    const branch =  "master";
+
+    const params = {
+        "TableName": `${stage}-${region}-Branch`,
+        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, ttl, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_branchName = :skey",
+        "ExpressionAttributeValues": {
+            ":pkey": query,
+            ":skey": branch
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#DYNOBASE_branchName": "branchName"
         },
         "ScanIndexForward": true
     };
