@@ -372,12 +372,11 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
-// ddb query to get App Table data
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
     const params = {
-        "TableName": `${stage}-${region}-Branch`,
-        
+        "TableName": `${stage}-${region}-App`,
+        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, originKey, platform, repository, updateTime",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
@@ -402,7 +401,6 @@ app.get("/customerinfoApp", async (req, res) => {
         res.send("Internal Service Error");
     }
 });
-
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
