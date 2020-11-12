@@ -23,7 +23,7 @@ class Table extends Component {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => (
                             <tr key={index}>
                                 <td>{key}</td>
-                                <td>{this.props.data[key] ? this.props.data[key].toString() : "Object was undefined"}</td>
+                                <td>{this.props.data[key] ? JSON.stringify(this.props.data[key]) : "Object was undefined"}</td>
                             </tr>
                         )) : <tr>
                                 <td>No Data Found</td>
