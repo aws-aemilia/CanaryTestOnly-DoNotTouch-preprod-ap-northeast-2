@@ -412,7 +412,7 @@ app.get("/customerinfoBranch", async (req, res) => {
 
     const params = {
         "TableName": `${stage}-${region}-Branch`,
-        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, ttl, updateTime, version",
+        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_branchName = :skey",
         "ExpressionAttributeValues": {
             ":pkey": query,
@@ -420,7 +420,8 @@ app.get("/customerinfoBranch", async (req, res) => {
         },
         "ExpressionAttributeNames": {
             "#DYNOBASE_appId": "appId",
-            "#DYNOBASE_branchName": "branchName"
+            "#DYNOBASE_branchName": "branchName",
+            "#ttl": "ttl"
         },
         "ScanIndexForward": true
     };
