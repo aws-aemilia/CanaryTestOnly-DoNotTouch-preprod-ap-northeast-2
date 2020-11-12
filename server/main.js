@@ -379,8 +379,8 @@ app.get("/customerinfoApp", async (req, res) => {
     // const ddb = new aws.DynamoDB.DocumentClient();
     // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
-        "TableName": `${stage}-${region}-App`,
-        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, originKey, platform, repository, updateTime",
+        "TableName": `${stage}-${region}-Branch`,
+        
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
