@@ -373,14 +373,14 @@ app.post("/insights/clear", async (req, res) => {
 });
 
 
-app.get("/customerinfo", async (req, res) => {
+app.get("/customerinfoApp", async (req, res) => {
 
     const { stage, region, query } = req.query;
     // const ddb = new aws.DynamoDB.DocumentClient();
     // const documentClient = new aws.DynamoDB.DocumentClient();
     const params = {
         "TableName": `${stage}-${region}-App`,
-        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn",
+        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, name, originKey, platform, repository, updateTime",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
