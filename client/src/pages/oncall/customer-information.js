@@ -4,9 +4,7 @@ import Ajax from "../../ajax";
 import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
 import NavBar from "../../components/navbar";
-
 import { ButtonToolbar, DropdownButton, Dropdown, Form } from "react-bootstrap";
-
 
 class CustomerInformation extends Component {
     constructor(props) {
@@ -21,7 +19,6 @@ class CustomerInformation extends Component {
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
 
-
     searchDataChanged(text) {
         this.setState({
             search: text
@@ -35,15 +32,6 @@ class CustomerInformation extends Component {
             }
         });
     }
-
-    // Define the query parameter
-//     getAppId(){
-//     const params = {
-//         stage: this.state.stage,
-//         region: this.state.region,
-//         search: this.state.search,
-//     };
-// }
 
     async getApiData() {
         try {
@@ -66,7 +54,6 @@ class CustomerInformation extends Component {
             })
         }
     }
-
 
     render() {
         return (
