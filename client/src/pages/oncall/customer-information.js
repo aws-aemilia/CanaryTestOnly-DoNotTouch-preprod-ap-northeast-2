@@ -12,7 +12,7 @@ class CustomerInformation extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: {},
+            data: [],
             search: '',
             loading: false,
             regions: [],
@@ -30,7 +30,7 @@ class CustomerInformation extends Component {
                 this.getApiData();
             } else {
                 this.setState({
-                    data: {}
+                    data: []
                 })
             }
         });
@@ -58,7 +58,7 @@ class CustomerInformation extends Component {
             console.log(error);
             console.log("data fetch fail")
             this.setState({
-                data: {}
+                data: []
             })
         }
     }
