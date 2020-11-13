@@ -40,8 +40,8 @@ class CustomerInformation extends Component {
     async getApiData() {
         try {
    const promises = [];
-   promises.add(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-   promises.add(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)); 
+   promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+   promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)); 
    const [resultApp, resultBranch] = await Promise.all(promises);
             this.setState({
                 appData: resultApp.data, 
