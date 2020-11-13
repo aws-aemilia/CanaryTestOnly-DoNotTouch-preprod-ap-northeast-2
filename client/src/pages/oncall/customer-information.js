@@ -11,6 +11,8 @@ class CustomerInformation extends Component {
         super(props);
         this.state = {
             data: {},
+            appData: {},
+            branchData: {},
             search: '',
             loading: false,
             regions: [],
