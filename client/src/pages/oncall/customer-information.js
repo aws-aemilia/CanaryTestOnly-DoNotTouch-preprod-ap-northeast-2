@@ -33,23 +33,25 @@ class CustomerInformation extends Component {
         });
     }
 
+
+
     async getApiData() {
         try {
-            const response = await Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
-            const {data} = response;
-            console.log(data);
-            console.log("data fetch")
+   const promises = [];
+   promises.add(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+   promises.add(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)); 
+   const [resultApp, resultBranch] = await Promise.all(promises);
             this.setState({
-                data
+                appData: resultApp.data, 
+                branchData: resultBranch.data
             });
         } catch (error) {
             console.log(error);
-            console.log("data fetch fail")
-            this.setState({
-                data: {}
-            })
+            console.log("data fetch fail");
         }
     }
+
+
 
     render() {
         return (
@@ -65,9 +67,9 @@ class CustomerInformation extends Component {
                     <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
                 <h4 style={this.tagStyle}>App Table</h4>
-                <Table data={this.state.data} />
+                <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
-                <Table data={this.state.data} />
+                <Table data={this.state.branchData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 <Table data={this.state.data} />
                 <h4 style={this.tagStyle}>Domain Table</h4>
