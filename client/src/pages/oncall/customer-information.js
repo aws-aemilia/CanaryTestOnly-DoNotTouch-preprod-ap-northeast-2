@@ -70,12 +70,6 @@ class CustomerInformation extends Component {
                 <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
                 <Table data={this.state.branchData} />
-                <h4 style={this.tagStyle}>Job Table</h4>
-                <Table data={this.state.data} />
-                <h4 style={this.tagStyle}>Domain Table</h4>
-                <Table data={this.state.data} />
-                <h4 style={this.tagStyle}>Webhook Table</h4>
-                <Table data={this.state.data} />
             </div>
         )
     }
