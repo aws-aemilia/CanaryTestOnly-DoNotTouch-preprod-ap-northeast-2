@@ -408,7 +408,7 @@ app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
 
     // go through each branch and retrieve data from specific appId
-    const branch =  "";
+    const branch =  "master";
 
     const params = {
         "TableName": `${stage}-${region}-Branch`,
