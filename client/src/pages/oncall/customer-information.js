@@ -106,7 +106,7 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>App Table</h4>
                 <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
-                <Table data={this.state.branchData} />
+                { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData}/>)) }
             </div>
         )
     }

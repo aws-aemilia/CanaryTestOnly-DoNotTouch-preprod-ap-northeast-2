@@ -449,14 +449,12 @@ app.get("/customerinfoJob", async (req, res) => {
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, status, updateTime, version",
-        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_branchArn = :skey",
+        "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
         "ExpressionAttributeValues": {
-            ":pkey": query,
-            ":skey": branch
+            ":pkey": query
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId",
-            "#DYNOBASE_branchName": "branchArn"
+            "#DYNOBASE_branchArn": "branchArn"
         },
         "ScanIndexForward": true
     };
@@ -466,7 +464,7 @@ app.get("/customerinfoJob", async (req, res) => {
         const result = await client.query(params).promise();
         console.log("res.json worked");
         res.status(200);
-        res.json(result.Items[0]);
+        res.json(result.Items);
     } catch (e) {
         console.log("res.json did not work");
         console.error(e);
@@ -485,14 +483,13 @@ app.get("/customerinfoDomain", async (req, res) => {
     const params = {
         "TableName": `${stage}-${region}-Domain`,
         "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, status, statusReason, subDomainDOs, updateTime, version",
-        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_domainName = :skey",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query,
             ":skey": domain
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId",
-            "#DYNOBASE_domainName": "domainName"
+            "#DYNOBASE_appId": "appId"
         },
         "ScanIndexForward": true
     };
@@ -502,7 +499,7 @@ app.get("/customerinfoDomain", async (req, res) => {
         const result = await client.query(params).promise();
         console.log("res.json worked");
         res.status(200);
-        res.json(result.Items[0]);
+        res.json(result.Items);
     } catch (e) {
         console.log("res.json did not work");
         console.error(e);
