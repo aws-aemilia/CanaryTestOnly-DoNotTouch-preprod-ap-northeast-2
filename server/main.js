@@ -387,7 +387,7 @@ app.get("/customerinfoApp", async (req, res) => {
             "#DYNOBASE_appId": "appId",
             "#name": "name"
         },
-        "ScanIndexForward": false
+        "ScanIndexForward": true
     };
     try {
         // client should pass credentials
@@ -421,7 +421,7 @@ app.get("/customerinfoBranch", async (req, res) => {
             "#DYNOBASE_appId": "appId",
             "#ttl": "ttl"
         },
-        "ScanIndexForward": false
+        "ScanIndexForward": true
     };
     try {
         // client should pass credentials
@@ -456,7 +456,7 @@ app.get("/customerinfoJob", async (req, res) => {
         "ExpressionAttributeNames": {
             "#DYNOBASE_branchArn": "branchArn"
         },
-        "ScanIndexForward": false
+        "ScanIndexForward": true
     };
     try {
         // client should pass credentials
@@ -479,15 +479,16 @@ app.get("/customerinfoDomain", async (req, res) => {
 
     const params = {
         "TableName": `${stage}-${region}-Domain`,
-        "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, status, statusReason, subDomainDOs, updateTime, version",
+        "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, #status, statusReason, subDomainDOs, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId"
+            "#DYNOBASE_appId": "appId",
+            "#status": "status"
         },
-        "ScanIndexForward": false
+        "ScanIndexForward": true
     };
     try {
         // client should pass credentials
