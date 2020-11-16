@@ -12,7 +12,7 @@ class CustomerInformation extends Component {
         this.state = {
             data: {},
             appData: {},
-            branchData: {},
+            branchData: [],
             search: '',
             loading: false,
             regions: [],
@@ -55,40 +55,7 @@ class CustomerInformation extends Component {
         }
     }
 
-    // fetchAppTable() {
-    //     return Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         return data;
-    //     })
-    // }
 
-    // fetchBranchTable(branchName, index) {
-    //     return Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}` + branchName)
-    //     .then(response => response.json()
-    //     .then(data => {
-    //         return [index, data];
-    //     }));
-    // }
-
-    // async getApiData() {
-    //     try {
-    //         const data = await this.fetchAppTable();
-    //         console.log("appTable", JSON.stringify(data));
-
-    //         const promises = data.map((branch, index) => this.fetchBranchTable(branch.branchName, index));
-    //         await Promise.all(promises).then(responses => {
-    //             responses.map(response => {
-    //                 data[response[0]] = {...data[response[0]], ...response[1]};
-    //                 console.log("branchTable");
-    //             })
-    //         });
-    //         console.log("data", JSON.stringify(data));
-    //     } catch (error) {
-    //         console.log(error);
-    //         console.log("data fetch fail");
-    //     }
-    // }
 
 
 
