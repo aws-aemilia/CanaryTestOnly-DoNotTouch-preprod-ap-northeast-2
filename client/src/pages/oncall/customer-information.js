@@ -13,6 +13,7 @@ class CustomerInformation extends Component {
             data: {},
             appData: {},
             branchData: [],
+            domainData: [],
             search: '',
             loading: false,
             regions: [],
@@ -44,10 +45,12 @@ class CustomerInformation extends Component {
             const promises = [];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            const [resultApp, resultBranch] = await Promise.all(promises);
+            promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
             this.setState({
                 appData: resultApp.data,
-                branchData: resultBranch.data
+                branchData: resultBranch.data,
+                domainData: resultDomain.data
             });
         } catch (error) {
             console.log(error);
