@@ -429,6 +429,7 @@ app.get("/customerinfoBranch", async (req, res) => {
         const result = await client.query(params).promise();
         console.log("res.json worked");
         res.status(200);
+        console.log(result.Items)
         res.json(result.Items);
     } catch (e) {
         console.log("res.json did not work");
@@ -487,7 +488,7 @@ app.get("/customerinfoDomain", async (req, res) => {
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_domainName = :skey",
         "ExpressionAttributeValues": {
             ":pkey": query,
-            ":skey": Domain
+            ":skey": domain
         },
         "ExpressionAttributeNames": {
             "#DYNOBASE_appId": "appId",

@@ -5,7 +5,6 @@ import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
 import NavBar from "../../components/navbar";
 import { ButtonToolbar, DropdownButton, Dropdown, Form } from "react-bootstrap";
-import { response } from '../../../../server/main';
 
 class CustomerInformation extends Component {
     constructor(props) {
