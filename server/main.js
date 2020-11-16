@@ -16,6 +16,7 @@ const {
     fetchQueryOutput,
 } = require("./extensions/insightsHelper");
 const queryHelper = require("./extensions/queryHelper");
+const { Domain } = require('domain');
 
 if(process.env.NODE_ENV == "development") {
 
@@ -408,20 +409,53 @@ app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
 
     // go through each branch and retrieve data from specific appId
-    const branch =  "";
 
     const params = {
         "TableName": `${stage}-${region}-Branch`,
         "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
-        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_branchName = :skey",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#ttl": "ttl"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Job table
+app.get("/customerinfoJob", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    // go through each branch and retrieve data from specific appId
+    const branch =  "";
+
+    const params = {
+        "TableName": `${stage}-${region}-Job`,
+        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, status, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_branchArn = :skey",
         "ExpressionAttributeValues": {
             ":pkey": query,
             ":skey": branch
         },
         "ExpressionAttributeNames": {
             "#DYNOBASE_appId": "appId",
-            "#DYNOBASE_branchName": "branchName",
-            "#ttl": "ttl"
+            "#DYNOBASE_branchName": "branchArn"
         },
         "ScanIndexForward": true
     };
@@ -439,6 +473,79 @@ app.get("/customerinfoBranch", async (req, res) => {
         res.send("Internal Service Error");
     }
 });
+
+// ddb query to get customer data from Domain table
+app.get("/customerinfoDomain", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    // go through each domain and retrieve data from specific appId
+    const domain =  "";
+
+    const params = {
+        "TableName": `${stage}-${region}-Domain`,
+        "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, status, statusReason, subDomainDOs, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_domainName = :skey",
+        "ExpressionAttributeValues": {
+            ":pkey": query,
+            ":skey": Domain
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#DYNOBASE_domainName": "domainName"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Webhook table
+app.get("/customerinfoWebhook", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    // go through each webhook and retrieve data from specific appId
+    const webhook =  "";
+
+    const params = {
+        "TableName": `${stage}-${region}-Webhook`,
+        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId, webhookUrl",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_webhookId= :skey",
+        "ExpressionAttributeValues": {
+            ":pkey": query,
+            ":skey": webhook
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#DYNOBASE_webhookId": "webhookId"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {

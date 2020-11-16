@@ -5,6 +5,7 @@ import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
 import NavBar from "../../components/navbar";
 import { ButtonToolbar, DropdownButton, Dropdown, Form } from "react-bootstrap";
+import { response } from '../../../../server/main';
 
 class CustomerInformation extends Component {
     constructor(props) {
@@ -39,12 +40,12 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-   const promises = [];
-   promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-   promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)); 
-   const [resultApp, resultBranch] = await Promise.all(promises);
+            const promises = [];
+            promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            const [resultApp, resultBranch] = await Promise.all(promises);
             this.setState({
-                appData: resultApp.data, 
+                appData: resultApp.data,
                 branchData: resultBranch.data
             });
         } catch (error) {
@@ -52,6 +53,41 @@ class CustomerInformation extends Component {
             console.log("data fetch fail");
         }
     }
+
+    // fetchAppTable() {
+    //     return Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         return data;
+    //     })
+    // }
+
+    // fetchBranchTable(branchName, index) {
+    //     return Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}` + branchName)
+    //     .then(response => response.json()
+    //     .then(data => {
+    //         return [index, data];
+    //     }));
+    // }
+
+    // async getApiData() {
+    //     try {
+    //         const data = await this.fetchAppTable();
+    //         console.log("appTable", JSON.stringify(data));
+
+    //         const promises = data.map((branch, index) => this.fetchBranchTable(branch.branchName, index));
+    //         await Promise.all(promises).then(responses => {
+    //             responses.map(response => {
+    //                 data[response[0]] = {...data[response[0]], ...response[1]};
+    //                 console.log("branchTable");
+    //             })
+    //         });
+    //         console.log("data", JSON.stringify(data));
+    //     } catch (error) {
+    //         console.log(error);
+    //         console.log("data fetch fail");
+    //     }
+    // }
 
 
 
