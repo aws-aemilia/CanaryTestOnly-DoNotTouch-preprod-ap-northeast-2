@@ -16,7 +16,9 @@ class CustomerInformation extends Component {
             search: '',
             loading: false,
             regions: [],
-            stages: []
+            stages: [],
+            tableData: {},
+            tablename: {}
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
