@@ -48,12 +48,8 @@ class CustomerInformation extends Component {
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
-            console.log(resultApp);
-            console.log(resultBranch);
-            console.log(resultDomain);
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
             const jobResults = await Promise.all(jobPromises);
-            console.log(jobResults);
 
             this.setState({
                 appData: resultApp.data,
@@ -61,20 +57,10 @@ class CustomerInformation extends Component {
                 domainData: resultDomain.data,
                 jobData: jobResults.data
             });
-
-            console.log(this.state.appData);
-            console.log(this.state.branchData);
-            console.log(this.state.domainData);
-            console.log(this.state.jobData);
-
  
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
-            console.log(this.state.appData);
-            console.log(this.state.branchData);
-            console.log(this.state.domainData);
-            console.log(this.state.jobData);
         }
     }
 
