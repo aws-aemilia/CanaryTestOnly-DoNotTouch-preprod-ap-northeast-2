@@ -447,13 +447,14 @@ app.get("/customerinfoJob", async (req, res) => {
 
     const params = {
         "TableName": `${stage}-${region}-Job`,
-        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, status, updateTime, version",
+        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": branchName
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_branchArn": "branchArn"
+            "#DYNOBASE_branchArn": "branchArn",
+            "#status": "status"
         },
         "ScanIndexForward": true
     };
