@@ -441,7 +441,7 @@ app.get("/customerinfoBranch", async (req, res) => {
 
 // ddb query to get customer data from Job table
 app.get("/customerinfoJob", async (req, res) => {
-    const { stage, region, branchArn } = req.branchArn;
+    const { stage, region, query } = req.query;
 
     // go through each branch and retrieve data from specific appId
 
@@ -450,7 +450,7 @@ app.get("/customerinfoJob", async (req, res) => {
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
         "ExpressionAttributeValues": {
-            ":pkey": branchArn
+            ":pkey": query
         },
         "ExpressionAttributeNames": {
             "#DYNOBASE_branchArn": "branchArn",
