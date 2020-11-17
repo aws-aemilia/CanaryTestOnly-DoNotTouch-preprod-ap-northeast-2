@@ -14,6 +14,7 @@ class CustomerInformation extends Component {
             appData: {},
             branchData: [],
             domainData: [],
+            jobData: [],
             search: '',
             loading: false,
             regions: [],
