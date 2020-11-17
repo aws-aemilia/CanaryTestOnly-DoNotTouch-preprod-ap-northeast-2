@@ -41,7 +41,7 @@ class CustomerInformation extends Component {
 
 
     async getApiData() {
-        try {   
+        try {
 
             const promises = [];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
@@ -57,7 +57,7 @@ class CustomerInformation extends Component {
                 domainData: resultDomain.data,
                 jobData: jobResults
             });
- 
+
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -70,11 +70,11 @@ class CustomerInformation extends Component {
 
     render() {
         return (
-            <div>
-                <span>Customer Information</span>
-
-                <small>Customer Configuration and Settings</small>
-                
+            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+                <h1>
+                    <span>Customer Information</span>
+                    <small>Customer Configuration and Settings</small>
+                </h1>
                 <StageRegionSelector
                     regions={this.props.regions}
                     stage={this.state.stage}
@@ -88,11 +88,11 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>App Table</h4>
                 <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
-                { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData}/>)) }
+                { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Domain Table</h4>
-                { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData}/>)) }
+                { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Job Table</h4>
-                { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData}/>)) }
+                { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
 
             </div>
         )

@@ -387,7 +387,7 @@ app.get("/customerinfoApp", async (req, res) => {
             "#DYNOBASE_appId": "appId",
             "#name": "name"
         },
-        "ScanIndexForward": true
+        "ScanIndexForward": false
     };
     try {
         // client should pass credentials
