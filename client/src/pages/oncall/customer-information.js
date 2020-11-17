@@ -55,7 +55,7 @@ class CustomerInformation extends Component {
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
-                jobData: jobResults
+                jobData: jobResults.data
             });
 
         } catch (error) {
@@ -70,9 +70,10 @@ class CustomerInformation extends Component {
 
     render() {
         return (
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+            <div style={{display: 'flex',  height: '100vh'}}>
                 <h1>
                     <span>Customer Information</span>
+                    
                     <small>Customer Configuration and Settings</small>
                 </h1>
                 <StageRegionSelector
