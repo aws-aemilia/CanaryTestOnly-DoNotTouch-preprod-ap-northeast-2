@@ -55,7 +55,7 @@ class CustomerInformation extends Component {
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
-                jobData: jobResults.data
+                jobData: jobResults
             });
 
  
