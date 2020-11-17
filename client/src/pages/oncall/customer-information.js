@@ -71,6 +71,10 @@ class CustomerInformation extends Component {
     render() {
         return (
             <div>
+                <span>Customer Information</span>
+
+                <small>Customer Configuration and Settings</small>
+                
                 <StageRegionSelector
                     regions={this.props.regions}
                     stage={this.state.stage}
