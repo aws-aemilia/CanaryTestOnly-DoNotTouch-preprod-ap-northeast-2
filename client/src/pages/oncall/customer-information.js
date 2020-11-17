@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Table from '../../components/tables/table';
+import AppTable from '../../components/tables/AppTable';
 import Ajax from "../../ajax";
 import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
@@ -87,7 +88,7 @@ class CustomerInformation extends Component {
                     <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
                 <h4 style={this.tagStyle}>App Table</h4>
-                <Table data={this.state.appData} />
+                <AppTable data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
                 { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Domain Table</h4>
