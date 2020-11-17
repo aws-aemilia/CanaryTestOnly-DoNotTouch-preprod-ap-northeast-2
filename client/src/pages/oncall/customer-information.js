@@ -73,7 +73,7 @@ class CustomerInformation extends Component {
             <div>
                 <h1>
                     <span>Customer Information</span>
-
+                    {' '}
                     <small>Customer Configuration and Settings</small>
                 </h1>
                 <StageRegionSelector
