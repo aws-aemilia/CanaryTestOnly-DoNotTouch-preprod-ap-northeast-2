@@ -55,7 +55,7 @@ class CustomerInformation extends Component {
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
-                jobData: jobResults.data
+                jobData: jobResults.map(job => job.data)
             });
 
         } catch (error) {
@@ -73,7 +73,7 @@ class CustomerInformation extends Component {
             <div style={{display: 'flex',  height: '100vh'}}>
                 <h1>
                     <span>Customer Information</span>
-                    
+
                     <small>Customer Configuration and Settings</small>
                 </h1>
                 <StageRegionSelector
