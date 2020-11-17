@@ -50,12 +50,13 @@ class CustomerInformation extends Component {
             const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
             const jobResults = await Promise.all(jobPromises);
+            const jobRes = jobResults.map(job => job.data);
 
             this.setState({
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
-                jobData: jobResults.map(job => job.data)
+                jobData: jobRes.map(job => job.data)
             });
 
         } catch (error) {
