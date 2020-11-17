@@ -45,13 +45,14 @@ class CustomerInformation extends Component {
         try {   
 
             const promises = [];
+            const jobPromises =[];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             // promises.push(Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${this.state.branch}`));
             const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
-                const jobPromises = resultBranch.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${branch.branchArn}`));
-                const jobResults = await Promise.all(jobPromises);
+            jobPromises.push.resultBranch.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${branch.branchArn}`));
+            const [jobResults] = await Promise.all(jobPromises);
 
             this.setState({
                 appData: resultApp.data,
