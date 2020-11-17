@@ -42,19 +42,25 @@ class CustomerInformation extends Component {
 
 
     async getApiData() {
-        try {
+        try {   
+
             const promises = [];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            promises.push(Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchName=${this.state.branch}`));
-            const [resultApp, resultBranch, resultDomain, resultJob] = await Promise.all(promises);
+            // promises.push(Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${this.state.branch}`));
+            const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
+                const jobPromises = resultBranch.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${branch.branchArn}`));
+                const jobResults = await Promise.all(jobPromises);
+
             this.setState({
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
-                jobData: resultJob.data
+                jobData: jobResults.data
             });
+
+ 
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -81,7 +87,7 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>App Table</h4>
                 <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
-                { this.state.branchData.map((tableData => <Table branch={"branchArn"} tablename={"branchName"} data={tableData}/>)) }
+                { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData}/>)) }
                 <h4 style={this.tagStyle}>Domain Table</h4>
                 { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData}/>)) }
                 <h4 style={this.tagStyle}>Job Table</h4>
