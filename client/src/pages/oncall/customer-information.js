@@ -71,6 +71,10 @@ class CustomerInformation extends Component {
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
+            console.log(this.state.appData);
+            console.log(this.state.branchData);
+            console.log(this.state.domainData);
+            console.log(this.state.jobData);
         }
     }
 
