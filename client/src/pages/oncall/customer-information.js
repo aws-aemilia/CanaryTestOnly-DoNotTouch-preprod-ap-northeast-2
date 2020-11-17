@@ -20,8 +20,7 @@ class CustomerInformation extends Component {
             regions: [],
             stages: [],
             tableData: {},
-            tablename: {},
-            branch: ''
+            tablename: {}
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
@@ -45,25 +44,17 @@ class CustomerInformation extends Component {
         try {   
 
             const promises = [];
-            const jobPromises =[];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            // promises.push(Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${this.state.branch}`));
             const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
-
+            const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${branch.branchArn}`));
+            const jobResults = await Promise.all(jobPromises);
 
             this.setState({
                 appData: resultApp.data,
                 branchData: resultBranch.data,
-                domainData: resultDomain.data
-            });
-
-            jobPromises.push(this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&branchArn=${branch.branchArn}`)));
-            const [jobResults] = await Promise.all(jobPromises);
-
-            
-            this.setState({
+                domainData: resultDomain.data,
                 jobData: jobResults.data
             });
 
