@@ -21,7 +21,7 @@ class AppTable extends Component {
                     </tr>
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => (
-                            <tr key={"appId"}>
+                            <tr key={index}>
                                 <td>{key}</td>
                                 <td>{JSON.stringify(this.props.data[key])}</td>                            </tr>
                         )) : <tr>

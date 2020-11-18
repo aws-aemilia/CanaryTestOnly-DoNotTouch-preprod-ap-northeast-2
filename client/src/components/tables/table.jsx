@@ -12,6 +12,7 @@ class Table extends Component {
 
 
     render() {
+        const {data} = this.props;
         return (
             <table className={styles.table}>
                 <tbody>
@@ -23,7 +24,10 @@ class Table extends Component {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => (
                             <tr key={index}>
                                 <td>{key}</td>
-                                <td>{JSON.stringify(this.props.data[key])}</td>                            </tr>
+                                <td>
+                                    {JSON.stringify(data[key]) == 0 ? "False" : JSON.stringify(data[key]) == 1 ? "True" : JSON.stringify(data[key])}
+                                </td>                           
+                            </tr>
                         )) : <tr>
                                 <td>No Data Found</td>
                                 <td></td>
