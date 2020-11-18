@@ -25,7 +25,7 @@ class Table extends Component {
                             <tr key={index}>
                                 <td>{key}</td>
                                 <td>
-                                    {JSON.stringify(data[key]) == 0 ? "False" : JSON.stringify(data[key]) == 1 ? "True" : JSON.stringify(data[key])}
+                                    {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) == "1" ? "True" : JSON.stringify(data[key])}
                                 </td>                           
                             </tr>
                         )) : <tr>
