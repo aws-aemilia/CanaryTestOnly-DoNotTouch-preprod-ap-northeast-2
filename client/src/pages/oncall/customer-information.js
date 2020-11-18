@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Table from '../../components/tables/table';
-import AppTable from '../../components/tables/AppTable';
 import Ajax from "../../ajax";
 import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
@@ -40,10 +39,8 @@ class CustomerInformation extends Component {
         });
     }
 
-
     async getApiData() {
         try {
-
             const promises = [];
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
@@ -55,33 +52,26 @@ class CustomerInformation extends Component {
             const getJobData = jobResults.map(job => job.data);
             let getJobDataValue = [];
             getJobData.forEach(obj => {
-                for (const [key, value] of Object.entries(obj)){
+                for (const [key, value] of Object.entries(obj)) {
                     getJobDataValue.push(value)
                 }
             });
-
             console.log("getJobDataValue", getJobDataValue)
-
             this.setState({
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
                 jobData: getJobDataValue
-            }, () => console.log("jobData", this.state.jobData) );
-
+            }, () => console.log("jobData", this.state.jobData));
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
         }
     }
 
-
-
-
-
     render() {
         return (
-            <div style={{width: "85%", margin: "0 auto"}}>
+            <div style={{ width: "85%", margin: "0 auto" }}>
                 <h1>
                     <span>Customer Information</span>
                     {' '}
@@ -105,7 +95,6 @@ class CustomerInformation extends Component {
                 { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-
             </div>
         )
     }

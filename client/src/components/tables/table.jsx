@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import styles from './table.module.css';
 
 class Table extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             data: props.data
         }
     }
-
 
     render() {
         const { data } = this.props;

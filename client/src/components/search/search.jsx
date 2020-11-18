@@ -1,7 +1,6 @@
 import React,{Component} from 'react';
 
 class Search extends Component{
-
     searchStyle = {
         border: '1px solid #ddd',
         padding: '5px',
@@ -23,7 +22,6 @@ class Search extends Component{
         this.setState({ searchValue:event.target.value });
         // this.props.searchDataChanged(event.target.value);
     }
-
 
     render(){
         return(

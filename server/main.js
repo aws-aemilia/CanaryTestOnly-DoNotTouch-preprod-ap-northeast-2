@@ -457,7 +457,7 @@ app.get("/customerinfoJob", async (req, res) => {
             "#DYNOBASE_branchArn": "branchArn",
             "#status": "status"
         },
-        "ScanIndexForward": true
+        "ScanIndexForward": false
 
     };
     try {
