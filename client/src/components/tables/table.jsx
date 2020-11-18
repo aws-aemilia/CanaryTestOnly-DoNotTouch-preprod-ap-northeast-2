@@ -22,16 +22,16 @@ class Table extends Component {
                     </tr>
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => {
-                            if(JSON.stringify(data[key]) === "0"){
-                                console.log("false quotes")
-                            }else if(JSON.stringify(data[key]) === 0){
-                                console.log("false")
-                            }
                             return (
                                 <tr key={index}>
                                     <td>{key}</td>
                                     <td>
-                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) == "1" ? "True" : JSON.stringify(data[key])}
+                                        {JSON.stringify(data[key]) === "0" ? "False" 
+                                        : JSON.stringify(data[key]) === "1" ? "True" 
+                                        : key == "createTime" ? new Date(JSON.stringify(data[key]))
+                                        : key == "updateTime" ? new Date(JSON.stringify(data[key]))
+                                        : JSON.stringify(data[key])
+                                        }
                                     </td>
                                 </tr>
                             )
