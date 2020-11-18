@@ -449,6 +449,7 @@ app.get("/customerinfoJob", async (req, res) => {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
+        "Limit": "1",
         "ExpressionAttributeValues": {
             ":pkey": query
         },

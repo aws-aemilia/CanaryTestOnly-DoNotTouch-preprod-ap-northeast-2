@@ -24,7 +24,7 @@ class Table extends Component {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
                             let getDate = "";
                             if(key === "createTime" || key === "updateTime"){
-                                getDate = `${JSON.parse(data[key])}`;
+                                getDate = `${JSON.stringify(data[key])}`;
                             }
                             let dateRetrieved = new Date(`${getDate}`)
                             return (
