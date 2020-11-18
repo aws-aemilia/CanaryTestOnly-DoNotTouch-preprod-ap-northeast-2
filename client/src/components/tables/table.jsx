@@ -12,7 +12,7 @@ class Table extends Component {
 
 
     render() {
-        const {data} = this.props;
+        const { data } = this.props;
         return (
             <table className={styles.table}>
                 <tbody>
@@ -21,14 +21,21 @@ class Table extends Component {
                         <th>Value</th>
                     </tr>
                     {
-                        Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => (
-                            <tr key={index}>
-                                <td>{key}</td>
-                                <td>
-                                    {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) == "1" ? "True" : JSON.stringify(data[key])}
-                                </td>                           
-                            </tr>
-                        )) : <tr>
+                        Object.keys(this.props.data).length ? Object.keys(this.props.data).map((key, index) => {
+                            if(JSON.stringify(data[key]) === "0"){
+                                console.log("false quotes")
+                            }else if(JSON.stringify(data[key]) === 0){
+                                console.log("false")
+                            }
+                            return (
+                                <tr key={index}>
+                                    <td>{key}</td>
+                                    <td>
+                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) == "1" ? "True" : JSON.stringify(data[key])}
+                                    </td>
+                                </tr>
+                            )
+                        }) : <tr>
                                 <td>No Data Found</td>
                                 <td></td>
                             </tr>

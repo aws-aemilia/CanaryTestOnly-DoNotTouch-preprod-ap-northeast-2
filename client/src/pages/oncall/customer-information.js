@@ -88,7 +88,7 @@ class CustomerInformation extends Component {
                     <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
                 <h4 style={this.tagStyle}>App Table</h4>
-                <AppTable data={this.state.appData} />
+                <Table data={this.state.appData} />
                 <h4 style={this.tagStyle}>Branch Table</h4>
                 { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Domain Table</h4>
