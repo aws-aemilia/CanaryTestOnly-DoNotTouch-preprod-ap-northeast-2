@@ -26,7 +26,7 @@ class Table extends Component {
                                 <tr key={index}>
                                     <td>{key}</td>
                                     <td>
-                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${new Date(JSON.stringify(data[key]))}` : key === "updateTime" ? `${new Date(JSON.stringify(data[key]))}` : JSON.stringify(data[key])}
+                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${new Date(`${JSON.stringify(data[key])}`)}` : key === "updateTime" ? `${new Date(`${JSON.stringify(data[key])}`)}` : JSON.stringify(data[key])}
                                     </td>
                                 </tr>
                             )
