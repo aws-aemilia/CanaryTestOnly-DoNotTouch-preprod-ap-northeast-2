@@ -22,11 +22,16 @@ class Table extends Component {
                     </tr>
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
+                            let getDate = "";
+                            if(key === "createTime" || key === "updateTime"){
+                                getDate = `${JSON.stringify(data[key])}`;
+                            }
+                            let dateRetrieved = new Date(`${getDate}`)
                             return (
                                 <tr key={index}>
                                     <td>{key}</td>
                                     <td>
-                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${new Date(`${JSON.stringify(data[key])}`)}` : key === "updateTime" ? `${new Date(`${JSON.stringify(data[key])}`)}` : JSON.stringify(data[key])}
+                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${dateRetrieved}` : key === "updateTime" ? `${dateRetrieved}` : JSON.stringify(data[key])}
                                     </td>
                                 </tr>
                             )
