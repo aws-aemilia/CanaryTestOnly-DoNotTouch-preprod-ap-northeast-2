@@ -2,12 +2,9 @@
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   border: 1px solid #ddd;
-  width: 85%;
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 30px;
-  justify-content: center;
-  align-items: center;
-
 }
 
 .table th {

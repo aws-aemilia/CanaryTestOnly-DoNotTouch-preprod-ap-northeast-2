@@ -50,14 +50,16 @@ class CustomerInformation extends Component {
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             const [resultApp, resultBranch, resultDomain] = await Promise.all(promises);
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
+            console.log("jobPromises", jobPromises)
             const jobResults = await Promise.all(jobPromises);
+            console.log("jobResults", jobResults)
 
             this.setState({
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
                 jobData: jobResults.map(job => job.data)
-            });
+            }, () => console.log("jobData", this.state.jobData) );
 
         } catch (error) {
             console.log(error);
@@ -71,7 +73,7 @@ class CustomerInformation extends Component {
 
     render() {
         return (
-            <div>
+            <div style={{width: "85%", margin: "0 auto"}}>
                 <h1>
                     <span>Customer Information</span>
                     {' '}
