@@ -50,7 +50,7 @@ class Table extends Component {
                             : key === "startTime" ? `${dateRetrieved}` 
                             : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? "" 
-                            : data[key]
+                            : JSON.stringify(data[key])
                             }
                                     </td>
                                 </tr>
