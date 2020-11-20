@@ -22,15 +22,19 @@ class Table extends Component {
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
                             let getDate = "";
+                            let getDateParse = "";
                             if(key === "createTime" || key === "updateTime"){
                                 getDate = `${JSON.stringify(data[key])}`;
+                                getDateParse = `${JSON.parse(data[key])}`;
+
+                                console.log("date returned", getDate);
+                                console.log("date returned parsed", getDateParse);
                             }
 
-                            console.log("date returned", getDate);
-                            console.log("typeof var", typeof getDate)
-                            console.log("typeof var2", typeof `${getDate}`)
                             let dateRetrieved = new Date(`${getDate}`)
+                            let dateRetrievedParse = new Date(`${getDateParse}`)
                             console.log("date retrieved", dateRetrieved)
+                            console.log("date retrieved parse", dateRetrievedParse)
                             return (
                                 <tr key={index}>
                                     <td>{key}</td>
