@@ -22,33 +22,30 @@ class Table extends Component {
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
                             let getDate = "";
-                            let getDateParse = "";
-                            if(key === "createTime" || key === "updateTime"){
-                                getDate = `${JSON.stringify(data[key])}`;
-                                console.log("date returned", getDate);
-
-                                let testing = new Date(`${getDate}`)
-
-                            console.log("date testing", testing)
-                            
-
-                                getDateParse = JSON.parse(JSON.stringify(data[key]))
-
-                                console.log("date returned parsed>>>", `${getDateParse}`);
-                                console.log("date returned parsed", getDateParse);
-                                let dateRetrievedParse = new Date(`${getDateParse}`)
-                                console.log("date retrieved parse", dateRetrievedParse)
+                            if (key === "createTime" || key === "updateTime") {
+                                getDate = JSON.parse(JSON.stringify(data[key]))
                             }
+                            const dateRetrieved = new Date(`${getDate}`)
 
-                            let dateRetrieved = new Date(`${getDate}`)
-
-                            console.log("date retrieved", dateRetrieved)
+                            let config = {}
+                            if (key === "config") {
+                                config = JSON.parse(JSON.stringify(data[key]))
+                            }
 
                             return (
                                 <tr key={index}>
                                     <td>{key}</td>
                                     <td>
-                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${dateRetrieved}` : key === "updateTime" ? `${dateRetrieved}` : JSON.stringify(data[key])}
+                                        {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${dateRetrieved}` : key === "updateTime" ? `${dateRetrieved}` : key === "config" ? (
+                                            Object.keys(config).map((configKey, configIndex) => {
+                                                return (
+                                                    <div key={configIndex} className={styles.config}>
+                                                        <h6>{configKey}</h6>
+                                                        <p>{config[configKey]}</p>
+                                                    </div>
+                                                )
+                                            })
+                                        ) : JSON.stringify(data[key])}
                                     </td>
                                 </tr>
                             )

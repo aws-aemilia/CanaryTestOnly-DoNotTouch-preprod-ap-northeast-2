@@ -24,3 +24,18 @@
 .table tr:hover {
   background-color: #ddd;
 }
+
+.config{
+  display: flex;
+}
+
+.config h6{
+  width: 35%;
+  text-align: right;
+  margin-right: 4%;
+}
+
+.config p{
+  width: 70%;
+  text-align: left;
+}
