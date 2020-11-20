@@ -22,11 +22,17 @@ class Table extends Component {
                     {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
                             let getDate = "";
-                            if (key === "createTime" || key === "updateTime") {
+                            if (key === "createTime" || key === "updateTime" || key === "commitTime" || key === "endTime" || key === "startTime") {
                                 getDate = JSON.parse(JSON.stringify(data[key]))
                             }
 
                             const dateRetrieved = new Date(`${getDate}`)
+
+                            if(key === "config"){
+                                console.log("config", data[key])
+                                console.log("string config", JSON.stringify(data[key]))
+                                console.log("parsed config", JSON.parse(JSON.stringify(data[key])))
+                            }
 
 
                             return (
