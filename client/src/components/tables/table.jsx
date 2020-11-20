@@ -23,7 +23,7 @@ class Table extends Component {
                         Object.keys(this.props.data).length ? Object.keys(this.props.data).sort().map((key, index) => {
                             let getDate = "";
                             if (key === "createTime" || key === "updateTime" || key === "commitTime" || key === "endTime" || key === "startTime") {
-                                getDate = JSON.parse(JSON.stringify(data[key]))
+                                getDate = data[key]
                             }
 
                             const dateRetrieved = new Date(`${getDate}`)
@@ -40,7 +40,18 @@ class Table extends Component {
                                 <tr key={index}>
                                     <td>{key}</td>
                                     <td>
-                            {JSON.stringify(data[key]) === "0" ? "False" : JSON.stringify(data[key]) === "1" ? "True" : key === "createTime" ? `${dateRetrieved}` : key === "updateTime" ? `${dateRetrieved}` : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>))) : JSON.stringify(data[key])}
+                            {
+                            data[key] === 0 ? "False" 
+                            : data[key] === 1 ? "True" 
+                            : key === "createTime" ? `${dateRetrieved}` 
+                            : key === "updateTime" ? `${dateRetrieved}` 
+                            : key === "commitTime" ? `${dateRetrieved}` 
+                            : key === "endTime" ? `${dateRetrieved}` 
+                            : key === "startTime" ? `${dateRetrieved}` 
+                            : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
+                            : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? "" 
+                            : data[key]
+                            }
                                     </td>
                                 </tr>
                             )
