@@ -25,16 +25,21 @@ class Table extends Component {
                             let getDateParse = "";
                             if(key === "createTime" || key === "updateTime"){
                                 getDate = `${JSON.stringify(data[key])}`;
-                                getDateParse = `${JSON.parse(data[key])}`;
-
                                 console.log("date returned", getDate);
+
+                                
+                            let dateRetrieved = new Date(`${getDate}`)
+
+                            console.log("date retrieved", dateRetrieved)
+
+                                getDateParse = JSON.parse(JSON.stringify(data[key]))
+
+                                console.log("date returned parsed>>>", `${getDateParse}`);
                                 console.log("date returned parsed", getDateParse);
+                                let dateRetrievedParse = new Date(`${getDateParse}`)
+                                console.log("date retrieved parse", dateRetrievedParse)
                             }
 
-                            let dateRetrieved = new Date(`${getDate}`)
-                            let dateRetrievedParse = new Date(`${getDateParse}`)
-                            console.log("date retrieved", dateRetrieved)
-                            console.log("date retrieved parse", dateRetrievedParse)
                             return (
                                 <tr key={index}>
                                     <td>{key}</td>
