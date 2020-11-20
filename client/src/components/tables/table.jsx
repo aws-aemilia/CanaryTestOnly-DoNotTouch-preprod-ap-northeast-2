@@ -27,10 +27,10 @@ class Table extends Component {
                                 getDate = `${JSON.stringify(data[key])}`;
                                 console.log("date returned", getDate);
 
-                                
-                            let dateRetrieved = new Date(`${getDate}`)
+                                let testing = new Date(`${getDate}`)
 
-                            console.log("date retrieved", dateRetrieved)
+                            console.log("date testing", testing)
+                            
 
                                 getDateParse = JSON.parse(JSON.stringify(data[key]))
 
@@ -39,6 +39,10 @@ class Table extends Component {
                                 let dateRetrievedParse = new Date(`${getDateParse}`)
                                 console.log("date retrieved parse", dateRetrievedParse)
                             }
+
+                            let dateRetrieved = new Date(`${getDate}`)
+
+                            console.log("date retrieved", dateRetrieved)
 
                             return (
                                 <tr key={index}>
