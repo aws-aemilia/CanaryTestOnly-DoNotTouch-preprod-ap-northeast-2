@@ -48,7 +48,9 @@ class Table extends Component {
                             : key === "updateTime" ? `${dateRetrieved}` 
                             : key === "commitTime" ? `${dateRetrieved}` 
                             : key === "endTime" ? `${dateRetrieved}` 
-                            : key === "startTime" ? `${dateRetrieved}` 
+                            : key === "startTime" ? `${dateRetrieved}`
+                            : key === "subDomainDOs" || key === "jobSteps" ? JSON.stringify(data[key[key]], undefined, 2)
+                            : key === "buildSpec" ? JSON.stringify(data[key], undefined, 2).replace(/\\n/g, '\n').replace(/\"/g, "")
                             : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
                             : JSON.stringify(data[key], undefined, 2).replace(/\"/g, "")
