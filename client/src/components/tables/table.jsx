@@ -34,6 +34,8 @@ class Table extends Component {
                                 config = data[key];
                                 console.log("config", config)
                             }
+                            
+                            let array = [];
 
 
                             return (
@@ -49,7 +51,13 @@ class Table extends Component {
                             : key === "endTime" ? `${dateRetrieved}` 
                             : key === "startTime" ? `${dateRetrieved}` 
                             : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
-                            : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? "" 
+                            : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
+                            : data[key].isArray() ? array.forEach(element => {
+                                for (const [aKey, value] of Object.entries(element)) {
+                                    (Object.keys(value).map((Key, Index) => (<div key={Index} className={styles.config}><h6>{Key}</h6><p>{typeof data[key[Key]] === 'object' && Object.keys(data[key[Key]]).length === 0 ? "" : data[key[Key]]}</p></div>)))
+                                    
+                                }   
+                            })
                             : JSON.stringify(data[key])
                             }
                                     </td>
