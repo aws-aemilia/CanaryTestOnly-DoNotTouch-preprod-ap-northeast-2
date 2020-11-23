@@ -63,7 +63,7 @@ class Table extends Component {
                                     
                                 }   
                             })
-                            : JSON.stringify(data[key])
+                            : JSON.data[key]
                             }
                                     </td>
                                 </tr>
