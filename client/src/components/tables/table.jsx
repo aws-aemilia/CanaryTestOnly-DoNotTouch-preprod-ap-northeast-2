@@ -35,7 +35,12 @@ class Table extends Component {
                                 console.log("config", config)
                             }
                             
-                            let array = [];
+                            let infoArray = [];
+
+                            if(key === "subDomainDOs" || key === "jobSteps") {
+                                infoArray = data[key];
+                                console.log("infoArray", infoArray)
+                            }
 
 
                             return (
@@ -52,9 +57,9 @@ class Table extends Component {
                             : key === "startTime" ? `${dateRetrieved}` 
                             : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
-                            : data[key].isArray() ? array.forEach(element => {
+                            : key === "subDomainDOs" || key === "jobSteps" ? infoArray.forEach(element => {
                                 for (const [aKey, value] of Object.entries(element)) {
-                                    (Object.keys(value).map((Key, Index) => (<div key={Index} className={styles.config}><h6>{Key}</h6><p>{typeof data[key[Key]] === 'object' && Object.keys(data[key[Key]]).length === 0 ? "" : data[key[Key]]}</p></div>)))
+                                    (Object.keys(value).map((Key, Index) => (<div key={Index} className={styles.config}><h6>{Key}</h6><p>{typeof infoArray[Key] === 'object' && Object.keys(infoArray[Key]).length === 0 ? "" : infoArray[Key]}</p></div>)))
                                     
                                 }   
                             })
