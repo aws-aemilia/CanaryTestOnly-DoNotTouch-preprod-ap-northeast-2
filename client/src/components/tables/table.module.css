@@ -16,8 +16,9 @@
 .table th {
   border: 1px solid #ddd;
   padding: 8px;
+  white-space: pre-wrap;
   width:auto;
-  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .table tr:nth-child(even) {
