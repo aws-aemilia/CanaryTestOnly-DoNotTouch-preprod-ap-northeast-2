@@ -39,7 +39,9 @@ class Table extends Component {
 
                             return (
                                 <tr key={index}>
-                                    <td>{key}</td>
+                                    <td>
+                                        <pre><code>{key}</code></pre>
+                                    </td>
                                     <td>
                             {
                             data[key] === 0 ? "False" 
