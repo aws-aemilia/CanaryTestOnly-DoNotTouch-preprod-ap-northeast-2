@@ -39,10 +39,9 @@ class Table extends Component {
 
                             return (
                                 <tr key={index}>
+                                    <td>{key}</td>
                                     <td>
-                                        <pre><code>{key}</code></pre>
-                                    </td>
-                                    <td>
+                                        <pre><code>
                             {
                             data[key] === 0 ? "False" 
                             : data[key] === 1 ? "True" 
@@ -57,6 +56,7 @@ class Table extends Component {
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
                             : JSON.stringify(data[key], undefined, 2).replace(/"/g, "")
                             }
+                                        </code></pre>
                                     </td>
                                 </tr>
                             )
