@@ -5,6 +5,7 @@
   width: 100%;
   margin-top: 10px;
   margin-bottom: 30px;
+  table-layout: auto;
   float: left;
 }
 
@@ -18,7 +19,6 @@
   padding: 8px;
   white-space: pre-wrap;
   width: 200px;
-  word-break: break-all;
 }
 
 .table tr:nth-child(even) {
