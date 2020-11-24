@@ -1,11 +1,11 @@
 .table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  table-layout: fixed;
   border-collapse: collapse;
   border: 1px solid #ddd;
   width: 100%;
   margin-top: 10px;
   margin-bottom: 30px;
+  float: left;
 }
 
 .table th {
@@ -17,7 +17,7 @@
   border: 1px solid #ddd;
   padding: 8px;
   white-space: pre-wrap;
-  width:auto;
+  width: 200px;
   word-break: break-all;
 }
 
