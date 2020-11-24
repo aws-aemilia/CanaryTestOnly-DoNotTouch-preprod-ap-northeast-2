@@ -1,5 +1,6 @@
 .table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  table-layout: fixed;
   border-collapse: collapse;
   border: 1px solid #ddd;
   width: 100%;
