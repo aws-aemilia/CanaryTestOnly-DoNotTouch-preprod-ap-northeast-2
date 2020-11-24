@@ -44,7 +44,7 @@ class Table extends Component {
                             : key === "endTime" ? `${dateRetrieved}` 
                             : key === "startTime" ? `${dateRetrieved}`
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
-                            : JSON.stringify(data[key], null, "\n").replace(/"/g, "")
+                            : JSON.stringify(data[key], undefined, 2).replace(/"/g, "").replace(/\\n/g, "\n")
                             }
                                         </code></pre>
                                     </td>
