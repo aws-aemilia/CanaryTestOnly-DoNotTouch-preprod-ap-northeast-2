@@ -28,13 +28,6 @@ class Table extends Component {
 
                             const dateRetrieved = new Date(`${getDate}`)
 
-                            // let config = {};
-
-                            // if(key === "config"){
-                            //     config = data[key];
-                            //     console.log("config", config)
-                            // }
-                            
 
 
                             return (
@@ -50,8 +43,6 @@ class Table extends Component {
                             : key === "commitTime" ? `${dateRetrieved}` 
                             : key === "endTime" ? `${dateRetrieved}` 
                             : key === "startTime" ? `${dateRetrieved}`
-
-                            // : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
                             : JSON.stringify(data[key], null, "\n").replace(/"/g, "")
                             }
