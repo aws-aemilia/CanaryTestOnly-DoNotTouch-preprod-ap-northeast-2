@@ -28,12 +28,12 @@ class Table extends Component {
 
                             const dateRetrieved = new Date(`${getDate}`)
 
-                            let config = {};
+                            // let config = {};
 
-                            if(key === "config"){
-                                config = data[key];
-                                console.log("config", config)
-                            }
+                            // if(key === "config"){
+                            //     config = data[key];
+                            //     console.log("config", config)
+                            // }
                             
 
 
@@ -51,9 +51,9 @@ class Table extends Component {
                             : key === "endTime" ? `${dateRetrieved}` 
                             : key === "startTime" ? `${dateRetrieved}`
 
-                            : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
+                            // : key === "config" ? (Object.keys(config).map((configKey, configIndex) => (<div key={configIndex} className={styles.config}><h6>{configKey}</h6><p>{typeof config[configKey] === 'object' && Object.keys(config[configKey]).length === 0 ? "" : config[configKey]}</p></div>)))
                             : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
-                            : JSON.stringify(data[key], undefined, 2).replace(/"/g, "")
+                            : JSON.stringify(data[key], null, "\n").replace(/"/g, "")
                             }
                                         </code></pre>
                                     </td>
