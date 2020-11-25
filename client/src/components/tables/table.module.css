@@ -5,7 +5,7 @@
   width: 100%;
   margin-top: 10px;
   margin-bottom: 30px;
-  table-layout: auto;
+  table-layout: fixed;
   float: left;
 }
 
