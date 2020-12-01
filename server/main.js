@@ -393,11 +393,11 @@ app.get("/customerinfoApp", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log("res.json worked");
+        console.log("App res.json worked");
         res.status(200);
         res.json(result.Items[0]);
     } catch (e) {
-        console.log("res.json did not work");
+        console.log("App res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
@@ -427,12 +427,12 @@ app.get("/customerinfoBranch", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log("res.json worked");
+        console.log("Branch res.json worked");
         res.status(200);
         console.log(result.Items)
         res.json(result.Items);
     } catch (e) {
-        console.log("res.json did not work");
+        console.log("Branch res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
@@ -464,11 +464,11 @@ app.get("/customerinfoJob", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log("res.json worked");
+        console.log("Job res.json worked");
         res.status(200);
         res.json(result.Items);
     } catch (e) {
-        console.log("res.json did not work");
+        console.log("Job res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
@@ -496,11 +496,11 @@ app.get("/customerinfoDomain", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log("res.json worked");
+        console.log("Domain res.json worked");
         res.status(200);
         res.json(result.Items);
     } catch (e) {
-        console.log("res.json did not work");
+        console.log("Domain res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
@@ -516,15 +516,14 @@ app.get("/customerinfoWebhook", async (req, res) => {
 
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
+        "IndexName": 'appId-webhookId-index',
         "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId, webhookUrl",
-        "KeyConditionExpression": "#DYNOBASE_appId = :pkey and #DYNOBASE_webhookId= :skey",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
-            ":pkey": query,
-            ":skey": webhook
+            ":pkey": query
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId",
-            "#DYNOBASE_webhookId": "webhookId"
+            "#DYNOBASE_appId": "appId"
         },
         "ScanIndexForward": true
     };
@@ -532,11 +531,11 @@ app.get("/customerinfoWebhook", async (req, res) => {
         // client should pass credentials
         const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
         const result = await client.query(params).promise();
-        console.log("res.json worked");
+        console.log("Webhook res.json worked");
         res.status(200);
         res.json(result.Items[0]);
     } catch (e) {
-        console.log("res.json did not work");
+        console.log("Webhook res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
