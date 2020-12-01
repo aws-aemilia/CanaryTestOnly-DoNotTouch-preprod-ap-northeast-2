@@ -29,9 +29,9 @@ class Table extends Component {
                             const dateRetrieved = new Date(`${getDate}`)
 
                             let accountLink = "";
-                            let accountId = "";
+                            
                             if (key === "accountId") {
-                                accountId = JSON.stringify(data[key], undefined, 2).replace(/"/g, "")
+                                
                                 accountLink = "https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=" + data[key]
                             }
 
@@ -45,7 +45,7 @@ class Table extends Component {
                             {
                             data[key] === 0 ? "False" 
                             : data[key] === 1 ? "True" 
-                            : key === "accountId" ? accountId.link(accountLink)
+                            : key === "accountId" ? data[key].link(accountLink)
                             : key === "createTime" ? `${dateRetrieved}` 
                             : key === "updateTime" ? `${dateRetrieved}` 
                             : key === "commitTime" ? `${dateRetrieved}` 
