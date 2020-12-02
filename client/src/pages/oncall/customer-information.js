@@ -14,7 +14,7 @@ class CustomerInformation extends Component {
             appData: {},
             branchData: [],
             domainData: [],
-            webhookData: [],
+            webhookData: {},
             jobData: [],
             search: '',
             loading: false,
@@ -51,6 +51,10 @@ class CustomerInformation extends Component {
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
             const jobResults = await Promise.all(jobPromises);
             console.log("jobResults", jobResults)
+            console.log("resultApp", resultApp)
+            console.log("resultBranch", resultBranch)
+            console.log("resultDomain", resultDomain)
+            console.log("resultWebhook", resultWebhook)
             const getJobData = jobResults.map(job => job.data);
             let getJobDataValue = [];
             getJobData.forEach(obj => {
@@ -65,7 +69,7 @@ class CustomerInformation extends Component {
                 domainData: resultDomain.data,
                 webhookData: resultWebhook.data,
                 jobData: getJobDataValue
-            }, () => console.log("jobData", this.state.jobData));
+            }, () => console.log("webhookData", this.state.webhookData));
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -97,7 +101,7 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>Domain Table</h4>
                 { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Webhook Table</h4>
-                { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
+                <Table data={this.state.webhookData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
                 
