@@ -45,8 +45,8 @@ class Table extends Component {
                             {
                             data[key] === 0 ? "False" 
                             : data[key] === 1 ? "True" 
-                            :data[key] === "basicAuthCreds" ? undefined
-                            : key === "accountId" ? <a href={accountLink}>data[key]</a>
+                            : data[key] === "basicAuthCreds" ? undefined
+                            : key === "accountId" ? <a target='_blank' rel='noopener noreferrer' href={accountLink}>{data[key]}</a>
                             : key === "createTime" ? `${dateRetrieved}` 
                             : key === "updateTime" ? `${dateRetrieved}` 
                             : key === "commitTime" ? `${dateRetrieved}` 
