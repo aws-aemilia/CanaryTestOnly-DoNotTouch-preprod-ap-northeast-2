@@ -511,9 +511,6 @@ app.get("/customerinfoDomain", async (req, res) => {
 app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // go through each webhook and retrieve data from specific appId
-    const webhook =  "";
-
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
         "IndexName": 'appId-webhookId-index',
@@ -533,9 +530,39 @@ app.get("/customerinfoWebhook", async (req, res) => {
         const result = await client.query(params).promise();
         console.log("Webhook res.json worked");
         res.status(200);
-        res.json(result.Items[0]);
+        res.json(result.Items);
     } catch (e) {
         console.log("Webhook res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from LambdaEdgeConfig table
+app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": "LambdaEdgeConfig",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("LambdaEdgeConfig res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("LambdaEdgeConfig res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");

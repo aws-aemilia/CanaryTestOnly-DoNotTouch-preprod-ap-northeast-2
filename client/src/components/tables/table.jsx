@@ -45,6 +45,7 @@ class Table extends Component {
                             {
                             data[key] === 0 ? "False" 
                             : data[key] === 1 ? "True" 
+                            :data[key[key]] === "basicAuthCreds" ? undefined
                             : key === "accountId" ? data[key].link(accountLink)
                             : key === "createTime" ? `${dateRetrieved}` 
                             : key === "updateTime" ? `${dateRetrieved}` 
