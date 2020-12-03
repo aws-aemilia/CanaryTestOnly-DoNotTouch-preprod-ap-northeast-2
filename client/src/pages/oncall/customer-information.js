@@ -14,7 +14,8 @@ class CustomerInformation extends Component {
             appData: {},
             branchData: [],
             domainData: [],
-            webhookData: {},
+            webhookData: [],
+            lambdaData: {},
             jobData: [],
             search: '',
             loading: false,
@@ -47,7 +48,8 @@ class CustomerInformation extends Component {
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            const [resultApp, resultBranch, resultDomain, resultWebhook] = await Promise.all(promises);
+            promises.push(Ajax().fetch(`/customerinfoLambdaEdge?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            const [resultApp, resultBranch, resultDomain, resultWebhook, resultLambda] = await Promise.all(promises);
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
             const jobResults = await Promise.all(jobPromises);
             console.log("jobResults", jobResults)
@@ -55,6 +57,7 @@ class CustomerInformation extends Component {
             console.log("resultBranch", resultBranch)
             console.log("resultDomain", resultDomain)
             console.log("resultWebhook", resultWebhook)
+            console.log("resultLambda", resultLambda)
             const getJobData = jobResults.map(job => job.data);
             let getJobDataValue = [];
             getJobData.forEach(obj => {
@@ -68,6 +71,7 @@ class CustomerInformation extends Component {
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
                 webhookData: resultWebhook.data,
+                lambdaData: resultLambda.data,
                 jobData: getJobDataValue
             }, () => console.log("webhookData", this.state.webhookData));
         } catch (error) {
@@ -101,7 +105,9 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>Domain Table</h4>
                 { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
                 <h4 style={this.tagStyle}>Webhook Table</h4>
-                <Table data={this.state.webhookData} />
+                { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
+                <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>
+                <Table data={this.state.lambdaData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
                 
