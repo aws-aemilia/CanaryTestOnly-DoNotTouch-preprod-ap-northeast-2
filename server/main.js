@@ -546,7 +546,6 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const params = {
         "TableName": "LambdaEdgeConfig",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
-        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId, webhookUrl",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
