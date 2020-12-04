@@ -44,6 +44,7 @@ class Table extends Component {
                                         <pre><code>
                             {
                             data[key] === 0 ? "False" 
+                            : data[key["basicAuthCreds"]] ? ""
                             : data[key] === 1 ? "True" 
                             : data[key] === Object.keys("basicAuthCreds") ? ""
                             : typeof data[key] === 'object' && Object.keys(data[key]) === "basicAuthCreds" ? ""

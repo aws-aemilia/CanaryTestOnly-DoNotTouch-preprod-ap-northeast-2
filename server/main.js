@@ -412,7 +412,7 @@ app.get("/customerinfoBranch", async (req, res) => {
 
     const params = {
         "TableName": `${stage}-${region}-Branch`,
-        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
+        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config.enableAutoBuild, config.ejected, config.environmentVariables, config.enablePullRequestPreview, config.enablePerformanceMode, config.enableBasicAuth, config.enableNotification, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query
@@ -546,6 +546,7 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const params = {
         "TableName": "LambdaEdgeConfig",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId, webhookUrl",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
