@@ -80,7 +80,6 @@ class CustomerInformation extends Component {
                     getJobDataValue.push(value)
                 }
             });
-            this.remove(getJobDataValue, "basicAuthCreds")
             console.log("testing number of jobs runnning counter")
             console.log("getJobDataValue", getJobDataValue)
             const count = getJobDataValue.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
@@ -93,7 +92,7 @@ class CustomerInformation extends Component {
                 lambdaData: resultLambda.data,
                 jobData: getJobDataValue,
                 counter: count
-            }, () => console.log("webhookData", this.state.webhookData));
+            }, () => this.remove(this.state.lambdaData, "basicAuthCreds"));
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
