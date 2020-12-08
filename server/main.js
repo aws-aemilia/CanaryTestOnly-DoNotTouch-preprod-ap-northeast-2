@@ -514,7 +514,7 @@ app.get("/customerinfoWebhook", async (req, res) => {
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
         "IndexName": 'appId-webhookId-index',
-        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId, webhookUrl",
+        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query

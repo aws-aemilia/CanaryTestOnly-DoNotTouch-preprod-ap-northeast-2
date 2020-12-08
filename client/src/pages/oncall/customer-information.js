@@ -59,8 +59,8 @@ class CustomerInformation extends Component {
             
 
             try {
-                const appPromises = [Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)];
-                const resultApp = await Promise.all(appPromises);
+                const appPromise = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultApp = await Promise(appPromise);
                 console.log("resultApp", resultApp)
                 this.setState({appData : resultApp.data})
             }
