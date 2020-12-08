@@ -66,8 +66,8 @@ class CustomerInformation extends Component {
                 console.log("app table fetch error", appError)
             }
             try {
-                const branchPromises = [Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)];
-                const resultBranch = await Promise.all(branchPromises)
+                const branchPromises = Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultBranch = await branchPromises
                 console.log("resultBranch", resultBranch)
                 this.setState({branchData : resultBranch.data})
             }
@@ -75,8 +75,8 @@ class CustomerInformation extends Component {
                 console.log("branch table fetch error", branchError)
             }
             try {
-                const domainPromises = [Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)];
-                const resultDomain = await Promise.all(domainPromises)
+                const domainPromises = Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultDomain = await domainPromises
                 console.log("resultDomain", resultDomain)
                 this.setState({domainData : resultDomain.data})
             }
@@ -84,8 +84,8 @@ class CustomerInformation extends Component {
                 console.log("domain table fetch error", domainError)
             }
             try {
-                const webhookPromises = [Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)];
-                const resultWebhook = await Promise.all(webhookPromises)
+                const webhookPromises = Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultWebhook = await webhookPromises
 				console.log("resultWebhook", resultWebhook)
 				this.setState({webhookData : resultWebhook.data})
             }
@@ -93,8 +93,8 @@ class CustomerInformation extends Component {
                 console.log("webhook table fetch error", webhookError)
             }
             try {
-                const lambdaPromises = [Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`)];
-				const resultLambda = await Promise.all(lambdaPromises)
+                const lambdaPromises = Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+				const resultLambda = await lambdaPromises
 				console.log("resultLambda", resultLambda)
 				this.setState({lambdaData : resultLambda.data})
             }
