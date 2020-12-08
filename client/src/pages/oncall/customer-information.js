@@ -29,6 +29,17 @@ class CustomerInformation extends Component {
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
 
+    remove(obj, key) {
+        for (var k in obj) {
+            if (k==key) {
+                delete obj[k];
+            }
+            else if (typeof obj[k] === 'object') {
+                this.remove(obj[k], key);
+            }
+        }
+    }
+
     searchDataChanged(text) {
         this.setState({
             search: text
@@ -69,6 +80,7 @@ class CustomerInformation extends Component {
                     getJobDataValue.push(value)
                 }
             });
+            this.remove(getJobDataValue, "basicAuthCreds")
             console.log("testing number of jobs runnning counter")
             console.log("getJobDataValue", getJobDataValue)
             const count = getJobDataValue.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
