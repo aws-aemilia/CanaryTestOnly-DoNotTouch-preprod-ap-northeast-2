@@ -71,7 +71,7 @@ class CustomerInformation extends Component {
             });
             console.log("testing number of jobs runnning counter")
             console.log("getJobDataValue", getJobDataValue)
-            const count = getJobDataValue.filter((obj) => obj.jobStatus === "SUCCEED").length;
+            const count = getJobDataValue.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
             console.log("count", count);
             this.setState({ 
                 appData: resultApp.data,
