@@ -69,11 +69,10 @@ class CustomerInformation extends Component {
                     getJobDataValue.push(value)
                 }
             });
-            let numberOfJobsRunning = getJobDataValue[0].map(a => a.jobStatus)
-            console.log("running jobs", numberOfJobsRunning)
             const jobStatus = "SUCCEED"
+            console.log("testing number of jobs runnning counter")
             const count = getJobDataValue.filter((obj) => obj.jobStatus === jobStatus).length;
-            console.log(count);
+            console.log("count", count);
             this.setState({ 
                 appData: resultApp.data,
                 branchData: resultBranch.data,
@@ -121,7 +120,7 @@ class CustomerInformation extends Component {
                 <Table data={this.state.lambdaData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-        <h4 style={this.tagStyle}>Number of Jobs Running: {this.state.counter}</h4>
+                <h4 style={this.tagStyle}>Number of Jobs Running: {this.state.counter}</h4>
                 
             </div>
         )
