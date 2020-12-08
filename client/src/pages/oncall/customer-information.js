@@ -56,11 +56,9 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-            
-
             try {
                 const appPromise = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
-                const resultApp = await Promise(appPromise);
+                const resultApp = await appPromise;
                 console.log("resultApp", resultApp)
                 this.setState({appData : resultApp.data})
             }
@@ -120,12 +118,7 @@ class CustomerInformation extends Component {
 			catch (jobError) {
 				console.log("job table fetch error", jobError)
 			}
-			
-            
-           
-            
             console.log("testing number of jobs runnning counter")
-            
             const count = this.state.jobData.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
 			this.setState({counter: count})
             console.log("count", count);
