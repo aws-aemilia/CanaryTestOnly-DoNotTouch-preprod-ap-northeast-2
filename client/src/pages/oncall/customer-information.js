@@ -22,7 +22,8 @@ class CustomerInformation extends Component {
             regions: [],
             stages: [],
             tableData: {},
-            tablename: {}
+            tablename: {},
+            counter : 0
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
@@ -40,10 +41,18 @@ class CustomerInformation extends Component {
             }
         });
     }
+    
+    getNumberOfJobsRunning() {
+        let numberOfJobsRunning = jobData.map(a => a.jobStatus)
+    }
+
+    
 
     async getApiData() {
         try {
             const promises = [];
+
+
             promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
             promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
@@ -65,8 +74,12 @@ class CustomerInformation extends Component {
                     getJobDataValue.push(value)
                 }
             });
-            console.log("getJobDataValue", getJobDataValue)
-            this.setState({
+            let numberOfJobsRunning = getJobDataValue[0].map(a => a.jobStatus)
+            console.log("running jobs", numberOfJobsRunning)
+            const jobStatus = "SUCCEED"
+            const count = getJobDataValue.filter((obj) => obj.jobStatus === jobStatus).length;
+            console.log(count);
+            this.setState({ 
                 appData: resultApp.data,
                 branchData: resultBranch.data,
                 domainData: resultDomain.data,
@@ -79,6 +92,8 @@ class CustomerInformation extends Component {
             console.log("data fetch fail");
         }
     }
+
+    
 
     render() {
         return (
@@ -110,6 +125,8 @@ class CustomerInformation extends Component {
                 <Table data={this.state.lambdaData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
+                <h4 style={this.tagStyle}>Number of Jobs Running:</h4>
+                {  }
                 
             </div>
         )
