@@ -56,68 +56,80 @@ class CustomerInformation extends Component {
 
     async getApiData() {
         try {
-            const promises = [];
-
+            
 
             try {
-                promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+                const appPromises = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultApp = await Promise.all(appPromises);
+                console.log("resultApp", resultApp)
+                this.setState({appData : resultApp.data})
             }
             catch (appError) {
                 console.log("app table fetch error", appError)
             }
             try {
-                promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+                const branchPromises = Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultBranch = await Promise.all(branchPromises)
+                console.log("resultBranch", resultBranch)
+                this.setState({branchData : resultBranch.data})
             }
             catch (branchError) {
                 console.log("branch table fetch error", branchError)
             }
             try {
-                promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+                const domainPromises = Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultDomain = await Promise.all(domainPromises)
+                console.log("resultDomain", resultDomain)
+                this.setState({domainData : resultDomain.data})
             }
             catch (domainError) {
                 console.log("domain table fetch error", domainError)
             }
             try {
-                promises.push(Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+                const webhookPromises = Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+                const resultWebhook = await Promise.all(webhookPromises)
+				console.log("resultWebhook", resultWebhook)
+				this.setState({webhookData : resultWebhook.data})
             }
             catch (webhookError) {
                 console.log("webhook table fetch error", webhookError)
             }
             try {
-                promises.push(Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+                const lambdaPromises = Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
+				const resultLambda = await Promise.all(lambdaPromises)
+				console.log("resultLambda", resultLambda)
+				this.setState({lambdaData : resultLambda.data})
             }
             catch (lambdaEdgeConfigError) {
                 console.log("lambdaEdgeConfig table fetch error", lambdaEdgeConfigError)
             }
-            const [resultApp, resultBranch, resultDomain, resultWebhook, resultLambda] = await Promise.all(promises);
-            const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
-            const jobResults = await Promise.all(jobPromises);
-            console.log("jobResults", jobResults)
-            console.log("resultApp", resultApp)
-            console.log("resultBranch", resultBranch)
-            console.log("resultDomain", resultDomain)
-            console.log("resultWebhook", resultWebhook)
-            console.log("resultLambda", resultLambda)
-            const getJobData = jobResults.map(job => job.data);
-            let getJobDataValue = [];
-            getJobData.forEach(obj => {
-                for (const [key, value] of Object.entries(obj)) {
+			try {
+				const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
+				const jobResults = await Promise.all(jobPromises);
+				console.log("jobResults", jobResults)
+				const getJobData = jobResults.map(job => job.data);
+				let getJobDataValue = [];
+				getJobData.forEach(obj => {
+					for (const [key, value] of Object.entries(obj)) {
                     getJobDataValue.push(value)
                 }
-            });
+				});
+				console.log("getJobDataValue", getJobDataValue)
+				this.setState({jobData: getJobDataValue})
+			}
+			catch (jobError) {
+				console.log("job table fetch error", jobError)
+			}
+			
+            
+           
+            
             console.log("testing number of jobs runnning counter")
-            console.log("getJobDataValue", getJobDataValue)
-            const count = getJobDataValue.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
+            
+            const count = this.state.jobData.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
+			this.setState({counter: count})
             console.log("count", count);
-            this.setState({ 
-                appData: resultApp.data,
-                branchData: resultBranch.data,
-                domainData: resultDomain.data,
-                webhookData: resultWebhook.data,
-                lambdaData: resultLambda.data,
-                jobData: getJobDataValue,
-                counter: count
-            }, () => this.remove(this.state.lambdaData, "basicAuthCreds"));
+            
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
