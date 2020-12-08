@@ -59,11 +59,36 @@ class CustomerInformation extends Component {
             const promises = [];
 
 
-            promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            promises.push(Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
-            promises.push(Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            try {
+                promises.push(Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            }
+            catch (appError) {
+                console.log("app table fetch error", appError)
+            }
+            try {
+                promises.push(Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            }
+            catch (branchError) {
+                console.log("branch table fetch error", branchError)
+            }
+            try {
+                promises.push(Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            }
+            catch (domainError) {
+                console.log("domain table fetch error", domainError)
+            }
+            try {
+                promises.push(Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            }
+            catch (webhookError) {
+                console.log("webhook table fetch error", webhookError)
+            }
+            try {
+                promises.push(Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`));
+            }
+            catch (lambdaEdgeConfigError) {
+                console.log("lambdaEdgeConfig table fetch error", lambdaEdgeConfigError)
+            }
             const [resultApp, resultBranch, resultDomain, resultWebhook, resultLambda] = await Promise.all(promises);
             const jobPromises = resultBranch.data.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
             const jobResults = await Promise.all(jobPromises);
