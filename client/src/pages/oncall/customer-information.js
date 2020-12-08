@@ -5,6 +5,7 @@ import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
 import NavBar from "../../components/navbar";
 import { ButtonToolbar, DropdownButton, Dropdown, Form } from "react-bootstrap";
+import { counter } from '@fortawesome/fontawesome-svg-core';
 
 class CustomerInformation extends Component {
     constructor(props) {
@@ -41,12 +42,6 @@ class CustomerInformation extends Component {
             }
         });
     }
-    
-    getNumberOfJobsRunning() {
-        let numberOfJobsRunning = jobData.map(a => a.jobStatus)
-    }
-
-    
 
     async getApiData() {
         try {
@@ -85,7 +80,8 @@ class CustomerInformation extends Component {
                 domainData: resultDomain.data,
                 webhookData: resultWebhook.data,
                 lambdaData: resultLambda.data,
-                jobData: getJobDataValue
+                jobData: getJobDataValue,
+                counter: count
             }, () => console.log("webhookData", this.state.webhookData));
         } catch (error) {
             console.log(error);
@@ -125,8 +121,7 @@ class CustomerInformation extends Component {
                 <Table data={this.state.lambdaData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-                <h4 style={this.tagStyle}>Number of Jobs Running:</h4>
-                {  }
+        <h4 style={this.tagStyle}>Number of Jobs Running: {this.state.counter}</h4>
                 
             </div>
         )
