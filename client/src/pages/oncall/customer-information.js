@@ -151,19 +151,19 @@ class CustomerInformation extends Component {
                 >
                     <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
-                <h4 style={this.tagStyle}>{Object.keys(this.state.appData).length != 0 ? <Text>App Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.appData).length != 0 ? <Text>App Table</Text>: <Text></Text> }</h4>
                 <Table data={this.state.appData} />
-                <h4 style={this.tagStyle}>{Object.keys(this.state.branchData).length != 0 ? <Text>Branch Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.branchData).length != 0 ? <Text>Branch Table</Text>: <Text></Text> }</h4>
                 { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
-                <h4 style={this.tagStyle}>{Object.keys(this.state.domainData).length != 0 ? <Text>Domain Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.domainData).length != 0 ? <Text>Domain Table</Text>: <Text></Text> }</h4>
                 { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
-                <h4 style={this.tagStyle}>{Object.keys(this.state.webhookData).length != 0 ? <Text>Webhook Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.webhookData).length != 0 ? <Text>Webhook Table</Text>: <Text></Text> }</h4>
                 { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
-                <h4 style={this.tagStyle}>{Object.keys(this.state.lambdaData).length != 0 ? <Text>LambdaEdgeConfig Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.lambdaData).length != 0 ? <Text>LambdaEdgeConfig Table</Text>: <Text></Text> }</h4>
                 <Table data={this.state.lambdaData} />
-                <h4 style={this.tagStyle}>{Object.keys(this.state.jobData).length != 0 ? <Text>Job Table</Text>: null }</h4>
+                <h4 style={this.tagStyle}>{Object.keys(this.state.jobData).length != 0 ? <Text>Job Table</Text>: <Text></Text> }</h4>
                 { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-                <h4 style={this.tagStyle}>{this.state.counter != 0 ? <Text>Number of Jobs Running: {this.state.counter}</Text>: null}</h4>
+                <h4 style={this.tagStyle}>{this.state.counter != 0 ? <Text>Number of Jobs Running: {this.state.counter}</Text>: <Text></Text>}</h4>
                 
             </div>
         )
