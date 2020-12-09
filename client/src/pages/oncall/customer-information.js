@@ -30,7 +30,7 @@ class CustomerInformation extends Component {
 
     remove(obj, key) {
         for (var k in obj) {
-            if (k==key) {
+            if (k == key) {
                 delete obj[k];
             }
             else if (typeof obj[k] === 'object') {
@@ -59,7 +59,7 @@ class CustomerInformation extends Component {
                 const appPromise = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultApp = await appPromise;
                 console.log("resultApp", resultApp)
-                this.setState({appData : resultApp.data})
+                this.setState({ appData: resultApp.data })
             }
             catch (appError) {
                 console.log("app table fetch error", appError)
@@ -68,7 +68,7 @@ class CustomerInformation extends Component {
                 const branchPromises = Ajax().fetch(`/customerinfoBranch?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultBranch = await branchPromises
                 console.log("resultBranch", resultBranch)
-                this.setState({branchData : resultBranch.data})
+                this.setState({ branchData: resultBranch.data })
             }
             catch (branchError) {
                 console.log("branch table fetch error", branchError)
@@ -77,7 +77,7 @@ class CustomerInformation extends Component {
                 const domainPromises = Ajax().fetch(`/customerinfoDomain?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultDomain = await domainPromises
                 console.log("resultDomain", resultDomain)
-                this.setState({domainData : resultDomain.data})
+                this.setState({ domainData: resultDomain.data })
             }
             catch (domainError) {
                 console.log("domain table fetch error", domainError)
@@ -85,40 +85,40 @@ class CustomerInformation extends Component {
             try {
                 const webhookPromises = Ajax().fetch(`/customerinfoWebhook?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultWebhook = await webhookPromises
-				console.log("resultWebhook", resultWebhook)
-				this.setState({webhookData : resultWebhook.data})
+                console.log("resultWebhook", resultWebhook)
+                this.setState({ webhookData: resultWebhook.data })
             }
             catch (webhookError) {
                 console.log("webhook table fetch error", webhookError)
-                this.setState({webhookData : []})
+                this.setState({ webhookData: [] })
             }
             try {
                 const lambdaPromises = Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
-				const resultLambda = await lambdaPromises
-				console.log("resultLambda", resultLambda)
-				this.setState({lambdaData : resultLambda.data})
+                const resultLambda = await lambdaPromises
+                console.log("resultLambda", resultLambda)
+                this.setState({ lambdaData: resultLambda.data })
             }
             catch (lambdaEdgeConfigError) {
                 console.log("lambdaEdgeConfig table fetch error", lambdaEdgeConfigError)
-                this.setState({lambdaData : []})
+                this.setState({ lambdaData: [] })
             }
-			try {
-				const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
-				const jobResults = await Promise.all(jobPromises);
-				console.log("jobResults", jobResults)
-				const getJobData = jobResults.map(job => job.data);
-				let getJobDataValue = [];
-				getJobData.forEach(obj => {
-					for (const [key, value] of Object.entries(obj)) {
-                    getJobDataValue.push(value)
-                }
-				});
-				console.log("getJobDataValue", getJobDataValue)
-				this.setState({jobData: getJobDataValue})
-			}
-			catch (jobError) {
-				console.log("job table fetch error", jobError)
-			}
+            try {
+                const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
+                const jobResults = await Promise.all(jobPromises);
+                console.log("jobResults", jobResults)
+                const getJobData = jobResults.map(job => job.data);
+                let getJobDataValue = [];
+                getJobData.forEach(obj => {
+                    for (const [key, value] of Object.entries(obj)) {
+                        getJobDataValue.push(value)
+                    }
+                });
+                console.log("getJobDataValue", getJobDataValue)
+                this.setState({ jobData: getJobDataValue })
+            }
+            catch (jobError) {
+                console.log("job table fetch error", jobError)
+            }
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -143,18 +143,23 @@ class CustomerInformation extends Component {
                 >
                     <Search searchDataChanged={this.searchDataChanged} />
                 </StageRegionSelector>
-                <h4 style={this.tagStyle}>App Table</h4>
-                <Table data={this.state.appData} />
-                <h4 style={this.tagStyle}>Branch Table</h4>
-                { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
-                <h4 style={this.tagStyle}>Domain Table</h4>
-                { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
-                <h4 style={this.tagStyle}>Webhook Table</h4>
-                { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
-                <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>
-                <Table data={this.state.lambdaData} />
-                <h4 style={this.tagStyle}>Job Table</h4>
-                { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}   
+                {this.state.search !== '' && (
+                    <>
+                        <h4 style={this.tagStyle}>App Table</h4>
+                        <Table data={this.state.appData} />
+                        <h4 style={this.tagStyle}>Branch Table</h4>
+                        { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
+                        <h4 style={this.tagStyle}>Domain Table</h4>
+                        { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
+                        <h4 style={this.tagStyle}>Webhook Table</h4>
+                        { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
+                        <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>
+                        <Table data={this.state.lambdaData} />
+                        <h4 style={this.tagStyle}>Job Table</h4>
+                        { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
+
+                    </>
+                )}
             </div>
         )
     }
