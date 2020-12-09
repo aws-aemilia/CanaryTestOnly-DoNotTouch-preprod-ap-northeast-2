@@ -26,7 +26,8 @@ class CustomerInformation extends Component {
             domainTableToggled: true,
             webhookTableToggled: true,
             LambdaEdgeToggled: true,
-            jobTableToggled: true
+            jobTableToggled: true,
+            numOfJobs: 0
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
@@ -105,6 +106,17 @@ class CustomerInformation extends Component {
                     }
                 });
                 this.setState({ jobData: getJobDataValue })
+
+                let getNumOfJobs = 0;
+                getJobDataValue.forEach(g => {
+                    g.jobSteps.forEach(j => {
+                        if (j.jobStatus === "SUCCEED") {
+                            getNumOfJobs = getNumOfJobs += 1;
+                        }
+                    })
+                })
+
+                this.setState({ numOfJobs: getNumOfJobs })
             }
             catch (jobError) {
                 console.log("job table fetch error", jobError)
@@ -116,10 +128,10 @@ class CustomerInformation extends Component {
     }
 
     render() {
-        const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled } = this.state;
+        const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs } = this.state;
 
         const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between" };
-        const toggleStyle = { outline: "none", border: "none", padding: "6px 12px", borderRadius: "4px", backgroundColor: "#0d6efd" }
+        const toggleStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "22px", fontWeight: "bold" }
         return (
             <div style={{ width: "85%", margin: "0 auto" }}>
                 <h1>
@@ -138,53 +150,54 @@ class CustomerInformation extends Component {
                 </StageRegionSelector>
                 {this.state.search !== '' && (
                     <>
-                        {Object.keys(appData).length && (
+                        {Object.keys(appData).length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>App Table</h4>
                                 {appDataToggled ? <button style={toggleStyle} onClick={() => this.setState({ appDataToggled: false })}>-</button> : <button onClick={() => this.setState({ appDataToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {appDataToggled && <Table data={this.state.appData} />}
 
-                        {branchData.length === 0 && (
+                        {branchData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Branch Table</h4>
                                 {branchTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ branchTableToggled: false })}>-</button> : <button onClick={() => this.setState({ branchTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {branchTableToggled && this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
 
-                        {domainData.length === 0 && (
+                        {domainData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Domain Table</h4>
                                 {domainTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ domainTableToggled: false })}>-</button> : <button onClick={() => this.setState({ domainTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {domainTableToggled && this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
 
-                        {webhookData.length === 0 && (
+                        {webhookData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>WebHook Table</h4>
                                 {webhookTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ webhookTableToggled: false })}>-</button> : <button onClick={() => this.setState({ webhookTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {webhookTableToggled && this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
 
-                        {Object.keys(lambdaData).length && (
+                        {Object.keys(lambdaData).length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>LambdaEdgeConfig Table</h4>
                                 {LambdaEdgeToggled ? <button style={toggleStyle} onClick={() => this.setState({ LambdaEdgeToggled: false })}>-</button> : <button onClick={() => this.setState({ LambdaEdgeToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {LambdaEdgeToggled && <Table data={this.state.lambdaData} />}
-
-                        {jobData.length === 0 && (
+                        {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
-                        )}
+                        ) : null}
                         {jobTableToggled && this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
+
+                        <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
                     </>
                 )}
             </div>
