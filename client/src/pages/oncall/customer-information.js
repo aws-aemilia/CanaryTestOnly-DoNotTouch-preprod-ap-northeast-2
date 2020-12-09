@@ -24,7 +24,6 @@ class CustomerInformation extends Component {
             stages: [],
             tableData: {},
             tablename: {},
-            counter : 0
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
@@ -120,18 +119,11 @@ class CustomerInformation extends Component {
 			catch (jobError) {
 				console.log("job table fetch error", jobError)
 			}
-            console.log("testing number of jobs runnning counter")
-            const count = this.state.jobData.filter((obj) => obj.jobSteps.jobStatus === "SUCCEED").length;
-			this.setState({counter: count})
-            console.log("count", count);
-            
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
         }
     }
-
-    
 
     render() {
         return (
@@ -162,9 +154,7 @@ class CustomerInformation extends Component {
                 <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>
                 <Table data={this.state.lambdaData} />
                 <h4 style={this.tagStyle}>Job Table</h4>
-                { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-                <h4 style={this.tagStyle}>Number of Jobs Running: {this.state.counter}</h4>
-                
+                { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}   
             </div>
         )
     }
