@@ -546,6 +546,7 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const params = {
         "TableName": "LambdaEdgeConfig",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ProjectionExpression": "appId, aws:rep:deleting, aws:rep:updateregion, aws:rep:updatetime, config.enableBasicAuth, createTime, customDomainIds, customRuleConfigs, hostNameConfig, updateTime, version",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
@@ -568,7 +569,6 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
         res.send("Internal Service Error");
     }
 });
-
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
