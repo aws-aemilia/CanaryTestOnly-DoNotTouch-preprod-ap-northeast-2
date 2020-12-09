@@ -408,8 +408,6 @@ app.get("/customerinfoApp", async (req, res) => {
 app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // go through each branch and retrieve data from specific appId
-
     const params = {
         "TableName": `${stage}-${region}-Branch`,
         "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config.enableAutoBuild, config.ejected, config.environmentVariables, config.enablePullRequestPreview, config.enablePerformanceMode, config.enableBasicAuth, config.enableNotification, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
@@ -443,13 +441,10 @@ app.get("/customerinfoBranch", async (req, res) => {
 app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // go through each branch and retrieve data from specific appId
-
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
-        "Limit": "1",
         "ExpressionAttributeValues": {
             ":pkey": query
         },

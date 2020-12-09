@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from './table.module.css';
-import AceEditor from 'react-ace';
 
 class Table extends Component {
     constructor(props) {
