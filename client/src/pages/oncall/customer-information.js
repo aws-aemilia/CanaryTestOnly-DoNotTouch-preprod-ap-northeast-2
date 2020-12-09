@@ -110,7 +110,7 @@ class CustomerInformation extends Component {
                 let getNumOfJobs = 0;
                 getJobDataValue.forEach(g => {
                     g.jobSteps.forEach(j => {
-                        if (j.jobStatus === "SUCCEED") {
+                        if (j.jobStatus === "RUNNING") {
                             getNumOfJobs = getNumOfJobs += 1;
                         }
                     })
