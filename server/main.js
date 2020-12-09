@@ -18,7 +18,7 @@ const {
 const queryHelper = require("./extensions/queryHelper");
 const { Domain } = require('domain');
 
-if(process.env.NODE_ENV == "development") {
+if (process.env.NODE_ENV == "development") {
 
     let credentials = new aws.SharedIniFileCredentials({ profile: "brandon-aws" });
     aws.config.credentials = credentials;
@@ -54,7 +54,7 @@ let username;
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 
-if(process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV !== "development") {
     app.use((req, res, next) => {
         res.append('Access-Control-Allow-Origin', ['*']);
         res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
@@ -378,7 +378,7 @@ app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
     const params = {
         "TableName": `${stage}-${region}-App`,
-        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, originKey, platform, repository, updateTime",
+        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, platform, repository, updateTime",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
         "ExpressionAttributeValues": {
             ":pkey": query

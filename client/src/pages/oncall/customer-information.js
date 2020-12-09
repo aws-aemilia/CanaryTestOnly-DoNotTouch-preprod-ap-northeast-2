@@ -105,7 +105,6 @@ class CustomerInformation extends Component {
             try {
                 const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
                 const jobResults = await Promise.all(jobPromises);
-                console.log("jobResults", jobResults)
                 const getJobData = jobResults.map(job => job.data);
                 let getJobDataValue = [];
                 getJobData.forEach(obj => {
@@ -113,7 +112,6 @@ class CustomerInformation extends Component {
                         getJobDataValue.push(value)
                     }
                 });
-                console.log("getJobDataValue", getJobDataValue)
                 this.setState({ jobData: getJobDataValue })
             }
             catch (jobError) {
@@ -126,11 +124,11 @@ class CustomerInformation extends Component {
     }
 
     render() {
+        const { appData, branchData, domainData, webhookData, lambdaData, jobData } = this.state;
         return (
             <div style={{ width: "85%", margin: "0 auto" }}>
                 <h1>
                     <span>Customer Information</span>
-                    {' '}
                     <small>Customer Configuration and Settings</small>
                 </h1>
                 <StageRegionSelector
@@ -145,19 +143,18 @@ class CustomerInformation extends Component {
                 </StageRegionSelector>
                 {this.state.search !== '' && (
                     <>
-                        <h4 style={this.tagStyle}>App Table</h4>
+                        {Object.keys(appData).length && <h4 style={this.tagStyle}>App Table</h4>}
                         <Table data={this.state.appData} />
-                        <h4 style={this.tagStyle}>Branch Table</h4>
+                        {branchData.length && <h4 style={this.tagStyle}>Branch Table</h4>}
                         { this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
-                        <h4 style={this.tagStyle}>Domain Table</h4>
+                        {domainData.length && <h4 style={this.tagStyle}>Domain Table</h4>}
                         { this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
-                        <h4 style={this.tagStyle}>Webhook Table</h4>
+                        {webhookData.length && <h4 style={this.tagStyle}>Webhook Table</h4>}
                         { this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
-                        <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>
+                        {Object.keys(lambdaData).length && <h4 style={this.tagStyle}>LambdaEdgeConfig Table</h4>}
                         <Table data={this.state.lambdaData} />
-                        <h4 style={this.tagStyle}>Job Table</h4>
+                        {jobData.length && <h4 style={this.tagStyle}>Job Table</h4>}
                         { this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
-
                     </>
                 )}
             </div>

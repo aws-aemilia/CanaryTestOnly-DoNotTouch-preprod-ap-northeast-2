@@ -31,9 +31,9 @@ class Table extends Component {
                             const dateRetrieved = new Date(`${getDate}`)
 
                             let accountLink = "";
-                            
+
                             if (key === "accountId") {
-                                
+
                                 accountLink = "https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=" + data[key]
                             }
 
@@ -44,19 +44,19 @@ class Table extends Component {
                                     <td>{key}</td>
                                     <td>
                                         <pre><code>
-                            {
-                            data[key] === 0 ? "False"
-                            : data[key] === 1 ? "True"
-                            : data[key] === "config" ? delete data.config.basicAuthCreds
-                            : key === "accountId" ? <a target='_blank' rel='noopener noreferrer' href={accountLink}>{data[key]}</a>
-                            : key === "createTime" ? `${dateRetrieved}` 
-                            : key === "updateTime" ? `${dateRetrieved}` 
-                            : key === "commitTime" ? `${dateRetrieved}` 
-                            : key === "endTime" ? `${dateRetrieved}` 
-                            : key === "startTime" ? `${dateRetrieved}`
-                            : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
-                            : JSON.stringify(data[key], undefined, 2).replace(/"/g, "").replace(/\\n/g, "\n")
-                            }
+                                            {
+                                                data[key] === 0 ? "False"
+                                                    : data[key] === 1 ? "True"
+                                                        : data[key] === "config" ? delete data.config.basicAuthCreds
+                                                            : key === "accountId" ? <a target='_blank' rel='noopener noreferrer' href={accountLink}>{data[key]}</a>
+                                                                : key === "createTime" ? `${dateRetrieved}`
+                                                                    : key === "updateTime" ? `${dateRetrieved}`
+                                                                        : key === "commitTime" ? `${dateRetrieved}`
+                                                                            : key === "endTime" ? `${dateRetrieved}`
+                                                                                : key === "startTime" ? `${dateRetrieved}`
+                                                                                    : typeof data[key] === 'object' && Object.keys(data[key]).length === 0 ? ""
+                                                                                        : JSON.stringify(data[key], undefined, 2).replace(/"/g, "").replace(/\\n/g, "\n")
+                                            }
                                         </code></pre>
                                     </td>
                                 </tr>
