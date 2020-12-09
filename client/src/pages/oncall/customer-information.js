@@ -66,7 +66,6 @@ class CustomerInformation extends Component {
                     tr[i].style.display = "none";
                 }
             }
-
         }
     }
 
@@ -217,10 +216,11 @@ class CustomerInformation extends Component {
                         {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
+                                <input type="text" name="" id="myInput" placeholder="search..." onKeyUp="searchFun()" />
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
-                        {jobTableToggled && <input type="text" name="" id="myInput" placeholder="search..." onKeyUp="searchFun()" /> && this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))}
+                        {jobTableToggled && this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))}
 
                         <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
                     </>
