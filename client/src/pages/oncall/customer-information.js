@@ -130,7 +130,7 @@ class CustomerInformation extends Component {
     render() {
         const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs } = this.state;
 
-        const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between" };
+        const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" };
         const toggleStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "22px", fontWeight: "bold" }
         return (
             <div style={{ width: "85%", margin: "0 auto" }}>
