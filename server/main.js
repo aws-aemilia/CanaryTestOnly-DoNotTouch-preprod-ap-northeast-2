@@ -546,12 +546,15 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const params = {
         "TableName": "LambdaEdgeConfig",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
-        "ProjectionExpression": "appId, aws:rep:deleting, aws:rep:updateregion, aws:rep:updatetime, config.enableBasicAuth, createTime, customDomainIds, customRuleConfigs, hostNameConfig, updateTime, version",
+        "ProjectionExpression": "appId, #awsRepDeleting, #awsRepUpdateRegion, #awsRepUpdateTime, config.enableBasicAuth, createTime, customDomainIds, customRuleConfigs, hostNameConfig, updateTime, version",
         "ExpressionAttributeValues": {
             ":pkey": query
         },
         "ExpressionAttributeNames": {
-            "#DYNOBASE_appId": "appId"
+            "#DYNOBASE_appId": "appId",
+            "#awsRepDeleting": "aws:rep:deleting",
+            "#awsRepUpdateRegion": "aws:rep:updateregion",
+            "#awsRepUpdateTime": "aws:rep:updatetime"
         },
         "ScanIndexForward": true
     };
