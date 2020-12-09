@@ -46,6 +46,30 @@ class CustomerInformation extends Component {
         });
     }
 
+    searchFun() {
+        let filter = document.getElementById('myInput').value.toUpperCase();
+
+        let myTable = document.getElementById('jobTable');
+
+        let tr = myTable.getElementsByTagName('tr');
+
+        for (var i = 0; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName('td')[0];
+
+            if (td) {
+                let textValue = td.textContent || td.innerHTML;
+
+                if (textValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                }
+                else {
+                    tr[i].style.display = "none";
+                }
+            }
+
+        }
+    }
+
     async getApiData() {
         try {
             try {
@@ -83,7 +107,7 @@ class CustomerInformation extends Component {
             }
             catch (webhookError) {
                 console.log("webhook table fetch error", webhookError)
-                this.setState({ webhookData: [] })
+                this.setState({ webhookData: null })
             }
             try {
                 const lambdaPromises = Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
@@ -93,7 +117,7 @@ class CustomerInformation extends Component {
             }
             catch (lambdaEdgeConfigError) {
                 console.log("lambdaEdgeConfig table fetch error", lambdaEdgeConfigError)
-                this.setState({ lambdaData: [] })
+                this.setState({ lambdaData: null })
             }
             try {
                 const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
@@ -196,7 +220,7 @@ class CustomerInformation extends Component {
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
-                        {jobTableToggled && <input type="text" name="" id="myInput" placeholder="search..." /> && this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
+                        {jobTableToggled && <input type="text" name="" id="myInput" placeholder="search..." onKeyUp="searchFun()" /> && this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))}
 
                         <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
                     </>
