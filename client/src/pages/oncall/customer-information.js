@@ -141,7 +141,7 @@ class CustomerInformation extends Component {
                         {Object.keys(appData).length && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>App Table</h4>
-                                {appDataToggled ? <button style={toggleStyle} onClick={this.setState({ appDataToggled: false })}>-</button> : <button onClick={this.setState({ appDataToggled: true })} style={toggleStyle}>+</button>}
+                                {appDataToggled ? <button style={toggleStyle} onClick={() => this.setState({ appDataToggled: false })}>-</button> : <button onClick={() => this.setState({ appDataToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {appDataToggled && <Table data={this.state.appData} />}
@@ -149,7 +149,7 @@ class CustomerInformation extends Component {
                         {branchData.length === 0 && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Branch Table</h4>
-                                {branchTableToggled ? <button style={toggleStyle} onClick={this.setState({ branchTableToggled: false })}>-</button> : <button onClick={this.setState({ branchTableToggled: true })} style={toggleStyle}>+</button>}
+                                {branchTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ branchTableToggled: false })}>-</button> : <button onClick={() => this.setState({ branchTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {branchTableToggled && this.state.branchData.map((tableData => <Table tablename={"branchName"} data={tableData} />))}
@@ -157,7 +157,7 @@ class CustomerInformation extends Component {
                         {domainData.length === 0 && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Domain Table</h4>
-                                {domainTableToggled ? <button style={toggleStyle} onClick={this.setState({ domainTableToggled: false })}>-</button> : <button onClick={this.setState({ domainTableToggled: true })} style={toggleStyle}>+</button>}
+                                {domainTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ domainTableToggled: false })}>-</button> : <button onClick={() => this.setState({ domainTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {domainTableToggled && this.state.domainData.map((tableData => <Table tablename={"domainName"} data={tableData} />))}
@@ -165,7 +165,7 @@ class CustomerInformation extends Component {
                         {webhookData.length === 0 && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>WebHook Table</h4>
-                                {webhookTableToggled ? <button style={toggleStyle} onClick={this.setState({ webhookTableToggled: false })}>-</button> : <button onClick={this.setState({ webhookTableToggled: true })} style={toggleStyle}>+</button>}
+                                {webhookTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ webhookTableToggled: false })}>-</button> : <button onClick={() => this.setState({ webhookTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {webhookTableToggled && this.state.webhookData.map((tableData => <Table tablename={"webhookId"} data={tableData} />))}
@@ -173,7 +173,7 @@ class CustomerInformation extends Component {
                         {Object.keys(lambdaData).length && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>LambdaEdgeConfig Table</h4>
-                                {LambdaEdgeToggled ? <button style={toggleStyle} onClick={this.setState({ LambdaEdgeToggled: false })}>-</button> : <button onClick={this.setState({ LambdaEdgeToggled: true })} style={toggleStyle}>+</button>}
+                                {LambdaEdgeToggled ? <button style={toggleStyle} onClick={() => this.setState({ LambdaEdgeToggled: false })}>-</button> : <button onClick={() => this.setState({ LambdaEdgeToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {LambdaEdgeToggled && <Table data={this.state.lambdaData} />}
@@ -181,7 +181,7 @@ class CustomerInformation extends Component {
                         {jobData.length === 0 && (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
-                                {jobTableToggled ? <button style={toggleStyle} onClick={this.setState({ jobTableToggled: false })}>-</button> : <button onClick={this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
+                                {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         )}
                         {jobTableToggled && this.state.jobData.map((tableData => <Table tablename={"jobId"} data={tableData} />))}
@@ -191,5 +191,6 @@ class CustomerInformation extends Component {
         )
     }
 }
+
 
 export default CustomerInformation;
