@@ -62,7 +62,7 @@ class Table extends Component {
                                 </tr>
                             )
                         }) : <tr>
-                                <td>No Data Found</td>
+                                <td></td>
                                 <td></td>
                             </tr>
                     }
