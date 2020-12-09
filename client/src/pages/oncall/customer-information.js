@@ -176,7 +176,7 @@ class CustomerInformation extends Component {
 
                         {webhookData.length ? (
                             <div style={flexStyle}>
-                                <h4 style={{ marginBottom: 0 }}>WebHook Table</h4>
+                                <h4 style={{ marginBottom: 0 }}>Webhook Table</h4>
                                 {webhookTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ webhookTableToggled: false })}>-</button> : <button onClick={() => this.setState({ webhookTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
