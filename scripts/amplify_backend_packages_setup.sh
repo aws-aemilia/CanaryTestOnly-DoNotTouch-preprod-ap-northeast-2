@@ -69,10 +69,6 @@ function download_and_build_package() {
             sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainerNode10/configuration/Dockerfile.template
             
             # Modify Container package
-            originalText="arn:aws:iam::288275683263:root"
-            newText="arn:aws:iam::$(echo ${ACCOUNT_ID}):root"
-            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
-
             originalText="033345365959"
             newText="$(echo ${ACCOUNT_ID})"
             sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
