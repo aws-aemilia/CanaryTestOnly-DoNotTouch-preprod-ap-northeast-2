@@ -217,7 +217,7 @@ class CustomerInformation extends Component {
                             </div>
                         ) : null}
                         {jobTableToggled && moreJobsToggled ? this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))
-                            : !jobTableToggled && !moreJobsToggled ? this.state.jobDataMore.map((tableData => <Table id="jobTableMore" tablename={"jobId"} data={tableData} />)) :
+                            : jobTableToggled && !moreJobsToggled ? this.state.jobDataMore.map((tableData => <Table id="jobTableMore" tablename={"jobId"} data={tableData} />)) :
                                 console.log("error")}
 
                         <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
