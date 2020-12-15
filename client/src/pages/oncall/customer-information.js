@@ -157,7 +157,8 @@ class CustomerInformation extends Component {
 
         const filteredJob = this.state.jobData.map(j => {
             return Object.keys(j).reduce((r, e) => {
-                if (j[e].toLowerCase().includes(value.toLowerCase())) r[e] = j[e]
+                console.log("val>>>>", j[e])
+                if (j[e].includes(value.toLowerCase())) r[e] = j[e]
                 return r;
             }, {})
         })
