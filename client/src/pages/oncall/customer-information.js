@@ -31,6 +31,7 @@ class CustomerInformation extends Component {
             jobSearch: ""
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
+        this.handleJobSearch = this.handleJobSearch.bind(this)
     }
 
     searchDataChanged(text) {
