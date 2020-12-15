@@ -15,6 +15,7 @@ class CustomerInformation extends Component {
             webhookData: [],
             lambdaData: {},
             jobData: [],
+            jobDataMore: [],
             search: '',
             loading: false,
             regions: [],
@@ -27,11 +28,10 @@ class CustomerInformation extends Component {
             webhookTableToggled: true,
             LambdaEdgeToggled: true,
             jobTableToggled: true,
+            moreJobsToggled: false,
             numOfJobs: 0,
-            jobSearch: ""
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
-        this.handleJobSearch = this.handleJobSearch.bind(this)
     }
 
     searchDataChanged(text) {
@@ -48,28 +48,6 @@ class CustomerInformation extends Component {
         });
     }
 
-    searchFun() {
-        let filter = document.getElementById('myInput').value.toUpperCase();
-
-        let myTable = document.getElementById('jobTable');
-
-        let tr = myTable.getElementsByTagName('tr');
-
-        for (var i = 0; i < tr.length; i++) {
-            let td = tr[i].getElementsByTagName('td')[0];
-
-            if (td) {
-                let textValue = td.textContent || td.innerHTML;
-
-                if (textValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                }
-                else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    }
 
     async getApiData() {
         try {
@@ -131,9 +109,24 @@ class CustomerInformation extends Component {
                     }
                 });
                 this.setState({ jobData: getJobDataValue })
+            }
+            catch (jobError) {
+                console.log("job table fetch error", jobError)
+            }
+            try {
+                const jobPromisesMore = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJobMore?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
+                const jobResultsMore = await Promise.all(jobPromisesMore);
+                const getJobData = jobResultsMore.map(jobMore => jobMore.data);
+                let getJobDataValueMore = [];
+                getJobData.forEach(obj => {
+                    for (const [key, value] of Object.entries(obj)) {
+                        getJobDataValueMore.push(value)
+                    }
+                });
+                this.setState({ jobDataMore: getJobDataValueMore })
 
                 let getNumOfJobs = 0;
-                getJobDataValue.forEach(g => {
+                getJobDataValueMore.forEach(g => {
                     g.jobSteps.forEach(j => {
                         if (j.jobStatus === "RUNNING") {
                             getNumOfJobs = getNumOfJobs += 1;
@@ -143,8 +136,8 @@ class CustomerInformation extends Component {
 
                 this.setState({ numOfJobs: getNumOfJobs })
             }
-            catch (jobError) {
-                console.log("job table fetch error", jobError)
+            catch (jobMoreError) {
+                console.log("jobMore table fetch error", jobMoreError)
             }
         } catch (error) {
             console.log(error);
@@ -152,27 +145,12 @@ class CustomerInformation extends Component {
         }
     }
 
-    handleJobSearch(event) {
-        let value = event.target.value
-
-        const filteredJob = this.state.jobData.map(j => {
-            return Object.keys(j).reduce((r, e) => {
-                console.log("val>>>>", j[e])
-                if (j[e].includes(value.toLowerCase())) r[e] = j[e]
-                return r;
-            }, {})
-        })
-
-        console.log("filtered", filteredJob)
-
-        this.setState({ jobSearch: value })
-    }
-
     render() {
-        const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs, jobSearch } = this.state;
+        const { appData, branchData, domainData, webhookData, lambdaData, jobData, jobDataMore, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs, moreJobsToggled } = this.state;
 
         const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" };
         const toggleStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "22px", fontWeight: "bold" }
+        const jobStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "12px", fontWeight: "bold" }
         return (
             <div style={{ width: "85%", margin: "0 auto" }}>
                 <h1>
@@ -234,11 +212,11 @@ class CustomerInformation extends Component {
                         {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
-                                <input type="text" name="jobSearch" value={jobSearch} onChange={this.handleJobSearch} placeholder="Job Table Search..." />
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
+                                {moreJobsToggled ? <button style={jobStyle} onClick={() => this.setState({ moreJobsToggled: true })}>show less</button> : <button onClick={() => this.setState({ moreJobsToggled: false })} style={jobStyle}>show more</button>}
                             </div>
                         ) : null}
-                        {jobTableToggled && this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))}
+                        {jobTableToggled && moreJobsToggled ? this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />)) : this.state.jobDataMore.map((tableData => <Table id="jobTableMore" tablename={"jobId"} data={tableData} />))}
 
                         <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
                     </>

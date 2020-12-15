@@ -445,6 +445,7 @@ app.get("/customerinfoJob", async (req, res) => {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
         "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
+        "Limit": 1,
         "ExpressionAttributeValues": {
             ":pkey": query
         },
@@ -464,6 +465,39 @@ app.get("/customerinfoJob", async (req, res) => {
         res.json(result.Items);
     } catch (e) {
         console.log("Job res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Job table
+app.get("/customerinfoJobMore", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Job`,
+        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_branchArn": "branchArn",
+            "#status": "status"
+        },
+        "ScanIndexForward": false
+
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("JobMore res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("JobMore res.json did not work");
         console.error(e);
         res.status(500);
         res.send("Internal Service Error");
