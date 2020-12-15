@@ -212,12 +212,12 @@ class CustomerInformation extends Component {
                         {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
-                                {moreJobsToggled ? <button style={jobStyle} onClick={() => this.setState({ moreJobsToggled: true })}>show less</button> : <button onClick={() => this.setState({ moreJobsToggled: false })} style={jobStyle}>show more</button>}
+                                {moreJobsToggled === false ? <button style={jobStyle} onClick={() => this.setState({ moreJobsToggled: true })}>show less</button> : <button onClick={() => this.setState({ moreJobsToggled: false })} style={jobStyle}>show more</button>}
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
-                        {jobTableToggled && moreJobsToggled ? this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))
-                            : jobTableToggled && !moreJobsToggled ? this.state.jobDataMore.map((tableData => <Table id="jobTableMore" tablename={"jobId"} data={tableData} />)) :
+                        {jobTableToggled && moreJobsToggled === false ? this.state.jobData.map((tableData => <Table id="jobTable" tablename={"jobId"} data={tableData} />))
+                            : jobTableToggled && moreJobsToggled === true ? this.state.jobDataMore.map((tableData => <Table id="jobTableMore" tablename={"jobId"} data={tableData} />)) :
                                 console.log("error")}
 
                         <h5>Number of Jobs Running: <span style={{ color: "#0d6efd" }}>{numOfJobs}</span></h5>
