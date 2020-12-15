@@ -212,7 +212,7 @@ class CustomerInformation extends Component {
                         {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
-                                {moreJobsToggled === false ? <button style={jobStyle} onClick={() => this.setState({ moreJobsToggled: true })}>show less</button> : <button onClick={() => this.setState({ moreJobsToggled: false })} style={jobStyle}>show more</button>}
+                                {moreJobsToggled === false ? <button style={jobStyle} onClick={() => this.setState({ moreJobsToggled: true })}>show more</button> : <button onClick={() => this.setState({ moreJobsToggled: false })} style={jobStyle}>show less</button>}
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
