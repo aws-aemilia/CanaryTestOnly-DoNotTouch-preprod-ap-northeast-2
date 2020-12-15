@@ -27,7 +27,8 @@ class CustomerInformation extends Component {
             webhookTableToggled: true,
             LambdaEdgeToggled: true,
             jobTableToggled: true,
-            numOfJobs: 0
+            numOfJobs: 0,
+            jobSearch: ""
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
     }
@@ -150,8 +151,23 @@ class CustomerInformation extends Component {
         }
     }
 
+    handleJobSearch(event) {
+        let value = event.target.value
+
+        const filteredJob = this.state.jobData.map(j => {
+            return Object.keys(j).reduce((r, e) => {
+                if (j[e].toLowerCase().includes(value.toLowerCase())) r[e] = j[e]
+                return r;
+            }, {})
+        })
+
+        console.log("filtered", filteredJob)
+
+        this.setState({ jobSearch: value })
+    }
+
     render() {
-        const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs } = this.state;
+        const { appData, branchData, domainData, webhookData, lambdaData, jobData, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs, jobSearch } = this.state;
 
         const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" };
         const toggleStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "22px", fontWeight: "bold" }
@@ -216,7 +232,7 @@ class CustomerInformation extends Component {
                         {jobData.length ? (
                             <div style={flexStyle}>
                                 <h4 style={{ marginBottom: 0 }}>Job Table</h4>
-                                <input type="text" name="" id="myInput" placeholder="search..." onKeyUp="searchFun()" />
+                                <input type="text" name="jobSearch" value={jobSearch} onChange={this.handleJobSearch} placeholder="Job Table Search..." />
                                 {jobTableToggled ? <button style={toggleStyle} onClick={() => this.setState({ jobTableToggled: false })}>-</button> : <button onClick={() => this.setState({ jobTableToggled: true })} style={toggleStyle}>+</button>}
                             </div>
                         ) : null}
