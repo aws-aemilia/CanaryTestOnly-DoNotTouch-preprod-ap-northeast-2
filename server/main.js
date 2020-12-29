@@ -1,4 +1,3 @@
-
 const express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
@@ -42,7 +41,6 @@ let username;
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
-
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
     res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
