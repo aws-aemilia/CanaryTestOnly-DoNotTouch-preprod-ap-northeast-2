@@ -228,5 +228,4 @@ class CustomerInformation extends Component {
     }
 }
 
-
 export default CustomerInformation;
