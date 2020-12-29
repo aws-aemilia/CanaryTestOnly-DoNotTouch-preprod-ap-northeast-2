@@ -45,10 +45,17 @@ class Insights extends Component {
             this.state.time != null &&
             this.state.timeRange !== "S" &&
             this.state.timeRange !== "m"
+<<<<<<< HEAD
         ) {  
             const currentTime = this.state.time;
             const timeWithoutMinuteSecond = new Date(currentTime.setMinutes(0, 0, 0));
             this.setState({ time : timeWithoutMinuteSecond});
+=======
+        ) {
+            const selectedTime = this.state.time;
+            const timeWithoutSecondMinute = new Date(selectedTime.setMinutes(0, 0, 0));
+            this.setState({ time: timeWithoutSecondMinute });
+>>>>>>> bab1ccce189e16784e2ee8fd5134e5c769c071a2
         }
 
         const UTCtime =
@@ -67,14 +74,6 @@ class Insights extends Component {
         // Call API to fetch account ID data
         try {
             const { data: accounts } = await Ajax().post("/insights/accountInfo", params);
-            Ajax().post("/insights/QueryOutput", params, {responseType: 'blob'})
-            .then(function(response) {
-                let blob = new Blob([response.data], { type: 'contentType' })
-                let link = document.createElement('a')
-                link.href = window.URL.createObjectURL(blob)
-                link.download = 'result.csv'
-                link.click()
-            })
             // Change region display format
             accounts.forEach((element) => {
                 element.regions = element.regions.join(", ");
@@ -92,10 +91,17 @@ class Insights extends Component {
             this.state.time != null &&
             this.state.timeRange !== "S" &&
             this.state.timeRange !== "m"
+<<<<<<< HEAD
         ){  
             const currentTime = this.state.time;
             const timeWithoutMinuteSecond = new Date(currentTime.setMinutes(0, 0, 0));
             this.setState({ time : timeWithoutMinuteSecond});
+=======
+        ) {
+            const selectedTime = this.state.time;
+            const timeWithoutSecondMinute = new Date(selectedTime.setMinutes(0, 0, 0));
+            this.setState({ time: timeWithoutSecondMinute });
+>>>>>>> bab1ccce189e16784e2ee8fd5134e5c769c071a2
         }
 
         const UTCtime =
@@ -214,10 +220,6 @@ class Insights extends Component {
         const paginationOption = {
             sizePerPageList: [
                 {
-                    text: "20",
-                    value: 20,
-                },
-                {
                     text: "50",
                     value: 50,
                 },
@@ -225,8 +227,12 @@ class Insights extends Component {
                     text: "100",
                     value: 100,
                 },
+                {
+                    text: "200",
+                    value: 200,
+                },
             ],
-            sizePerPage: 20,
+            sizePerPage: 50,
         };
         return (
             <div>
@@ -239,9 +245,7 @@ class Insights extends Component {
                         stage={this.state.stage}
                         timeRange={this.state.timeRange}
                         onErrorCodeChange={(errorCode) =>
-                            errorCode.length > 0
-                                ? this.setState({ eventType: "E-" + errorCode })
-                                : this.setState({ eventType: "" })
+                            errorCode.length > 0 ? this.setState({ eventType : "E-" + errorCode }) : this.setState({ eventType : ""})
                         }
                         onRegionChange={(region) => this.setState({ region })}
                         onStageChange={(stage) =>
@@ -252,9 +256,7 @@ class Insights extends Component {
                         }
                         onPatternChange={(pattern) => {
                             pattern = pattern.toLowerCase();
-                            pattern.length > 0
-                                ? this.setState({ eventType: "P-" + pattern })
-                                : this.setState({ eventType: "" });
+                            pattern.length > 0 ?  this.setState({ eventType : "P-" + pattern }) : this.setState({ eventType : ""})
                         }}
                     >
                         {this.state.timePickerFormat && (
@@ -343,8 +345,7 @@ class Insights extends Component {
                 </div>
                 {this.state.timeout && (
                     <Alert variant={"danger"}>
-                        Slow query! Query is running in the background. Please
-                        try again later to retrieve results
+                        Slow query! Query is running in the background. Please try again later to retrieve results 
                     </Alert>
                 )}
                 <div className="result-table">

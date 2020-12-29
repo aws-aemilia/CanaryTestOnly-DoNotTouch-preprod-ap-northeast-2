@@ -61,7 +61,7 @@ const errorCodeQueryHelper = (timeRange, time, errorCode) => {
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
-                        AND hour = '${hour}'
+                        AND time LIKE '${hour}%'
                         AND status >= ${errorCodeStart}
                         AND status <= ${errorCodeEnd}`;
     } else if (timeRange === "D") {
@@ -90,9 +90,9 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     let queryType = "Pattern";
 
     // Replace special character
-    pattern = pattern.replace("%","\\%")
-    pattern = pattern.replace("_","\\_")
-    pattern = pattern.replace("'","''")
+    pattern = pattern.replace("%","\\%");
+    pattern = pattern.replace("_","\\_");
+    pattern = pattern.replace("'","''");
 
     // Generate query
     const logDataFields_Num = [
@@ -105,24 +105,25 @@ const patternQueryHelper = (timeRange, time, pattern) => {
         "timetofirstbyte",
     ]
     const logDataFields_String = [
-        // "requestip",
-        // "method",
-        // "host",
+        // "location",
+        "requestip",
+        "method",
+        "host",
         "uri",
-        // "referrer",
-        // "useragent",
-        // "querystring",
-        // "cookie",
-        // "resulttype",
-        // "requestid",
-        // "hostheader",
-        // "requestprotocol",
-        // "xforwardedfor",
-        // "sslprotocol",
-        // "sslcipher",
-        // "responseresulttype",
-        // "httpversion",
-        // "filestatus",
+        "referrer",
+        "useragent",
+        "querystring",
+        "cookie",
+        "resulttype",
+        "requestid",
+        "hostheader",
+        "requestprotocol",
+        "xforwardedfor",
+        "sslprotocol",
+        "sslcipher",
+        "responseresulttype",
+        "httpversion",
+        "filestatus",
     ];
     let patternMatchQuery = `LOWER(location) LIKE '%${pattern}%' ESCAPE '\\'`
     logDataFields_String.forEach((attribute) => {
@@ -162,7 +163,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
                         WHERE year = '${year}' 
                         AND month = '${month}' 
                         AND day = '${day}' 
-                        AND hour = '${hour}'
+                        AND time LIKE '${hour}%'
                         AND (${patternMatchQuery})`;
     } else if (timeRange === "D") {
         // Query format : Year-Month-Day
@@ -175,7 +176,7 @@ const patternQueryHelper = (timeRange, time, pattern) => {
     } else if (timeRange === "M") {
         // Query format : Year-Month
         queryTime = year + "-" + month;
-        queryContent = `SELECT * FROM "partitioned_parquet_logs" 
+        queryContent = `SELECT "host" FROM "partitioned_parquet_logs" 
                         WHERE year = '${year}' 
                         AND month = '${month}'
                         AND (${patternMatchQuery})`;

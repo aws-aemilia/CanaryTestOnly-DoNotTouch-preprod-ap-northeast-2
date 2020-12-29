@@ -12,8 +12,8 @@ NC='\033[0m' # No Color
 # See Also: https://quip-amazon.com/cL01AS85sm3A/Progress-notes-on-getting-Local-Development-to-work
 
 # TODO update the following values
-ACCOUNT_ID="YOUR_ACCOUNT_ID_HERE" # e.g. 123456789123
-USER_ALIAS="YOUR_ALIAS_HERE" # e.g. bradruof - not sure what is your alias?  Check https://phonetool.amazon.com/ --- (redirects to) ---> https://phonetool.amazon.com/users/<YOUR_ALIAS_HERE>
+ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text` # e.g. 123456789123
+USER_ALIAS=`whoami` # e.g. bradruof - not sure what is your alias?  Check https://phonetool.amazon.com/ --- (redirects to) ---> https://phonetool.amazon.com/users/<YOUR_ALIAS_HERE>
 RAINBOW_MODE="no" # Wonder what happens if you change this to 'yes'... 🌈.
 
 IS_MAC=''  # empty-string means this is a non-Mac (assume Linux)
@@ -40,7 +40,15 @@ function sed_dash_i() {
 # $3 = Package name: 
 # $4 = Versionset name:
 function download_and_build_package() {
-    echo -e echo -e "${GREEN}Setup $3: BEGIN${NC}"
+    echo -e "${GREEN}Setup $3: BEGIN${NC}"
+    while true; do
+    read -p "Do you wish to build this package? (y/n): " yn
+    case $yn in
+        [Yy] ) break;;
+        [Nn] ) return;;
+        * ) echo "Please answer y/n.";;
+    esac
+    done
     if [[ ! -d "$2/src/$3" ]]; then
         echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
         brazil ws --create -n $2 -vs $4
@@ -61,10 +69,6 @@ function download_and_build_package() {
             sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainerNode10/configuration/Dockerfile.template
             
             # Modify Container package
-            originalText="arn:aws:iam::288275683263:root"
-            newText="arn:aws:iam::$(echo ${ACCOUNT_ID}):root"
-            sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
-
             originalText="033345365959"
             newText="$(echo ${ACCOUNT_ID})"
             sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainer/configuration/cloudFormation/deploy.template.yml
@@ -132,7 +136,7 @@ function download_and_build_package() {
 echo -e "${GREEN}Ref: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/DevelopmentRunbook/#HUsingdeployscript${NC}"
 echo -e "${YELLOW}This tool will setup your workspace, download all the necessary packages, and update the your SAM files${NC}"
 echo -e "${YELLOW}This tool will not do the deployment!  In order to deploy use the deployment script 'amplify_backend_packages_deploy.sh'${NC}"
-set -x #echo commands
+#set -x #echo commands
 
 # Making common directory and navigating inside
 if [[ ! -d "AMPLIFY" ]]; then
@@ -146,7 +150,12 @@ download_and_build_package "Setup dynamodb stream: BEGIN" "AemiliaDynamoDBStream
 download_and_build_package "Setup control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda/development"
 download_and_build_package "Setup workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda" "AemiliaWorkersLambda/development"
 download_and_build_package "Setup warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool" "AemiliaWarmingPoolInfrastructure/development"
-#download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" # Maybe one day 🙄 - Amazon Linux 2 x86_64
+if [[ `uname -r` != *"amzn2"* ]]; then
+  echo -e "${RED}Since you aren't on AL2 if you want to checkout AemiliaEdgeLambda checkout and build it manually before proceeding or <Ctrl-C>.${NC}"
+else
+  download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" "AemiliaEdgeLambda/development"
+fi
+download_and_build_package "Setup edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda/development"
 download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
 download_and_build_package "Setup container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda" "AemiliaContainerLambda/development"
 download_and_build_package "Setup Containers: BEGIN" "AemiliaContainers" "AemiliaContainer" "AemiliaContainers/development"

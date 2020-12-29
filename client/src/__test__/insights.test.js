@@ -33,27 +33,27 @@ describe("insightsToolSelector render correctly", () => {
 });
 
 describe("Insights render correctly", () => {
-
     let wrapper = Enzyme.shallow(<Insights />);
+    const now = new Date();
     wrapper.setState({
         stage: "prod",
         region: "us-east-2",
+        time: now,
         eventType: "E-5XX",
         timeRange: "M",
         loading: false,
     });
 
-    it("State change correctly", () =>{
+    it("State change correctly", () => {
         expect(wrapper.state().stage).toEqual("prod");
         expect(wrapper.state().region).toEqual("us-east-2");
         expect(wrapper.state().loading).toEqual(false);
-    })
-    
+    });
+
     it("Click Button called getAccountId", () => {
         const spy = jest.spyOn(wrapper.instance(), "getAccountId");
         wrapper.instance().forceUpdate();
-        wrapper.find(Button).simulate("click");
+        wrapper.find(Button).at(0).simulate("click");
         expect(spy).toHaveBeenCalled();
     });
-
 });

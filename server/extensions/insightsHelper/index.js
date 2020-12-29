@@ -3,7 +3,6 @@ const accountInfo = require("../accounts");
 const patchSdk = require("../sdkpatcher");
 const aws = require("aws-sdk");
 const mapAppIdToAccountId = require("./mapAccountId");
-const fs = require('fs');
 
 const client_ddb = new aws.DynamoDB.DocumentClient();
 const client_S3 = new aws.S3();
@@ -182,37 +181,5 @@ module.exports = {
             let accounts = mapAppIdToAccountId(accountsInfo);
             return accounts;
         }
-    },
-    
-    fetchQueryOutput: async (stage, region, time, timeRange, eventType) => {
-        let regionList =
-            (region === "global") ? accountInfo.getRegions()[stage] : [region];
-        const [queryTime, queryType, queryContent] = queryHelper(
-            timeRange,
-            time,
-            eventType
-        );
-        const query = queryTime + "/" + eventType;
-        
-        for (let current_region of regionList) {
-            const stageRegion = stage + "-" + current_region;
-            const s3_params = {
-                Bucket: "aws-amplify-hosting-insights-query-history",
-                Key: "QueryOutput/" + stageRegion + '/' + query + '.csv',
-            };
-            const data = await client_S3.getObject(s3_params).promise();
-            fs.writeFileSync("/tmp/result.csv", data.Body, { flag: "a+" });
-        }
-
-        const file = fs.readFileSync('/tmp/result.csv');
-        const params = {
-            Bucket: "aws-amplify-hosting-insights-query-history",
-            Key: "TempOutput/"+ query + '.csv',
-            Body: file,
-            ServerSideEncryption: 'aws:kms'
-        };
-        await client_S3.upload(params).promise();
-
-        return;
     },
 };
