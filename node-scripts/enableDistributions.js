@@ -1,7 +1,7 @@
 `use strict`;
 const { CloudFront } = require("@aws-sdk/client-cloudfront");
 const fs = require("fs-extra");
-const orphanedDistributionsFileName = "orphanedDistributions-test.json";
+const orphanedDistributionsFileName = "orphanedDistributions.json";
 
 const run = async () => {
   const client = new CloudFront({});
