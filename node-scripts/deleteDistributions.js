@@ -4,7 +4,7 @@ const fs = require("fs-extra");
 const orphanedDistributionsFileName = "orphanedDistributions.json";
 
 const run = async () => {
-  const client = new CloudFront({});
+  const client = new CloudFront({region: "ap-south-1"});
   try {
     if (fs.existsSync(orphanedDistributionsFileName)) {
       const orphanedDistributions = fs.readJSONSync(
