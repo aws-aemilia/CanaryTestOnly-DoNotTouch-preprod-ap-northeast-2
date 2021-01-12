@@ -154,8 +154,7 @@ class CustomerInformation extends Component {
         return (
             <div style={{ width: "85%", margin: "0 auto" }}>
                 <h1>
-                    <span>Customer Information</span>
-                    <small>Customer Configuration and Settings</small>
+                    <span>Customer Information Settings</span>
                 </h1>
                 <StageRegionSelector
                     regions={this.props.regions}
