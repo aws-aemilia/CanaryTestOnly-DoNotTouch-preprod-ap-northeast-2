@@ -126,13 +126,13 @@ app.get('/api/metrics/builds/succeed', async (req, res) => {
         query = 'select * from main where jobid is not null order by timestamp desc limit 500';
     }
     if (query) {
-        // try {
-        //     const data = await businessMetrics(query); // Here is where redshift is used. (calls extensions/businessMetrics/index.js)
-        //     res.json(data);
-        // } catch (error) {
-        //     res.status(500);
-        //     res.json(error);
-        // }
+        try {
+            const data = await businessMetrics(query); // Here is where redshift is used. (calls extensions/businessMetrics/index.js)
+            res.json(data);
+        } catch (error) {
+            res.status(500);
+            res.json(error);
+        }
     } else {
         res.status(400);
         res.end('Invalid request');

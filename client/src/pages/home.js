@@ -34,8 +34,8 @@ class Home extends Component {
 
     async componentDidMount() {
         this.getAllBuilds();
-        // this.getFailureCountForWeek();
-        // this.getFailureCountForMonth();
+        this.getFailureCountForWeek();
+        this.getFailureCountForMonth();
     }
 
     async getFailureCountForWeek() {
