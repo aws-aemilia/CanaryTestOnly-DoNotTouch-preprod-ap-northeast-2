@@ -6,7 +6,7 @@
 # Region (default us-west-2)
 # Number of Versions to Keep (default 3)
 
-AWS_REGION=${1:-${AWS_REGION:-us-west-2}}
+AWS_REGION=${1:-${AWS_DEFAULT_REGION:-us-west-2}}
 VERSIONS_TO_KEEP=${2:-3}
 export AWS_PAGER=""
 code_storage=0
@@ -57,7 +57,7 @@ delete_old_versions() {
   [[ ! ${version_arns[@]} ]] && echo "No versions found, skipping" && return
 
   number_of_versions=$(wc -w <<< $version_arns)
-  echo "Number of verisons: $number_of_versions"
+  echo "Number of versions: $number_of_versions"
   [[ $number_of_versions -le $VERSIONS_TO_KEEP ]] && echo "No excess versions to delete, skipping" && return
 
   highest_version=$(aws lambda list-versions-by-function --region ${AWS_REGION} --function-name $1 --query "Versions[?!ends_with(FunctionArn, \`LATEST\`)].FunctionArn"  | jq -r '[.[] | match("\\d+$") | .string | tonumber] | sort | .[-1]')
@@ -81,7 +81,8 @@ delete_old_versions() {
           else
             echo "Deleting version $version_num";
             # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+            echo "*********Not deleting, uncomment code and rerun to actually delete"
+            #aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           fi
         done
         get_code_storage
