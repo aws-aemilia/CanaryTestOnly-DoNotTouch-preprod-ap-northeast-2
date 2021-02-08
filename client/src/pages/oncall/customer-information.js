@@ -48,7 +48,6 @@ class CustomerInformation extends Component {
         });
     }
 
-
     async getApiData() {
         try {
             try {
