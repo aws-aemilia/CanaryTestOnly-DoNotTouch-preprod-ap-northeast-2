@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pager Pain
 // @namespace    http://aws.amazon.com/
-// @version      2.0
+// @version      2.01
 // @description  Generate wiki notes for pages with emojis.  Assumes your oncall runs 9am-9am Monday-Monday.
 // @author       behroozi@
 // @include      https://paging.corp.a2z.com/
@@ -23,9 +23,17 @@
             //when the .send-buttons class shows up
             //clone a button, call it Pain and attach the click action to it
             let buttons = $(".send-buttons");
-            if(buttons.length !== 0) {
+            if(buttons.length !== 0 && buttons.children().length > 2) {
                 let clone = buttons.children().first().clone();
-                clone.find('a').click(function(e){
+                clone.click(function(e){
+                    if(!/#\/pages$/.test(window.location.href)){
+                       window.location.href = "https://paging.corp.a2z.com/#/pages";
+                       GM_notification({title:"Action Required",
+                                         text: "Click 😡 Pain again",
+                                         timeout: 3000,
+                                         image:GM_info.script.icon}, null);
+                       return;
+                    }
                     try {
                         //get any existing pages associated with the pain button
                         //so new pages can be overlayed
@@ -72,6 +80,7 @@
                     return false;
                 });
                 clone.find('span').text('😡 Pain');
+                clone.find('button').toggleClass("awsui-button-variant-normal awsui-button-variant-primary");
                 buttons.prepend(clone);
                 o.disconnect();
             }
