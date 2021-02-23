@@ -2,7 +2,7 @@ import MidwayIdentityJavaScriptClient from './midwayClient/client';
 
 const config = {
     region: "us-west-2",
-    cognitoIdentityPoolId: "us-west-2:2514e49c-af4b-4642-8ce0-4736e6a4a3bb"
+    cognitoIdentityPoolId: "us-west-2:32b52604-c1b2-4a1a-b3d0-81b06a789b4c"
 };
 
 class MidwayClient {
@@ -26,7 +26,7 @@ let ajax;
 const getAjax = () => {
     if (!ajax) {
         ajax = new MidwayClient(
-            process.env.REACT_APP_API_ENDPOINT ? process.env.REACT_APP_API_ENDPOINT : 'https://h4jqs1gatl.execute-api.us-west-2.amazonaws.com/latest',
+            process.env.REACT_APP_API_ENDPOINT ? process.env.REACT_APP_API_ENDPOINT : 'https://ex012oiylc.execute-api.us-west-2.amazonaws.com/latest',
             config.cognitoIdentityPoolId,
             config.region
         )
