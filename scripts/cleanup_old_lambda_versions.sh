@@ -6,7 +6,7 @@
 # Region (default us-west-2)
 # Number of Versions to Keep (default 3)
 
-AWS_REGION=${1:-${AWS_REGION:-us-west-2}}
+AWS_REGION=${1:-${AWS_DEFAULT_REGION:-us-west-2}}
 VERSIONS_TO_KEEP=${2:-3}
 export AWS_PAGER=""
 code_storage=0
@@ -25,7 +25,6 @@ delete_lambdas() {
   echo "Calculating storage usage in $AWS_REGION, if you have many functions/versions this could take a minute..."
   get_code_storage
   echo "===="
-  sleep 2
   lambdas=$(aws --region ${AWS_REGION} lambda list-functions --no-paginate --query "Functions[*].FunctionName" | jq -r '.[]')
   [[ ! ${lambdas[@]} ]] && echo "No Lambdas found." && exit 1
   echo "Lambdas found:"
@@ -36,9 +35,9 @@ delete_lambdas() {
   for lambda in ${lambdas[@]}; do
     echo "===="
     echo "Lambda: ${lambda}"
-    # Never delete any versions of edge lambda v2
+    # Never delete any versions of edge lambda v1 or v2
     # https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/AemiliaEdgeLambdaDeployer/#HCleanUpDeployer
-    if echo $lambda | grep -q AemiliaEdgeLambdaClone; then
+    if echo $lambda | grep -q 'AemiliaEdgeLambdaClone\|AemiliaOrigin'; then
         echo "Edge Lambda V2 function, skipping"
     else
       delete_old_versions $lambda
@@ -57,7 +56,7 @@ delete_old_versions() {
   [[ ! ${version_arns[@]} ]] && echo "No versions found, skipping" && return
 
   number_of_versions=$(wc -w <<< $version_arns)
-  echo "Number of verisons: $number_of_versions"
+  echo "Number of versions: $number_of_versions"
   [[ $number_of_versions -le $VERSIONS_TO_KEEP ]] && echo "No excess versions to delete, skipping" && return
 
   highest_version=$(aws lambda list-versions-by-function --region ${AWS_REGION} --function-name $1 --query "Versions[?!ends_with(FunctionArn, \`LATEST\`)].FunctionArn"  | jq -r '[.[] | match("\\d+$") | .string | tonumber] | sort | .[-1]')
@@ -81,10 +80,10 @@ delete_old_versions() {
           else
             echo "Deleting version $version_num";
             # Commented out by default to encourage testing expected output first - uncomment when ready to delete
-            # aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
+            echo "*********Not deleting, uncomment code and rerun to actually delete"
+            #aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           fi
         done
-        get_code_storage
         break
         ;;
       n|no)
