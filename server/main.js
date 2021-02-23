@@ -4,7 +4,11 @@ const path = require('path');
 const aws = require('aws-sdk');
 const proxy = require('http-proxy-middleware');
 const accounts = require('./extensions/accounts');
+<<<<<<< HEAD
 const businessMetrics = require('./extensions/businessMetrics'); // Metrics page calls redshift here
+=======
+const businessMetrics = require('./extensions/businessMetrics');
+>>>>>>> 3ecd6199eb12db1a587653d3a3792897469d1dd4
 const { getEvent } = require('./event');
 const patchSdk = require('./extensions/sdkpatcher');
 const { getAccountId } = require('./extensions/accounts');
@@ -41,7 +45,10 @@ let username;
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3ecd6199eb12db1a587653d3a3792897469d1dd4
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
     res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
@@ -572,6 +579,7 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
         res.send("Internal Service Error");
     }
 });
+
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
