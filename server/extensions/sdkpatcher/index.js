@@ -44,7 +44,7 @@ const roles = [
 let stsClient;
 const getStsClient = () => {
     if (!stsClient) {
-        stsClient = new aws.STS({stsRegionalEndpoints: 'regional'});
+        stsClient = new aws.STS({stsRegionalEndpoints: 'regional', ExternalId: 'AmplifyConsoleInternal'});
     }
     return stsClient;
 };
