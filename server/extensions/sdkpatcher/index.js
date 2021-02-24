@@ -44,7 +44,7 @@ const roles = [
 let stsClient;
 const getStsClient = () => {
     if (!stsClient) {
-        stsClient = new aws.STS({stsRegionalEndpoints: 'regional'});
+        stsClient = new aws.STS({stsRegionalEndpoints: 'regional', ExternalId: 'AmplifyConsoleInternal'});
     }
     return stsClient;
 };
@@ -59,6 +59,7 @@ const patchSdk = async (stage, region, sdk, sdkRegion) => {
         RoleArn,
         RoleSessionName: 'TOOLS',
         // DurationSeconds: 'NUMBER_VALUE'
+        ExternalId: 'AmplifyConsoleInternal',
     };
     try {
         const data = await client.assumeRole(params).promise();

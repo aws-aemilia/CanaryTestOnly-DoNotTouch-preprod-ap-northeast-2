@@ -61,6 +61,7 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/oncall/metering">Metering</Link>
                                 <Link className="dropdown-item" to="/oncall/lambdaedge">Lambda@Edge FileConfig</Link>
                                 <Link className="dropdown-item" to="/oncall/impact">Customer impact</Link>
+                                <Link className="dropdown-item" to="/oncall/customer-information">Customer Information</Link>
                             </div>
                         </li>
                         <li>
