@@ -22,11 +22,8 @@ delete_lambdas() {
   echo "===="
   echo "Make sure you're following the two-person rule if in a production environment!"
   echo "Iterating through functions in $AWS_REGION to delete any versions older than last $VERSIONS_TO_KEEP"
-  echo "Calculating storage usage in $AWS_REGION, if you have many functions/versions this could take a minute..."
-  get_code_storage
   echo "===="
-  sleep 2
-  lambdas=$(aws --region ${AWS_REGION} lambda list-functions --no-paginate --query "Functions[*].FunctionName" | jq -r '.[]')
+  lambdas=$(aws --region ${AWS_REGION} lambda list-functions --query "Functions[*].FunctionName" | jq -r '.[]')
   [[ ! ${lambdas[@]} ]] && echo "No Lambdas found." && exit 1
   echo "Lambdas found:"
   echo "${lambdas}"
@@ -36,10 +33,10 @@ delete_lambdas() {
   for lambda in ${lambdas[@]}; do
     echo "===="
     echo "Lambda: ${lambda}"
-    # Never delete any versions of edge lambda v2
+    # Never delete any versions of edge lambda v1 or v2
     # https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/AemiliaEdgeLambdaDeployer/#HCleanUpDeployer
-    if echo $lambda | grep -q AemiliaEdgeLambdaClone; then
-        echo "Edge Lambda V2 function, skipping"
+    if echo $lambda | grep -q 'AemiliaEdgeLambdaClone\|AemiliaOrigin'; then
+        echo "Edge Lambda function, skipping"
     else
       delete_old_versions $lambda
       echo "Done deleting old versions of lambda function: ${lambda}"
@@ -85,7 +82,6 @@ delete_old_versions() {
             #aws --region ${AWS_REGION} lambda delete-function --function-name ${version_arn}
           fi
         done
-        get_code_storage
         break
         ;;
       n|no)

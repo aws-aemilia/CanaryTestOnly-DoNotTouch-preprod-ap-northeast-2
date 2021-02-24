@@ -5,9 +5,9 @@ const aws = require('aws-sdk');
 const proxy = require('http-proxy-middleware');
 const accounts = require('./extensions/accounts');
 const businessMetrics = require('./extensions/businessMetrics');
-const {getEvent} = require('./event');
+const { getEvent } = require('./event');
 const patchSdk = require('./extensions/sdkpatcher');
-const {getAccountId} = require('./extensions/accounts');
+const { getAccountId } = require('./extensions/accounts');
 const Metering = require('./extensions/metering');
 const {
     queryAllRegions,
@@ -41,7 +41,6 @@ let username;
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
-
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
     res.append('Access-Control-Allow-Headers', 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
@@ -56,7 +55,7 @@ app.use((req, res, next) => {
         }
         if (!username || allowedUsers.indexOf(username) < 0) {
             res.status(403);
-            res.json({message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found`})
+            res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
         } else {
             next();
         }
@@ -100,7 +99,7 @@ app.get('/api/metrics/builds/failed', async (req, res) => {
     }
     if (query) {
         try {
-            const data = await businessMetrics(query);
+            const data = await businessMetrics(query); // Here is where redshift is used. (Calls extensions/businessMetrics/index.js)
             res.json(data);
         } catch (error) {
             res.status(500);
@@ -127,7 +126,7 @@ app.get('/api/metrics/builds/succeed', async (req, res) => {
     }
     if (query) {
         try {
-            const data = await businessMetrics(query);
+            const data = await businessMetrics(query); // Here is where redshift is used. (calls extensions/businessMetrics/index.js)
             res.json(data);
         } catch (error) {
             res.status(500);
@@ -148,17 +147,17 @@ app.post('/api/builds', async (req, res) => {
             'projectName': req.body.project,
             'nextToken': req.body.token ? req.body.token : undefined
         }).promise();
-        let codebuildBuilds = await codebuild.batchGetBuilds({'ids': buildIds['ids']}).promise();
+        let codebuildBuilds = await codebuild.batchGetBuilds({ 'ids': buildIds['ids'] }).promise();
         let token = buildIds.nextToken;
 
         builds = builds.concat(codebuildBuilds.builds);
 
-        res.end(JSON.stringify({'builds': builds, token}));
+        res.end(JSON.stringify({ 'builds': builds, token }));
     } catch (err) {
         console.log('error calling codebuild');
         console.log(err);
         res.status(400);
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 });
 
@@ -173,7 +172,7 @@ app.get('/api/logs', async (req, res) => {
             else res.end(JSON.stringify(data)); // successful response
         });
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 
 });
@@ -197,7 +196,7 @@ app.get('/api/logsbyprefix', async (req, res) => {
 
         res.end(JSON.stringify(builds));
     } catch (err) {
-        res.end(JSON.stringify({'error': err}));
+        res.end(JSON.stringify({ 'error': err }));
     }
 });
 
@@ -215,7 +214,7 @@ app.get('/api/cachemeta', async (req, res) => {
             if (err) {
                 console.log('error in s3');
                 console.log(err);
-                res.end(JSON.stringify({'error': err}))
+                res.end(JSON.stringify({ 'error': err }))
             } else {
                 console.log(data);
                 res.end(JSON.stringify(data))
@@ -223,7 +222,7 @@ app.get('/api/cachemeta', async (req, res) => {
         });
     } catch (err) {
         console.log('error');
-        res.end(JSON.stringify({'error': err}))
+        res.end(JSON.stringify({ 'error': err }))
     }
 });
 
@@ -236,7 +235,7 @@ app.get('/cwlogs/groups', async (req, res) => {
         let nextToken = undefined;
         let logGroups = [];
         do {
-            const result = await client.describeLogGroups({limit: 50, nextToken}).promise();
+            const result = await client.describeLogGroups({ limit: 50, nextToken }).promise();
             nextToken = result.nextToken;
             logGroups = [
                 ...logGroups,
@@ -253,7 +252,7 @@ app.get('/cwlogs/groups', async (req, res) => {
 });
 
 app.post('/cwlogs/events/filter', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.filterLogEvents(params).promise();
@@ -267,7 +266,7 @@ app.post('/cwlogs/events/filter', async (req, res) => {
 });
 
 app.post('/cwlogs/events/get', async (req, res) => {
-    const {stage, region, sdkRegion, ...params} = req.body;
+    const { stage, region, sdkRegion, ...params } = req.body;
     try {
         const client = await patchSdk(stage, region, aws.CloudWatchLogs, sdkRegion);
         const result = await client.getLogEvents(params).promise();
@@ -343,10 +342,241 @@ app.post("/insights/clear", async (req, res) => {
     }
 });
 
+// ddb query to get customer data from App table
+app.get("/customerinfoApp", async (req, res) => {
+    const { stage, region, query } = req.query;
+    const params = {
+        "TableName": `${stage}-${region}-App`,
+        "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, platform, repository, updateTime",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#name": "name"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("App res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("App res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Branch table
+app.get("/customerinfoBranch", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Branch`,
+        "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config.enableAutoBuild, config.ejected, config.environmentVariables, config.enablePullRequestPreview, config.enablePerformanceMode, config.enableBasicAuth, config.enableNotification, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#ttl": "ttl"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("Branch res.json worked");
+        res.status(200);
+        console.log(result.Items)
+        res.json(result.Items);
+    } catch (e) {
+        console.log("Branch res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Job table
+app.get("/customerinfoJob", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Job`,
+        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
+        "Limit": 1,
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_branchArn": "branchArn",
+            "#status": "status"
+        },
+        "ScanIndexForward": false
+
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("Job res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("Job res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Job table
+app.get("/customerinfoJobMore", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Job`,
+        "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_branchArn = :pkey",
+        "Limit": 6,
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_branchArn": "branchArn",
+            "#status": "status"
+        },
+        "ScanIndexForward": false
+
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("JobMore res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("JobMore res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Domain table
+app.get("/customerinfoDomain", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Domain`,
+        "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, #status, statusReason, subDomainDOs, updateTime, version",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#status": "status"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("Domain res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("Domain res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from Webhook table
+app.get("/customerinfoWebhook", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": `${stage}-${region}-Webhook`,
+        "IndexName": 'appId-webhookId-index',
+        "ProjectionExpression": "appId, branchName, createTime, description, updateTime, version, webhookArn, webhookId",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("Webhook res.json worked");
+        res.status(200);
+        res.json(result.Items);
+    } catch (e) {
+        console.log("Webhook res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
+// ddb query to get customer data from LambdaEdgeConfig table
+app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
+    const { stage, region, query } = req.query;
+
+    const params = {
+        "TableName": "LambdaEdgeConfig",
+        "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
+        "ProjectionExpression": "appId, #awsRepDeleting, #awsRepUpdateRegion, #awsRepUpdateTime, config.enableBasicAuth, createTime, customDomainIds, customRuleConfigs, hostNameConfig, updateTime, version",
+        "ExpressionAttributeValues": {
+            ":pkey": query
+        },
+        "ExpressionAttributeNames": {
+            "#DYNOBASE_appId": "appId",
+            "#awsRepDeleting": "aws:rep:deleting",
+            "#awsRepUpdateRegion": "aws:rep:updateregion",
+            "#awsRepUpdateTime": "aws:rep:updatetime"
+        },
+        "ScanIndexForward": true
+    };
+    try {
+        // client should pass credentials
+        const client = await patchSdk(stage, region, aws.DynamoDB.DocumentClient);
+        const result = await client.query(params).promise();
+        console.log("LambdaEdgeConfig res.json worked");
+        res.status(200);
+        res.json(result.Items[0]);
+    } catch (e) {
+        console.log("LambdaEdgeConfig res.json did not work");
+        console.error(e);
+        res.status(500);
+        res.send("Internal Service Error");
+    }
+});
+
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/../client/public/index.html'));
 });
+
 
 // app.listen(config.port);
 // console.log('App is listening on port ' + config.port);
