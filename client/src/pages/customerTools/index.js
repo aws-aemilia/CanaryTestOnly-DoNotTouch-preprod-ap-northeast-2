@@ -2,12 +2,11 @@ import React, {Component} from 'react';
 import {Route, Switch, withRouter} from 'react-router-dom';
 import NavBar from '../../components/navbar';
 import Ajax from "../../ajax";
-import Metering from './metering';
 import Impact from './impact';
-import LambdaEdge from './lambdaEdge';
 import CustomerInformation from './customer-information';
+import Insights from './insights';
 
-class OnCall extends Component {
+class CustomerTools extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -30,13 +29,11 @@ class OnCall extends Component {
                 <NavBar/>
                 <Switch>
                     <Switch>
-                        <Route path={this.props.match.path + '/metering'}
-                               render={(props) => <Metering {...props} regions={this.state.regions}/>}/>
-                        <Route path={this.props.match.path + '/lambdaedge'}
-                               render={(props) => <LambdaEdge {...props} regions={this.state.regions}/>}/>
                         <Route path={this.props.match.path + '/impact'}
                                render={(props) => <Impact {...props} regions={this.state.regions}/>}/>
                         <Route path={this.props.match.path + "/customer-information"} render={(props) => <CustomerInformation {...props} regions={this.state.regions}/>}/>
+                        <Route path={this.props.match.path + '/insights'}
+                               render={(props) => <Insights {...props} regions={this.state.regions}/>}/>
                     </Switch>
                 </Switch>
             </div>
@@ -44,4 +41,4 @@ class OnCall extends Component {
     }
 }
 
-export default withRouter(OnCall);
+export default withRouter(CustomerTools);

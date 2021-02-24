@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Button, Alert } from "react-bootstrap";
-import InsightsToolSelector from "../components/insightsToolSelector";
-import NavBar from "../components/navbar";
-import Ajax from "../ajax";
+import InsightsToolSelector from "../../components/insightsToolSelector";
+import NavBar from "../../components/navbar";
+import Ajax from "../../ajax";
 import DateTimePicker from "react-datetime-picker";
 import Spinner from "react-bootstrap/Spinner";
 import BootstrapTable from "react-bootstrap-table-next";

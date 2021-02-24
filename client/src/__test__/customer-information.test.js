@@ -2,7 +2,7 @@ import Enzyme from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import StageRegionSelector from "../../components/stageRegionSelector";
-import CustomerInformation from "../pages/oncall/customer-Information";
+import CustomerInformation from "../pages/oncallTools/customer-Information";
 
 Enzyme.configure({ adapter: new Adapter() });
 

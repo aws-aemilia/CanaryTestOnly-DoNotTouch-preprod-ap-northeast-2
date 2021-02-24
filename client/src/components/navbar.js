@@ -52,20 +52,20 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/failures/days/30">Last 30 Days</Link>
                             </div>
                         </li>
-                        <li className={`nav-item dropdown ${path.indexOf('/oncall') >= 0 ? 'active' : ''}`}>
+                        <li className={`nav-item dropdown ${path.indexOf('/oncallTools') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 OnCall
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <Link className="dropdown-item" to="/oncall/metering">Metering</Link>
-                                <Link className="dropdown-item" to="/oncall/lambdaedge">Lambda@Edge FileConfig</Link>
-                                <Link className="dropdown-item" to="/oncall/impact">Customer impact</Link>
-                                <Link className="dropdown-item" to="/oncall/customer-information">Customer Information</Link>
+                                <Link className="dropdown-item" to="/oncallTools/metering">Metering</Link>
+                                <Link className="dropdown-item" to="/oncallTools/lambdaedge">Lambda@Edge FileConfig</Link>
                             </div>
-                        </li>
-                        <li>
-                            <Link className="nav-link" to="/insights">Insights</Link>
+                            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>
+                                <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
+                                <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>
+                            </div>
                         </li>
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
