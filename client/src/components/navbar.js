@@ -55,12 +55,18 @@ class NavBar extends Component {
                         <li className={`nav-item dropdown ${path.indexOf('/oncallTools') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                OnCall
+                                OnCall Tools
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <Link className="dropdown-item" to="/oncallTools/metering">Metering</Link>
                                 <Link className="dropdown-item" to="/oncallTools/lambdaedge">Lambda@Edge FileConfig</Link>
-                            </div>
+                            </div>    
+                        </li>
+                        <li className={`nav-item dropdown ${path.indexOf('/customerTools') >= 0 ? 'active' : ''}`}>
+                            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Customer Tools
+                            </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>
                                 <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
