@@ -1,0 +1,27 @@
+version: 0.1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - cd server
+        - npm install
+        - npm install claudia -g
+    build:
+      commands:
+        - claudia update --config claudia.json --runtime nodejs12.x
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd ../client
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: client/build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - client/node_modules/**/*
