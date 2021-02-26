@@ -2,6 +2,8 @@ const aws = require('aws-sdk');
 const {getAccountId} = require('../accounts');
 
 const roles = [
+    // team metrics
+    'arn:aws:iam::718161700038:role/AmplifyConsoleHostingTools',
     // beta pdx
     'arn:aws:iam::033345365959:role/AemiliaWebhookProcessorLambda-OncallToolRole-15AWHWLYKMIO5',
     // gamma iad

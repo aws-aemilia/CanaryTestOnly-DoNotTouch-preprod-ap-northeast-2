@@ -1,5 +1,7 @@
 const Redshift = require('node-redshift');
 const aws = require('aws-sdk');
+const patchSdk = require("../sdkpatcher");
+
 
 let client;
 
@@ -14,7 +16,7 @@ async function setClient() {
     };
 
     try {
-        const rs = new aws.Redshift()
+        const rs =  await patchSdk('metrics', 'us-west-2', aws.Redshift);
         const ret = await rs.getClusterCredentials(params).promise()
         const connection = {
             user: ret.DbUser,
