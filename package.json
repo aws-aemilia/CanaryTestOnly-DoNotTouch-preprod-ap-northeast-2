@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "claudia": "^5.13.0"
+  }
+}
