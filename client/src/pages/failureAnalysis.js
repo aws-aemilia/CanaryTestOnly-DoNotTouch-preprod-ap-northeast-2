@@ -30,6 +30,7 @@ class Failures extends Component {
     }
 
     getList = () => {
+        const isMetrics = true;
         const {match: {params}} = this.props;
         let url = null;
 
@@ -46,7 +47,7 @@ class Failures extends Component {
             url = '/api/metrics/builds/failed?days=' + days;
         }
 
-        Ajax().fetch(url)
+        Ajax(isMetrics).fetch(url)
             .then(async ({data: json}) => {
                 if (json.rows.length <= 0) {
                     this.setState({'error': true, 'loading': false});

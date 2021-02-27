@@ -9,14 +9,6 @@
     "type": "The type of service supported by this account - service (single service stack - used in alphas), general (service account), canary, console"
   },
   "accounts": {
-    "metrics.us-west-2.aemilia": {
-      "accountId": "718161700038",
-      "alias": "prod",
-      "region": "us-west-2",
-      "region_partition": "aws",
-      "stage": "metrics",
-      "type": "service"
-    },
     "beta.us-west-2.aemilia": {
       "accountId": "033345365959",
       "alias": "beta",
