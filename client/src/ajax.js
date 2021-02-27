@@ -32,23 +32,21 @@ class MidwayClient {
 
 let ajax;
 const getAjax = (isMetrics) => {
-    if (!ajax) {
-        if (isMetrics) {
-            console.log("Go to Team Metrics Account")
-            ajax = new MidwayClient(
-                "https://ex012oiylc.execute-api.us-west-2.amazonaws.com/latest",
-                config_metrics.cognitoIdentityPoolId,
-                config_metrics.region
-            );
-        } else {
-            ajax = new MidwayClient(
-                process.env.REACT_APP_API_ENDPOINT
-                    ? process.env.REACT_APP_API_ENDPOINT
-                    : "https://t7qflvdki3.execute-api.us-west-2.amazonaws.com/latest",
-                config.cognitoIdentityPoolId,
-                config.region
-            );
-        }
+    if (isMetrics) {
+        console.log("Go to Team Metrics Account")
+        ajax = new MidwayClient(
+            "https://ex012oiylc.execute-api.us-west-2.amazonaws.com/latest",
+            config_metrics.cognitoIdentityPoolId,
+            config_metrics.region
+        );
+    } else {
+        ajax = new MidwayClient(
+            process.env.REACT_APP_API_ENDPOINT
+                ? process.env.REACT_APP_API_ENDPOINT
+                : "https://t7qflvdki3.execute-api.us-west-2.amazonaws.com/latest",
+            config.cognitoIdentityPoolId,
+            config.region
+        );
     }
     return ajax;
 };
