@@ -59,6 +59,7 @@ const patchSdk = async (stage, region, sdk, sdkRegion) => {
         RoleArn,
         RoleSessionName: 'TOOLS',
         // DurationSeconds: 'NUMBER_VALUE'
+        ExternalId: 'AmplifyConsoleInternal'
     };
     try {
         const data = await client.assumeRole(params).promise();
