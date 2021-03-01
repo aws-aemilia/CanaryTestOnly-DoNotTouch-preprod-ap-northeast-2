@@ -1,10 +1,10 @@
 {
   "lambda": {
-    "role": "AmplifyHostingTools-executor",
-    "name": "AmplifyHostingTools",
+    "role": "awsamplify-tools-executor",
+    "name": "awsamplify-tools",
     "region": "us-west-2"
   },
   "api": {
-    "id": "t7qflvdki3"
+    "id": "ex012oiylc"
   }
 }
