@@ -122,17 +122,20 @@ class Home extends Component {
     }
 
     async getFailureCountForDays(from, to) {
-        const {data} = await Ajax().fetch(`/api/metrics/builds/failed?daysFrom=${from}&daysTo=${to}`, {cancelToken: this.source.token});
+        const isMetrics = true;
+        const {data} = await Ajax(isMetrics).fetch(`/api/metrics/builds/failed?daysFrom=${from}&daysTo=${to}`, {cancelToken: this.source.token});
         return Object.entries(_.groupBy(data.rows, 'appid')).length;
     }
 
     async getSuccessCountForDays(from, to) {
-        const {data} = await Ajax().fetch(`/api/metrics/builds/succeed?daysFrom=${from}&daysTo=${to}`, {cancelToken: this.source.token});
+        const isMetrics = true;
+        const {data} = await Ajax(isMetrics).fetch(`/api/metrics/builds/succeed?daysFrom=${from}&daysTo=${to}`, {cancelToken: this.source.token});
         return {builds: data, passCount: Object.entries(_.groupBy(data.rows, 'appid')).length};
     }
 
     async getAllBuilds() {
-        const {data} = await Ajax().fetch(`/api/metrics/builds/succeed`, {cancelToken: this.source.token});
+        const isMetrics = true;
+        const {data} = await Ajax(isMetrics).fetch(`/api/metrics/builds/succeed`, {cancelToken: this.source.token});
         return {builds: data, passCount: Object.entries(_.groupBy(data.rows, 'appid')).length};
     }
 

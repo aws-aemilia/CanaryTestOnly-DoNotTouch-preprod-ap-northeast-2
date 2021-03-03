@@ -25,7 +25,8 @@ class List extends Component {
     // Retrieves the list of items from the Express app
     getBuilds = () => {
         const {match: {params}} = this.props;
-        Ajax().fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
+        const isMetrics = true;
+        Ajax(isMetrics).fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
             .then(async ({data: json}) => this.setState({'list': json['events']}));
     };
 
