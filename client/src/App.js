@@ -6,9 +6,9 @@ import Failures from './pages/failures';
 import FailureAnalysis from './pages/failureAnalysis';
 import Builds from './pages/builds';
 import Logs from './pages/logs';
-import OnCall from './pages/oncall';
+import OnCall from './pages/oncallTools';
 import Ajax from "./ajax";
-import Insights from "./pages/insights";
+import CustomerTools from './pages/customerTools'
 
 class App extends Component {
     constructor(props) {
@@ -44,8 +44,8 @@ class App extends Component {
                     <Route path='/failureAnalysis/search/:query' component={FailureAnalysis}/>
                     <Route path='/builds/:region/:project' component={Builds}/>
                     <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>
-                    <Route path='/oncall' component={OnCall}/>
-                    <Route path='/insights' component={Insights}/>
+                    <Route path='/oncallTools' component={OnCall}/>
+                    <Route path='/customerTools' component={CustomerTools}/>
                 </Switch>
             </div>
         );

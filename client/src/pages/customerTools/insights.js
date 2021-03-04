@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { Button, Alert } from "react-bootstrap";
-import InsightsToolSelector from "../components/insightsToolSelector";
-import NavBar from "../components/navbar";
-import Ajax from "../ajax";
+import InsightsToolSelector from "../../components/insightsToolSelector";
+import Ajax from "../../ajax";
 import DateTimePicker from "react-datetime-picker";
 import Spinner from "react-bootstrap/Spinner";
 import BootstrapTable from "react-bootstrap-table-next";
@@ -222,113 +221,110 @@ class Insights extends Component {
         };
         return (
             <div>
-                <NavBar />
-                <div>
-                    <InsightsToolSelector
-                        loading={this.state.loading}
-                        regions={this.state.regions}
-                        region={this.state.region}
-                        stage={this.state.stage}
-                        timeRange={this.state.timeRange}
-                        onErrorCodeChange={(errorCode) =>
-                            errorCode.length > 0 ? this.setState({ eventType: "E-" + errorCode }) : this.setState({ eventType: "" })
-                        }
-                        onRegionChange={(region) => this.setState({ region })}
-                        onStageChange={(stage) =>
-                            this.setState({ stage, region: "" })
-                        }
-                        onTimeRangeChange={(timeRange) =>
-                            this.handleTimeRangeChange(timeRange)
-                        }
-                        onPatternChange={(pattern) => {
-                            pattern = pattern.toLowerCase();
-                            pattern.length > 0 ? this.setState({ eventType: "P-" + pattern }) : this.setState({ eventType: "" })
-                        }}
-                    >
-                        {this.state.timePickerFormat && (
-                            <div>
-                                <div className="input-group date">
-                                    <DateTimePicker
-                                        disableClock={true}
-                                        disableCalendar={true}
-                                        format={this.state.timePickerFormat}
-                                        onChange={(time) =>
-                                            this.setState({ time })
-                                        }
-                                        value={this.state.time}
-                                    />
-                                </div>
-                                <span className="badge badge-pill badge-primary">
-                                    Select time:
+                <InsightsToolSelector
+                    loading={this.state.loading}
+                    regions={this.state.regions}
+                    region={this.state.region}
+                    stage={this.state.stage}
+                    timeRange={this.state.timeRange}
+                    onErrorCodeChange={(errorCode) =>
+                        errorCode.length > 0 ? this.setState({ eventType: "E-" + errorCode }) : this.setState({ eventType: "" })
+                    }
+                    onRegionChange={(region) => this.setState({ region })}
+                    onStageChange={(stage) =>
+                        this.setState({ stage, region: "" })
+                    }
+                    onTimeRangeChange={(timeRange) =>
+                        this.handleTimeRangeChange(timeRange)
+                    }
+                    onPatternChange={(pattern) => {
+                        pattern = pattern.toLowerCase();
+                        pattern.length > 0 ? this.setState({ eventType: "P-" + pattern }) : this.setState({ eventType: "" })
+                    }}
+                >
+                    {this.state.timePickerFormat && (
+                        <div>
+                            <div className="input-group date">
+                                <DateTimePicker
+                                    disableClock={true}
+                                    disableCalendar={true}
+                                    format={this.state.timePickerFormat}
+                                    onChange={(time) =>
+                                        this.setState({ time })
+                                    }
+                                    value={this.state.time}
+                                />
+                            </div>
+                            <span className="badge badge-pill badge-primary">
+                                Select time:
                                 </span>
+                        </div>
+                    )}
+
+                    {this.state.region &&
+                        this.state.eventType &&
+                        this.state.timeRange && (
+                            <div>
+                                {!this.state.loading && (
+                                    <Button
+                                        disabled={
+                                            !this.state.stage ||
+                                            !this.state.region ||
+                                            this.state.loading
+                                        }
+                                        onClick={this.getAccountId}
+                                        variant="info"
+                                    >
+                                        Get Data
+                                    </Button>
+                                )}
+
+                                {this.state.loading && (
+                                    <Button disabled variant="info">
+                                        <Spinner
+                                            animation="border"
+                                            aria-hidden="true"
+                                            as="span"
+                                            role="status"
+                                            size="sm"
+                                        />
+                                    </Button>
+                                )}
                             </div>
                         )}
 
-                        {this.state.region &&
-                            this.state.eventType &&
-                            this.state.timeRange && (
-                                <div>
-                                    {!this.state.loading && (
-                                        <Button
-                                            disabled={
-                                                !this.state.stage ||
-                                                !this.state.region ||
-                                                this.state.loading
-                                            }
-                                            onClick={this.getAccountId}
-                                            variant="info"
-                                        >
-                                            Get Data
-                                        </Button>
-                                    )}
+                    {this.state.region &&
+                        this.state.eventType &&
+                        this.state.timeRange && (
+                            <div>
+                                {!this.state.loading && (
+                                    <Button
+                                        disabled={
+                                            !this.state.stage ||
+                                            !this.state.region ||
+                                            this.state.loading
+                                        }
+                                        onClick={this.clearCache}
+                                        variant="info"
+                                    >
+                                        Clear Cache
+                                    </Button>
+                                )}
 
-                                    {this.state.loading && (
-                                        <Button disabled variant="info">
-                                            <Spinner
-                                                animation="border"
-                                                aria-hidden="true"
-                                                as="span"
-                                                role="status"
-                                                size="sm"
-                                            />
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
-
-                        {this.state.region &&
-                            this.state.eventType &&
-                            this.state.timeRange && (
-                                <div>
-                                    {!this.state.loading && (
-                                        <Button
-                                            disabled={
-                                                !this.state.stage ||
-                                                !this.state.region ||
-                                                this.state.loading
-                                            }
-                                            onClick={this.clearCache}
-                                            variant="info"
-                                        >
-                                            Clear Cache
-                                        </Button>
-                                    )}
-
-                                    {this.state.loading && (
-                                        <Button disabled variant="info">
-                                            <Spinner
-                                                animation="border"
-                                                aria-hidden="true"
-                                                as="span"
-                                                role="status"
-                                                size="sm"
-                                            />
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
-                    </InsightsToolSelector>
-                </div>
+                                {this.state.loading && (
+                                    <Button disabled variant="info">
+                                        <Spinner
+                                            animation="border"
+                                            aria-hidden="true"
+                                            as="span"
+                                            role="status"
+                                            size="sm"
+                                        />
+                                    </Button>
+                                )}
+                            </div>
+                        )}
+                </InsightsToolSelector>
                 {this.state.timeout && (
                     <Alert variant={"danger"}>
                         Slow query! Query is running in the background. Please try again later to retrieve results
