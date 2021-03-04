@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCrosshairs} from '@fortawesome/free-solid-svg-icons'
 import {faUser} from '@fortawesome/free-solid-svg-icons'
 import Ajax from '../ajax';
+import { withRouter } from "react-router-dom"
 
 class Failures extends Component {
     // Initialize the state
@@ -62,7 +63,7 @@ class Failures extends Component {
     };
 
     onTargetClick(row) {
-        window.location.href = `/builds/${row.region}/${row.appid}`;
+        this.props.history.push(`/builds/${row.region}/${row.appid}`);
     }
 
     onUserClick(row) {
@@ -126,4 +127,4 @@ class Failures extends Component {
     }
 }
 
-export default Failures;
+export default withRouter(Failures);
