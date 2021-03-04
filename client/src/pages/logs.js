@@ -7,7 +7,7 @@ import Ajax from '../ajax';
 
 import 'brace/theme/dracula';
 
-class List extends Component {
+class Logs extends Component {
     // Initialize the state
     constructor(props) {
         super(props);
@@ -26,7 +26,7 @@ class List extends Component {
     getBuilds = () => {
         const {match: {params}} = this.props;
         const isMetrics = true;
-        Ajax(isMetrics).fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
+        Ajax().fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
             .then(async ({data: json}) => this.setState({'list': json['events']}));
     };
 
@@ -71,4 +71,4 @@ class List extends Component {
     }
 }
 
-export default List;
+export default Logs;
