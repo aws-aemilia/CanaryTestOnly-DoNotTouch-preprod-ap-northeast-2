@@ -5,8 +5,10 @@ import NavBar from '../components/navbar';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCrosshairs} from "@fortawesome/free-solid-svg-icons";
 import Ajax from '../ajax';
+import { withRouter } from "react-router-dom"
 
-class List extends Component {
+
+class Builds extends Component {
     // Initialize the state
     constructor(props) {
         super(props);
@@ -58,7 +60,7 @@ class List extends Component {
 
     onTargetClick(row) {
         const {match: {params}} = this.props;
-        window.location.href = `/logs/${params['region']}/${row.logs.groupName}/${row.logs.streamName.replace('/', '|')}`;
+        this.props.history.push(`/logs/${params['region']}/${row.logs.groupName}/${row.logs.streamName.replace('/', '|')}`);
     }
 
     actionFormatter = (cell, row) => {
@@ -114,4 +116,4 @@ class List extends Component {
     }
 }
 
-export default List;
+export default withRouter(Builds);
