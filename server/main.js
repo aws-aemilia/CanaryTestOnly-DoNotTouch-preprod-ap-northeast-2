@@ -32,7 +32,8 @@ const allowedUsers = [
     'weikding',
     'behroozi',
     'hsspain',
-    'brnmye'
+    'brnmye',
+    'lopezbnd'
 ];
 
 const app = express();
