@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+    LambdaFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            FunctionName: LogAggregator
+            Handler: src/handlers/logAggregator.handler
+            Runtime: nodejs12.x
+            Timeout: 10
+            Tracing: Active
+            Events:
+                Stream:
+                    Type: Kinesis
+                    Properties:
+                        Stream: !GetAtt KinesisStream.Arn
+                        BatchSize: 100
+                        StartingPosition: LATEST
+
+    KinesisStream:
+        Type: AWS::Kinesis::Stream
+        Properties:
+            Name: TestKinesisStream
+            ShardCount: 1
+
+    KinesisRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: CWLtoKinesisRole
+            AssumeRolePolicyDocument:
+                Statement:
+                    - Action: ["sts:AssumeRole"]
+                      Effect: Allow
+                      Principal:
+                          Service: [logs.amazonaws.com]
+                Version: "2012-10-17"
+            Policies:
+                - PolicyDocument:
+                      Statement:
+                          - Effect: Allow
+                            Action:
+                                - kinesis:PutRecord
+                            Resource: !GetAtt KinesisStream.Arn
+                      Version: "2012-10-17"
+                  PolicyName: PermissionsForCWL
+
+    CloudWatchDestination:
+        Type: AWS::Logs::Destination
+        Properties:
+            DestinationName: LogDestination
+            DestinationPolicy: >
+                {
+                  "Statement":[
+                      {
+                        "Effect":"Allow",
+                        "Principal":{
+                            "AWS":[
+                                "574702015642",
+                                "033345365959",
+                                "457974620857",
+                                "395333095307",
+                                "396176200477",
+                                "073653171576",
+                                "264748200621",
+                                "565036926641",
+                                "711974673587",
+                                "499901155257",
+                                "550167628141",
+                                "148414518837",
+                                "024873182396",
+                                "801187164913",
+                                "644397351177",
+                                "068675532419",
+                                "214290359175",
+                                "824930503114",
+                                "693207358157",
+                                "315276288780",
+                                "574285171994",
+                                "804516649577",
+                                "381391443810"
+                                ]
+                        },
+                        "Action":"logs:PutSubscriptionFilter",
+                        "Resource":"arn:aws:logs:us-west-2:643036967432:destination:LogDestination"
+                      }
+                  ]
+                }
+            RoleArn: !GetAtt KinesisRole.Arn
+            TargetArn: !GetAtt KinesisStream.Arn
