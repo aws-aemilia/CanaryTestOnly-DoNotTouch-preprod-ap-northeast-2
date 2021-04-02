@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pager Pain
 // @namespace    http://aws.amazon.com/
-// @version      2.01
+// @version      2.02
 // @description  Generate wiki notes for pages with emojis.  Assumes your oncall runs 9am-9am Monday-Monday.
 // @author       behroozi@
 // @include      https://paging.corp.a2z.com/
@@ -51,7 +51,7 @@
 
                             //remove the Escalated/New Sev 2 from details
                             let details = {subject:subject.replace(/^.*Sev\d(.\d)? - /,""),source:source,timestamp:timestamp};
-                            let ttRegex = subject.match(/^SIM (\w+)/);
+                            let ttRegex = subject.match(/(?:^SIM|Ticket \#) (\w+)/);
                             if(ttRegex) {
                                 details.ticket_id = ttRegex[1];
                             }
@@ -189,6 +189,7 @@
                 incrementPageCount(page.emoji, pageCounts);
             }
         }
+        incrementPageCount('Unique', pageCounts, Object.keys(pageSummary).length);
 
         //Sort counts so it is total pages, after hours pages, emoji pages
         for(let type of Object.keys(pageCounts).sort().reverse()){
