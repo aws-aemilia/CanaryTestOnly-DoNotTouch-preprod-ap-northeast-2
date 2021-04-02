@@ -8,7 +8,8 @@ Resources:
             FunctionName: LogAggregator
             Handler: src/handlers/logAggregator.handler
             Runtime: nodejs12.x
-            Timeout: 10
+            Timeout: 300
+            MemorySize: 2048
             Tracing: Active
             Events:
                 Stream:
@@ -17,6 +18,11 @@ Resources:
                         Stream: !GetAtt KinesisStream.Arn
                         BatchSize: 100
                         StartingPosition: LATEST
+    
+    CloudWatchLogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties: 
+            LogGroupName: ServiceLogs
 
     KinesisStream:
         Type: AWS::Kinesis::Stream
@@ -88,4 +94,5 @@ Resources:
                 }
             RoleArn: !GetAtt KinesisRole.Arn
             TargetArn: !GetAtt KinesisStream.Arn
+    
         
