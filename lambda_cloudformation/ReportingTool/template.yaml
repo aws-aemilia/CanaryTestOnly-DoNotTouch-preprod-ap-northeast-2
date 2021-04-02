@@ -24,10 +24,26 @@ Resources:
         Properties: 
             LogGroupName: ServiceLogs
 
+    ReportingCMK:
+        Type: AWS::KMS::Key
+        Properties: 
+            Enabled: true
+            KeyPolicy: 
+                Statement:
+                - Sid: Enable IAM User Permissions
+                  Effect: Allow
+                  Principal:
+                    AWS: arn:aws:iam::643036967432:root
+                  Action: kms:*
+                  Resource: "*"
+
     KinesisStream:
         Type: AWS::Kinesis::Stream
         Properties:
             Name: LogDestination
+            StreamEncryption:
+                EncryptionType : KMS
+                KeyId : !GetAtt ReportingCMK.Arn
             ShardCount: 1
 
     KinesisRole:
