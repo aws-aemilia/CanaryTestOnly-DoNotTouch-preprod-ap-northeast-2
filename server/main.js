@@ -53,7 +53,7 @@ app.use((req, res, next) => {
             const parts = cognitoAuthenticationProvider.split(':');
             username = parts[parts.length - 1];
         }
-        if (!username || adminUsers.indexOf(username) < 0 || supportUsers.indexOf(username) < 0) {
+        if (!username || (adminUsers.indexOf(username) < 0 && supportUsers.indexOf(username) < 0)) {
             res.status(403);
             res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
         } else if (supportUsers.indexOf(username) >= 0){
