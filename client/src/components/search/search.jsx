@@ -33,9 +33,20 @@ class Search extends Component{
                     'padding': '8px',
                     'borderRadius': '5px'
                 }}
-                onClick={ () => this.props.searchDataChanged(this.state.searchValue )}
+                onClick={ () => this.props.searchDataChanged(this.state.searchValue)}
                 >
-                    Search
+                    Search App information
+                </button>
+
+                <button style={{
+                    'border': 'none',
+                    'backgroundColor': '#ddd',
+                    'padding': '8px',
+                    'borderRadius': '5px'
+                }}
+                onClick={ () => this.props.searchBuild(this.state.searchValue)}
+                >
+                    Search build history
                 </button>
             </div>
         )

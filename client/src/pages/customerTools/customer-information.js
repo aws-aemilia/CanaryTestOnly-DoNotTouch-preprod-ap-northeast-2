@@ -32,6 +32,7 @@ class CustomerInformation extends Component {
             numOfJobs: 0,
         }
         this.searchDataChanged = this.searchDataChanged.bind(this);
+        this.searchBuild = this.searchBuild.bind(this);
     }
 
     searchDataChanged(text) {
@@ -46,6 +47,10 @@ class CustomerInformation extends Component {
                 })
             }
         });
+    }
+
+    searchBuild(appId) {
+        window.location.href = `/builds/${this.state.region}/${appId}`;
     }
 
     async getApiData() {
@@ -163,7 +168,7 @@ class CustomerInformation extends Component {
                     onStageChange={(stage) => this.setState({ stage, region: '' })}
                     onRegionChange={(region) => this.setState({ region })}
                 >
-                    <Search searchDataChanged={this.searchDataChanged} />
+                    <Search searchDataChanged={this.searchDataChanged} searchBuild={this.searchBuild}/>         
                 </StageRegionSelector>
                 {this.state.search !== '' && (
                     <>
