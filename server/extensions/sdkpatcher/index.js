@@ -39,7 +39,13 @@ const roles = [
     // cdg
     'arn:aws:iam::693207358157:role/AemiliaWebhookProcessorLambda-OncallToolRole-1CVEXENQFK37F',
     // arn
-    'arn:aws:iam::315276288780:role/AemiliaWebhookProcessorLambda-OncallToolRole-16ZKTJGP8ZBVE'
+    'arn:aws:iam::315276288780:role/AemiliaWebhookProcessorLambda-OncallToolRole-16ZKTJGP8ZBVE',
+    // hkg
+    'arn:aws:iam::574285171994:role/AemiliaWebhookProcessorLambda-OncallToolRole-I3QTG9DD6VDJ',
+    // mxp
+    'arn:aws:iam::804516649577:role/AemiliaWebhookProcessorLambda-OncallToolRole-1A6QFTQWJQQ6L',
+    // bah
+    'arn:aws:iam::183380703454:role/AemiliaWebhookProcessorLambda-OncallToolRole-1HPT95VR0EL66'
 ];
 let stsClient;
 const getStsClient = () => {
