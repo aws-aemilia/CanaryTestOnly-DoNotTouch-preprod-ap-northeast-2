@@ -61,6 +61,7 @@ app.use((req, res, next) => {
                 res.status(403);
                 res.end(`Unauthorized: User ${username} is not authorized to access this feature `)
             }
+            next();
         } else{
             next();
         }
