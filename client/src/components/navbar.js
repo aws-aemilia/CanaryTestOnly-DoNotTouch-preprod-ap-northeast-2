@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import {Link, withRouter} from 'react-router-dom';
+import Ajax from "../ajax";
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {search: ''};
+        this.state = {search: '', admin: undefined};
 
         this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
+    }
+
+    componentDidMount() {
+        Ajax().fetch({
+            method: 'GET',
+            url: '/permission'
+        })
+        .then((result) => this.setState({admin: result.data}))
+        .catch((err) => this.setState({error: err}));
     }
 
     handleChangeSearch(event) {
@@ -37,6 +47,11 @@ class NavBar extends Component {
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
+                        {
+                            !this.state.admin && <Link className="nav-link" to="/customerTools/customer-information">Customer Information</Link>
+                        }
+                        { this.state.admin && 
+                        <div>
                         <li className={`nav-item ${path === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
@@ -52,21 +67,30 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/failures/days/30">Last 30 Days</Link>
                             </div>
                         </li>
-                        <li className={`nav-item dropdown ${path.indexOf('/oncall') >= 0 ? 'active' : ''}`}>
+                        <li className={`nav-item dropdown ${path.indexOf('/oncallTools') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                OnCall
+                                OnCall Tools
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <Link className="dropdown-item" to="/oncall/metering">Metering</Link>
-                                <Link className="dropdown-item" to="/oncall/lambdaedge">Lambda@Edge FileConfig</Link>
-                                <Link className="dropdown-item" to="/oncall/impact">Customer impact</Link>
-                                <Link className="dropdown-item" to="/oncall/customer-information">Customer Information</Link>
+                                <Link className="dropdown-item" to="/oncallTools/metering">Metering</Link>
+                                <Link className="dropdown-item" to="/oncallTools/lambdaedge">Lambda@Edge FileConfig</Link>
+                            </div>    
+                        </li>
+                        
+                        <li className={`nav-item dropdown ${path.indexOf('/customerTools') >= 0 ? 'active' : ''}`}>
+                            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Customer Tools
+                            </a>
+                            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>
+                                <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>
+                                <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
                             </div>
                         </li>
-                        <li>
-                            <Link className="nav-link" to="/insights">Insights</Link>
-                        </li>
+                        </div>
+                        }
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
                         <input className="form-control mr-sm-2" type="search" placeholder="Account / App ID"

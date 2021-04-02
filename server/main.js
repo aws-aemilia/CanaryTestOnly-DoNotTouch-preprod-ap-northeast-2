@@ -14,25 +14,25 @@ const {
     queryOneRegion,
 } = require("./extensions/insightsHelper");
 const queryHelper = require("./extensions/queryHelper");
+const permissionChecker = require("./extensions/accessControl")
 
-const allowedUsers = [
-    'anatonie',
+const adminUsers = [
     'loganch',
     'lisirui',
     'snimakom',
     'nsswamin',
-    'haoyujie',
     'litwjaco',
     'donkahn',
     'bradruof',
-    'guerarda',
     'rjabhi',
-    'rugary',
     'jffranzo',
-    'weikding',
     'behroozi',
     'hsspain',
     'brnmye'
+];
+
+const supportUsers = [
+    'weikding'
 ];
 
 const app = express();
@@ -53,10 +53,19 @@ app.use((req, res, next) => {
             const parts = cognitoAuthenticationProvider.split(':');
             username = parts[parts.length - 1];
         }
-        if (!username || allowedUsers.indexOf(username) < 0) {
+        if (!username || (adminUsers.indexOf(username) < 0 && supportUsers.indexOf(username) < 0)) {
             res.status(403);
             res.json({ message: username ? `Unauthorized: User ${username} is unauthorized` : `Unauthorized: Midway identifier not found` })
-        } else {
+        } else if (supportUsers.indexOf(username) >= 0){
+            if (!permissionChecker(req.url)){
+                res.status(403);
+                res.end(JSON.stringify({
+                    message: `Unauthorized: User ${username} is not authorized to access this feature `,
+                }));
+            }
+            console.log(`Support Engineer: ${username} requested : ${req.url}`)
+            next();
+        } else{
             next();
         }
     } else {
@@ -76,6 +85,10 @@ const proxyOptions = {
 app.use('/proxy/oncall', proxy(proxyOptions));
 
 app.get('/username', async (req, res) => res.send(username));
+
+app.get("/permission", async (req, res) =>
+    res.send(adminUsers.indexOf(username) >= 0)
+);
 
 app.get('/regions', (req, res) => res.json(accounts.getRegions()));
 
