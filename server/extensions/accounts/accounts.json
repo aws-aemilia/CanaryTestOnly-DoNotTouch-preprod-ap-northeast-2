@@ -178,7 +178,7 @@
       "type": "service"
     },
     "prod.me-south-1.aemilia": {
-      "accountId": "381391443810",
+      "accountId": "183380703454",
       "alias": "prod-bah",
       "region": "me-south-1",
       "region_partition": "aws",

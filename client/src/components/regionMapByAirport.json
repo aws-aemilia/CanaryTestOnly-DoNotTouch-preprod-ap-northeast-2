@@ -1,86 +1,94 @@
 {
     "iad": {
-      "selector": "Northern Virginia",
-      "region": "us-east-1"
+        "selector": "Northern Virginia",
+        "region": "us-east-1"
     },
     "sfo": {
-      "selector": "Northern California",
-      "region": "us-west-1"
+        "selector": "Northern California",
+        "region": "us-west-1"
     },
     "pdx": {
-      "selector": "Oregon",
-      "region": "us-west-2"
+        "selector": "Oregon",
+        "region": "us-west-2"
     },
     "cmh": {
-      "selector": "Columbus, Ohio",
-      "region": "us-east-2"
+        "selector": "Columbus, Ohio",
+        "region": "us-east-2"
     },
     "yul": {
-      "selector": "Montreal Quebec Canada",
-      "region": "ca-central-1"
+        "selector": "Montreal Quebec Canada",
+        "region": "ca-central-1"
     },
     "bom": {
-      "selector": "Mumbai, India",
-      "region": "ap-south-1"
+        "selector": "Mumbai, India",
+        "region": "ap-south-1"
     },
     "icn": {
-      "selector": "Seoul, South Korea",
-      "region": "ap-northeast-2"
+        "selector": "Seoul, South Korea",
+        "region": "ap-northeast-2"
     },
     "sin": {
-      "selector": "Singapore",
-      "region": "ap-southeast-1"
+        "selector": "Singapore",
+        "region": "ap-southeast-1"
     },
     "syd": {
-      "selector": "Sydney, Austrailia",
-      "region": "ap-southeast-2"
+        "selector": "Sydney, Austrailia",
+        "region": "ap-southeast-2"
     },
     "nrt": {
-      "selector": "Tokyo, Japan",
-      "region": "ap-northeast-1"
+        "selector": "Tokyo, Japan",
+        "region": "ap-northeast-1"
     },
     "fra": {
-      "selector": "Frankfurt, Germany",
-      "region": "eu-central-1"
+        "selector": "Frankfurt, Germany",
+        "region": "eu-central-1"
     },
     "dub": {
-      "selector": "Dublin, Ireland",
-      "region": "eu-west-1"
+        "selector": "Dublin, Ireland",
+        "region": "eu-west-1"
     },
     "lhr": {
-      "selector": "London, England",
-      "region": "eu-west-2"
+        "selector": "London, England",
+        "region": "eu-west-2"
     },
     "gru": {
-      "selector": "Sao Paulo, Brazil",
-      "region": "sa-east-1"
+        "selector": "Sao Paulo, Brazil",
+        "region": "sa-east-1"
     },
     "bjs": {
-      "selector": "Beijing, China",
-      "region": "cn-north-1"
+        "selector": "Beijing, China",
+        "region": "cn-north-1"
     },
     "zhy": {
-      "selector": "Zhongwei, Ningxia, China",
-      "region": "cn-northwest-1"
+        "selector": "Zhongwei, Ningxia, China",
+        "region": "cn-northwest-1"
     },
     "pdt": {
-      "selector": "GovCloud",
-      "region": "govcloud"
+        "selector": "GovCloud",
+        "region": "govcloud"
     },
     "arn": {
-      "selector": "Sweden",
-      "region": "eu-north-1"
+        "selector": "Sweden",
+        "region": "eu-north-1"
     },
     "hkg": {
-      "selector": "Hong Kong",
-      "region": "ap-east-1"
+        "selector": "Hong Kong",
+        "region": "ap-east-1"
     },
     "cdg": {
-      "selector": "Paris, France",
-      "region": "eu-west-3"
+        "selector": "Paris, France",
+        "region": "eu-west-3"
     },
     "kix": {
-      "selector": "Japan",
-      "region": "ap-northeast-3"
+        "selector": "Osaka, Japan",
+        "region": "ap-northeast-3"
+    },
+    "bah": {
+        "selector": "Bahrain",
+        "region": "me-south-1"
+    },
+    "mxp": {
+        "selector": "Milan, Italy",
+        "region": "eu-south-1"
     }
 }
