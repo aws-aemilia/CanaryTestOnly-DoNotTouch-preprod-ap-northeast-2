@@ -40,6 +40,12 @@ Mappings:
       prod : "arn:aws:iam::693207358157:root"
     eu-north-1:
       prod : "arn:aws:iam::315276288780:root"
+    ap-east-1:
+      prod:  "arn:aws:iam::574285171994:root"
+    eu-south-1:
+      prod:  "arn:aws:iam::804516649577:root"
+    me-south-1:
+      prod:  "arn:aws:iam::183380703454:root"
 
 Parameters:
   Stage: {Type: String, Default: 'prod'}
