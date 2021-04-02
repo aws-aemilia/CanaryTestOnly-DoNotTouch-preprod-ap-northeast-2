@@ -160,6 +160,30 @@
       "region_partition": "aws",
       "stage": "prod",
       "type": "service"
+    },
+    "prod.ap-east-1.aemilia": {
+      "accountId": "574285171994",
+      "alias": "prod-hkg",
+      "region": "ap-east-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.eu-south-1.aemilia": {
+      "accountId": "804516649577",
+      "alias": "prod-mxp",
+      "region": "eu-south-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
+    },
+    "prod.me-south-1.aemilia": {
+      "accountId": "183380703454",
+      "alias": "prod-bah",
+      "region": "me-south-1",
+      "region_partition": "aws",
+      "stage": "prod",
+      "type": "service"
     }
   }
 }
