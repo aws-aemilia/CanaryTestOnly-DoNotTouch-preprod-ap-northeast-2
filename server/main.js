@@ -59,7 +59,9 @@ app.use((req, res, next) => {
         } else if (supportUsers.indexOf(username) >= 0){
             if (!permissionChecker(req.url)){
                 res.status(403);
-                res.end(`Unauthorized: User ${username} is not authorized to access this feature `)
+                res.end(JSON.stringify({
+                    message: `Unauthorized: User ${username} is not authorized to access this feature `,
+                }));
             }
             next();
         } else{
@@ -83,6 +85,10 @@ const proxyOptions = {
 app.use('/proxy/oncall', proxy(proxyOptions));
 
 app.get('/username', async (req, res) => res.send(username));
+
+app.get("/permission", async (req, res) =>
+    res.send(adminUsers.indexOf(username) >= 0)
+);
 
 app.get('/regions', (req, res) => res.json(accounts.getRegions()));
 

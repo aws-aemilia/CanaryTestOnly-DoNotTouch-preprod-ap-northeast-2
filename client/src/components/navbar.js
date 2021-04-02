@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import {Link, withRouter} from 'react-router-dom';
+import Ajax from "../ajax";
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {search: ''};
+        this.state = {search: '', admin: undefined};
 
         this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
+    }
+
+    componentDidMount() {
+        Ajax().fetch({
+            method: 'GET',
+            url: '/permission'
+        })
+        .then((result) => this.setState({admin: result.data}))
+        .catch((err) => this.setState({error: err}));
     }
 
     handleChangeSearch(event) {
@@ -40,6 +50,8 @@ class NavBar extends Component {
                         <li className={`nav-item ${path === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
+                        { this.state.admin && 
+                        <div>
                         <li className={`nav-item dropdown ${path.indexOf('/failures') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -62,15 +74,17 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/oncallTools/lambdaedge">Lambda@Edge FileConfig</Link>
                             </div>    
                         </li>
+                        </div>
+                        }
                         <li className={`nav-item dropdown ${path.indexOf('/customerTools') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Customer Tools
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>
+                                { this.state.admin && <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>}
+                                { this.state.admin && <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>}
                                 <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
-                                <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>
                             </div>
                         </li>
                     </ul>
