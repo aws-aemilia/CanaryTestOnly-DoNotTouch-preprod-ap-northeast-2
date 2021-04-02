@@ -12,12 +12,13 @@ const allowedUrlList = [
     "/customerinfoLambdaEdgeConfig",
 ];
 const permissionChecker = (apiUrl) => {
+    let pass = false;
     allowedUrlList.forEach((allowedUrl) => {
         if (apiUrl.startsWith(allowedUrl)) {
-            return true;
+            pass = true;
         }
     });
-    return false;
+    return pass;
 };
 
 module.exports = permissionChecker;
