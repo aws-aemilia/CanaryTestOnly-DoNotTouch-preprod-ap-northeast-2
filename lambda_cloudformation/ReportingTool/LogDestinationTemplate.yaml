@@ -1,0 +1,23 @@
+Resources:
+    CloudWatchDestination:
+        Type: AWS::Logs::Destination
+        Properties:
+            DestinationName: LogDestination
+            DestinationPolicy: >
+                {
+                  "Statement" : [
+                                    {
+                                    "Effect" : "Allow",
+                                    "Principal" : {
+                                        "AWS" : ["214290359175"]
+                                    },
+                                    "Action" : "logs:PutSubscriptionFilter",
+                                    "Resource" : "arn:aws:logs:us-west-2:643036967432:destination:LogDestination"
+                                    }
+                                ]
+                }
+            RoleArn: arn:aws:iam::643036967432:role/CWLtoKinesisRole
+            TargetArn: arn:aws:kinesis:us-west-2:643036967432:stream/LogDestination
+            
+    
+
