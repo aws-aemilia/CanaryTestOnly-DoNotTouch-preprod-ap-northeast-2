@@ -24,6 +24,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub aws-amplify-hosting-insights-query-history
+      VersioningConfiguration:
+        Status: Enabled
       BucketEncryption: 
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -62,6 +64,20 @@ Resources:
           Condition:
             'Null':
               s3:x-amz-server-side-encryption: 'true'
+        - Sid: DenyNonSecureTransport
+          Action: s3:*
+          Effect: Deny
+          Principal: "*"
+          Resource: 
+            - !Join
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref InsightsQueryHistoryBucket
+                    - "/*"
+          Condition:
+            Bool:
+              aws:SecureTransport: false
+
 
   HostingInsightsCMK:
     Type: AWS::KMS::Key
