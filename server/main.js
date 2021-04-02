@@ -63,6 +63,7 @@ app.use((req, res, next) => {
                     message: `Unauthorized: User ${username} is not authorized to access this feature `,
                 }));
             }
+            console.log(`Support Engineer: ${username} requested : ${req.url}`)
             next();
         } else{
             next();

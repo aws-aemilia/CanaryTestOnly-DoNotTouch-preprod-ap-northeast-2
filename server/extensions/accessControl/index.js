@@ -1,5 +1,6 @@
 const allowedUrlList = [
     "/username",
+    "/permission",
     "/regions",
     "/api/builds",
     "/api/metrics/builds/failed",

@@ -47,11 +47,14 @@ class NavBar extends Component {
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
+                        {
+                            !this.state.admin && <Link className="nav-link" to="/customerTools/customer-information">Customer Information</Link>
+                        }
+                        { this.state.admin && 
+                        <div>
                         <li className={`nav-item ${path === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
-                        { this.state.admin && 
-                        <div>
                         <li className={`nav-item dropdown ${path.indexOf('/failures') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -74,19 +77,20 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/oncallTools/lambdaedge">Lambda@Edge FileConfig</Link>
                             </div>    
                         </li>
-                        </div>
-                        }
+                        
                         <li className={`nav-item dropdown ${path.indexOf('/customerTools') >= 0 ? 'active' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Customer Tools
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                { this.state.admin && <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>}
-                                { this.state.admin && <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>}
+                                <Link className="dropdown-item" to="/customerTools/impact">Customer Impact</Link>
+                                <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>
                                 <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
                             </div>
                         </li>
+                        </div>
+                        }
                     </ul>
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
                         <input className="form-control mr-sm-2" type="search" placeholder="Account / App ID"
