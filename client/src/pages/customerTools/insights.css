@@ -17,3 +17,10 @@
     outline: none;
     margin-right:15px;
 }
+
+.customer-info-button{
+    border: none;
+    background-color: #ddd;
+    padding: 8px;
+    border-radius: 5px;
+}

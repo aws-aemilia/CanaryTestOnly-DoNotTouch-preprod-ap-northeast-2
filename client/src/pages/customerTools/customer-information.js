@@ -170,25 +170,12 @@ class CustomerInformation extends Component {
                 >
                 <div style={{ display:'flex' }}>
                     <input type="search" placeholder="Search by App ID..." className='text-input' value={this.state.search} onChange={this.handleInputChange}/>
-                    <button style={{
-                        'border': 'none',
-                        'backgroundColor': '#ddd',
-                        'padding': '8px',
-                        'borderRadius': '5px'
-                    }}
-                    onClick={ () => this.searchCustomerInformation()}
-                    >
-                        Search App information
-                    </button>
                 </div>
-                <button style={{
-                    'border': 'none',
-                    'backgroundColor': '#ddd',
-                    'padding': '8px',
-                    'borderRadius': '5px'
-                }}
-                    onClick={ () => this.searchBuildHistory()}
-                >
+                <button className='customer-info-button' onClick={ () => this.searchCustomerInformation()}>
+                    Search App information
+                </button>
+
+                <button className='customer-info-button' onClick={ () => this.searchBuildHistory()}>
                     Search build history
                 </button>
                 </StageRegionSelector>
