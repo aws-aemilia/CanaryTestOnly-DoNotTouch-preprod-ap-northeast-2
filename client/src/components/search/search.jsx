@@ -37,17 +37,6 @@ class Search extends Component{
                 >
                     Search App information
                 </button>
-
-                <button style={{
-                    'border': 'none',
-                    'backgroundColor': '#ddd',
-                    'padding': '8px',
-                    'borderRadius': '5px'
-                }}
-                onClick={ () => this.props.searchBuild(this.state.searchValue)}
-                >
-                    Search build history
-                </button>
             </div>
         )
     }
