@@ -31,6 +31,7 @@ class CustomerInformation extends Component {
             jobTableToggled: true,
             moreJobsToggled: false,
             numOfJobs: 0,
+            showTable: false
         }
     }
 
@@ -45,9 +46,7 @@ class CustomerInformation extends Component {
     }
 
     searchBuildHistory() {
-        console.log("current app id is :", this.state.search)
         this.props.history.push(`/builds/${this.state.region}/${this.state.search}`);
-        
     }
 
     handleInputChange = (event) => {
@@ -60,7 +59,7 @@ class CustomerInformation extends Component {
                 const appPromise = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultApp = await appPromise;
                 console.log("resultApp", resultApp)
-                this.setState({ appData: resultApp.data })
+                this.setState({ appData: resultApp.data, showTable: true })
             }
             catch (appError) {
                 console.log("app table fetch error", appError)
@@ -179,7 +178,7 @@ class CustomerInformation extends Component {
                     Search build history
                 </button>
                 </StageRegionSelector>
-                { !appData  && (
+                { this.state.showTable  && (
                     <>
                         {Object.keys(appData).length ? (
                             <div style={flexStyle}>
