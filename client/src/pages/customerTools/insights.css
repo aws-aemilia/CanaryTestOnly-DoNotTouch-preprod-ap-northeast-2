@@ -7,3 +7,13 @@
 .result-table {
     margin: 1rem;
 }
+
+.text-input {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 200px;
+    border-radius: 5px;
+    font-size: 12px;
+    outline: none;
+    margin-right:15px;
+}

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {withRouter} from 'react-router-dom';
 import Table from '../../components/tables/table';
 import Ajax from "../../ajax";
-import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
+import './insights.css'
 
 class CustomerInformation extends Component {
     constructor(props) {
@@ -32,25 +32,26 @@ class CustomerInformation extends Component {
             moreJobsToggled: false,
             numOfJobs: 0,
         }
-        this.searchDataChanged = this.searchDataChanged.bind(this);
     }
 
-    searchDataChanged(text) {
-        this.setState({
-            search: text
-        }, () => {
-            if (this.state.search) {
-                this.getApiData();
-            } else {
-                this.setState({
-                    data: {}
-                })
-            }
-        });
+    searchCustomerInformation() {
+        if (this.state.search) {
+            this.getApiData();
+        } else {
+            this.setState({
+                data: {}
+            })
+        }
     }
 
-    searchBuild() {
+    searchBuildHistory() {
+        console.log("current app id is :", this.state.search)
         this.props.history.push(`/builds/${this.state.region}/${this.state.search}`);
+        
+    }
+
+    handleInputChange = (event) => {
+        this.setState({ search: event.target.value });
     }
 
     async getApiData() {
@@ -151,7 +152,6 @@ class CustomerInformation extends Component {
 
     render() {
         const { appData, branchData, domainData, webhookData, lambdaData, jobData, jobDataMore, appDataToggled, branchTableToggled, domainTableToggled, webhookTableToggled, LambdaEdgeToggled, jobTableToggled, numOfJobs, moreJobsToggled } = this.state;
-
         const flexStyle = { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" };
         const toggleStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "22px", fontWeight: "bold" }
         const jobStyle = { outline: "none", border: "none", padding: "2px 12px", borderRadius: "4px", backgroundColor: "#0d6efd", color: "white", fontSize: "12px", fontWeight: "bold" }
@@ -168,19 +168,31 @@ class CustomerInformation extends Component {
                     onStageChange={(stage) => this.setState({ stage, region: '' })}
                     onRegionChange={(region) => this.setState({ region })}
                 >
-                    <Search searchDataChanged={this.searchDataChanged}/>         
+                <div style={{ display:'flex' }}>
+                    <input type="search" placeholder="Search by App ID..." className='text-input' value={this.state.search} onChange={this.handleInputChange}/>
+                    <button style={{
+                        'border': 'none',
+                        'backgroundColor': '#ddd',
+                        'padding': '8px',
+                        'borderRadius': '5px'
+                    }}
+                    onClick={ () => this.searchCustomerInformation()}
+                    >
+                        Search App information
+                    </button>
+                </div>
                 <button style={{
                     'border': 'none',
                     'backgroundColor': '#ddd',
                     'padding': '8px',
                     'borderRadius': '5px'
                 }}
-                    onClick={ () => this.searchBuild()}
+                    onClick={ () => this.searchBuildHistory()}
                 >
                     Search build history
                 </button>
                 </StageRegionSelector>
-                {this.state.search !== '' && (
+                { !appData  && (
                     <>
                         {Object.keys(appData).length ? (
                             <div style={flexStyle}>
