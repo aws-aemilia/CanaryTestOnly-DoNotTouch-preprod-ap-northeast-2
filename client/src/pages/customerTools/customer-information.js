@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {withRouter} from 'react-router-dom';
 import Table from '../../components/tables/table';
 import Ajax from "../../ajax";
 import Search from '../../components/search/search';
@@ -49,7 +50,7 @@ class CustomerInformation extends Component {
     }
 
     searchBuild() {
-        window.location.href = `/builds/${this.state.region}/${this.state.search}`;
+        this.props.history.push(`/builds/${this.state.region}/${this.state.search}`);
     }
 
     async getApiData() {
@@ -240,4 +241,4 @@ class CustomerInformation extends Component {
     }
 }
 
-export default CustomerInformation;
+export default withRouter(CustomerInformation);
