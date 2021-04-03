@@ -39,7 +39,6 @@ const app = express();
 let username;
 
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
