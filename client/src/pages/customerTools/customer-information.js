@@ -59,7 +59,7 @@ class CustomerInformation extends Component {
                 const appPromise = Ajax().fetch(`/customerinfoApp?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
                 const resultApp = await appPromise;
                 console.log("resultApp", resultApp)
-                this.setState({ appData: resultApp.data, showTable: true })
+                this.setState({ appData: resultApp.data })
             }
             catch (appError) {
                 console.log("app table fetch error", appError)
@@ -143,6 +143,7 @@ class CustomerInformation extends Component {
             catch (jobMoreError) {
                 console.log("jobMore table fetch error", jobMoreError)
             }
+            this.setState({ showTable: true })
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -170,13 +171,17 @@ class CustomerInformation extends Component {
                 <div style={{ display:'flex' }}>
                     <input type="search" placeholder="Search by App ID..." className='text-input' value={this.state.search} onChange={this.handleInputChange}/>
                 </div>
-                <button className='customer-info-button' onClick={ () => this.searchCustomerInformation()}>
-                    Search App information
-                </button>
+                { this.state.region && this.state.stage && (
+                    <>
+                    <button className='customer-info-button' onClick={ () => this.searchCustomerInformation()}>
+                        Search App information
+                    </button>
 
-                <button className='customer-info-button' onClick={ () => this.searchBuildHistory()}>
-                    Search build history
-                </button>
+                    <button className='customer-info-button' onClick={ () => this.searchBuildHistory()}>
+                        Search build history
+                    </button>
+                    </>)
+                }
                 </StageRegionSelector>
                 { this.state.showTable  && (
                     <>
