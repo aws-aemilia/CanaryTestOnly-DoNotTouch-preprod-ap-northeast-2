@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import {withRouter} from 'react-router-dom';
 import Table from '../../components/tables/table';
 import Ajax from "../../ajax";
-import Search from '../../components/search/search';
 import StageRegionSelector from "../../components/stageRegionSelector";
+import './insights.css'
 
 class CustomerInformation extends Component {
     constructor(props) {
@@ -30,22 +31,26 @@ class CustomerInformation extends Component {
             jobTableToggled: true,
             moreJobsToggled: false,
             numOfJobs: 0,
+            showTable: false
         }
-        this.searchDataChanged = this.searchDataChanged.bind(this);
     }
 
-    searchDataChanged(text) {
-        this.setState({
-            search: text
-        }, () => {
-            if (this.state.search) {
-                this.getApiData();
-            } else {
-                this.setState({
-                    data: {}
-                })
-            }
-        });
+    searchCustomerInformation() {
+        if (this.state.search) {
+            this.getApiData();
+        } else {
+            this.setState({
+                data: {}
+            })
+        }
+    }
+
+    searchBuildHistory() {
+        this.props.history.push(`/builds/${this.state.region}/${this.state.search}`);
+    }
+
+    handleInputChange = (event) => {
+        this.setState({ search: event.target.value });
     }
 
     async getApiData() {
@@ -138,6 +143,7 @@ class CustomerInformation extends Component {
             catch (jobMoreError) {
                 console.log("jobMore table fetch error", jobMoreError)
             }
+            this.setState({ showTable: true })
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
@@ -163,9 +169,22 @@ class CustomerInformation extends Component {
                     onStageChange={(stage) => this.setState({ stage, region: '' })}
                     onRegionChange={(region) => this.setState({ region })}
                 >
-                    <Search searchDataChanged={this.searchDataChanged} />
+                <div style={{ display:'flex' }}>
+                    <input type="search" placeholder="Search by App ID..." className='text-input' value={this.state.search} onChange={this.handleInputChange}/>
+                </div>
+                { this.state.region && this.state.stage && (
+                    <>
+                    <button className='customer-info-button' onClick={ () => this.searchCustomerInformation()}>
+                        Search App information
+                    </button>
+
+                    <button className='customer-info-button' onClick={ () => this.searchBuildHistory()}>
+                        Search build history
+                    </button>
+                    </>)
+                }
                 </StageRegionSelector>
-                {this.state.search !== '' && (
+                { this.state.showTable  && (
                     <>
                         {Object.keys(appData).length ? (
                             <div style={flexStyle}>
@@ -226,4 +245,4 @@ class CustomerInformation extends Component {
     }
 }
 
-export default CustomerInformation;
+export default withRouter(CustomerInformation)
