@@ -29,11 +29,12 @@ const adminUsers = [
     'behroozi',
     'hsspain',
     'brnmye',
-    'lopezbnd'
+    'lopezbnd',
+    'weikding'
 ];
 
+// Add Support Engineer alias here
 const supportUsers = [
-    'weikding'
 ];
 
 const app = express();
