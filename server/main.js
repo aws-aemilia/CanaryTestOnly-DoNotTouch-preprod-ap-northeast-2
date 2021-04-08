@@ -28,11 +28,11 @@ const adminUsers = [
     'jffranzo',
     'behroozi',
     'hsspain',
-    'brnmye'
+    'brnmye',
+    'weikding'
 ];
 
 const supportUsers = [
-    'weikding'
 ];
 
 const app = express();

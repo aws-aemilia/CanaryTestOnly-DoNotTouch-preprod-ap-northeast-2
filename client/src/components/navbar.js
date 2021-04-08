@@ -51,7 +51,7 @@ class NavBar extends Component {
                             !this.state.admin && <Link className="nav-link" to="/customerTools/customer-information">Customer Information</Link>
                         }
                         { this.state.admin && 
-                        <div>
+                        <>
                         <li className={`nav-item ${path === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
@@ -89,7 +89,7 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/customerTools/customer-information">Customer Information</Link>
                             </div>
                         </li>
-                        </div>
+                        </>
                         }
                     </ul>
                     { this.state.admin && 
