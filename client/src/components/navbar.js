@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import {Link, withRouter} from 'react-router-dom';
+import Ajax from "../ajax";
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {search: ''};
+        this.state = {search: '', admin: undefined};
 
         this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
+    }
+
+    componentDidMount() {
+        Ajax().fetch({
+            method: 'GET',
+            url: '/permission'
+        })
+        .then((result) => this.setState({admin: result.data}))
+        .catch((err) => this.setState({error: err}));
     }
 
     handleChangeSearch(event) {
@@ -37,6 +47,11 @@ class NavBar extends Component {
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
+                        {
+                            !this.state.admin && <Link className="nav-link" to="/customerTools/customer-information">Customer Information</Link>
+                        }
+                        { this.state.admin && 
+                        <div>
                         <li className={`nav-item ${path === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
@@ -73,12 +88,16 @@ class NavBar extends Component {
                                 <Link className="dropdown-item" to="/customerTools/insights">Customer Insights</Link>
                             </div>
                         </li>
+                        </div>
+                        }
                     </ul>
+                    { this.state.admin && 
                     <form className="form-inline my-2 my-lg-0" onSubmit={this.handleSubmitSearch}>
                         <input className="form-control mr-sm-2" type="search" placeholder="Account / App ID"
                                aria-label="Account / App ID" onChange={this.handleChangeSearch}/>
                         <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
+                    }   
                 </div>
             </nav>
         )
