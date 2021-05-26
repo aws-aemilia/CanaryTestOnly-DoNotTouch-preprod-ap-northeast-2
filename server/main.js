@@ -30,7 +30,9 @@ const adminUsers = [
     'hsspain',
     'brnmye',
     'lopezbnd',
-    'weikding'
+    'weikding',
+    'fdingler',
+    'kalmj'
 ];
 
 // Add Support Engineer alias here
