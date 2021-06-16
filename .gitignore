@@ -33,3 +33,6 @@ server/claudia.alpha.json
 # Local stack deployment
 AMPLIFY
 .aws-sam
+
+# scripts output
+scripts/output

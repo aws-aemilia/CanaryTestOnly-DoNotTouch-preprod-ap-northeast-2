@@ -1,0 +1,21 @@
+# https://isengard.amazon.com/console-access?filter=aemilia-prod
+315276288780 eu-north-1
+565036926641 eu-west-1
+711974673587 ap-southeast-2
+824930503114 ca-central-1
+183380703454 me-south-1
+214290359175 us-west-1
+693207358157 eu-west-3
+574285171994 ap-east-1
+644397351177 eu-central-1
+550167628141 ap-northeast-1
+024873182396 ap-northeast-2
+073653171576 us-east-1
+499901155257 eu-west-2
+068675532419 sa-east-1
+801187164913 ap-south-1
+804516649577 eu-south-1
+148414518837 ap-southeast-1
+264748200621 us-east-2
+395333095307 us-west-2
+
