@@ -25,10 +25,6 @@ SEARCH_START=$(($START_TIME))
 SEARCH_END=$(($START_TIME+$ONE_DAY))
 
 echo "Run Id: $RUN_ID"
-SEARCH_START_FORMATTED=$(perl -e 'use POSIX qw(strftime); print strftime "%F %T %Z",localtime('$SEARCH_START')')
-echo "Search Start:" $SEARCH_START_FORMATTED
-SEARCH_END_FORMATTED=$(perl -e 'use POSIX qw(strftime); print strftime "%F %T %Z",localtime('$SEARCH_END')')
-echo "Search End:" $SEARCH_END_FORMATTED
 echo "Query: $QUERY"
 
 function getLogs {
@@ -49,6 +45,10 @@ function getLogs {
     exitIfUnset "$QUERY_ID" "Unable to start query"
     exitIfUnset "$LOG_GROUP" "Unable to find log group with prefix${LOG_GROUP_PREFIX}"
     echo "Query Id: $QUERY_ID"
+    SEARCH_START_FORMATTED=$(perl -e 'use POSIX qw(strftime); print strftime "%F %T %Z",localtime('$SEARCH_START')')
+    echo "Search Start:" $SEARCH_START_FORMATTED
+    SEARCH_END_FORMATTED=$(perl -e 'use POSIX qw(strftime); print strftime "%F %T %Z",localtime('$SEARCH_END')')
+    echo "Search End:" $SEARCH_END_FORMATTED
 
     while true; do
       STATUS=`aws logs get-query-results --query-id $QUERY_ID --output text --query "status"`
@@ -59,10 +59,9 @@ function getLogs {
 
     TODAY=$(date +%Y-%m-%d)
     OUTPUT_DIR="output/$TODAY-$RUN_ID"
-    echo "creating dir $OUTPUT_DIR"
     mkdir -p $OUTPUT_DIR
-    aws logs get-query-results --query-id $QUERY_ID --query "results[*][*].value" --output text | tee -a "$OUTPUT_DIR/$REGION"
-    ((SEARCH_START=$SEARCH_START+$ONE_DAY+1))
+    aws logs get-query-results --query-id $QUERY_ID --query "results[*][*].value" --output text | tee -a "$OUTPUT_DIR/$REGION" 1> /dev/null
+    ((SEARCH_START=$SEARCH_END+1))
     ((SEARCH_END=$SEARCH_END+$ONE_DAY))
   done
 }
