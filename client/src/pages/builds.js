@@ -29,6 +29,7 @@ class Builds extends Component {
         const {match: {params}} = this.props;
         let builds = [];
         const requestParams = {
+            stage: params['stage'],
             region: params['region'],
             project: params['project'],
             token: ''

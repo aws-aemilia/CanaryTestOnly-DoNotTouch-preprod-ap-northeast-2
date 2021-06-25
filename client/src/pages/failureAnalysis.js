@@ -100,7 +100,7 @@ class Failures extends Component {
     };
 
     onTargetClick(row) {
-        window.location.href = `/builds/${row.region}/${row.appid}`;
+        window.location.href = `/builds/prod/${row.region}/${row.appid}`;
     }
 
     onUserClick(row) {

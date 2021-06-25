@@ -20,6 +20,7 @@ class CustomerInformation extends Component {
             search: '',
             loading: false,
             regions: [],
+            stage:'',
             stages: [],
             tableData: {},
             tablename: {},
@@ -46,7 +47,7 @@ class CustomerInformation extends Component {
     }
 
     searchBuildHistory() {
-        this.props.history.push(`/builds/${this.state.region}/${this.state.search}`);
+        this.props.history.push(`/builds/${this.state.stage}/${this.state.region}/${this.state.search}`);
     }
 
     handleInputChange = (event) => {

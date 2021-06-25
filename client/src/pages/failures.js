@@ -63,7 +63,7 @@ class Failures extends Component {
     };
 
     onTargetClick(row) {
-        this.props.history.push(`/builds/${row.region}/${row.appid}`);
+        this.props.history.push(`/builds/prod/${row.region}/${row.appid}`);
     }
 
     onUserClick(row) {

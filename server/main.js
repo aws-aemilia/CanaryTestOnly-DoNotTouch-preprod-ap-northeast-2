@@ -157,7 +157,7 @@ app.get('/api/metrics/builds/succeed', async (req, res) => {
 
 app.post('/api/builds', async (req, res) => {
     try {
-        const codebuild = await patchSdk('prod', req.body.region, aws.CodeBuild);
+        const codebuild = await patchSdk(req.body.stage, req.body.region, aws.CodeBuild);
         let builds = [];
 
         let buildIds = await codebuild.listBuildsForProject({

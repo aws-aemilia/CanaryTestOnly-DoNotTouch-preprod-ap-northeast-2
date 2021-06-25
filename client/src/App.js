@@ -42,7 +42,7 @@ class App extends Component {
                     <Route path='/failures' component={Failures}/>
                     <Route path='/failureAnalysis/days/:daysFrom/:daysTo' component={FailureAnalysis}/>
                     <Route path='/failureAnalysis/search/:query' component={FailureAnalysis}/>
-                    <Route path='/builds/:region/:project' component={Builds}/>
+                    <Route path='/builds/:stage/:region/:project' component={Builds}/>
                     <Route path='/logs/:region/:logGroupName/:logStreamName' component={Logs}/>
                     <Route path='/oncallTools' component={OnCall}/>
                     <Route path='/customerTools' component={CustomerTools}/>
