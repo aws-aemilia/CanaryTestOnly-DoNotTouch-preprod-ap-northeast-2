@@ -180,7 +180,7 @@ app.post('/api/builds', async (req, res) => {
 
 app.get('/api/logs', async (req, res) => {
     try {
-        const cloudwatchlogs = await patchSdk(req.query.query['stage'], req.query['region'], aws.CloudWatchLogs);
+        const cloudwatchlogs = await patchSdk(req.query['stage'], req.query['region'], aws.CloudWatchLogs);
         cloudwatchlogs.getLogEvents({
             'logGroupName': req.query['logGroupName'],
             'logStreamName': req.query['logStreamName']
