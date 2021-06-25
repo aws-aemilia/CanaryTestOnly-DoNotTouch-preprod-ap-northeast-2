@@ -74,7 +74,7 @@ class Failures extends Component {
                 // Iterate over apps
                 for (let app of list) {
                     this.setState({processingAppsCurrent: list.indexOf(app)});
-                    let result = await Ajax(isMetrics).fetch(`/api/logsbyprefix?region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamNamePrefix=${app.appid}`);
+                    let result = await Ajax().fetch(`/api/logsbyprefix?region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamNamePrefix=${app.appid}`);
                     let streams = result.data;
 
                     streams.sort(function(a, b){return b.creationTime - a.creationTime});

@@ -35,8 +35,7 @@ class Builds extends Component {
         };
         try {
             do {
-                const isMetrics = true;
-                const {data: json} = await Ajax(isMetrics).post(`/api/builds`, requestParams);
+                const {data: json} = await Ajax().post(`/api/builds`, requestParams);
                 if (json['builds']) {
                     builds = [
                         ...builds,
