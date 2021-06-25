@@ -60,7 +60,7 @@ class Builds extends Component {
 
     onTargetClick(row) {
         const {match: {params}} = this.props;
-        this.props.history.push(`/logs/${params['region']}/${row.logs.groupName}/${row.logs.streamName.replace('/', '|')}`);
+        this.props.history.push(`/logs/${params['stage']}/${params['region']}/${row.logs.groupName}/${row.logs.streamName.replace('/', '|')}`);
     }
 
     actionFormatter = (cell, row) => {

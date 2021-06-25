@@ -25,8 +25,7 @@ class Logs extends Component {
     // Retrieves the list of items from the Express app
     getBuilds = () => {
         const {match: {params}} = this.props;
-        const isMetrics = true;
-        Ajax().fetch(`/api/logs?region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
+        Ajax().fetch(`/api/logs?stage=${params['stage']}&region=${params['region']}&logGroupName=${params['logGroupName']}&logStreamName=${params['logStreamName'].replace('|', '/')}`)
             .then(async ({data: json}) => this.setState({'list': json['events']}));
     };
 

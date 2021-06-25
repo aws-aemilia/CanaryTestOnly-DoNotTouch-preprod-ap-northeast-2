@@ -74,7 +74,7 @@ class Failures extends Component {
                 // Iterate over apps
                 for (let app of list) {
                     this.setState({processingAppsCurrent: list.indexOf(app)});
-                    let result = await Ajax().fetch(`/api/logsbyprefix?region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamNamePrefix=${app.appid}`);
+                    let result = await Ajax().fetch(`/api/logsbyprefix?stage=prod&region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamNamePrefix=${app.appid}`);
                     let streams = result.data;
 
                     streams.sort(function(a, b){return b.creationTime - a.creationTime});
@@ -82,7 +82,7 @@ class Failures extends Component {
 
                     let logs = [];
                     for (let stream of streams) {
-                        let logResult = await Ajax().fetch(`/api/logs?region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamName=${stream.logStreamName.replace('|', '/')}`);
+                        let logResult = await Ajax().fetch(`/api/logs?stage=prod&region=${app.region}&logGroupName=${'AWSCodeBuild'}&logStreamName=${stream.logStreamName.replace('|', '/')}`);
 
                         let errors = logResult.data.events.filter(logEntry => logEntry.message.indexOf(' Error') > 0 || logEntry.message.indexOf(' error') > 0);
 
