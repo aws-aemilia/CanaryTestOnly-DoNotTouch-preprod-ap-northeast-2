@@ -3,7 +3,6 @@ const allowedUrlList = [
     "/permission",
     "/regions",
     "/api/builds",
-    "/api/metrics/builds/failed",
     "/customerinfoApp",
     "/customerinfoBranch",
     "/customerinfoJob",
