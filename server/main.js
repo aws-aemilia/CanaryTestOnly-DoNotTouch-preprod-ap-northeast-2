@@ -36,7 +36,11 @@ const adminUsers = [
 
 // Add Support Engineer alias here
 const supportUsers = [
-    'weikding'
+    'weikding',
+    'aamcdona', 
+    'pratamin', 
+    'mccadesi',
+    'hambln'
 ];
 
 // Flag for Pen Tester - DELETE BEFORE RELEASE
