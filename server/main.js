@@ -31,12 +31,12 @@ const adminUsers = [
     'brnmye',
     'lopezbnd',
     'fdingler',
-    'kalmj'
+    'kalmj',
+    'weikding'
 ];
 
 // Add Support Engineer alias here
 const supportUsers = [
-    'weikding',
     'aamcdona', 
     'pratamin', 
     'mccadesi',
