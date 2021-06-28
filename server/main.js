@@ -192,6 +192,13 @@ app.post('/api/builds', async (req, res) => {
 });
 
 app.get('/api/logs', async (req, res) => {
+    // Access Denied - Pen testers retrieve Prod customer data
+    if (penTester && req.query['stage'] == 'prod'){
+        res.status(403);
+        res.end(JSON.stringify({
+            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
+        }));
+    }
     try {
         const cloudwatchlogs = await patchSdk(req.query['stage'], req.query['region'], aws.CloudWatchLogs);
         cloudwatchlogs.getLogEvents({
