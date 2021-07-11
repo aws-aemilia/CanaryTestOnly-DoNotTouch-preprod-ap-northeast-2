@@ -37,14 +37,8 @@ const adminUsers = [
 
 // Add Support Engineer alias here
 const supportUsers = [
-    'aamcdona', 
-    'pratamin', 
-    'mccadesi',
-    'hambln'
 ];
 
-// Flag for Pen Tester - DELETE BEFORE RELEASE
-let penTester = false;
 
 const app = express();
 let username;
@@ -75,7 +69,6 @@ app.use((req, res, next) => {
                     message: `Unauthorized: User ${username} is not authorized to access this feature `,
                 }));
             }
-            penTester = true;
             console.log(`Support Engineer: ${username} requested : ${req.url}`)
             next();
         } else{
@@ -165,14 +158,6 @@ app.get('/api/metrics/builds/succeed', async (req, res) => {
 });
 
 app.post('/api/builds', async (req, res) => {
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && req.body.stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
-
     try {
         const codebuild = await patchSdk(req.body.stage, req.body.region, aws.CodeBuild);
         let builds = [];
@@ -196,13 +181,6 @@ app.post('/api/builds', async (req, res) => {
 });
 
 app.get('/api/logs', async (req, res) => {
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && req.query['stage'] == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
     try {
         const cloudwatchlogs = await patchSdk(req.query['stage'], req.query['region'], aws.CloudWatchLogs);
         cloudwatchlogs.getLogEvents({
@@ -387,14 +365,6 @@ app.post("/insights/clear", async (req, res) => {
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
-
     const params = {
         "TableName": `${stage}-${region}-App`,
         "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, platform, repository, updateTime",
@@ -426,14 +396,6 @@ app.get("/customerinfoApp", async (req, res) => {
 // ddb query to get customer data from Branch table
 app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
-
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
     
     const params = {
         "TableName": `${stage}-${region}-Branch`,
@@ -467,14 +429,6 @@ app.get("/customerinfoBranch", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
-
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
 
     const params = {
         "TableName": `${stage}-${region}-Job`,
@@ -510,14 +464,6 @@ app.get("/customerinfoJob", async (req, res) => {
 app.get("/customerinfoJobMore", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
-
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
@@ -552,14 +498,6 @@ app.get("/customerinfoJobMore", async (req, res) => {
 app.get("/customerinfoDomain", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
-
     const params = {
         "TableName": `${stage}-${region}-Domain`,
         "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, #status, statusReason, subDomainDOs, updateTime, version",
@@ -592,14 +530,6 @@ app.get("/customerinfoDomain", async (req, res) => {
 app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
 
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
-
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
         "IndexName": 'appId-webhookId-index',
@@ -631,14 +561,6 @@ app.get("/customerinfoWebhook", async (req, res) => {
 // ddb query to get customer data from LambdaEdgeConfig table
 app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const { stage, region, query } = req.query;
-
-    // Access Denied - Pen testers retrieve Prod customer data
-    if (penTester && stage == 'prod'){
-        res.status(403);
-        res.end(JSON.stringify({
-            message: `Unauthorized: User ${username} is not authorized to access this prod customer data `,
-        }));
-    }
 
     const params = {
         "TableName": "LambdaEdgeConfig",
