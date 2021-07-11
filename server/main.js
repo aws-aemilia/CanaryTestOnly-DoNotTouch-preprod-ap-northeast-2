@@ -357,7 +357,7 @@ app.post("/insights/clear", async (req, res) => {
 // ddb query to get customer data from App table
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -391,7 +391,7 @@ app.get("/customerinfoApp", async (req, res) => {
 // ddb query to get customer data from Branch table
 app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -426,7 +426,7 @@ app.get("/customerinfoBranch", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -462,7 +462,7 @@ app.get("/customerinfoJob", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJobMore", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -498,7 +498,7 @@ app.get("/customerinfoJobMore", async (req, res) => {
 // ddb query to get customer data from Domain table
 app.get("/customerinfoDomain", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -532,7 +532,7 @@ app.get("/customerinfoDomain", async (req, res) => {
 // ddb query to get customer data from Webhook table
 app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
@@ -566,7 +566,7 @@ app.get("/customerinfoWebhook", async (req, res) => {
 // ddb query to get customer data from LambdaEdgeConfig table
 app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const { stage, region, query } = req.query;
-    if (isParamsValid(stage, region, query)) {
+    if (!isParamsValid(stage, region, query)) {
         res.status(400);
     }
     const params = {
