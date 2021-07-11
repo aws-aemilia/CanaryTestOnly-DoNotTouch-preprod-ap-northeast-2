@@ -357,6 +357,9 @@ app.post("/insights/clear", async (req, res) => {
 // ddb query to get customer data from App table
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-App`,
         "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, platform, repository, updateTime",
@@ -388,7 +391,9 @@ app.get("/customerinfoApp", async (req, res) => {
 // ddb query to get customer data from Branch table
 app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-Branch`,
         "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config.enableAutoBuild, config.ejected, config.environmentVariables, config.enablePullRequestPreview, config.enablePerformanceMode, config.enableBasicAuth, config.enableNotification, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",
@@ -421,7 +426,9 @@ app.get("/customerinfoBranch", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
@@ -455,7 +462,9 @@ app.get("/customerinfoJob", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJobMore", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
@@ -489,7 +498,9 @@ app.get("/customerinfoJobMore", async (req, res) => {
 // ddb query to get customer data from Domain table
 app.get("/customerinfoDomain", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-Domain`,
         "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, #status, statusReason, subDomainDOs, updateTime, version",
@@ -521,7 +532,9 @@ app.get("/customerinfoDomain", async (req, res) => {
 // ddb query to get customer data from Webhook table
 app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
         "IndexName": 'appId-webhookId-index',
@@ -553,7 +566,9 @@ app.get("/customerinfoWebhook", async (req, res) => {
 // ddb query to get customer data from LambdaEdgeConfig table
 app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const { stage, region, query } = req.query;
-
+    if (isParamsValid(stage, region, query)) {
+        res.status(400);
+    }
     const params = {
         "TableName": "LambdaEdgeConfig",
         "KeyConditionExpression": "#DYNOBASE_appId = :pkey",
@@ -588,6 +603,19 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/../client/public/index.html'));
 });
+
+// Params check
+const isParamsValid = (stage, region, appId) => {
+    // Check empty appId
+    if (appId.trim() === '') return false;
+
+    // Check invalid stage & region
+    try {
+        const accountId = getAccountId(stage, region)
+    } catch (e){
+        return false;
+    }
+}
 
 
 // app.listen(config.port);
