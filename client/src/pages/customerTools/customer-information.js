@@ -143,11 +143,11 @@ class CustomerInformation extends Component {
             catch (jobMoreError) {
                 console.log("jobMore table fetch error", jobMoreError)
             }
+            this.setState({ showTable: true });
         } catch (error) {
             console.log(error);
             console.log("data fetch fail");
         }
-        this.setState({ showTable: true });
     }
 
     render() {

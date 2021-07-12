@@ -359,7 +359,7 @@ app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: ''});
     }
     const params = {
         "TableName": `${stage}-${region}-App`,
@@ -394,7 +394,7 @@ app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: []});
     }
     const params = {
         "TableName": `${stage}-${region}-Branch`,
@@ -430,7 +430,7 @@ app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: []});
     }
     const params = {
         "TableName": `${stage}-${region}-Job`,
@@ -467,7 +467,7 @@ app.get("/customerinfoJobMore", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: []});
     }
     const params = {
         "TableName": `${stage}-${region}-Job`,
@@ -504,7 +504,7 @@ app.get("/customerinfoDomain", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: []});
     }
     const params = {
         "TableName": `${stage}-${region}-Domain`,
@@ -539,7 +539,7 @@ app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: []});
     }
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
@@ -574,7 +574,7 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const { stage, region, query } = req.query;
     if (!isParamsValid(stage, region, query)) {
         res.status(400);
-        res.end(JSON.stringify({ 'error': 'Invalid query params' }));
+        res.end({data: ''});
     }
     const params = {
         "TableName": "LambdaEdgeConfig",
