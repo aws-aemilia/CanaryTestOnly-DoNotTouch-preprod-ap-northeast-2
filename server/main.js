@@ -622,6 +622,7 @@ const isParamsValid = (stage, region, appId) => {
     } catch (e){
         return false;
     }
+    return true;
 }
 
 
