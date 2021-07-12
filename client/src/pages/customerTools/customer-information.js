@@ -91,7 +91,6 @@ class CustomerInformation extends Component {
             }
             catch (webhookError) {
                 console.log("webhook table fetch error", webhookError)
-                this.setState({ webhookData: null })
             }
             try {
                 const lambdaPromises = Ajax().fetch(`/customerinfoLambdaEdgeConfig?stage=${this.state.stage}&region=${this.state.region}&query=${this.state.search}`);
@@ -101,7 +100,6 @@ class CustomerInformation extends Component {
             }
             catch (lambdaEdgeConfigError) {
                 console.log("lambdaEdgeConfig table fetch error", lambdaEdgeConfigError)
-                this.setState({ lambdaData: null })
             }
             try {
                 const jobPromises = this.state.branchData.map(branch => Ajax().fetch(`/customerinfoJob?stage=${this.state.stage}&region=${this.state.region}&query=${branch.branchArn}`));
