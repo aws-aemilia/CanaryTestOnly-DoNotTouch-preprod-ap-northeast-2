@@ -15,6 +15,7 @@ const {
 } = require("./extensions/insightsHelper");
 const queryHelper = require("./extensions/queryHelper");
 const permissionChecker = require("./extensions/accessControl")
+const { isParamsValid } = require("./extensions/paramsValidator")
 
 const adminUsers = [
     'loganch',
@@ -610,21 +611,6 @@ app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/../client/public/index.html'));
 });
-
-// Params check
-const isParamsValid = (stage, region, appId) => {
-    // Check empty appId
-    if (appId === null || appId.trim() === '') return false;
-
-    // Check invalid stage & region
-    try {
-        const accountId = getAccountId(stage, region)
-    } catch (e){
-        return false;
-    }
-    return true;
-}
-
 
 // app.listen(config.port);
 // console.log('App is listening on port ' + config.port);
