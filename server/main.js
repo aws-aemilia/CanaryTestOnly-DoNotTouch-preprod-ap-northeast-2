@@ -15,6 +15,7 @@ const {
 } = require("./extensions/insightsHelper");
 const queryHelper = require("./extensions/queryHelper");
 const permissionChecker = require("./extensions/accessControl")
+const { isParamsValid } = require("./extensions/paramsValidator")
 
 const adminUsers = [
     'loganch',
@@ -365,6 +366,11 @@ app.post("/insights/clear", async (req, res) => {
 app.get("/customerinfoApp", async (req, res) => {
     const { stage, region, query } = req.query;
 
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
+
     const params = {
         "TableName": `${stage}-${region}-App`,
         "ProjectionExpression": "accountId, appId, buildSpec, certificateArn, cloudFrontDistributionId, createTime, defaultDomain, enableAutoBranchCreation, enableAutoBranchDeletion, enableBasicAuth, enableBranchAutoBuild, enableRewriteAndRedirect, environmentVariables, hostingBucketName, iamServiceRoleArn, #name, platform, repository, updateTime",
@@ -396,6 +402,11 @@ app.get("/customerinfoApp", async (req, res) => {
 // ddb query to get customer data from Branch table
 app.get("/customerinfoBranch", async (req, res) => {
     const { stage, region, query } = req.query;
+
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
     
     const params = {
         "TableName": `${stage}-${region}-Branch`,
@@ -429,6 +440,11 @@ app.get("/customerinfoBranch", async (req, res) => {
 // ddb query to get customer data from Job table
 app.get("/customerinfoJob", async (req, res) => {
     const { stage, region, query } = req.query;
+
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
 
     const params = {
         "TableName": `${stage}-${region}-Job`,
@@ -464,6 +480,11 @@ app.get("/customerinfoJob", async (req, res) => {
 app.get("/customerinfoJobMore", async (req, res) => {
     const { stage, region, query } = req.query;
 
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
+
     const params = {
         "TableName": `${stage}-${region}-Job`,
         "ProjectionExpression": "branchArn, commitId, commitTime, createTime, endTime, jobId, jobSteps, jobType, meteringJobId, startTime, #status, updateTime, version",
@@ -498,6 +519,11 @@ app.get("/customerinfoJobMore", async (req, res) => {
 app.get("/customerinfoDomain", async (req, res) => {
     const { stage, region, query } = req.query;
 
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
+
     const params = {
         "TableName": `${stage}-${region}-Domain`,
         "ProjectionExpression": "certificateVerificationRecord, createTime, distributionId, domainId, domainName, domainType, enableAutoSubDomain, #status, statusReason, subDomainDOs, updateTime, version",
@@ -530,6 +556,11 @@ app.get("/customerinfoDomain", async (req, res) => {
 app.get("/customerinfoWebhook", async (req, res) => {
     const { stage, region, query } = req.query;
 
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
+
     const params = {
         "TableName": `${stage}-${region}-Webhook`,
         "IndexName": 'appId-webhookId-index',
@@ -561,6 +592,11 @@ app.get("/customerinfoWebhook", async (req, res) => {
 // ddb query to get customer data from LambdaEdgeConfig table
 app.get("/customerinfoLambdaEdgeConfig", async (req, res) => {
     const { stage, region, query } = req.query;
+
+    if (!isParamsValid(stage, region, query)) {
+        res.status(400);
+        res.end('Invalid request');
+    }
 
     const params = {
         "TableName": "LambdaEdgeConfig",
