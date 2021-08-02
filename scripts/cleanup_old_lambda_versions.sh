@@ -49,7 +49,7 @@ delete_old_versions() {
   # https://stackoverflow.com/questions/28055346/bash-unbound-variable-array-script-s3-bash
   declare -a versions
   
-  version_arns=$(aws --region ${AWS_REGION} lambda list-versions-by-function --no-paginate --function-name $1 \
+  version_arns=$(aws --region ${AWS_REGION} lambda list-versions-by-function --function-name $1 \
     --query "Versions[?ends_with(FunctionArn, \`LATEST\`) == \`false\`].FunctionArn"  | jq -r '.[]')
   [[ ! ${version_arns[@]} ]] && echo "No versions found, skipping" && return
 
@@ -68,7 +68,7 @@ delete_old_versions() {
   while true ; do
     case "$DELETE" in
       y|yes)
-        aliases=$(aws --region ${AWS_REGION} lambda list-aliases --no-paginate --function-name $1)
+        aliases=$(aws --region ${AWS_REGION} lambda list-aliases --function-name $1)
         for version_arn in ${version_arns[@]}; do
           version_num=$(echo $version_arn | grep -Eo "[0-9]+$")
           if [[ $version_num -gt $newest_version_to_delete ]]; then
