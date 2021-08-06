@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "ChromeCVEMonitor"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-84hyntz8n79r"
+s3_prefix = "ChromeCVEMonitor"
+region = "us-west-2"
+capabilities = "CAPABILITY_NAMED_IAM"
