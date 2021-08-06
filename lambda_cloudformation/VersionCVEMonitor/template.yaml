@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Hosting Insights tool lambda function
+
+Resources:
+  ChromeCVEMonitorDDBTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TimeToLiveSpecification:
+        AttributeName: 'expiresAt'
+        Enabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+      - AttributeName: "cveId"
+        AttributeType: "S"
+      KeySchema:
+      - AttributeName: "cveId"
+        KeyType: "HASH"
+      TableName: "Chrome-CVE-record-history"
+              
+  ChromeCVEMonitor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VersionCVEMonitorLambda
+      Handler: src/VersionCVEMonitorLambda.handler
+      Runtime: nodejs14.x
+      MemorySize: 512
+      Timeout: 900
+      Environment:
+          Variables:
+            CVE_RECORD_HISTORY_TABLE: !Ref ChromeCVEMonitorDDBTable
+      Role: 
+        Fn::GetAtt:
+          - LambdaRole
+          - Arn
+      Events:
+        UpdateSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 hour)
+  
+  LambdaRole:
+    Properties:
+      RoleName: ChromeCVEMonitorLambdaRole
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [lambda.amazonaws.com]
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action: 
+              - 'dynamodb:*'
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: "*"
+          Version: '2012-10-17'
+        PolicyName: ChromeCVEMonitorLambdaRolePolicy
+    Type: AWS::IAM::Role
