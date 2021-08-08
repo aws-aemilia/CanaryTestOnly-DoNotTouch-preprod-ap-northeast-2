@@ -69,7 +69,7 @@ describe("Tests helper functions", () => {
     });
 
     it("should send email", async (done) => {
-        const notificationMessage = `Immediate Action reuired! New Google Chrome ${dummyChromeCVERecord.cve_id} found, CVE summary is : ${dummyChromeCVERecord.summary}, CVE url is: ${dummyChromeCVERecord.url}, `;
+        const notificationMessage = `Immediate Action required! New Google Chrome ${dummyChromeCVERecord.cve_id} found, CVE summary is : ${dummyChromeCVERecord.summary}, CVE url is: ${dummyChromeCVERecord.url}, `;
         const emailParams = {
             Destination: {
                 ToAddresses: ["aws-mobile-amplify@amazon.com"],

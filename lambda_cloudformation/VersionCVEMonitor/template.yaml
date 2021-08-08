@@ -62,11 +62,11 @@ Resources:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
-            Resource: arn:aws:logs:*:*:*
+            Resource: "*"
           - Effect: Allow
             Action: 
               - 'dynamodb:*'
-            Resource: "*"
+            Resource: !GetAtt ChromeCVEMonitorDDBTable.Arn
           - Effect: Allow
             Action:
               - ses:SendEmail

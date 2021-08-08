@@ -56,7 +56,7 @@ module.exports = {
         const cveSummary = record.summary;
         const cveUrl = record.url;
          
-        const notificationMessage = `Immediate Action reuired! New Google Chrome ${cveId} found, CVE summary is : ${cveSummary}, CVE url is: ${cveUrl}, ` 
+        const notificationMessage = `Immediate Action required! New Google Chrome ${cveId} found, CVE summary is : ${cveSummary}, CVE url is: ${cveUrl}, ` 
         const emailParams = {
             Destination: {
                 ToAddresses: ["aws-mobile-amplify@amazon.com"],
