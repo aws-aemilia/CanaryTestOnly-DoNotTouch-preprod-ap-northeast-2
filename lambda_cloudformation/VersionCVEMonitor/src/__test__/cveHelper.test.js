@@ -25,7 +25,7 @@ describe("Tests helper functions", () => {
         done();
     });
 
-    it("should getRecord from DynamoDB", async (done) => {
+    it("should get record from DynamoDB", async (done) => {
         const getMocked = jest.fn();
         getMocked.mockReturnValue({
             promise: jest.fn().mockReturnValue(
@@ -44,7 +44,7 @@ describe("Tests helper functions", () => {
         done();
     });
 
-    it("should putRecord from DynamoDB", async (done) => {
+    it("should put record to DynamoDB", async (done) => {
         const putParams = {
             TableName: process.env.CVE_RECORD_HISTORY_TABLE,
             Item: {
