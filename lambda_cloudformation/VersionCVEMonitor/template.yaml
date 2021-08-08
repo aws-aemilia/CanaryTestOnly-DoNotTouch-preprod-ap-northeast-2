@@ -59,10 +59,9 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
-            - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
-            Resource: "*"
+            Resource: arn:aws:logs:us-west-2:643036967432:log-group:/aws/lambda/VersionCVEMonitorLambda:*
           - Effect: Allow
             Action: 
               - 'dynamodb:*'
