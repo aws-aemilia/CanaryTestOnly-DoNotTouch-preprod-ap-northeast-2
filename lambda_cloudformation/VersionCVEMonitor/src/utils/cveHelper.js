@@ -44,7 +44,7 @@ module.exports = {
         try {
             await ddb.put(putParams).promise();
         } catch (err) {
-            throw error;
+            throw err;
         }
 
         return;

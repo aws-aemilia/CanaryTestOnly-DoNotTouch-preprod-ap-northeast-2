@@ -42,7 +42,7 @@ Resources:
         UpdateSchedule:
           Type: Schedule
           Properties:
-            Schedule: rate(1 hour)
+            Schedule: rate(5 minutes)
   
   LambdaRole:
     Properties:
@@ -70,6 +70,10 @@ Resources:
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+            Resource: "*"
+          - Effect : Allow
+            Action:
+              - cloudwatch:PutMetricData
             Resource: "*"
           Version: '2012-10-17'
         PolicyName: ChromeCVEMonitorLambdaRolePolicy
