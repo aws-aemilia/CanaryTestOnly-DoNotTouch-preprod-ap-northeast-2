@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         MCM Changelist
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Looks for amplify and aemilia related changed packages in a pipeline diff and generates markdown suitable for pasting into a CM
 // @author       behroozi@
 // @include      /https:\/\/pipelines.amazon.com\/.*?(target_events|diff|track_changes_v2|approval_attempts|unapproved_changes)/
-// @require      https://godmode.behroozi.people.aws.dev/scripts/jquery.min.js
+// @require      https://godmode.behroozi.people.aws.dev/scripts/jquery-3.6.0.min.js
 // @icon         https://godmode.behroozi.people.aws.dev/img/godMode.png
+// @updateURL    https://code.amazon.com/packages/AWSAmplifyTools/blobs/mainline/--/gm-scripts/MCMChangelist.user.js?download=1
+// @downloadURL  https://code.amazon.com/packages/AWSAmplifyTools/blobs/mainline/--/gm-scripts/MCMChangelist.user.js?download=1
 // @grant GM_setClipboard
 // @grant GM_notification
 // ==/UserScript==
