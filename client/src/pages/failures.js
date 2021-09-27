@@ -67,7 +67,7 @@ class Failures extends Component {
     }
 
     onUserClick(row) {
-        window.location.href = `https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=${row.accountid}`;
+        window.location.href = `https://edge-tools.amazon.com/search?query=${row.accountid}`;
     }
 
     actionFormatter = (cell, row) => {

@@ -145,7 +145,7 @@ class Insights extends Component {
     render() {
         const formatter = (cell) => {
             let SOTLink =
-                "https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=" +
+                "https://edge-tools.amazon.com/search?query=" +
                 cell;
             return <a href={SOTLink} target="_blank" rel="noopener noreferrer"> {cell} </a>;
         };

@@ -33,7 +33,7 @@ class Table extends Component {
 
                             if (key === "accountId") {
 
-                                accountLink = "https://aws-tools.amazon.com/servicetools/search.aws?searchType=ACCOUNT&query=" + data[key]
+                                accountLink = "https://edge-tools.amazon.com/search?query=" + data[key]
                             }
 
 
