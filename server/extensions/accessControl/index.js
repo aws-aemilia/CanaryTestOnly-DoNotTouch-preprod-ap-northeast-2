@@ -4,13 +4,6 @@ const allowedUrlList = [
     "/regions",
     "/api/builds",
     "/api/logs",
-    "/customerinfoApp",
-    "/customerinfoBranch",
-    "/customerinfoJob",
-    "/customerinfoJobMore",
-    "/customerinfoDomain",
-    "/customerinfoWebhook",
-    "/customerinfoLambdaEdgeConfig",
 ];
 const permissionChecker = (apiUrl) => {
     let pass = false;
