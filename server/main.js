@@ -33,7 +33,7 @@ const adminUsers = [
     'lopezbnd',
     'fdingler',
     'kalmj',
-    // 'weikding',
+    'weikding',
     'hloriana',
     'kgnanask',
     'xubham'
@@ -41,7 +41,19 @@ const adminUsers = [
 
 // Add Support Engineer alias here
 const supportUsers = [
-    'weikding'
+    'bgarreth',
+    'casbrito',
+    'jayrava',
+    'manemman',
+    'nbbuddhi',
+    'nidhiman',
+    'phampp',
+    'sahdhawa',
+    'snarij',
+    'bangat',
+    'obanw',
+    'anjuz',
+    'yunganw'
 ];
 
 
