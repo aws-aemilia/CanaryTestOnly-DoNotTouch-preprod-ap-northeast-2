@@ -50,7 +50,7 @@ const supportUsers = [
     'nidhiman',
     'phampp',
     'sahdhawa',
-    'snarij',
+    'snsarij',
     'bangat',
     'obanw',
     'anjuz',
