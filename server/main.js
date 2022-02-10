@@ -33,7 +33,10 @@ const adminUsers = [
     'fdingler',
     'etsung',
     'kalmj',
-    'hloriana'
+    'hloriana',
+    'kgnanask',
+    'xubham',
+    'saazim'
 ];
 
 const supportUsers = [
