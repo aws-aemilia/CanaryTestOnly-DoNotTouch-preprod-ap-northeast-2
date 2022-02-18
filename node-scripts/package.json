@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0",
-    "noisy-reverse-proxy": "ts-node noisyReverseProxy.ts"
+    "noisy-reverse-proxy": "ts-node noisyReverseProxy.ts",
+    "P60053501": "ts-node P60053501/findAbusers.ts"
   },
   "author": "",
   "license": "ISC",

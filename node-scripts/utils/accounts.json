@@ -1,0 +1,78 @@
+[
+    {
+        "region": "eu-north-1",
+        "account": "315276288780"
+    },
+    {
+        "region": "eu-west-1",
+        "account": "565036926641"
+    },
+    {
+        "region": "ap-southeast-2",
+        "account": "711974673587"
+    },
+    {
+        "region": "ca-central-1",
+        "account": "824930503114"
+    },
+    {
+        "region": "me-south-1",
+        "account": "183380703454"
+    },
+    {
+        "region": "us-west-1",
+        "account": "214290359175"
+    },
+    {
+        "region": "eu-west-3",
+        "account": "693207358157"
+    },
+    {
+        "region": "ap-east-1",
+        "account": "574285171994"
+    },
+    {
+        "region": "eu-central-1",
+        "account": "644397351177"
+    },
+    {
+        "region": "ap-northeast-1",
+        "account": "550167628141"
+    },
+    {
+        "region": "ap-northeast-2",
+        "account": "024873182396"
+    },
+    {
+        "region": "us-east-1",
+        "account": "073653171576"
+    },
+    {
+        "region": "eu-west-2",
+        "account": "499901155257"
+    },
+    {
+        "region": "sa-east-1",
+        "account": "068675532419"
+    },
+    {
+        "region": "ap-south-1",
+        "account": "801187164913"
+    },
+    {
+        "region": "eu-south-1",
+        "account": "804516649577"
+    },
+    {
+        "region": "ap-southeast-1",
+        "account": "148414518837"
+    },
+    {
+        "region": "us-east-2",
+        "account": "264748200621"
+    },
+    {
+        "region": "us-west-2",
+        "account": "395333095307"
+    }
+]
