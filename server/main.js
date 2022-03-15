@@ -18,6 +18,7 @@ const permissionChecker = require("./extensions/accessControl")
 const { isParamsValid } = require("./extensions/paramsValidator")
 
 const adminUsers = [
+    'nestorba',
     'loganch',
     'lisirui',
     'snimakom',
