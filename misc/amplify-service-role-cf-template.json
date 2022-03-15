@@ -19,7 +19,7 @@
         "IAMR3RA0M": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "AssumeRolePolicyDocument": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"gamma.amplify.amazonaws.com\",\"amplify.amazonaws.com\"]},\"Action\":\"sts:AssumeRole\"}]}",
+                "AssumeRolePolicyDocument": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"gamma.amplify.amazonaws.com\",\"amplify.amazonaws.com\",\"test.amplify.aws.internal\"]},\"Action\":\"sts:AssumeRole\"}]}",
                 "Description": "Amplify Console backend deployment service role",
                 "RoleName": "AmplifyBackendDeploymentsRole",
                 "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AdministratorAccess"]
