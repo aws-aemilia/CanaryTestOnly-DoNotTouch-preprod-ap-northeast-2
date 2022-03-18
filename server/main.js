@@ -20,7 +20,6 @@ const { isParamsValid } = require("./extensions/paramsValidator")
 const adminUsers = [
     'nestorba',
     'loganch',
-    'lisirui',
     'snimakom',
     'nsswamin',
     'litwjaco',
@@ -28,12 +27,8 @@ const adminUsers = [
     'bradruof',
     'rjabhi',
     'jffranzo',
-    'behroozi',
-    'hsspain',
-    'brnmye',
     'lopezbnd',
     'fdingler',
-    'kalmj',
     'weikding',
     'hloriana',
     'kgnanask',
@@ -55,7 +50,9 @@ const supportUsers = [
     'bangat',
     'obanw',
     'anjuz',
-    'yunganw'
+    'yunganw',
+    'mengb',
+    'hruixin'
 ];
 
 
