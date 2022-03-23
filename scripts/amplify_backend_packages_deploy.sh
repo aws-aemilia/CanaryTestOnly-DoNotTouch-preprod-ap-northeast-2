@@ -28,7 +28,7 @@ function deploy_local_package() {
     brazil-build-tool-exec sam package
     if [[ "$3" == "AemiliaContainer" ]]; then 
         echo -e "${GREEN}Deleting aemilia-build-image repository images from ECR...${NC}"
-        aws ecr list-images --repository-name aemilia-build-image --query "imageIds[].imageDigest" --output text | xargs -i aws ecr batch-delete-image --repository-name aemilia-build-image --image-ids imageDigest={}
+        aws ecr list-images --repository-name aemilia-build-image --query "imageIds[].imageDigest" --output text | xargs -I{} aws ecr batch-delete-image --repository-name aemilia-build-image --image-ids imageDigest={}
         echo -e "${GREEN}Deleting aemilia-build-image repository from ECR${NC}"
         aws ecr delete-repository --repository-name aemilia-build-image
         brazil-build-tool-exec sam deploy
@@ -60,13 +60,8 @@ deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "
 deploy_local_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda"
 deploy_local_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool"
 
-# Step 2: Manual
-if [[ `uname -r` != *"amzn2"* ]]; then
-  echo -e "${RED}Since you aren't on AL2 if you want to deploy AemiliaEdgeLambda deploy it manually before proceeding or <Ctrl-C>.${NC}"
-else
-  deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda"
-  deploy_local_package "Deploy edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda"
-fi
+deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda"
+deploy_local_package "Deploy edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda"
 
 # Step 3: Semi-Automated Deploy this last
 deploy_local_package "Deploy pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute"

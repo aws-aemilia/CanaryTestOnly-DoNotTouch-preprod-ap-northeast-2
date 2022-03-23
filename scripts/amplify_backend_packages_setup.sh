@@ -42,12 +42,12 @@ function sed_dash_i() {
 function download_and_build_package() {
     echo -e "${GREEN}Setup $3: BEGIN${NC}"
     while true; do
-    read -p "Do you wish to build this package? (y/n): " yn
-    case $yn in
-        [Yy] ) break;;
-        [Nn] ) return;;
-        * ) echo "Please answer y/n.";;
-    esac
+        read -p "Do you wish to build this package? (y/n): " yn
+        case $yn in
+            [Yy] ) break;;
+            [Nn] ) return;;
+            * ) echo "Please answer y/n.";;
+        esac
     done
     if [[ ! -d "$2/src/$3" ]]; then
         echo -e "${YELLOW}Creating workspace and adding required packages${NC}"
@@ -55,6 +55,7 @@ function download_and_build_package() {
         cd $2
         if [ "$IS_MAC" = '1' ]; then
             echo "`yes|brazil setup platform-support`" # yes + pipefail = :-( swallow non-0 exit statuses just here
+            brazil ws use --platform "AL2_x86_64"
         fi
 
         brazil ws --use -p $3
@@ -145,11 +146,7 @@ download_and_build_package "Setup dynamodb stream: BEGIN" "AemiliaDynamoDBStream
 download_and_build_package "Setup control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda/development"
 download_and_build_package "Setup workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda" "AemiliaWorkersLambda/development"
 download_and_build_package "Setup warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool" "AemiliaWarmingPoolInfrastructure/development"
-if [[ `uname -r` != *"amzn2"* ]]; then
-  echo -e "${RED}Since you aren't on AL2 if you want to checkout AemiliaEdgeLambda checkout and build it manually before proceeding or <Ctrl-C>.${NC}"
-else
-  download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" "AemiliaEdgeLambda/development"
-fi
+download_and_build_package "Setup edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda" "AemiliaEdgeLambda/development"
 download_and_build_package "Setup edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda/development"
 download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
 download_and_build_package "Setup container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda" "AemiliaContainerLambda/development"
