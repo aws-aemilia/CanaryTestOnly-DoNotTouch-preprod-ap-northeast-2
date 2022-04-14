@@ -4,7 +4,7 @@ import {
 } from "@aws-sdk/client-service-quotas";
 import yaml from "js-yaml";
 import fs from "fs";
-import Isengard from "./utils/isengard";
+import Isengard from "./utils/isengardCreds";
 
 // This script is useful to fetch the current Lambda Concurrency quota that we have on 
 // each region per production account. Since we use Lambda@Edge and it consumes Lambda 
