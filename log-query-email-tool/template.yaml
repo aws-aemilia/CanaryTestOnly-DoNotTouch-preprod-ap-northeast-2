@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lambda-query-runner
+
+  Sample SAM Template for lambda-query-runner
+
+Resources:
+  LambdaQueryRunner:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: "LambdaQueryRunner"
+      Environment:
+        Variables:
+          FROM_EMAIL: "aws-mobile-amplify@amazon.com"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - CloudWatchLogsFullAccess
+        - AmazonSESFullAccess
+      CodeUri: throttling-email-app/
+      Handler: app.lambdaHandler
+      Timeout: 300
+      MemorySize: 512
+      Runtime: nodejs14.x
+      Events:
+        ScheduledFunction:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 16 ? * MON *) # every monday at 9am PST
+      Architectures:
+        - x86_64
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        - app.ts

@@ -1,0 +1,14 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "lambda-query-runner"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-84hyntz8n79r"
+s3_prefix = "lambda-query-runner"
+region = "us-west-2"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+[default.build.parameters]
+beta_features = true
+[default.sync.parameters]
+beta_features = true
