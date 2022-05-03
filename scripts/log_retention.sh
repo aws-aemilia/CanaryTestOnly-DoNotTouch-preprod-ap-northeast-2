@@ -5,8 +5,8 @@ set -e
 # Log Groups in an account. It loops through all Amplify regions and uses
 # Isengard to fetch temporaary credentials with the OncallOperator role. 
 
-# To invoke it pass the region airport code and the iam role to assume:
-# ./log_retention PDX OncallOperator
+# To invoke it pass the region airport code
+# ./log_retention PDX
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
@@ -15,7 +15,7 @@ source "$CURRENT_DIR/utils.sh"
 
 RETENTIONINDAYS=3653 # 10 years
 REGION_AIRPORT_CODE=$1 # Get region from args
-IAM_ROLE=$2 # Get role from args
+IAM_ROLE=OncallOperator
 
 echo "Running script for $REGION_AIRPORT_CODE"
 amplify_account=$(get_amplify_account $REGION_AIRPORT_CODE)
