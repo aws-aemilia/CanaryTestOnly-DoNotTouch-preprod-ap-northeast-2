@@ -32,4 +32,9 @@ while IFS= read -r lg; do
       --log-group-name $lg \
       --retention-in-days $RETENTIONINDAYS
 done <<< "$lglist"
-echo "======================================="
+echo "Done"
+
+echo "Unsetting credentials"
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_SESSION_TOKEN
