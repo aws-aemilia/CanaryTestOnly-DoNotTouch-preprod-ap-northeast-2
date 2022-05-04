@@ -23,7 +23,7 @@ isengard_login $amplify_account $IAM_ROLE
 regionName=$(get_region_name $REGION_AIRPORT_CODE)
 echo "Region name $regionName"
 echo "Listing all log groups in the account"
-lglist=$(aws logs describe-log-groups --region $regionName --output text --query 'logGroups[*].[logGroupName]')
+lglist=$(aws logs describe-log-groups --region $regionName --output json | jq -r '.logGroups[] | select(.retentionInDays == null) | .logGroupName')
 while IFS= read -r lg; do
   echo "Configuring retention policy for $lg"
   sleep 1
