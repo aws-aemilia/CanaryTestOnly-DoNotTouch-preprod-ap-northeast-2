@@ -51,7 +51,7 @@
 
                             //remove the Escalated/New Sev 2 from details
                             let details = {subject:subject.replace(/^.*Sev\d(.\d)? - /,""),source:source,timestamp:timestamp};
-                            let ttRegex = subject.match(/(?:^SIM|Ticket \#|TT) (\w+)/);
+                            let ttRegex = subject.match(/(?:SIM|Ticket \#|TT) (\w+)/);
                             if(ttRegex) {
                                 details.ticket_id = ttRegex[1];
                             }
