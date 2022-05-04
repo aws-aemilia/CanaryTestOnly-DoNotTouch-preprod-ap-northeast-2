@@ -5,23 +5,19 @@ import {
 import yaml from "js-yaml";
 import fs from "fs";
 import Isengard from "./utils/isengardCreds";
+import { AmplifyAccount } from "./types";
 
-// This script is useful to fetch the current Lambda Concurrency quota that we have on 
-// each region per production account. Since we use Lambda@Edge and it consumes Lambda 
-// capacity from 13 regions. We need to track Lambda usage across all those regions, 
+// This script is useful to fetch the current Lambda Concurrency quota that we have on
+// each region per production account. Since we use Lambda@Edge and it consumes Lambda
+// capacity from 13 regions. We need to track Lambda usage across all those regions,
 // not only the region where Amplify is deployed. This means we need to track
-// 19 accounts * 13 l@e regions = 247 different quotas. This script automates the task 
-// of pulling those values using the Service Quotas API. 
+// 19 accounts * 13 l@e regions = 247 different quotas. This script automates the task
+// of pulling those values using the Service Quotas API.
 
 // To run it, simply run brazil-build current-lambda-limits.
-// It produces a YAML file at the end with all the values. 
-// The script automatically gets credentials from Isengard for each account. So, make 
+// It produces a YAML file at the end with all the values.
+// The script automatically gets credentials from Isengard for each account. So, make
 // sure you have a valid midway token when running it. `midway -o`
-
-interface AmplifyAccount {
-  region: string;
-  accountId: string;
-}
 
 const accounts: AmplifyAccount[] = [
   { region: "eu-west-2", accountId: "499901155257" },
@@ -75,7 +71,7 @@ async function main() {
     // Add accountId to the response
     limits[account.accountId] = {};
 
-    // Regions to fetch lambda quota from: 
+    // Regions to fetch lambda quota from:
     // - All regions where lambda@edge consumes capacity
     // - But also the Amplify region itself for this corresponding account
     const regions = new Set([account.region, ...lambdaEdgeRegions]);

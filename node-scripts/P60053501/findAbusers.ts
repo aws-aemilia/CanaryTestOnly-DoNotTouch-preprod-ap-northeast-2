@@ -1,4 +1,4 @@
-// Script to find abuses of https://t.corp.amazon.com/P60053501/communication 
+// Script to find abuses of https://t.corp.amazon.com/P60053501/communication
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { AWSError } from "aws-sdk";
 
-import serviceAccounts from "../utils/accounts.json";
+import serviceAccounts from "../utils/static/accounts.json";
 import isengardCreds from "../utils/isengardCreds";
 import sleep from "../utils/sleep";
 
@@ -33,7 +33,6 @@ function getAccountIdFromRoleArn(roleArn: string): string | null {
 
 async function main() {
   for await (const serviceAccount of serviceAccounts) {
-
     console.log(`============ ${serviceAccount.region} ===========`);
 
     const { account, region } = serviceAccount;

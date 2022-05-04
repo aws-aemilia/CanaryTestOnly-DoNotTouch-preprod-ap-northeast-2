@@ -1,4 +1,5 @@
 import { exec } from "child_process";
+import { Credentials } from "../types";
 
 interface StdIoResp {
   stdout: string;
@@ -43,17 +44,13 @@ async function runCmd({
   });
 }
 
-interface Credentials {
-  accessKeyId: string;
-  secretAccessKey: string;
-  sessionToken: string;
-  expiration: number;
-}
-
-async function getCredentials(accountId: string): Promise<Credentials> {
+async function getCredentials(
+  accountId: string,
+  roleName = "ReadOnly"
+): Promise<Credentials> {
   const params = {
     AWSAccountID: accountId,
-    IAMRoleName: "ReadOnly",
+    IAMRoleName: roleName,
   };
 
   const cmd = `

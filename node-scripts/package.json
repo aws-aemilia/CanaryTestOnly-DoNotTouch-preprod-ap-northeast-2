@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 0",
     "noisy-reverse-proxy": "ts-node noisyReverseProxy.ts",
     "P60053501": "ts-node P60053501/findAbusers.ts",
-    "current-lambda-limits": "ts-node getCurrentLambdaLimits.ts"
+    "current-lambda-limits": "ts-node getCurrentLambdaLimits.ts",
+    "P61637409": "ts-node P61637409/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -17,13 +18,13 @@
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudfront": "^3.1.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
-    "@aws-sdk/client-service-quotas": "^3.37.0",
+    "@aws-sdk/client-service-quotas": "^3.9.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
     "aws-sdk": "^2.851.0",
     "command-line-args": "^5.1.1",
     "crypto-js": "^3.1.9-1",
     "fs-extra": "^9.0.1",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.0.0",
     "rate-limiter-flexible": "2.2.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
