@@ -1,0 +1,302 @@
+[
+  {
+    "accountId": "033345365959",
+    "email": "aws-mobile-aemilia-beta@amazon.com",
+    "region": "us-west-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "396176200477",
+    "email": "aws-mobile-aemilia-gamma-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "457974620857",
+    "email": "aws-mobile-aemilia-gamma-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "241572322679",
+    "email": "aws-mobile-aemilia-preprod-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "905484389639",
+    "email": "aws-mobile-aemilia-preprod-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "414549345730",
+    "email": "aws-mobile-aemilia-preprod-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "130362053750",
+    "email": "aws-mobile-aemilia-preprod-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "795328988917",
+    "email": "aws-mobile-aemilia-preprod-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "261067636671",
+    "email": "aws-mobile-aemilia-preprod-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "645662906121",
+    "email": "aws-mobile-aemilia-preprod-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "250849867218",
+    "email": "aws-mobile-aemilia-preprod-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "014224714919",
+    "email": "aws-mobile-aemilia-preprod-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "373263430287",
+    "email": "aws-mobile-aemilia-preprod-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "664363737505",
+    "email": "aws-mobile-aemilia-preprod-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "880523927286",
+    "email": "aws-mobile-aemilia-preprod-kix@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "217549701435",
+    "email": "aws-mobile-aemilia-preprod-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "105889380570",
+    "email": "aws-mobile-aemilia-preprod-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "521901182269",
+    "email": "aws-mobile-aemilia-preprod-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "808545654877",
+    "email": "aws-mobile-aemilia-preprod-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "652616700988",
+    "email": "aws-mobile-aemilia-preprod-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "869518299611",
+    "email": "aws-mobile-aemilia-preprod-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "606839312539",
+    "email": "aws-mobile-aemilia-preprod-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "968464305406",
+    "email": "aws-mobile-aemilia-preprod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "315276288780",
+    "email": "aws-mobile-aemilia-prod-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "183380703454",
+    "email": "aws-mobile-aemilia-prod-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "801187164913",
+    "email": "aws-mobile-aemilia-prod-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "693207358157",
+    "email": "aws-mobile-aemilia-prod-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "264748200621",
+    "email": "aws-mobile-aemilia-prod-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "565036926641",
+    "email": "aws-mobile-aemilia-prod-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "644397351177",
+    "email": "aws-mobile-aemilia-prod-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "068675532419",
+    "email": "aws-mobile-aemilia-prod-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "574285171994",
+    "email": "aws-mobile-aemilia-prod-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "073653171576",
+    "email": "aws-mobile-aemilia-prod-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "024873182396",
+    "email": "aws-mobile-aemilia-prod-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "042337181263",
+    "email": "aws-mobile-aemilia-prod-kix@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "499901155257",
+    "email": "aws-mobile-aemilia-prod-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "804516649577",
+    "email": "aws-mobile-aemilia-prod-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "550167628141",
+    "email": "aws-mobile-aemilia-prod-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "395333095307",
+    "email": "aws-mobile-aemilia-prod-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "214290359175",
+    "email": "aws-mobile-aemilia-prod-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "148414518837",
+    "email": "aws-mobile-aemilia-prod-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "711974673587",
+    "email": "aws-mobile-aemilia-prod-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "824930503114",
+    "email": "aws-mobile-aemilia-prod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod"
+  }
+]

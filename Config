@@ -32,6 +32,7 @@ package.AWSAmplifyTools = {
             OdinLocalPythonInterface = 1.1;
             NodeJS-SIMClient = 1.0;
             NodeJS-Odin = 3.0;
+            NodeJS-Isengard = 4.1;
         };
     };
 

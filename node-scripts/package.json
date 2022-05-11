@@ -14,8 +14,10 @@
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@amzn/isengard": "*",
     "@amzn/odin": "*",
     "@amzn/sim-client": "*",
+    "@aws-sdk/client-cloudformation": "^3.85.0",
     "@aws-sdk/client-cloudfront": "^3.1.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
     "@aws-sdk/client-service-quotas": "^3.9.0",
@@ -34,6 +36,7 @@
     "@types/command-line-args": "^5.0.0",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^14.14.35",
+    "prettier": "2.6.2",
     "ts-node": "^9.1.1",
     "tslint": "^5.12.1",
     "typescript": "^3.9.9"
