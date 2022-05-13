@@ -59,6 +59,31 @@ const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
+const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
+  const integTestNameRegex =
+      /^aws-mobile-amplify-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-console?@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(integTestNameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegion(airportCode),
+        stage,
+      },
+    ];
+  });
+};
+
 /**
  * get Control Plane accounts for all regions and stages
  */
@@ -71,4 +96,8 @@ export async function controlPlaneAccounts(): Promise<AmplifyAccount[]> {
  */
 export async function integTestAccounts(): Promise<AmplifyAccount[]> {
   return withFileCache(getIntegTestAccounts, "integTestAccounts")();
+}
+
+export async function consoleAccounts(): Promise<AmplifyAccount[]> {
+  return withFileCache(getConsoleAccounts, "consoleAccounts")();
 }
