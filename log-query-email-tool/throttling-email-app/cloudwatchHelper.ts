@@ -1,8 +1,48 @@
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
-import { TableRow } from "./types";
+import CloudWatch from "aws-sdk/clients/cloudwatch";
+import { AmplifyServiceQueryResults, TableRow } from "./types";
+
+const METRIC_NAMESPACE = 'LambdaQueryRunner';
+
+export const publishMetrics = async (metricType: string, cloudwatchClient: CloudWatch, serviceQueryResult: AmplifyServiceQueryResults) => {
+    let throttleMap: any = {};
+    for (const row of serviceQueryResult.queryResponse!) {
+        if (Object.keys(throttleMap).includes(row.service)) {
+            if (Object.keys(throttleMap[row.service]).includes(row.region)) {
+                throttleMap[row.service][row.region] += Number(row.numberOfThrottles);
+            } else {
+                throttleMap[row.service][row.region] = Number(row.numberOfThrottles)
+            }
+        } else {
+            throttleMap[row.service] = {};
+            throttleMap[row.service][row.region] = Number(row.numberOfThrottles)
+        }
+    }
+
+    for (const serviceThrottle of Object.keys(throttleMap)) {
+        for (const regionThrottled of Object.keys(throttleMap[serviceThrottle])) {
+            const params = {
+                MetricData: [
+                    {
+                        MetricName: serviceThrottle,
+                        Dimensions: [
+                            {
+                                Name: regionThrottled,
+                                Value: `${serviceQueryResult.service.serviceName.split(' ').join('-')}-${metricType}`
+                            },
+                        ],
+                        Unit: 'None',
+                        Value: throttleMap[serviceThrottle][regionThrottled]
+                    },
+                ],
+                Namespace: METRIC_NAMESPACE
+            };
+            await cloudwatchClient.putMetricData(params).promise();
+        }
+    }
+}
 
 export const startQuery = async (start: number, end: number, query: string, logGroup: string, cloudwatchLogsClient: CloudWatchLogs): Promise<string> => {
-
     const startQueryResponse = await cloudwatchLogsClient.startQuery({
         startTime: start,
         endTime: end,
@@ -24,9 +64,6 @@ export const getQueryResult = async (queryId: string, cloudwatchLogsClient: Clou
         try {
             const getQueryResultsResponse = await cloudwatchLogsClient.getQueryResults({ queryId }).promise();
             status = getQueryResultsResponse.status || "Failed"
-
-            console.log("status " + status)
-            console.log("results " + JSON.stringify(getQueryResultsResponse.results!))
             if (status === "Complete") {
                 for (const row of getQueryResultsResponse.results!) {
                     let customerAccountId = "";

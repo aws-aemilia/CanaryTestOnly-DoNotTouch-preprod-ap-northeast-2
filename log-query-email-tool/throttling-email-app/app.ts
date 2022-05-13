@@ -1,19 +1,23 @@
 
-import { CloudWatchLogs, SES } from 'aws-sdk';
-import { getQueryResult, startQuery } from './cloudwatchHelper';
+import { CloudWatchLogs, SES, CloudWatch, SecretsManager } from 'aws-sdk';
+import { getQueryResult, publishMetrics, startQuery } from './cloudwatchHelper';
 import { AmplifyServices } from './amplifyServiceQueries';
-
 import { sendSNSEmail } from './sesHelper';
 import { AmplifyServiceQueryResults } from './types';
+import { sendWebhook } from './webhookHelper';
+import { GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
+import { getWebhookSecret } from './secretsManagerHelper';
+import { TITLE, toHtml, toPlainText } from './textFormattingHelper';
 
 // clients
 const cloudwatchLogsClient = new CloudWatchLogs({ region: process.env.AWS_REGION });
+const cloudwatchClient = new CloudWatch({ region: process.env.AWS_REGION });
 const ses = new SES({ region: process.env.AWS_REGION });
+const secretsManager = new SecretsManager({ region: process.env.AWS_REGION });
 
 // constants
 const TEAM_MEMBERS = ['aws-mobile-amplify@amazon.com'];
-const TITLE = 'Throttling Across Amplify Hosting';
-const ONE_WEEK_IN_MS = 24*7*60*60*1000;
+const ONE_WEEK_IN_MS = 24*7*1*60*60*1000;
 
 export const lambdaHandler = async (): Promise<void> => {
     // start queries
@@ -47,9 +51,44 @@ export const lambdaHandler = async (): Promise<void> => {
         return;
     }
 
+    // publish cloudwatch metrics
+    try {
+        console.log('publish cloudwatch metrics...')
+        for (const serviceQueryResult of serviceQueryResults) {
+            await publishMetrics('Throttles',cloudwatchClient, serviceQueryResult);
+        }
+    } catch (e) {
+        console.error('error getting query results')
+        console.error(e);
+        return;
+    }
+
     // format to html
     console.log(`format to html`);
     const htmlQueryResponse = toHtml(serviceQueryResults);
+
+    // format to plain text for slack
+    console.log(`format to plain text for slack`);
+    const plainTextResponse = toPlainText(serviceQueryResults);
+
+    // send webhook
+    if (process.env.SECRET_NAME) {
+        try {
+            console.log('get webhook url and sending webhook...');
+            const webhookURLResponse: GetSecretValueResponse = await getWebhookSecret(process.env.SECRET_NAME!, secretsManager);
+            if (webhookURLResponse && webhookURLResponse.SecretString) {
+                const secret = JSON.parse(webhookURLResponse.SecretString!)
+                const slackWebookUrl = secret[process.env.SECRET_NAME];
+                await sendWebhook(plainTextResponse, slackWebookUrl);
+                console.log(`webhook sent with content: ${plainTextResponse}`);
+            }
+        } catch (e) {
+            console.error('error sending webhook');
+            console.error(e);
+            return;
+        }
+    }
+
 
     // send email
     try {
@@ -63,76 +102,4 @@ export const lambdaHandler = async (): Promise<void> => {
     }
 };
 
-const toHtml = (serviceQueryResults: AmplifyServiceQueryResults[]) => {
-    // Add Header and Styling
-    let htmlStr = '<html>';
-    htmlStr += addHeader();
 
-    // Add Header and Table for each service Results
-    for (const serviceTable of serviceQueryResults) {
-        htmlStr += `<h2>${serviceTable.service.serviceName}</h2>`;
-        htmlStr += `<p>Click <a href="${serviceTable.service.linkToQuery}">here</a> to open the query in CloudWatch.</p>`;
-
-        if (serviceTable.queryResponse!.length > 0) {
-            htmlStr += '<table>';
-            htmlStr += `  <tr>
-            <th>Customer AWS Account Id</th>
-            <th>Region</th>
-            <th>Service</th>
-            <th>Number of Throttles</th>
-          </tr>`;
-        
-            for (const line of serviceTable.queryResponse!) {
-                htmlStr += `  <tr>
-                <td>${line.customerAccountId}</td>
-                <td>${line.region}</td>
-                <td>${line.service}</td>
-                <td>${line.numberOfThrottles}</td>
-              </tr>`;
-            }
-            htmlStr += '</table>';
-        } else {
-            htmlStr += `<p>No throttling occourced this past week in: ${serviceTable.service.serviceName}! 🎉</p>`;
-        }
-        htmlStr += `<br/>`;
-    }
-
-    // Add Footer
-    htmlStr += addFooter();
-
-    return htmlStr;
-}
-const addHeader = (): string => {
-    let htmlStr = '';
-    htmlStr += `<head>
-    <style>
-    table {
-      font-family: arial, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    
-    td, th {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
-    }
-    
-    tr:nth-child(even) {
-      background-color: #dddddd;
-    }
-    </style>
-    </head>`
-    htmlStr += '<body>';
-    htmlStr += `<h1>${TITLE}</h1>`;
-    htmlStr += `<h3>(data from the last week)</h3>`;
-    return htmlStr;
-}
-const addFooter = (): string => {
-    let htmlStr = '';
-    htmlStr += '<hr/>';
-    htmlStr += '<p>See more on our <a href="https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/ReportingDashboard/">Reporting Tool Dashboard</a></p>';
-    htmlStr += '</body>';
-    htmlStr += '</html>';
-    return htmlStr;
-}

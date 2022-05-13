@@ -6,6 +6,11 @@ Description: >
   Sample SAM Template for lambda-query-runner
 
 Resources:
+  ThrottlingDashbord:
+    Type: AWS::CloudWatch::Dashboard
+    Properties: 
+      DashboardBody: "{    \"widgets\": [        {            \"height\": 10,            \"width\": 12,            \"y\": 0,            \"x\": 0,            \"type\": \"metric\",            \"properties\": {                \"metrics\": [                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-yul}','Average',300))\", \"label\": \"YUL\", \"id\": \"e1\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-cmh}','Average',300))\", \"label\": \"CMH\", \"id\": \"e2\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-dub}','Average',300))\", \"label\": \"DUB\", \"id\": \"e3\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-iad}','Average',300))\", \"label\": \"IAD\", \"id\": \"e4\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-sin}','Average',300))\", \"label\": \"SIN\", \"id\": \"e5\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-bom}','Average',300))\", \"label\": \"BOM\", \"id\": \"e6\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-fra}','Average',300))\", \"label\": \"FRA\", \"id\": \"e7\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-icn}','Average',300))\", \"label\": \"ICN\", \"id\": \"e8\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-nrt}','Average',300))\", \"label\": \"NRT\", \"id\": \"e9\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-pdx}','Average',300))\", \"label\": \"PDX\", \"id\": \"e10\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-syd}','Average',300))\", \"label\": \"SYD\", \"id\": \"e11\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-arn}','Average',300))\", \"label\": \"ARN\", \"id\": \"e12\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-bah}','Average',300))\", \"label\": \"BAH\", \"id\": \"e13\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-cdg}','Average',300))\", \"label\": \"CDG\", \"id\": \"e14\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-gru}','Average',300))\", \"label\": \"GRU\", \"id\": \"e15\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-hkg}','Average',300))\", \"label\": \"HKG\", \"id\": \"e16\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-lhr}','Average',300))\", \"label\": \"LHR\", \"id\": \"e17\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-mxp}','Average',300))\", \"label\": \"MXP\", \"id\": \"e18\", \"region\": \"us-west-2\" } ],                    [ { \"expression\": \"SUM(SEARCH('{LambdaQueryRunner,prod-sfo}','Average',300))\", \"label\": \"SFO\", \"id\": \"e19\", \"region\": \"us-west-2\" } ]                ],                \"view\": \"timeSeries\",                \"stacked\": false,                \"region\": \"us-west-2\",                \"stat\": \"Average\",                \"period\": 300,                \"title\": \"ThrottlingDashboard\"            }        }    ]}"
+      DashboardName: throttling-dashbord
   LambdaQueryRunner:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -13,10 +18,13 @@ Resources:
       Environment:
         Variables:
           FROM_EMAIL: "aws-mobile-amplify@amazon.com"
+          SECRET_NAME: "SLACK_WEBHOOK_URL"
       Policies:
         - AWSLambdaBasicExecutionRole
         - CloudWatchLogsFullAccess
         - AmazonSESFullAccess
+        - CloudWatchFullAccess
+        - SecretsManagerReadWrite
       CodeUri: throttling-email-app/
       Handler: app.lambdaHandler
       Timeout: 300

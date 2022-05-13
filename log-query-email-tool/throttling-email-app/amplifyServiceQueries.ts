@@ -11,7 +11,6 @@ export const AmplifyServices: AmplifyService[] = [
         | parse @message '\\"exceptionMessage\\":\\"*\\",' as exceptionMessage
         | parse @message '\\"accountId\\":\\"*\\",' as customerAccountId
         | parse @message '\\"operation\\":\\"*\\",' as operation
-        | filter @message like '\\"canary\\":false,'
         | filter exceptionMessage like "Rate exceeded"
         | parse exceptionMessage 'Rate exceeded (Service: *;' as theService
         | stats count(*) as throttles by customerAccountId, region, theService`
