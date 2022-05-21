@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pager Pain
 // @namespace    http://aws.amazon.com/
-// @version      2.03
+// @version      2.04
 // @description  Generate wiki notes for pages with emojis.  Assumes your oncall runs 9am-9am Monday-Monday.
 // @author       behroozi@
 // @include      https://paging.corp.a2z.com/
