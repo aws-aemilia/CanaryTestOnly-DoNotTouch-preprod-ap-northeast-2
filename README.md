@@ -1,21 +1,31 @@
 # AWS Amplify Tools
 
-This package contains ops tools for Amplify Console. The Node scripts are located inside the `node-scripts` folder and the bash scripts under `scripts`. 
+This package contains ops tools for Amplify Console. The Node scripts are located inside the `node-scripts` folder and
+the bash scripts under `scripts`.
 
-## Running a Node script
-
-First, install dependencies 
+## Installing dependencies
 
 ```bash
 cd node-scripts
+brazil ws --sync --md
 brazil-build install
 ```
 
-Then run the desired script
+If the above fails due to a package being supposedly not found, on the `AWSAmplifyTools/development` version
+set, [merge from live](https://build.amazon.com/merge#{%22destination%22:%22AWSAmplifyTools/development%22,%22options%22:{%22source%22:%22live%22,%22add%22:[]}})
+, then retry the last two commands above.
+
+## Running a Node script
 
 ```bash
 node {script_name}.js
+npx ts-node {script_name}.ts
 ```
+
+## Use Prettier for code formatting
+
+After running `brazil-build install` above, install your IDE's Prettier extension, and point it to this
+project's `node_modules`. Or, run `npx prettier --write .` to reformat your script.
 
 ### Noisy reverse proxy script
 

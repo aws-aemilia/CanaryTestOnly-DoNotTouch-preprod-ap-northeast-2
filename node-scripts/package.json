@@ -19,6 +19,7 @@
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudformation": "^3.85.0",
     "@aws-sdk/client-cloudfront": "^3.1.0",
+    "@aws-sdk/client-codebuild": "^3.87.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
     "@aws-sdk/client-service-quotas": "^3.9.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
