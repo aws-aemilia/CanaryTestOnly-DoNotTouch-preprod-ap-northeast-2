@@ -9,9 +9,10 @@ import {
 import yargs from "yargs";
 import { getTicket } from "../SimT";
 
-const buildIsolateResourcesMessage = (accountId: string) => {
+type EventType = "IsolateResources" | "RestoreResources";
+const buildMessage = (accountId: string, eventType: EventType) => {
   return {
-    eventType: "IsolateResources",
+    eventType,
     eventMessage: {
       accountId,
       topicName: "ManualAction",
@@ -32,7 +33,11 @@ const extractAccountIds = (text: string): string[] => {
   return Array.from(text.matchAll(accountIdRegex), (m) => m[0]);
 };
 
-const validateAbuseTicket = async (ticket: string, accountId: string) => {
+const validateAbuseTicket = async (
+  ticket: string,
+  accountId: string,
+  action: "Block" | "Unblock" = "Block"
+) => {
   const ticketData = await getTicket(ticket);
 
   const uniqueAccountIds = [
@@ -42,8 +47,7 @@ const validateAbuseTicket = async (ticket: string, accountId: string) => {
     ]),
   ];
 
-  const abuseTicketTitlePrefix =
-    "Amplify Abuse - Request to Block AWS Customer";
+  const abuseTicketTitlePrefix = `Amplify Abuse - Request to ${action} AWS Customer`;
 
   if (!ticketData.title.includes(abuseTicketTitlePrefix)) {
     throw new Error(
@@ -70,9 +74,10 @@ const validateAbuseTicket = async (ticket: string, accountId: string) => {
   }
 };
 
-const sendIsolateResourcesMessage = async (
+const sendMessage = async (
   account: AmplifyAccount,
-  accountId: string
+  accountId: string,
+  eventType: EventType
 ): Promise<void> => {
   const sqsClient = new SQSClient({
     region: account.region,
@@ -84,7 +89,7 @@ const sendIsolateResourcesMessage = async (
 
   const sendMessageCommand = new SendMessageCommand({
     QueueUrl: accountClosureQueue(account),
-    MessageBody: JSON.stringify(buildIsolateResourcesMessage(accountId)),
+    MessageBody: JSON.stringify(buildMessage(accountId, eventType)),
   });
 
   console.log(`sending SQS message: `, sendMessageCommand.input);
@@ -109,7 +114,7 @@ const main = async () => {
     })
     .option("ticket", {
       describe:
-        'The Id of the "Amplify Abuse - Request to Block AWS Customer" ticket. e.g. V594515849',
+        'The Id of the "Amplify Abuse - Request to Block AWS Customer" (or Unblock) ticket. e.g. V594515849',
       type: "string",
       demandOption: true,
     })
@@ -119,15 +124,23 @@ const main = async () => {
       default: "prod",
       choices: ["beta", "gamma", "preprod", "prod"],
     })
+    .option("unblock", {
+      describe:
+        'Unblock the Account. Will send a "RestoreResources" message instead',
+      type: "boolean",
+      default: false,
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { accountId, ticket, stage } = args;
+  const { accountId, ticket, stage, unblock } = args;
 
-  await validateAbuseTicket(ticket, accountId);
+  const action = unblock ? "Unblock" : "Block";
+
+  await validateAbuseTicket(ticket, accountId, action);
   console.log(
-    `verified that ${ticket} is a valid abuse ticket for account ${accountId}`
+    `verified that ${ticket} is a valid "Request to ${action} AWS Customer" ticket for account ${accountId}`
   );
 
   const controlPLaneAccounts = (await controlPlaneAccounts()).filter(
@@ -136,7 +149,11 @@ const main = async () => {
 
   for (const controlPLaneAccount of controlPLaneAccounts) {
     console.log(`Disabling account in ${controlPLaneAccount.region}...`);
-    await sendIsolateResourcesMessage(controlPLaneAccount, accountId);
+    await sendMessage(
+      controlPLaneAccount,
+      accountId,
+      action == "Block" ? "IsolateResources" : "RestoreResources"
+    );
   }
 
   console.log("SUCCESS");
