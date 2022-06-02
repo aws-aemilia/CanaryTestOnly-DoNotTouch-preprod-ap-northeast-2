@@ -8,7 +8,8 @@
     "noisy-reverse-proxy": "ts-node noisyReverseProxy.ts",
     "P60053501": "ts-node P60053501/findAbusers.ts",
     "current-lambda-limits": "ts-node getCurrentLambdaLimits.ts",
-    "P61637409": "ts-node P61637409/index.ts"
+    "P61637409": "ts-node P61637409/index.ts",
+    "customDomains": "ts-node customDomains.ts"
   },
   "author": "",
   "license": "ISC",
