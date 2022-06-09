@@ -22,6 +22,11 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
 
     const { airportCode, stage } = match.groups!;
 
+    if (airportCode === 'kix') {
+      // kix has not launched yet.
+      return [];
+    }
+
     return [
       {
         accountId: acc.AWSAccountID,

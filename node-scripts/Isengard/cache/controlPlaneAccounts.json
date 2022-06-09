@@ -97,13 +97,6 @@
     "stage": "preprod"
   },
   {
-    "accountId": "880523927286",
-    "email": "aws-mobile-aemilia-preprod-kix@amazon.com",
-    "airportCode": "kix",
-    "region": "ap-northeast-3",
-    "stage": "preprod"
-  },
-  {
     "accountId": "217549701435",
     "email": "aws-mobile-aemilia-preprod-lhr@amazon.com",
     "airportCode": "lhr",
@@ -234,13 +227,6 @@
     "email": "aws-mobile-aemilia-prod-icn@amazon.com",
     "airportCode": "icn",
     "region": "ap-northeast-2",
-    "stage": "prod"
-  },
-  {
-    "accountId": "042337181263",
-    "email": "aws-mobile-aemilia-prod-kix@amazon.com",
-    "airportCode": "kix",
-    "region": "ap-northeast-3",
     "stage": "prod"
   },
   {
