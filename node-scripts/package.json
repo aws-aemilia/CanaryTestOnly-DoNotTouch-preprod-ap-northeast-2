@@ -9,7 +9,9 @@
     "P60053501": "ts-node P60053501/findAbusers.ts",
     "current-lambda-limits": "ts-node getCurrentLambdaLimits.ts",
     "P61637409": "ts-node P61637409/index.ts",
-    "customDomains": "ts-node customDomains.ts"
+    "customDomains": "ts-node customDomains.ts",
+    "abuseReport": "ts-node OpsTools/disableAbuseAccount.ts",
+    "globalQuery": "ts-node globalQuery.ts"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +21,7 @@
     "@amzn/odin": "*",
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudformation": "^3.85.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.85.0",
     "@aws-sdk/client-cloudfront": "^3.1.0",
     "@aws-sdk/client-codebuild": "^3.87.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
@@ -40,6 +43,7 @@
     "@types/command-line-args": "^5.0.0",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^14.14.35",
+    "@types/yargs": "^17.0.10",
     "prettier": "2.6.2",
     "ts-node": "^9.1.1",
     "tslint": "^5.12.1",

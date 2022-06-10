@@ -27,6 +27,20 @@ npx ts-node {script_name}.ts
 After running `brazil-build install` above, install your IDE's Prettier extension, and point it to this
 project's `node_modules`. Or, run `npx prettier --write .` to reformat your script.
 
+
+## Global Query Script
+
+```
+cd node-scripts/
+npm run globalQuery -- \
+--logGroupPrefix /aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor- \
+--stage prod \
+--outputDir queryResults \
+--startDate 2022-04-01T00:00:00 \
+--endDate 2022-04-02T00:00:00 \
+--query "fields @timestamp | filter @message like /assuming account event service facing fatal error, stop processing/ | stats count(*) by bin(1d)"
+```
+
 ### Noisy reverse proxy script
 
 ```bash

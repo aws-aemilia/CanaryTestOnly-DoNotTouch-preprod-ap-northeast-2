@@ -100,7 +100,7 @@ const sendMessage = async (
 };
 
 const main = async () => {
-  const args = yargs(process.argv.slice(2))
+  const args = await yargs(process.argv.slice(2))
     .usage(
       `
           Disable ALL Apps in ALL regions for an AWS account flagged for abuse. This tool sends an "IsolateResources" sqs message to the AccountClosure service queue.
