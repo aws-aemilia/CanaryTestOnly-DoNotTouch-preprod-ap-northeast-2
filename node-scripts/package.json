@@ -17,7 +17,7 @@
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@amzn/isengard": "*",
+    "@amzn/isengard": "4.1.5",
     "@amzn/odin": "*",
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudformation": "^3.85.0",
