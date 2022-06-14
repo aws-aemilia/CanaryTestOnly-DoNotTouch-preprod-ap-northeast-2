@@ -8,6 +8,7 @@ import {
 
 import yargs from "yargs";
 import { getTicket } from "../SimT";
+import { whoAmI } from "../utils";
 
 type EventType = "IsolateResources" | "RestoreResources";
 const buildMessage = (accountId: string, eventType: EventType) => {
@@ -17,7 +18,7 @@ const buildMessage = (accountId: string, eventType: EventType) => {
       accountId,
       topicName: "ManualAction",
       publishTimestamp: Date.now(),
-      eventId: "00000000-sent-by-disableAbuseAccount-tool",
+      eventId: `${whoAmI()}-sent-by-disableAbuseAccount-tool`,
       reasonCode: "ManualAction",
     },
     appDOS: [],
@@ -77,14 +78,12 @@ const validateAbuseTicket = async (
 const sendMessage = async (
   account: AmplifyAccount,
   accountId: string,
-  eventType: EventType
+  eventType: EventType,
+  role: string
 ): Promise<void> => {
   const sqsClient = new SQSClient({
     region: account.region,
-    credentials: getIsengardCredentialsProvider(
-      account.accountId,
-      "OncallOperator"
-    ),
+    credentials: getIsengardCredentialsProvider(account.accountId, role),
   });
 
   const sendMessageCommand = new SendMessageCommand({
@@ -124,6 +123,13 @@ const main = async () => {
       default: "prod",
       choices: ["beta", "gamma", "preprod", "prod"],
     })
+    .option("role", {
+      describe:
+        "IAM role to assume to run the tool. Role must exist in ALL control plane accounts for all regions",
+      type: "string",
+      default: "OncallOperator",
+      choices: ["OncallOperator", "SupportOps"],
+    })
     .option("unblock", {
       describe:
         'Unblock the Account. Will send a "RestoreResources" message instead',
@@ -134,7 +140,7 @@ const main = async () => {
     .version(false)
     .help().argv;
 
-  const { accountId, ticket, stage, unblock } = args;
+  const { accountId, ticket, stage, unblock, role } = args;
 
   const action = unblock ? "Unblock" : "Block";
 
@@ -152,7 +158,8 @@ const main = async () => {
     await sendMessage(
       controlPLaneAccount,
       accountId,
-      action == "Block" ? "IsolateResources" : "RestoreResources"
+      action == "Block" ? "IsolateResources" : "RestoreResources",
+      role
     );
   }
 
