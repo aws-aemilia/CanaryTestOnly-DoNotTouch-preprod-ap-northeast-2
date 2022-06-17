@@ -103,7 +103,7 @@ const main = async () => {
     .usage(
       `
           Disable ALL Apps in ALL regions for an AWS account flagged for abuse. This tool sends an "IsolateResources" sqs message to the AccountClosure service queue.
-          ** Requires kcurl to be installed **
+          ** Requires kcurl to be installed, try brew install env-improvement if it isn't. **
           `
     )
     .option("accountId", {
@@ -164,8 +164,10 @@ const main = async () => {
   }
 
   console.log("SUCCESS");
+  console.log("Resolve and paste the following into the ticket:");
+  console.log("================================================")
   console.log(
-    `you can go to https://genie.console.amplify.aws.a2z.com/${stage}/customer/${accountId} to verify that Apps are disabled in all regions. It may take a few minutes for changes to take effect`
+    `You can go to https://genie.console.amplify.aws.a2z.com/${stage}/customer/${accountId} to verify that Apps are disabled in all regions. It may take a few minutes for changes to take effect.`
   );
 };
 
