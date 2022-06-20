@@ -7,6 +7,7 @@ import {
 import { getAttributeName, getCredentialsHash } from "../helpers";
 import { LambdaEdgeConfig } from "../types";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { exhaustiveScan } from "../helpers/dynamo-util";
 
 export const migrateLambdaEdgeConfigTable = async (
   ddbClient: DynamoDBDocumentClient,
@@ -303,13 +304,13 @@ const getLambdaEdgeConfigsWithCreds = async (
       "attribute_exists(branchConfig)",
   });
 
-  const res = await ddbClient.send(scan);
+  const items = await exhaustiveScan(scan, ddbClient);
 
-  if (!res || !res.Items || res.Items.length < 1) {
+  if (items.length < 1) {
     return [];
   }
 
-  return res.Items as LambdaEdgeConfig[];
+  return items as LambdaEdgeConfig[];
 };
 
 const getLambdaEdgeConfigWithCreds = async (
@@ -357,6 +358,9 @@ const updateLambdaEdgeConfig = async (
   });
 
   await ddbClient.send(update);
+
+  // 100ms interval between each update to prevent overloading the DDB table capacity
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 const deleteFromLambdaEdgeConfig = async (
@@ -378,4 +382,7 @@ const deleteFromLambdaEdgeConfig = async (
   });
 
   await ddbClient.send(update);
+
+  // 100ms interval between each update to prevent overloading the DDB table capacity
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
