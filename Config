@@ -29,9 +29,6 @@ package.AWSAmplifyTools = {
     # be exported to other packages that build against you.
     dependencies = {
         1.0 = {
-            OdinLocalPythonInterface = 1.1;
-            NodeJS-SIMClient = 1.0;
-            NodeJS-Odin = 3.0;
         };
     };
 

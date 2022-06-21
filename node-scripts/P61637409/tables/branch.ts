@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getAttributeName, getCredentialsHash } from "../helpers";
+import { exhaustiveScan } from "../helpers/dynamo-util";
 import { Branch, BranchConfig } from "../types";
 
 export const migrateBranchTable = async (
@@ -202,13 +203,13 @@ const getBranchesWithCreds = async (
       "attribute_exists(config.basicAuthCreds) OR attribute_exists(config.basicAuthCredsV2)",
   });
 
-  const res = await ddbClient.send(scan);
+  const items = await exhaustiveScan(scan, ddbClient);
 
-  if (!res || !res.Items || res.Items.length < 1) {
+  if (items.length < 1) {
     return [];
   }
 
-  return res.Items as Branch[];
+  return items as Branch[];
 };
 
 const getBranchesForAppIdWithCreds = async (
@@ -259,6 +260,9 @@ const updateBranch = async (
   });
 
   await ddbClient.send(update);
+
+  // 100ms interval between each update to prevent overloading the DDB table capacity
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 const deleteFromBranch = async (
@@ -282,4 +286,7 @@ const deleteFromBranch = async (
   });
 
   await ddbClient.send(update);
+
+  // 100ms interval between each update to prevent overloading the DDB table capacity
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
