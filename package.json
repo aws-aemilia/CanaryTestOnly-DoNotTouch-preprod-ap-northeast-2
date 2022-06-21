@@ -1,5 +1,5 @@
 {
-  "name": "awsamplify-tools",
+  "name": "@amzn/aws-amplify-tools",
   "version": "1.0.0",
   "dependencies": {
     "claudia": "^5.13.0"

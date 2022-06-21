@@ -1,5 +1,5 @@
 {
-  "name": "scripts",
+  "name": "@amzn/aws-amplify-tools-scripts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,7 +18,6 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@amzn/isengard": "4.1.5",
-    "@amzn/odin": "*",
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudformation": "^3.85.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.85.0",
