@@ -78,9 +78,7 @@ brazil-build noisy-reverse-proxy -- \
 If this fails on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
 
 ```
-ts-node disableAbuseAccount.ts    # Run interactively
-
-ts-node disableAbuseAccount.ts \  # Run with arguments
+ts-node disableAbuseAccount.ts \
 --accountId 123456789012 \        # Required
 --ticket D1234567 \               # Required
 --stage prod \ 

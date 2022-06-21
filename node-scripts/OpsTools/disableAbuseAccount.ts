@@ -167,7 +167,7 @@ const main = async () => {
   console.log("Resolve and paste the following into the ticket:");
   console.log("================================================")
   console.log(
-    `You can go to https://genie.console.amplify.aws.a2z.com/${stage}/customer/${accountId} to verify that Apps are disabled in all regions. It may take a few minutes for changes to take effect.`
+    `You can go to https://genie.console.amplify.aws.a2z.com/${stage}/customer/${accountId} to verify the status of this account's apps. It may take a few minutes for changes to take effect.`
   );
 };
 
