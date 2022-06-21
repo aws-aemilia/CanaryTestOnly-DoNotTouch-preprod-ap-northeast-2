@@ -117,6 +117,11 @@ const main = async () => {
       type: "string",
       demandOption: true,
     })
+    .option("ignoreTicket", {
+      describe:
+        'Ignore ticket validation. Useful to restore accounts that were blocked by mistake. Can only be used for alongside "unblock"',
+      type: "boolean",
+    })
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
@@ -138,16 +143,31 @@ const main = async () => {
     })
     .strict()
     .version(false)
-    .help().argv;
+    .help()
+    .check(({ ignoreTicket, unblock}) => {
+      if (ignoreTicket && !unblock) {
+        throw new Error(
+          '"ignoreTicket" not allowed here. "ignoreTicket" can only be used to "unblock" accounts'
+        );
+      }
+      return true;
+    }).argv;
 
-  const { accountId, ticket, stage, unblock, role } = args;
+
+  const { accountId, ticket, ignoreTicket, stage, unblock, role } = args;
 
   const action = unblock ? "Unblock" : "Block";
 
-  await validateAbuseTicket(ticket, accountId, action);
-  console.log(
-    `verified that ${ticket} is a valid "Request to ${action} AWS Customer" ticket for account ${accountId}`
-  );
+  if (ignoreTicket) {
+    console.warn(
+      'Skipped ticket validation since "ignoreTicket" param was provided'
+    );
+  } else {
+    await validateAbuseTicket(ticket, accountId, action);
+    console.log(
+      `verified that ${ticket} is a valid "Request to ${action} AWS Customer" ticket for account ${accountId}`
+    );
+  }
 
   const controlPLaneAccounts = (await controlPlaneAccounts()).filter(
     (acc) => acc.stage === stage
