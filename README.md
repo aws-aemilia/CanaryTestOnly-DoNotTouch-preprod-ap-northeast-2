@@ -85,3 +85,10 @@ ts-node disableAbuseAccount.ts \
 --role OncallOperator \
 --unblock false
 ```
+
+### Instructions to run GetSSRAppsUsingBasicAuth
+This tool will scan the App table for a givin region for apps that use SSR and Basic Auth.
+It will then write the accountIds for the owners of these apps to `GetSSRAppsUsingBasicAuth/outpout`
+```
+npm run GetSSRAppsUsingBasicAuth -- --region=ca-central-1 --stage=prod --action=get-impact
+```
