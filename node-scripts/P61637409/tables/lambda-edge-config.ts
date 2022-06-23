@@ -4,21 +4,44 @@ import {
   ScanCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { getAttributeName, getCredentialsHash } from "../helpers";
-import { LambdaEdgeConfig } from "../types";
+import {
+  getAttributeName,
+  getCredentialsHash,
+  exhaustiveScan,
+  getApp,
+  getDomainApp,
+  getDdbClient,
+} from "../helpers";
+import { App, LambdaEdgeConfig } from "../types";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { exhaustiveScan } from "../helpers/dynamo-util";
+import { Credentials } from "../../types";
 
 export const migrateLambdaEdgeConfigTable = async (
   ddbClient: DynamoDBDocumentClient,
+  credentials: Credentials,
   region: string,
   stage: string,
-  givenAppId?: string
+  givenAppId?: string,
+  skipSSR = true
 ) => {
+  const specialRegion = [
+    "ap-east-1",
+    "eu-north-1",
+    "eu-south-1",
+    "me-south-1",
+  ].includes(region);
+
   const tableName = `LambdaEdgeConfig`;
   const lambdaEdgeConfigs = givenAppId
-    ? await getLambdaEdgeConfigWithCreds(tableName, givenAppId, ddbClient)
-    : await getLambdaEdgeConfigsWithCreds(tableName, ddbClient);
+    ? await getLambdaEdgeConfigWithCreds(
+        tableName,
+        givenAppId,
+        specialRegion ? getDdbClient("us-east-1", credentials) : ddbClient
+      )
+    : await getLambdaEdgeConfigsWithCreds(
+        tableName,
+        specialRegion ? getDdbClient("us-east-1", credentials) : ddbClient
+      );
 
   console.log(
     JSON.stringify({
@@ -34,6 +57,60 @@ export const migrateLambdaEdgeConfigTable = async (
 
     if (!appId) {
       continue;
+    }
+
+    console.log(
+      JSON.stringify({
+        message: `Processing LambdaEdgeConfig`,
+        appId,
+      })
+    );
+
+    const app = await getApp(stage, region, appId, ddbClient);
+    let domainApp: App | undefined;
+
+    if (!app) {
+      console.log(
+        JSON.stringify({
+          message: `App not found. Looking up the Domain table`,
+          appId,
+        })
+      );
+
+      const domainId = appId;
+      domainApp = await getDomainApp(stage, region, domainId, ddbClient);
+
+      if (!domainApp) {
+        console.log(
+          JSON.stringify({
+            message: `App not found for domainId. This is a deleted app.`,
+            domainId,
+          })
+        );
+        continue;
+      }
+    }
+
+    if (skipSSR) {
+      if (app && app.platform === "WEB_DYNAMIC") {
+        console.log(
+          JSON.stringify({
+            message: `Skipping SSR app`,
+            appId,
+          })
+        );
+        continue;
+      }
+
+      if (domainApp && domainApp.platform === "WEB_DYNAMIC") {
+        console.log(
+          JSON.stringify({
+            message: `Skipping SSR app`,
+            appId: domainApp.appId,
+          })
+        );
+        continue;
+      }
     }
 
     const pristineLambdaEdgeConfig: LambdaEdgeConfig = JSON.parse(
@@ -58,7 +135,9 @@ export const migrateLambdaEdgeConfigTable = async (
                 "config.basicAuthCredsV2",
                 appId,
                 tableName,
-                ddbClient
+                specialRegion
+                  ? getDdbClient("us-east-1", credentials)
+                  : ddbClient
               );
               console.log(
                 JSON.stringify({
@@ -76,7 +155,7 @@ export const migrateLambdaEdgeConfigTable = async (
               "config.basicAuthCreds",
               appId,
               tableName,
-              ddbClient
+              specialRegion ? getDdbClient("us-east-1", credentials) : ddbClient
             );
             console.log(
               JSON.stringify({
@@ -154,8 +233,11 @@ export const migrateLambdaEdgeConfigTable = async (
       }
     } catch (err) {
       console.error(
-        `Error updating LambdaEdgeConfig for App Id: ${appId}`,
-        err
+        JSON.stringify({
+          message: "Error updating LambdaEdgeConfig",
+          appId,
+          err,
+        })
       );
     }
   }
@@ -172,10 +254,18 @@ export const migrateLambdaEdgeConfigTable = async (
 
 export const rollbackLambdaEdgeConfigTable = async (
   ddbClient: DynamoDBDocumentClient,
+  credentials: Credentials,
   region: string,
   stage: string,
   givenAppId?: string
 ) => {
+  const specialRegion = [
+    "ap-east-1",
+    "eu-north-1",
+    "eu-south-1",
+    "me-south-1",
+  ].includes(region);
+
   const tableName = `LambdaEdgeConfig`;
   let lambdaEdgeConfigs: LambdaEdgeConfig[];
 
@@ -187,7 +277,12 @@ export const rollbackLambdaEdgeConfigTable = async (
       ).toString()
     );
   } catch (err) {
-    console.error(`Error reading LambdaEdgeConfig data from JSON`, err);
+    console.error(
+      JSON.stringify({
+        message: `Error reading LambdaEdgeConfig data from JSON`,
+        err,
+      })
+    );
     throw err;
   }
 
@@ -214,7 +309,7 @@ export const rollbackLambdaEdgeConfigTable = async (
             "config.basicAuthCreds",
             appId,
             tableName,
-            ddbClient
+            specialRegion ? getDdbClient("us-east-1", credentials) : ddbClient
           );
           console.log(
             JSON.stringify({
@@ -229,7 +324,7 @@ export const rollbackLambdaEdgeConfigTable = async (
             "config.basicAuthCredsV2",
             appId,
             tableName,
-            ddbClient
+            specialRegion ? getDdbClient("us-east-1", credentials) : ddbClient
           );
           console.log(
             JSON.stringify({
@@ -285,8 +380,11 @@ export const rollbackLambdaEdgeConfigTable = async (
       }
     } catch (err) {
       console.error(
-        `Error rolling back LambdaEdgeConfig for App Id: ${appId}`,
-        err
+        JSON.stringify({
+          message: "Error rolling back LambdaEdgeConfig",
+          appId,
+          err,
+        })
       );
     }
   }
@@ -304,7 +402,13 @@ const getLambdaEdgeConfigsWithCreds = async (
       "attribute_exists(branchConfig)",
   });
 
-  const items = await exhaustiveScan(scan, ddbClient);
+  /**
+   * Would be nice to use paginateScan from `@aws-sdk/client-dynamodb`, but there's
+   * no way to control the load on table capacity. With the custom `exhautiveScan`
+   * method, we're able to do the scan in intervals of 1 second, preventing a spike
+   * in the read usage.
+   */
+  const items = await exhaustiveScan("LambdaEdgeConfig", scan, ddbClient);
 
   if (items.length < 1) {
     return [];
@@ -342,8 +446,9 @@ const updateLambdaEdgeConfig = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,
@@ -369,8 +474,9 @@ const deleteFromLambdaEdgeConfig = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,

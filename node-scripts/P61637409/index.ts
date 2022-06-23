@@ -17,6 +17,7 @@ import {
   getRegion,
   getStage,
 } from "./helpers";
+import { Credentials } from "../types";
 
 async function run() {
   const args = getArgs();
@@ -33,14 +34,15 @@ async function run() {
   const ddbClient = getDdbClient(region, credentials);
 
   if (action === "migrate") {
-    await migrate(ddbClient, region, stage, appId);
+    await migrate(ddbClient, credentials, region, stage, appId);
   } else {
-    await rollback(ddbClient, region, stage, appId);
+    await rollback(ddbClient, credentials, region, stage, appId);
   }
 }
 
 const migrate = async (
   ddbClient: DynamoDBDocumentClient,
+  credentials: Credentials,
   region: string,
   stage: string,
   appId?: string
@@ -54,12 +56,19 @@ const migrate = async (
   console.log("Completed migration of Branch table");
 
   console.log("Starting migration of LambdaEdgeConfig table");
-  await migrateLambdaEdgeConfigTable(ddbClient, region, stage, appId);
+  await migrateLambdaEdgeConfigTable(
+    ddbClient,
+    credentials,
+    region,
+    stage,
+    appId
+  );
   console.log("Completed migration of LambdaEdgeConfig table");
 };
 
 const rollback = async (
   ddbClient: DynamoDBDocumentClient,
+  credentials: Credentials,
   region: string,
   stage: string,
   appId?: string
@@ -73,7 +82,13 @@ const rollback = async (
   console.log("Completed rollback of Branch table");
 
   console.log("Starting rollback of LambdaEdgeConfig table");
-  await rollbackLambdaEdgeConfigTable(ddbClient, region, stage, appId);
+  await rollbackLambdaEdgeConfigTable(
+    ddbClient,
+    credentials,
+    region,
+    stage,
+    appId
+  );
   console.log("Completed rollback of LambdaEdgeConfig table");
 };
 

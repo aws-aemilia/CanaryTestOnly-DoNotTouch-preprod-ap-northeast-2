@@ -94,8 +94,12 @@ export const getAccount = (region: string, stage: string) => {
   return account;
 };
 
-export const getCredentials = async (accountId: string, stage: string) => {
-  const roleName = stage === "prod" ? "OnCallOperator" : "Admin";
+export const getCredentials = async (
+  accountId: string,
+  stage: string,
+  roleName?: string
+) => {
+  roleName = roleName || stage === "prod" ? "OnCallOperator" : "Admin";
   const credentials = await Isengard.getCredentials(accountId, roleName);
 
   if (!credentials) {

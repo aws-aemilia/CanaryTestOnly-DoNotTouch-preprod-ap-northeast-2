@@ -5,20 +5,24 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { getAttributeName, getCredentialsHash } from "../helpers";
-import { exhaustiveScan } from "../helpers/dynamo-util";
+import {
+  getAttributeName,
+  getCredentialsHash,
+  exhaustiveScan,
+} from "../helpers";
 import { App, AutoBranchCreationConfig } from "../types";
 
 export const migrateAppTable = async (
   ddbClient: DynamoDBDocumentClient,
   region: string,
   stage: string,
-  givenAppId?: string
+  givenAppId?: string,
+  skipSSR = true
 ) => {
   const tableName = `${stage}-${region}-App`;
   const apps = givenAppId
     ? await getAppWithCreds(tableName, givenAppId, ddbClient)
-    : await getAppsWithCreds(tableName, ddbClient);
+    : await getAppsWithCreds(tableName, ddbClient, skipSSR);
 
   console.log(
     JSON.stringify({
@@ -36,6 +40,13 @@ export const migrateAppTable = async (
     if (!appId) {
       continue;
     }
+
+    console.log(
+      JSON.stringify({
+        message: `Processing App`,
+        appId,
+      })
+    );
 
     const pristineApp: App = JSON.parse(JSON.stringify(app));
     let modified = false;
@@ -82,8 +93,7 @@ export const migrateAppTable = async (
         }
       }
 
-      const autoBranchCreationConfig =
-        app.autoBranchCreationConfig as AutoBranchCreationConfig;
+      const autoBranchCreationConfig = app.autoBranchCreationConfig as AutoBranchCreationConfig;
 
       if (!autoBranchCreationConfig || !autoBranchCreationConfig.branchConfig) {
         continue;
@@ -141,7 +151,13 @@ export const migrateAppTable = async (
         }
       }
     } catch (err) {
-      console.error(`Error updating app with App ID: ${appId}`, err);
+      console.error(
+        JSON.stringify({
+          message: "Error updating app",
+          appId,
+          err,
+        })
+      );
     }
   }
 
@@ -172,7 +188,12 @@ export const rollbackAppTable = async (
       ).toString()
     );
   } catch (err) {
-    console.error(`Error reading App data from JSON`, err);
+    console.error(
+      JSON.stringify({
+        message: `Error reading App data from JSON`,
+        err,
+      })
+    );
     throw err;
   }
 
@@ -217,8 +238,7 @@ export const rollbackAppTable = async (
         );
       }
 
-      const autoBranchCreationConfig =
-        app.autoBranchCreationConfig as AutoBranchCreationConfig;
+      const autoBranchCreationConfig = app.autoBranchCreationConfig as AutoBranchCreationConfig;
 
       if (autoBranchCreationConfig && autoBranchCreationConfig.branchConfig) {
         const autoBranchCreds =
@@ -255,26 +275,52 @@ export const rollbackAppTable = async (
         }
       }
     } catch (err) {
-      console.error(`Error rolling back app with App ID: ${appId}`, err);
+      console.error(
+        JSON.stringify({
+          message: "Error rolling back app",
+          appId,
+          err,
+        })
+      );
     }
   }
 };
 
 const getAppsWithCreds = async (
   tableName: string,
-  ddbClient: DynamoDBDocumentClient
+  ddbClient: DynamoDBDocumentClient,
+  skipSSR = true
 ) => {
+  let FilterExpression =
+    "attribute_exists(basicAuthCreds) OR attribute_exists(basicAuthCredsV2) OR " +
+    "attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCreds) OR " +
+    "attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCredsV2)";
+
+  if (skipSSR) {
+    FilterExpression = `platform <> :ssr and (${FilterExpression})`;
+  }
+
+  const ExpressionAttributeValues = skipSSR
+    ? {
+        ":ssr": "WEB_DYNAMIC",
+      }
+    : undefined;
+
   const scan = new ScanCommand({
     TableName: tableName,
     ProjectionExpression:
       "appId,basicAuthCreds,basicAuthCredsV2,autoBranchCreationConfig",
-    FilterExpression:
-      "attribute_exists(basicAuthCreds) OR attribute_exists(basicAuthCredsV2) OR " +
-      "attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCreds) OR " +
-      "attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCredsV2)",
+    FilterExpression,
+    ExpressionAttributeValues,
   });
 
-  const items = await exhaustiveScan(scan, ddbClient);
+  /**
+   * Would be nice to use paginateScan from `@aws-sdk/client-dynamodb`, but there's
+   * no way to control the load on table capacity. With the custom `exhautiveScan`
+   * method, we're able to do the scan in intervals of 1 second, preventing a spike
+   * in the read usage.
+   */
+  const items = await exhaustiveScan("App", scan, ddbClient);
 
   if (items.length < 1) {
     return [];
@@ -313,8 +359,9 @@ const updateApp = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,
@@ -340,8 +387,9 @@ const deleteFromApp = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,

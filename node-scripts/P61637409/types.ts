@@ -3,6 +3,8 @@ export interface App {
   autoBranchCreationConfig?: AutoBranchCreationConfig;
   basicAuthCreds?: string;
   basicAuthCredsV2?: string;
+  platform?: string;
+  accountId?: string;
 }
 
 export interface Branch {

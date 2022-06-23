@@ -5,15 +5,20 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { getAttributeName, getCredentialsHash } from "../helpers";
-import { exhaustiveScan } from "../helpers/dynamo-util";
+import {
+  getAttributeName,
+  getCredentialsHash,
+  exhaustiveScan,
+  getApp,
+} from "../helpers";
 import { Branch, BranchConfig } from "../types";
 
 export const migrateBranchTable = async (
   ddbClient: DynamoDBDocumentClient,
   region: string,
   stage: string,
-  givenAppId?: string
+  givenAppId?: string,
+  skipSSR = true
 ) => {
   const tableName = `${stage}-${region}-Branch`;
   const branches = givenAppId
@@ -35,6 +40,37 @@ export const migrateBranchTable = async (
 
     if (!appId || !branchName) {
       continue;
+    }
+
+    console.log(
+      JSON.stringify({
+        message: `Processing Branch`,
+        appId,
+      })
+    );
+
+    const app = await getApp(stage, region, appId, ddbClient);
+
+    if (!app) {
+      console.log(
+        JSON.stringify({
+          message: `App not found. This is a deleted app.`,
+          appId,
+        })
+      );
+      continue;
+    }
+
+    if (skipSSR) {
+      if (app && app.platform === "WEB_DYNAMIC") {
+        console.log(
+          JSON.stringify({
+            message: `Skipping SSR app`,
+            appId,
+          })
+        );
+        continue;
+      }
     }
 
     const pristineBranch = JSON.parse(JSON.stringify(branch));
@@ -95,8 +131,12 @@ export const migrateBranchTable = async (
       }
     } catch (err) {
       console.error(
-        `Error updating branch ${branchName} for App ID ${appId}`,
-        err
+        JSON.stringify({
+          message: `Error updating branch`,
+          branchName,
+          appId,
+          err,
+        })
       );
     }
   }
@@ -128,7 +168,12 @@ export const rollbackBranchTable = async (
       ).toString()
     );
   } catch (err) {
-    console.error(`Error reading Branch data from JSON`, err);
+    console.error(
+      JSON.stringify({
+        message: `Error reading Branch data from JSON`,
+        err,
+      })
+    );
     throw err;
   }
 
@@ -185,8 +230,12 @@ export const rollbackBranchTable = async (
       }
     } catch (err) {
       console.error(
-        `Error rolling back branch ${branchName} for App ID ${appId}`,
-        err
+        JSON.stringify({
+          message: `Error rolling back branch`,
+          branchName,
+          appId,
+          err,
+        })
       );
     }
   }
@@ -203,7 +252,13 @@ const getBranchesWithCreds = async (
       "attribute_exists(config.basicAuthCreds) OR attribute_exists(config.basicAuthCredsV2)",
   });
 
-  const items = await exhaustiveScan(scan, ddbClient);
+  /**
+   * Would be nice to use paginateScan from `@aws-sdk/client-dynamodb`, but there's
+   * no way to control the load on table capacity. With the custom `exhautiveScan`
+   * method, we're able to do the scan in intervals of 1 second, preventing a spike
+   * in the read usage.
+   */
+  const items = await exhaustiveScan("Branch", scan, ddbClient);
 
   if (items.length < 1) {
     return [];
@@ -243,8 +298,9 @@ const updateBranch = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,
@@ -272,8 +328,9 @@ const deleteFromBranch = async (
   tableName: string,
   ddbClient: DynamoDBDocumentClient
 ) => {
-  const { attributeName, ExpressionAttributeNames } =
-    getAttributeName(attribute);
+  const { attributeName, ExpressionAttributeNames } = getAttributeName(
+    attribute
+  );
 
   const update = new UpdateCommand({
     TableName: tableName,
