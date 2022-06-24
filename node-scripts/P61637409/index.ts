@@ -48,11 +48,11 @@ const migrate = async (
   appId?: string
 ) => {
   console.log("Starting migration of App table");
-  await migrateAppTable(ddbClient, region, stage, appId);
+  await migrateAppTable(ddbClient, region, stage, appId, false);
   console.log("Completed migration of App table");
 
   console.log("Starting migration of Branch table");
-  await migrateBranchTable(ddbClient, region, stage, appId);
+  await migrateBranchTable(ddbClient, region, stage, appId, false);
   console.log("Completed migration of Branch table");
 
   console.log("Starting migration of LambdaEdgeConfig table");
@@ -61,7 +61,8 @@ const migrate = async (
     credentials,
     region,
     stage,
-    appId
+    appId,
+    false
   );
   console.log("Completed migration of LambdaEdgeConfig table");
 };

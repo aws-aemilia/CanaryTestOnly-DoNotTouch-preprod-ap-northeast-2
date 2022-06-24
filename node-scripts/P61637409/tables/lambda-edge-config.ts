@@ -66,32 +66,32 @@ export const migrateLambdaEdgeConfigTable = async (
       })
     );
 
-    const app = await getApp(stage, region, appId, ddbClient);
-    let domainApp: App | undefined;
+    if (skipSSR) {
+      const app = await getApp(stage, region, appId, ddbClient);
+      let domainApp: App | undefined;
 
-    if (!app) {
-      console.log(
-        JSON.stringify({
-          message: `App not found. Looking up the Domain table`,
-          appId,
-        })
-      );
-
-      const domainId = appId;
-      domainApp = await getDomainApp(stage, region, domainId, ddbClient);
-
-      if (!domainApp) {
+      if (!app) {
         console.log(
           JSON.stringify({
-            message: `App not found for domainId. This is a deleted app.`,
-            domainId,
+            message: `App not found. Looking up the Domain table`,
+            appId,
           })
         );
-        continue;
-      }
-    }
 
-    if (skipSSR) {
+        const domainId = appId;
+        domainApp = await getDomainApp(stage, region, domainId, ddbClient);
+
+        if (!domainApp) {
+          console.log(
+            JSON.stringify({
+              message: `App not found for domainId. This is a deleted app.`,
+              domainId,
+            })
+          );
+          continue;
+        }
+      }
+
       if (app && app.platform === "WEB_DYNAMIC") {
         console.log(
           JSON.stringify({

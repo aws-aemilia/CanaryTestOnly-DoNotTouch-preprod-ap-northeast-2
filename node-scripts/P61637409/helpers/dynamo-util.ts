@@ -40,12 +40,6 @@ export const exhaustiveScan = async (
     await exhaustiveScan(itemName, scanCommand, ddbClient, items);
   }
 
-  console.log(
-    JSON.stringify({
-      message: `Total ${itemName} items found: ${items.length}`,
-    })
-  );
-
   return items;
 };
 

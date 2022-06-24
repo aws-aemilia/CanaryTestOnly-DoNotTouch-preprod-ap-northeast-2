@@ -49,19 +49,19 @@ export const migrateBranchTable = async (
       })
     );
 
-    const app = await getApp(stage, region, appId, ddbClient);
-
-    if (!app) {
-      console.log(
-        JSON.stringify({
-          message: `App not found. This is a deleted app.`,
-          appId,
-        })
-      );
-      continue;
-    }
-
     if (skipSSR) {
+      const app = await getApp(stage, region, appId, ddbClient);
+
+      if (!app) {
+        console.log(
+          JSON.stringify({
+            message: `App not found. This is a deleted app.`,
+            appId,
+          })
+        );
+        continue;
+      }
+
       if (app && app.platform === "WEB_DYNAMIC") {
         console.log(
           JSON.stringify({
