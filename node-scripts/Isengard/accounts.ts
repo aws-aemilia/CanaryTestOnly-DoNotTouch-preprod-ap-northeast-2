@@ -8,6 +8,7 @@ export type AmplifyAccount = {
   airportCode: string;
   region: string;
   stage: string;
+  cellNumber?: string;
 };
 const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const controlPlaneNameRegex =
@@ -89,6 +90,58 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
+const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+      /^aws-amplify-compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegion(airportCode),
+        stage,
+      },
+    ];
+  });
+};
+
+const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+      /^aws-amplify-compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage, cellNumber } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegion(airportCode),
+        stage,
+        cellNumber
+      },
+    ];
+  });
+};
+
+
 /**
  * get Control Plane accounts for all regions and stages
  */
@@ -105,4 +158,12 @@ export async function integTestAccounts(): Promise<AmplifyAccount[]> {
 
 export async function consoleAccounts(): Promise<AmplifyAccount[]> {
   return withFileCache(getConsoleAccounts, "consoleAccounts")();
+}
+
+export async function computeServiceControlPlaneAccounts(): Promise<AmplifyAccount[]> {
+  return withFileCache(getComputeServiceControlPlaneAccounts, "computeServiceControlPlaneAccounts")();
+}
+
+export async function computeServiceDataPlaneAccounts(): Promise<AmplifyAccount[]> {
+  return withFileCache(getComputeServiceDataPlaneAccounts, "computeServiceDataPlaneAccounts")();
 }

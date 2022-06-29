@@ -1,0 +1,26 @@
+[
+  {
+    "accountId": "973008340916",
+    "email": "aws-amplify-compute-service-beta-pdx-cell1@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "beta",
+    "cellNumber": "1"
+  },
+  {
+    "accountId": "076630064198",
+    "email": "aws-amplify-compute-service-gamma-iad-cell1@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma",
+    "cellNumber": "1"
+  },
+  {
+    "accountId": "040660781325",
+    "email": "aws-amplify-compute-service-gamma-pdx-cell1@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma",
+    "cellNumber": "1"
+  }
+]

@@ -14,12 +14,14 @@
     "GetSSRAppsUsingBasicAuth": "ts-node GetSSRAppsUsingBasicAuth/index.ts",
     "customDomains": "ts-node customDomains.ts",
     "abuseReport": "ts-node OpsTools/disableAbuseAccount.ts",
+    "addAccountsToServicePrincipal": "ts-node OpsTools/computeService/addAccountsToServicePrincipal.ts",
     "globalQuery": "ts-node globalQuery.ts"
   },
   "author": "",
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@amzn/aws-identity-management-admin-service-internal": "*",
     "@amzn/isengard": "4.1.5",
     "@amzn/sim-client": "*",
     "@aws-sdk/client-cloudformation": "^3.85.0",

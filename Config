@@ -29,6 +29,7 @@ package.AWSAmplifyTools = {
     # be exported to other packages that build against you.
     dependencies = {
         1.0 = {
+            AWSIdentityManagementAdminServiceInternalJavaScriptClient = 1.0;
         };
     };
 
