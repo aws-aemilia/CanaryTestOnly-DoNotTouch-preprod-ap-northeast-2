@@ -2,6 +2,7 @@
   {
     "accountId": "033345365959",
     "email": "aws-mobile-aemilia-beta@amazon.com",
+    "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "beta"
   },

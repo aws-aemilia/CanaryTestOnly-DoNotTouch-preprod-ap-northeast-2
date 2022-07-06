@@ -2,8 +2,8 @@ import path from "path";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
 export const withFileCache = <T extends Array<any>, U>(
+  filename: string,
   fn: (...args: T) => Promise<U>,
-  filename: string
 ) => {
   return async (...args: T): Promise<U> => {
     const filePath = path.join(__dirname, "cache", `${filename}.json`);

@@ -1,6 +1,8 @@
 import { AccountListItem, listIsengardAccounts } from "@amzn/isengard";
 import { toRegion } from "../utils/regions";
 import { withFileCache } from "./cache";
+import { curry, pipe } from "ramda";
+import { Region, Stage } from "./types";
 
 export type AmplifyAccount = {
   accountId: string;
@@ -32,7 +34,7 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
       {
         accountId: acc.AWSAccountID,
         email: acc.Email,
-        airportCode,
+        airportCode: stage === "beta" ? "pdx" : airportCode,
         region: stage === "beta" ? "us-west-2" : toRegion(airportCode),
         stage,
       },
@@ -141,29 +143,131 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
   });
 };
 
+const withFilterByRegionAndStage = (
+  fn: () => Promise<AmplifyAccount[]>
+): ((options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]>) => {
+  return async ({ stage, region }: { stage?: Stage; region?: Region } = {}) => {
+    return (await fn()).filter(
+      (a) =>
+        (region === undefined ||
+          a.region === region ||
+          a.airportCode.toUpperCase() === region.toUpperCase()) &&
+        (stage === undefined || a.stage === stage)
+    );
+  };
+};
 
-/**
- * get Control Plane accounts for all regions and stages
- */
-export async function controlPlaneAccounts(): Promise<AmplifyAccount[]> {
-  return withFileCache(getControlPlaneAccounts, "controlPlaneAccounts")();
-}
+const withFindByRegionAndStage = (
+  fn: () => Promise<AmplifyAccount[]>
+): ((stage: Stage, region: Region) => Promise<AmplifyAccount>) => {
+  return async (stage: Stage, region: Region) => {
+    const found: AmplifyAccount | undefined = (await fn()).find(
+      (a) =>
+        a.stage === stage &&
+        (a.region === region ||
+          a.airportCode.toUpperCase() === region.toUpperCase())
+    );
+    if (found === undefined) {
+      throw new Error(
+        `Could not find account for stage,region = ${stage},${region}`
+      );
+    }
+    return found;
+  };
+};
 
-/**
- * get Integration Tests accounts for all regions and stages
- */
-export async function integTestAccounts(): Promise<AmplifyAccount[]> {
-  return withFileCache(getIntegTestAccounts, "integTestAccounts")();
-}
+const defaultGetAccounts = (
+  fn: () => Promise<AmplifyAccount[]>,
+  cacheKey: string
+): ((options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]>) => {
+  return pipe(
+    () => fn,
+    curry(withFileCache)(cacheKey),
+    withFilterByRegionAndStage
+  )();
+};
 
-export async function consoleAccounts(): Promise<AmplifyAccount[]> {
-  return withFileCache(getConsoleAccounts, "consoleAccounts")();
-}
+const defaultGetAccount = (
+  fn: () => Promise<AmplifyAccount[]>,
+  cacheKey: string
+): ((stage: Stage, region: Region) => Promise<AmplifyAccount>) => {
+  return pipe(
+    () => fn,
+    curry(withFileCache)(cacheKey),
+    withFindByRegionAndStage
+  )();
+};
 
-export async function computeServiceControlPlaneAccounts(): Promise<AmplifyAccount[]> {
-  return withFileCache(getComputeServiceControlPlaneAccounts, "computeServiceControlPlaneAccounts")();
-}
+export const controlPlaneAccounts: (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+  getControlPlaneAccounts,
+  "controlPlaneAccounts"
+);
+export const controlPlaneAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getControlPlaneAccounts,
+  "controlPlaneAccounts"
+);
 
-export async function computeServiceDataPlaneAccounts(): Promise<AmplifyAccount[]> {
-  return withFileCache(getComputeServiceDataPlaneAccounts, "computeServiceDataPlaneAccounts")();
-}
+export const integTestAccounts: (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+  getIntegTestAccounts,
+  "integTestAccounts"
+);
+export const integTestAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getIntegTestAccounts,
+  "integTestAccounts"
+);
+
+export const consoleAccounts: (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+  getConsoleAccounts,
+  "consoleAccounts"
+);
+export const consoleAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getConsoleAccounts,
+  "consoleAccounts"
+);
+
+export const computeServiceControlPlaneAccounts: (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+  getComputeServiceControlPlaneAccounts,
+  "computeServiceControlPlaneAccounts"
+);
+export const computeServiceControlPlaneAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getComputeServiceControlPlaneAccounts,
+  "computeServiceControlPlaneAccounts"
+);
+
+export const computeServiceDataPlaneAccounts: (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+  getComputeServiceDataPlaneAccounts,
+  "computeServiceDataPlaneAccounts"
+);
