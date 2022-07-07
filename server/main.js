@@ -53,7 +53,9 @@ const supportUsers = [
     'anjuz',
     'yunganw',
     'mengb',
-    'hruixin'
+    'hruixin',
+    'zanurag',
+    'vishnaya'
 ];
 
 
