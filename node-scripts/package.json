@@ -15,7 +15,8 @@
     "customDomains": "ts-node customDomains.ts",
     "abuseReport": "ts-node OpsTools/disableAbuseAccount.ts",
     "addAccountsToServicePrincipal": "ts-node OpsTools/computeService/addAccountsToServicePrincipal.ts",
-    "globalQuery": "ts-node globalQuery.ts"
+    "globalQuery": "ts-node globalQuery.ts",
+    "migrateToCloudFrontPolicies": "ts-node migrateToCloudFrontPolicies.ts"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +35,7 @@
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.120.0",
     "@aws-sdk/client-route-53": "^3.118.1",
     "@aws-sdk/client-secrets-manager": "^3.118.1",
+    "@aws-sdk/client-lambda": "^3.130.0",
     "@aws-sdk/client-service-quotas": "^3.9.0",
     "@aws-sdk/client-sqs": "^3.100.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
