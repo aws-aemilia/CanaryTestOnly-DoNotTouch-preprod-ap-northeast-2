@@ -17,26 +17,19 @@ const queryHelper = require("./extensions/queryHelper");
 const permissionChecker = require("./extensions/accessControl")
 
 const adminUsers = [
-    'loganch',
-    'lisirui',
     'snimakom',
     'nsswamin',
     'litwjaco',
-    'donkahn',
-    'bradruof',
     'rjabhi',
     'jffranzo',
-    'behroozi',
-    'hsspain',
-    'brnmye',
     'weikding',
     'fdingler',
-    'etsung',
-    'kalmj',
     'hloriana',
     'kgnanask',
     'xubham',
-    'saazim'
+    'saazim',
+    'mcscottm',
+    'olileung'
 ];
 
 const supportUsers = [
