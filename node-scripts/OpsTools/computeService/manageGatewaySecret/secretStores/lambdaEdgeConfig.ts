@@ -11,7 +11,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import base64 from "base64-js";
-import { readSecretFn } from "./types";
+import {readSecretFn, SecretStore} from "./types";
 
 const TABLE_NAME = "LambdaEdgeConfig";
 
@@ -21,7 +21,7 @@ const encodeSecret = (secret: string): string => {
 const decodeSecret = (encoded: string): string => {
   return Buffer.from(base64.toByteArray(encoded)).toString();
 };
-export const readSecret: readSecretFn = async (account: AmplifyAccount) => {
+const readSecret: readSecretFn = async (account: AmplifyAccount) => {
   const dynamodb = new DynamoDBClient({
     region: account.region,
     credentials: getIsengardCredentialsProvider(account.accountId),
@@ -49,7 +49,7 @@ export const readSecret: readSecretFn = async (account: AmplifyAccount) => {
   };
 };
 
-export const writeSecret = async (
+const writeSecret = async (
   account: AmplifyAccount,
   secret: string
 ): Promise<void> => {
@@ -76,3 +76,8 @@ export const writeSecret = async (
 
   await documentClient.send(command);
 };
+
+export const ddbLambdaEdgeConfigSecretStore: SecretStore = {
+  readSecret,
+  writeSecret
+}

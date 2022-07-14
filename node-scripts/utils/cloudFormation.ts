@@ -3,16 +3,10 @@ import {
   DescribeStacksCommand,
   DescribeStacksCommandOutput,
 } from "@aws-sdk/client-cloudformation";
-import {AmplifyAccount, getIsengardCredentialsProvider} from "../Isengard";
+import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
+import { memoizeWith } from "ramda";
 
-/**
- * Fetch outputs from a given CFN stack
- * @param options
- * @param options.amplifyAccount The AWS account where the CFN stack is located
- * @param options.stackName
- * @param options.outputKeys The CFN output keys to fetch
- */
-export const getCloudFormationOutputs = async ({
+export const fetchCloudFormationOutputs = async ({
   amplifyAccount,
   stackName,
   outputKeys,
@@ -37,3 +31,15 @@ export const getCloudFormationOutputs = async ({
       return acc;
     }, {} as Record<string, string>);
 };
+
+/**
+ * Fetch outputs from a given CFN stack
+ * @param options
+ * @param options.amplifyAccount The AWS account where the CFN stack is located
+ * @param options.stackName
+ * @param options.outputKeys The CFN output keys to fetch
+ */
+export const getCloudFormationOutputs = memoizeWith(
+  ({ amplifyAccount, stackName, outputKeys }) => `${amplifyAccount.accountId}|${stackName}|${outputKeys.join('#')}`,
+  fetchCloudFormationOutputs
+);
