@@ -34,7 +34,8 @@ const adminUsers = [
     'kgnanask',
     'xubham',
     'saazim',
-    'mcscottm'
+    'mcscottm',
+    'olileung'
 ];
 
 // Add Support Engineer alias here
