@@ -1,5 +1,5 @@
 import { AccountListItem, listIsengardAccounts } from "@amzn/isengard";
-import { toRegion } from "../utils/regions";
+import { toRegionName } from "../utils/regions";
 import { withFileCache } from "./cache";
 import { curry, pipe } from "ramda";
 import { Region, Stage } from "./types";
@@ -12,6 +12,12 @@ export type AmplifyAccount = {
   stage: string;
   cellNumber?: string;
 };
+
+export type AccountsLookupFn = (options?: {
+  stage?: Stage;
+  region?: Region;
+}) => Promise<AmplifyAccount[]>;
+
 const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const controlPlaneNameRegex =
     /^aws-mobile-aemilia-(?<stage>beta|gamma|preprod|prod)(-(?<airportCode>[a-z]{3}))?@amazon.com$/;
@@ -35,7 +41,7 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
         accountId: acc.AWSAccountID,
         email: acc.Email,
         airportCode: stage === "beta" ? "pdx" : airportCode,
-        region: stage === "beta" ? "us-west-2" : toRegion(airportCode),
+        region: stage === "beta" ? "us-west-2" : toRegionName(airportCode),
         stage,
       },
     ];
@@ -60,7 +66,7 @@ const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
         accountId: acc.AWSAccountID,
         email: acc.Email,
         airportCode,
-        region: toRegion(airportCode),
+        region: toRegionName(airportCode),
         stage,
       },
     ];
@@ -85,7 +91,7 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
         accountId: acc.AWSAccountID,
         email: acc.Email,
         airportCode,
-        region: toRegion(airportCode),
+        region: toRegionName(airportCode),
         stage,
       },
     ];
@@ -94,7 +100,7 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
 
 const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
-      /^aws-amplify-compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+      /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -110,7 +116,7 @@ const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]
         accountId: acc.AWSAccountID,
         email: acc.Email,
         airportCode,
-        region: toRegion(airportCode),
+        region: toRegionName(airportCode),
         stage,
       },
     ];
@@ -119,7 +125,7 @@ const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]
 
 const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
-      /^aws-amplify-compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
+      /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -135,7 +141,7 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
         accountId: acc.AWSAccountID,
         email: acc.Email,
         airportCode,
-        region: toRegion(airportCode),
+        region: toRegionName(airportCode),
         stage,
         cellNumber
       },
@@ -145,10 +151,7 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
 
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
-): ((options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]>) => {
+): AccountsLookupFn => {
   return async ({ stage, region }: { stage?: Stage; region?: Region } = {}) => {
     return (await fn()).filter(
       (a) =>
@@ -164,11 +167,36 @@ const withFindByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): ((stage: Stage, region: Region) => Promise<AmplifyAccount>) => {
   return async (stage: Stage, region: Region) => {
-    const found: AmplifyAccount | undefined = (await fn()).find(
+    const accs = await fn()
+    const found: AmplifyAccount | undefined = (accs).find(
       (a) =>
         a.stage === stage &&
         (a.region === region ||
           a.airportCode.toUpperCase() === region.toUpperCase())
+    );
+    if (found === undefined) {
+      throw new Error(
+        `Could not find account for stage,region = ${stage},${region}. Account set was ${accs.map(x=>x.email)}`
+      );
+    }
+    return found;
+  };
+};
+
+const withFindByRegionAndStageAndCell = (
+  fn: () => Promise<AmplifyAccount[]>
+): ((
+  stage: Stage,
+  region: Region,
+  cellNumber: number
+) => Promise<AmplifyAccount>) => {
+  return async (stage: Stage, region: Region, cellNumber: number) => {
+    const found: AmplifyAccount | undefined = (await fn()).find(
+      (a) =>
+        a.stage === stage &&
+        (a.region === region ||
+          a.airportCode.toUpperCase() === region.toUpperCase()) &&
+        a.cellNumber === cellNumber.toString()
     );
     if (found === undefined) {
       throw new Error(
@@ -182,10 +210,7 @@ const withFindByRegionAndStage = (
 const defaultGetAccounts = (
   fn: () => Promise<AmplifyAccount[]>,
   cacheKey: string
-): ((options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]>) => {
+): AccountsLookupFn => {
   return pipe(
     () => fn,
     curry(withFileCache)(cacheKey),
@@ -204,10 +229,7 @@ const defaultGetAccount = (
   )();
 };
 
-export const controlPlaneAccounts: (options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+export const controlPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
   getControlPlaneAccounts,
   "controlPlaneAccounts"
 );
@@ -219,10 +241,7 @@ export const controlPlaneAccount: (
   "controlPlaneAccounts"
 );
 
-export const integTestAccounts: (options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+export const integTestAccounts: AccountsLookupFn = defaultGetAccounts(
   getIntegTestAccounts,
   "integTestAccounts"
 );
@@ -234,10 +253,7 @@ export const integTestAccount: (
   "integTestAccounts"
 );
 
-export const consoleAccounts: (options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+export const consoleAccounts: AccountsLookupFn = defaultGetAccounts(
   getConsoleAccounts,
   "consoleAccounts"
 );
@@ -249,10 +265,7 @@ export const consoleAccount: (
   "consoleAccounts"
 );
 
-export const computeServiceControlPlaneAccounts: (options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+export const computeServiceControlPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
   getComputeServiceControlPlaneAccounts,
   "computeServiceControlPlaneAccounts"
 );
@@ -264,10 +277,13 @@ export const computeServiceControlPlaneAccount: (
   "computeServiceControlPlaneAccounts"
 );
 
-export const computeServiceDataPlaneAccounts: (options?: {
-  stage?: Stage;
-  region?: Region;
-}) => Promise<AmplifyAccount[]> = defaultGetAccounts(
+export const computeServiceDataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
   getComputeServiceDataPlaneAccounts,
   "computeServiceDataPlaneAccounts"
 );
+
+export const computeServiceDataPlaneAccount: (stage: Stage, region: Region, cellNumber: number) => Promise<AmplifyAccount> = pipe(
+    () => getComputeServiceDataPlaneAccounts,
+    curry(withFileCache)('computeServiceDataPlaneAccounts'),
+    withFindByRegionAndStageAndCell
+)()

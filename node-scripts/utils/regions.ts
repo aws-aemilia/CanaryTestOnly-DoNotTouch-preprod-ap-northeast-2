@@ -1,6 +1,8 @@
 /**
  * Fragment of the RIP Regions JSON file
  */
+import {AirportCode, RegionName} from "../Isengard/types";
+
 const regions: Record<string, {
     "airportCode": string,
     "partition": string,
@@ -193,22 +195,55 @@ const regions: Record<string, {
     }
 }
 
-export const toAirportCode = (region: string): string => {
+
+const optInRegions = [
+    "ap-south-2",
+    "af-south-1",
+    "eu-south-1",
+    "eu-south-2",
+    "us-catalyst-1",
+    "me-south-1",
+    "me-central-1",
+    "il-central-1",
+    "ap-east-1",
+    "ca-west-1",
+    "mx-central-1",
+    "ap-southeast-3",
+    "ap-southeast-4",
+    "eu-central-2",
+    "ap-southeast-5",
+    "in-amazon-1",
+]
+
+export const toAirportCode = (region: string): AirportCode => {
+    if (Object.values(regions).find(r => r.airportCode === region.toUpperCase())){
+        // it is already an airport code, just return it.
+        return region.toUpperCase() as AirportCode;
+    }
+
     const lowerCaseRegion = region.toLowerCase();
     if (regions[lowerCaseRegion]) {
-        return regions[lowerCaseRegion].airportCode;
+        return regions[lowerCaseRegion].airportCode as AirportCode;
     }
     throw new Error(`Not a valid region: ${region}`)
 }
 
-export const toRegion = (airportCode: string): string => {
-    const upperCaseAirportCode = airportCode.toUpperCase();
+export const toRegionName = (region: string): RegionName => {
+    if (regions[region.toLowerCase()]) {
+        // it is already a region name
+        return region.toLowerCase() as RegionName;
+    }
+    const upperCaseAirportCode = region.toUpperCase();
 
     const match = Object.values(regions)
         .find((value) => value.airportCode === upperCaseAirportCode);
 
     if (match) {
-        return match.region;
+        return match.region as RegionName;
     }
-    throw new Error(`Not a valid airport code: ${airportCode}`)
+    throw new Error(`Not a valid airport code: ${region}`)
+}
+
+export const isOptInRegion = (region: string) => {
+    return optInRegions.includes(toRegionName(region));
 }
