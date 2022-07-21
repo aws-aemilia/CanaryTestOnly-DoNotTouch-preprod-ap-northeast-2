@@ -19,5 +19,19 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "gamma"
+  },
+  {
+    "accountId": "296090502073",
+    "email": "aws-mobile-amplify+compute-service-gamma-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "280608668128",
+    "email": "aws-mobile-amplify+compute-service-prod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod"
   }
 ]

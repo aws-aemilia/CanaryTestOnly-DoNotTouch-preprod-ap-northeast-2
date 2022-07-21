@@ -22,5 +22,21 @@
     "region": "us-west-2",
     "stage": "gamma",
     "cellNumber": "1"
+  },
+  {
+    "accountId": "319878526917",
+    "email": "aws-mobile-amplify+compute-service-gamma-hkg-cell1@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "gamma",
+    "cellNumber": "1"
+  },
+  {
+    "accountId": "616657649725",
+    "email": "aws-mobile-amplify+compute-service-prod-yul-cell1@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod",
+    "cellNumber": "1"
   }
 ]
