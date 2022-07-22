@@ -32,22 +32,30 @@ export const getNamedSecretLocations = async (
       "CellGatewayOriginVerifyHeader"
     ),
   },
+  ... await getComputeServiceOnlyNamedSecretLocations(stage, region)
+});
+
+
+export const getComputeServiceOnlyNamedSecretLocations = async (
+    stage: Stage,
+    region: Region
+): Promise<Pick<NamedSecretLocations, 'gatewayA'|'gatewayB'>> => ({
   gatewayA: (await computeServiceDataPlaneAccounts({ stage, region })).flatMap(
-    (acc) => [
-      { account: acc, secretStore: elbSecretStoreWithPriority("5") },
-      {
-        account: acc,
-        secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretA"),
-      },
-    ]
+      (acc) => [
+        { account: acc, secretStore: elbSecretStoreWithPriority("5") },
+        {
+          account: acc,
+          secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretA"),
+        },
+      ]
   ),
   gatewayB: (await computeServiceDataPlaneAccounts({ stage, region })).flatMap(
-    (acc) => [
-      { account: acc, secretStore: elbSecretStoreWithPriority("10") },
-      {
-        account: acc,
-        secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretB"),
-      },
-    ]
+      (acc) => [
+        { account: acc, secretStore: elbSecretStoreWithPriority("10") },
+        {
+          account: acc,
+          secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretB"),
+        },
+      ]
   ),
 });

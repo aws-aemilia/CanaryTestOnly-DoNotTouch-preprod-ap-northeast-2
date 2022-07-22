@@ -6,24 +6,27 @@ import {
   readSecretFromAllLocations,
   writeSecretToAllLocations,
 } from "./utils/utils";
-import { getNamedSecretLocations } from "./secretStores/secretLocations";
-
-const getSecretLocations = async (
-  stage: Stage,
-  region: Region
-): Promise<{ account: AmplifyAccount; secretStore: SecretStore }[]> => {
-  const namedSecretLocations = await getNamedSecretLocations(stage, region);
-  return Object.values(namedSecretLocations).flatMap((s) =>
-    Array.isArray(s) ? s : [s]
-  );
-};
+import {
+  getComputeServiceOnlyNamedSecretLocations,
+  getNamedSecretLocations,
+} from "./secretStores/secretLocations";
 
 const unsafeResetSecret = async (
   stage: Stage,
   region: Region,
-  doUpdate: boolean = false
+  {
+    doUpdate,
+    computeServiceOnly,
+  }: { doUpdate: boolean; computeServiceOnly: boolean }
 ) => {
-  const secretLocations = await getSecretLocations(stage, region);
+  const namedSecretLocations = computeServiceOnly
+    ? await getComputeServiceOnlyNamedSecretLocations(stage, region)
+    : await getNamedSecretLocations(stage, region);
+
+  const secretLocations = Object.values(namedSecretLocations).flatMap((s) =>
+      Array.isArray(s) ? s : [s]
+  );
+
   const secretValue = newSecret();
 
   const values = await readSecretFromAllLocations(secretLocations);
@@ -73,13 +76,22 @@ doing so would cause a few seconds of downtime. Although it can be used to reset
       type: "boolean",
       default: false,
     })
+    .option("computeServiceOnly", {
+      describe:
+        "update only the compute service cell accounts. useful for region/stages without a corresponding control plane account",
+      type: "boolean",
+      default: false,
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, doUpdate } = args;
+  const { stage, region, doUpdate, computeServiceOnly } = args;
 
-  await unsafeResetSecret(stage as Stage, region as Region, doUpdate);
+  await unsafeResetSecret(stage as Stage, region as Region, {
+    doUpdate,
+    computeServiceOnly,
+  });
 };
 
 main()
