@@ -1,7 +1,7 @@
 import { Credentials, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 
-const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin'];
+const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin', 'Route53Manager'];
 
 const getIsengardCredentials = async (
   accountId: string, iamRoleName="ReadOnly"
