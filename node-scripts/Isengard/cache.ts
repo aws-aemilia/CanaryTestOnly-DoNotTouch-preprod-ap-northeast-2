@@ -1,5 +1,5 @@
 import path from "path";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 
 export const withFileCache = <T extends Array<any>, U>(
   filename: string,
@@ -19,3 +19,10 @@ export const withFileCache = <T extends Array<any>, U>(
     return output;
   };
 };
+
+export const deleteCache = async(filename: string) => {
+  const filePath = path.join(__dirname, "cache", `${filename}.json`);
+  if (existsSync(filePath)) {
+    unlinkSync(filePath)
+  }
+}
