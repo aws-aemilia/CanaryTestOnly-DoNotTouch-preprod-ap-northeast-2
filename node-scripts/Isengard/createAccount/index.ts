@@ -2,21 +2,19 @@ import { computeServiceControlPlanePurposeFn } from "./accountPuporses/computeSe
 import { createAmplifyAccount } from "./createAmplifyAccount";
 import { computeServiceCellPurposeFn } from "./accountPuporses/computeServiceCell";
 import { Region, Stage } from "../types";
+import { dataPlanePurposeFn } from "./accountPuporses/dataPlane";
 
-export const createComputeServiceControlPlaneAccount: (
+export type CreateAccountFn = (
   stage: Stage,
   region: Region,
   cellNumber?: number
-) => Promise<void> = createAmplifyAccount.bind(
-  undefined,
-  computeServiceControlPlanePurposeFn
-);
+) => Promise<void>;
 
-export const createComputeServiceCellAccount: (
-  stage: Stage,
-  region: Region,
-  cellNumber?: number
-) => Promise<void> = createAmplifyAccount.bind(
-  undefined,
-  computeServiceCellPurposeFn
-);
+export const createComputeServiceControlPlaneAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, computeServiceControlPlanePurposeFn);
+
+export const createComputeServiceCellAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, computeServiceCellPurposeFn);
+
+export const createDataPlaneAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, dataPlanePurposeFn);

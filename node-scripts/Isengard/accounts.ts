@@ -149,6 +149,31 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
   });
 };
 
+const getDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+      /^aws-mobile-amplify\+dataplane-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      },
+    ];
+  });
+};
+
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): AccountsLookupFn => {
@@ -287,3 +312,15 @@ export const computeServiceDataPlaneAccount: (stage: Stage, region: Region, cell
     curry(withFileCache)('computeServiceDataPlaneAccounts'),
     withFindByRegionAndStageAndCell
 )()
+
+export const dataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
+    getDataPlaneAccounts,
+    "dataPlaneAccounts"
+);
+export const dataPlaneAccount: (
+    stage: Stage,
+    region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+    getDataPlaneAccounts,
+    "dataPlaneAccounts"
+);

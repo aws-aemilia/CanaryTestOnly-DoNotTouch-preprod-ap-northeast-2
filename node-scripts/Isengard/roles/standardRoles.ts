@@ -5,7 +5,7 @@ export const oncallOperatorRole: AmplifyRole = {
     Description: "OncallOperator",
     ContingentAuth: 1,
     PolicyTemplateReference: {
-        OwnerID: "aws-mobile-amplify",
+        OwnerID: "aws-mobile-amplify-oncall",
         PolicyTemplateName: "AmplifyOncallOperatorPolicy",
     },
 };
