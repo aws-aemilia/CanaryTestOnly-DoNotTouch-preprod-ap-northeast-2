@@ -17,7 +17,8 @@
     "addAccountsToServicePrincipal": "ts-node OpsTools/computeService/addAccountsToServicePrincipal.ts",
     "globalQuery": "ts-node globalQuery.ts",
     "migrateToCloudFrontPolicies": "ts-node migrateToCloudFrontPolicies.ts",
-    "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts"
+    "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
+    "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts"
   },
   "author": "",
   "license": "ISC",

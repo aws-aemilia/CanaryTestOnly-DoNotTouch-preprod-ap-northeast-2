@@ -5,5 +5,33 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "beta"
+  },
+  {
+    "accountId": "634403797906",
+    "email": "aws-mobile-amplify+dataplane-gamma-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "902114056747",
+    "email": "aws-mobile-amplify+dataplane-gamma-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "485590535125",
+    "email": "aws-mobile-amplify+dataplane-gamma-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "628987390189",
+    "email": "aws-mobile-amplify+dataplane-prod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod"
   }
 ]
