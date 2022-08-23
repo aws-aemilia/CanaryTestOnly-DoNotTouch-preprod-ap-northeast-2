@@ -9,7 +9,6 @@ export const withFileCache = <T extends Array<any>, U>(
     const filePath = path.join(__dirname, "cache", `${filename}.json`);
 
     if (existsSync(filePath)) {
-      console.log(`loading ${filePath}`);
       return JSON.parse(readFileSync(filePath, { encoding: "utf8" })) as U;
     }
 
