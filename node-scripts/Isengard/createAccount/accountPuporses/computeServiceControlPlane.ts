@@ -1,7 +1,7 @@
 import { Region, Stage } from "../../types";
 import { toAirportCode } from "../../../utils/regions";
-import {capitalize} from "../createAmplifyAccount";
-import {AccountPurposeFn} from "./types";
+import { capitalize } from "../createAmplifyAccount";
+import { AccountPurposeFn } from "./types";
 
 export const computeServiceControlPlanePurposeFn: AccountPurposeFn = (
   stage: Stage,
@@ -14,6 +14,8 @@ export const computeServiceControlPlanePurposeFn: AccountPurposeFn = (
   Name: `compute-service-${stage}-${toAirportCode(
     region
   ).toLowerCase()}@amazon.com`,
-  Description: `Amplify Compute Service Control Plane - ${stage} - ${region}`,
+  Description: `Amplify Compute Service Control Plane - ${capitalize(stage)} - ${toAirportCode(
+    region
+  ).toUpperCase()}`,
   Group: `Amplify Compute Service/${capitalize(stage)}`,
 });

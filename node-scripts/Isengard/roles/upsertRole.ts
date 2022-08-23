@@ -61,8 +61,6 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
       IAMRoleName,
       Description,
       ContingentAuth,
-      AssumeRoleTimeOutMin: 60,
-      FederationTimeOutMin: 60,
     },
   });
 
