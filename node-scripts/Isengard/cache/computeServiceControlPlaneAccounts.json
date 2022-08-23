@@ -1,23 +1,65 @@
 [
   {
     "accountId": "841623727189",
-    "email": "aws-amplify-compute-service-beta-pdx@amazon.com",
+    "email": "aws-mobile-amplify+compute-service-beta-pdx@amazon.com",
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "beta"
   },
   {
-    "accountId": "251882655899",
-    "email": "aws-amplify-compute-service-gamma-iad@amazon.com",
-    "airportCode": "iad",
-    "region": "us-east-1",
+    "accountId": "282919194308",
+    "email": "aws-mobile-amplify+compute-service-gamma-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
     "stage": "gamma"
   },
   {
-    "accountId": "457018460978",
-    "email": "aws-amplify-compute-service-gamma-pdx@amazon.com",
-    "airportCode": "pdx",
-    "region": "us-west-2",
+    "accountId": "867962779599",
+    "email": "aws-mobile-amplify+compute-service-gamma-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "443175911298",
+    "email": "aws-mobile-amplify+compute-service-gamma-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "262883906203",
+    "email": "aws-mobile-amplify+compute-service-gamma-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "056424166291",
+    "email": "aws-mobile-amplify+compute-service-gamma-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "684757847620",
+    "email": "aws-mobile-amplify+compute-service-gamma-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "916691397564",
+    "email": "aws-mobile-amplify+compute-service-gamma-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "258545457839",
+    "email": "aws-mobile-amplify+compute-service-gamma-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
     "stage": "gamma"
   },
   {
@@ -26,6 +68,202 @@
     "airportCode": "hkg",
     "region": "ap-east-1",
     "stage": "gamma"
+  },
+  {
+    "accountId": "251882655899",
+    "email": "aws-mobile-amplify+compute-service-gamma-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "493316164417",
+    "email": "aws-mobile-amplify+compute-service-gamma-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "589458321259",
+    "email": "aws-mobile-amplify+compute-service-gamma-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "951399156494",
+    "email": "aws-mobile-amplify+compute-service-gamma-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "975302810635",
+    "email": "aws-mobile-amplify+compute-service-gamma-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "457018460978",
+    "email": "aws-mobile-amplify+compute-service-gamma-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "715331782280",
+    "email": "aws-mobile-amplify+compute-service-gamma-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "508264506166",
+    "email": "aws-mobile-amplify+compute-service-gamma-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "678316663279",
+    "email": "aws-mobile-amplify+compute-service-gamma-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "544302774838",
+    "email": "aws-mobile-amplify+compute-service-gamma-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "324083443363",
+    "email": "aws-mobile-amplify+compute-service-prod-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "778656315944",
+    "email": "aws-mobile-amplify+compute-service-prod-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "961089157158",
+    "email": "aws-mobile-amplify+compute-service-prod-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "067021532459",
+    "email": "aws-mobile-amplify+compute-service-prod-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "763602849397",
+    "email": "aws-mobile-amplify+compute-service-prod-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "721353850853",
+    "email": "aws-mobile-amplify+compute-service-prod-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "661687143689",
+    "email": "aws-mobile-amplify+compute-service-prod-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "029015999262",
+    "email": "aws-mobile-amplify+compute-service-prod-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "884941116652",
+    "email": "aws-mobile-amplify+compute-service-prod-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "739217192896",
+    "email": "aws-mobile-amplify+compute-service-prod-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "448766840572",
+    "email": "aws-mobile-amplify+compute-service-prod-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "735893892429",
+    "email": "aws-mobile-amplify+compute-service-prod-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "182690974485",
+    "email": "aws-mobile-amplify+compute-service-prod-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "966594649980",
+    "email": "aws-mobile-amplify+compute-service-prod-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "583090263836",
+    "email": "aws-mobile-amplify+compute-service-prod-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "924418769215",
+    "email": "aws-mobile-amplify+compute-service-prod-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "406015739782",
+    "email": "aws-mobile-amplify+compute-service-prod-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "352487128082",
+    "email": "aws-mobile-amplify+compute-service-prod-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "prod"
   },
   {
     "accountId": "280608668128",
