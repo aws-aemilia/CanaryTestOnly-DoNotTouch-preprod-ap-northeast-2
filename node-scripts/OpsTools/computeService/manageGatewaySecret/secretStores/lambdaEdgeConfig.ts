@@ -23,7 +23,7 @@ const decodeSecret = (encoded: string): string => {
 };
 const readSecret: readSecretFn = async (account: AmplifyAccount) => {
   const dynamodb = new DynamoDBClient({
-    region: account.region,
+    region: 'us-east-1', // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
     credentials: getIsengardCredentialsProvider(account.accountId),
   });
   const documentClient = DynamoDBDocumentClient.from(dynamodb);
@@ -58,7 +58,7 @@ const writeSecret = async (
   );
 
   const dynamodb = new DynamoDBClient({
-    region: account.region,
+    region: 'us-east-1', // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
     credentials: getIsengardCredentialsProvider(
       account.accountId,
       "OncallOperator"

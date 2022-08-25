@@ -18,19 +18,34 @@ export type NamedSecretLocations = {
   gatewayA: SecretLocation[];
   gatewayB: SecretLocation[];
 };
+
+/**
+ * Compute service gamma uses preprod control plane and integ test accounts when there is no corresponding gamma account.
+ */
+const locateAccountWithGammaSpecialCase = async (
+  fn: (stage: Stage, region: Region) => Promise<AmplifyAccount>,
+  stage: Stage,
+  region: Region
+): Promise<AmplifyAccount> => {
+  if (stage !== "gamma") {
+    return fn(stage, region);
+  } else {
+    try {
+      return await fn(stage, region);
+    } catch (e) {
+      // nothing to do
+    }
+    return fn("preprod", region);
+  }
+};
+
 export const getNamedSecretLocations = async (
   stage: Stage,
   region: Region
 ): Promise<NamedSecretLocations> => ({
   edgeLambda: {
-    account: await controlPlaneAccount(stage, region),
+    account: await locateAccountWithGammaSpecialCase(controlPlaneAccount, stage, region),
     secretStore: ddbLambdaEdgeConfigSecretStore,
-  },
-  integTest: {
-    account: await integTestAccount(stage, region),
-    secretStore: secretsManagerSecretStoreWithName(
-      "CellGatewayOriginVerifyHeader"
-    ),
   },
   ... await getComputeServiceOnlyNamedSecretLocations(stage, region)
 });
@@ -39,7 +54,7 @@ export const getNamedSecretLocations = async (
 export const getComputeServiceOnlyNamedSecretLocations = async (
     stage: Stage,
     region: Region
-): Promise<Pick<NamedSecretLocations, 'gatewayA'|'gatewayB'>> => ({
+): Promise<Pick<NamedSecretLocations, 'gatewayA'|'gatewayB'|'integTest'>> => ({
   gatewayA: (await dataPlaneAccounts({ stage, region })).flatMap(
       (acc) => [
         { account: acc, secretStore: elbSecretStoreWithPriority("5") },
@@ -58,4 +73,10 @@ export const getComputeServiceOnlyNamedSecretLocations = async (
         },
       ]
   ),
+  integTest: {
+    account: await locateAccountWithGammaSpecialCase(integTestAccount, stage, region),
+    secretStore: secretsManagerSecretStoreWithName(
+        "CellGatewayOriginVerifyHeader"
+    ),
+  },
 });
