@@ -1,7 +1,7 @@
 import {
   AmplifyAccount,
-  computeServiceDataPlaneAccounts,
   controlPlaneAccount,
+  dataPlaneAccounts,
   integTestAccount,
   Region,
   Stage,
@@ -40,7 +40,7 @@ export const getComputeServiceOnlyNamedSecretLocations = async (
     stage: Stage,
     region: Region
 ): Promise<Pick<NamedSecretLocations, 'gatewayA'|'gatewayB'>> => ({
-  gatewayA: (await computeServiceDataPlaneAccounts({ stage, region })).flatMap(
+  gatewayA: (await dataPlaneAccounts({ stage, region })).flatMap(
       (acc) => [
         { account: acc, secretStore: elbSecretStoreWithPriority("5") },
         {
@@ -49,7 +49,7 @@ export const getComputeServiceOnlyNamedSecretLocations = async (
         },
       ]
   ),
-  gatewayB: (await computeServiceDataPlaneAccounts({ stage, region })).flatMap(
+  gatewayB: (await dataPlaneAccounts({ stage, region })).flatMap(
       (acc) => [
         { account: acc, secretStore: elbSecretStoreWithPriority("10") },
         {

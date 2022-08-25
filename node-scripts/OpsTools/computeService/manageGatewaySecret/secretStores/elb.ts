@@ -13,7 +13,7 @@ import {
 import { SecretStore } from "./types";
 import { partial } from "ramda";
 
-const isForwardToCellGatewayServiceRule = (rule: Rule): boolean => {
+const isForwardToHostingGatewayServiceRule = (rule: Rule): boolean => {
   return (
     !!rule.Actions?.find((action) => action.Type === "forward") &&
     !!rule.Conditions?.find(
@@ -24,46 +24,46 @@ const isForwardToCellGatewayServiceRule = (rule: Rule): boolean => {
   );
 };
 
-const findCellGatewayLoadBalancerArn = async (
-  cellAccount: AmplifyAccount
+const findHostingGatewayLoadBalancerArn = async (
+  dataplane: AmplifyAccount
 ): Promise<string> => {
-  const { stage } = cellAccount;
-  const stackName = `ComputeServiceCellGateway-${stage}`;
+  const { stage } = dataplane;
+  const stackName = `HostingGateway-${stage}`;
 
   const outputs = await getCloudFormationOutputs({
-    amplifyAccount: cellAccount,
-    outputKeys: ["CellGatewayLoadBalancerArn"],
+    amplifyAccount: dataplane,
+    outputKeys: ["HostingGatewayLoadBalancerArn"],
     stackName,
   });
 
-  if (outputs.CellGatewayLoadBalancerArn === undefined) {
+  if (outputs.HostingGatewayLoadBalancerArn === undefined) {
     throw new Error(
-      `The CellGatewayLoadBalancerArn key is not found in the outputs of ${stackName}`
+      `The HostingGatewayLoadBalancerArn key is not found in the outputs of ${stackName}`
     );
   }
 
-  return outputs.CellGatewayLoadBalancerArn;
+  return outputs.HostingGatewayLoadBalancerArn;
 };
 
 const getListenerArn = async (
   elbClient: ElasticLoadBalancingV2Client,
-  cellGatewayLoadBalancerArn: string
+  hostingGatewayLoadBalancerArn: string
 ): Promise<string> => {
   const { Listeners } = await elbClient.send(
     new DescribeListenersCommand({
-      LoadBalancerArn: cellGatewayLoadBalancerArn,
+      LoadBalancerArn: hostingGatewayLoadBalancerArn,
     })
   );
 
   if (Listeners === undefined || Listeners.length === 0) {
     throw new Error(
-      `There are no listeners for  ${cellGatewayLoadBalancerArn}`
+      `There are no listeners for  ${hostingGatewayLoadBalancerArn}`
     );
   }
 
   if (Listeners.length > 1) {
     throw new Error(
-      `There are multiple listeners for ${cellGatewayLoadBalancerArn}. This is unexpected`
+      `There are multiple listeners for ${hostingGatewayLoadBalancerArn}. This is unexpected`
     );
   }
 
@@ -72,21 +72,21 @@ const getListenerArn = async (
 
 export const readSecretsFromELB = async (
   priority: string,
-  cellAccount: AmplifyAccount
+  dataPlaneAccount: AmplifyAccount
 ) => {
-  const { region } = cellAccount;
-  const cellGatewayLoadBalancerArn = await findCellGatewayLoadBalancerArn(
-    cellAccount
+  const { region } = dataPlaneAccount;
+  const hostingGatewayLoadBalancerArn = await findHostingGatewayLoadBalancerArn(
+    dataPlaneAccount
   );
 
   const elbClient = new ElasticLoadBalancingV2Client({
     region,
-    credentials: getIsengardCredentialsProvider(cellAccount.accountId),
+    credentials: getIsengardCredentialsProvider(dataPlaneAccount.accountId),
   });
 
   const listenerArn = await getListenerArn(
     elbClient,
-    cellGatewayLoadBalancerArn
+    hostingGatewayLoadBalancerArn
   );
 
   const describeRulesCommandOutput = await elbClient.send(
@@ -94,7 +94,7 @@ export const readSecretsFromELB = async (
   );
 
   const secretRule = describeRulesCommandOutput
-    .Rules!.filter(isForwardToCellGatewayServiceRule)
+    .Rules!.filter(isForwardToHostingGatewayServiceRule)
     .find((rule) => rule.Priority === priority);
 
   const secretValue = secretRule?.Conditions?.[0].HttpHeaderConfig?.Values?.[0];
@@ -102,12 +102,12 @@ export const readSecretsFromELB = async (
   return secretValue
     ? {
         value: secretValue,
-        meta: `${cellAccount.email} - ELB priority:${secretRule!.Priority} ${
+        meta: `${dataPlaneAccount.email} - ELB priority:${secretRule!.Priority} ${
           secretRule!.RuleArn
         }`,
       }
     : {
-        meta: `${cellAccount.email} - ELB priority:${
+        meta: `${dataPlaneAccount.email} - ELB priority:${
           secretRule?.Priority ?? ""
         } ${
           secretRule?.RuleArn ?? "rule does not exist"
@@ -117,30 +117,30 @@ export const readSecretsFromELB = async (
 
 export const writeSecretToELB = async (
   priority: string,
-  cellAccount: AmplifyAccount,
+  dataPlaneAccount: AmplifyAccount,
   secretValue: string
 ): Promise<void> => {
-  const { region } = cellAccount;
+  const { region } = dataPlaneAccount;
 
   console.log(
-    `Writing secret to ELB at ${cellAccount.region}:${cellAccount.accountId}`
+    `Writing secret to ELB at ${dataPlaneAccount.region}:${dataPlaneAccount.accountId}`
   );
 
-  const cellGatewayLoadBalancerArn = await findCellGatewayLoadBalancerArn(
-    cellAccount
+  const hostingGatewayLoadBalancerArn = await findHostingGatewayLoadBalancerArn(
+    dataPlaneAccount
   );
 
   const elbClient = new ElasticLoadBalancingV2Client({
     region,
     credentials: getIsengardCredentialsProvider(
-      cellAccount.accountId,
+      dataPlaneAccount.accountId,
       "OncallOperator"
     ),
   });
 
   const listenerArn = await getListenerArn(
     elbClient,
-    cellGatewayLoadBalancerArn
+    hostingGatewayLoadBalancerArn
   );
 
   const describeRulesCommandOutput = await elbClient.send(
@@ -148,7 +148,7 @@ export const writeSecretToELB = async (
   );
 
   const forwardRules = describeRulesCommandOutput
-    .Rules!.filter(isForwardToCellGatewayServiceRule)
+    .Rules!.filter(isForwardToHostingGatewayServiceRule)
     .filter((rule) => rule.Priority === priority);
 
   if (forwardRules.length !== 1) {
