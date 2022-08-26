@@ -174,6 +174,31 @@ const getDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
+const getKinesisConsumerAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+    /^aws-amplify-kinesis-(consumer|cnsmr)-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      },
+    ];
+  });
+}
+
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): AccountsLookupFn => {
@@ -323,4 +348,16 @@ export const dataPlaneAccount: (
 ) => Promise<AmplifyAccount> = defaultGetAccount(
     getDataPlaneAccounts,
     "dataPlaneAccounts"
+);
+
+export const kinesisConsumerAccounts: AccountsLookupFn = defaultGetAccounts(
+  getKinesisConsumerAccounts,
+  "kinesisConsumerAccounts"
+);
+export const kinesisConsumerAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getKinesisConsumerAccounts,
+  "kinesisConsumerAccounts"
 );
