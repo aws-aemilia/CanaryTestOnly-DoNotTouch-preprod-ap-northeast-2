@@ -1,4 +1,5 @@
 import {
+  AmplifyAccount,
   computeServiceControlPlaneAccount,
   computeServiceDataPlaneAccount,
   createComputeServiceCellAccount,
@@ -10,13 +11,28 @@ import {
 } from "../Isengard";
 import yargs from "yargs";
 import { deleteCache } from "../Isengard/cache";
+import { requestMaxLambdaConcurrency, requestMaxLambdaStorage } from "../SimT";
+import sleep from "../utils/sleep";
+
+const cutTicketsLambdaLimitIncrease = async (createdAccount: AmplifyAccount): Promise<void> => {
+    console.log("Cutting tickets to request Lambda limit increases");
+    const concurrencyTicket = await requestMaxLambdaConcurrency(createdAccount)
+    console.log(`concurrency increase: https://t.corp.amazon.com/${concurrencyTicket}`);
+
+    await sleep(3_000); // avoid throttles
+
+    const storageTicket = await requestMaxLambdaStorage(createdAccount);
+    console.log(`code storage increase: https://t.corp.amazon.com/${storageTicket}`);
+}
 
 const main = async ()=> {
 
     const args = await yargs(process.argv.slice(2))
         .usage(
             `
-Create a compute service account
+Create an Isengard AWS account
+
+** Requires kcurl to be installed. install it with "brew install env-improvement"**
 `
         )
         .option("type", {
@@ -54,14 +70,16 @@ Create a compute service account
             console.log('SUCCESS')
             console.log('Refreshing the local account cache...')
             await deleteCache('computeServiceControlPlaneAccounts');
-            await computeServiceControlPlaneAccount(stage, region)
+            const computeAccount = await computeServiceControlPlaneAccount(stage, region)
+            await cutTicketsLambdaLimitIncrease(computeAccount)
             break;
         case 'computeServiceCell':
             await createComputeServiceCellAccount(stage, region, cellNumber);
             console.log('SUCCESS')
             console.log('Refreshing the local account cache...')
             await deleteCache('computeServiceDataPlaneAccounts');
-            await computeServiceDataPlaneAccount(stage, region, cellNumber!)
+            const cellAccount = await computeServiceDataPlaneAccount(stage, region, cellNumber!)
+            await cutTicketsLambdaLimitIncrease(cellAccount)
             break;
         case 'dataPlane':
           await createDataPlaneAccount(stage, region, cellNumber);

@@ -1,5 +1,10 @@
 import util from "util";
 import { exec as execNonPromise } from "child_process";
+import { AmplifyAccount } from "../Isengard";
+import {
+  LambdaLimit, maxCodeStorageLambdaLimit, maxLambdaConcurrencyLambdaLimit,
+} from "./LambdaLimitIncrease";
+
 const exec = util.promisify(execNonPromise);
 
 const executeCommand = async (command: string): Promise<string> => {
@@ -47,3 +52,63 @@ export const getTicket = async (ticketId: string): Promise<Ticket> => {
     description: response.description as string,
   };
 };
+
+/**
+ * Cuts a ticket to Lambda requesting a Limit increase. The ticket will be resolved automatically by a bot.
+ * See: https://w.amazon.com/index.php/Lambda/Limits
+ */
+const createLambdaLimitIncreaseTicket = async (
+  lambdaLimit: LambdaLimit,
+  account: AmplifyAccount
+): Promise<string> => {
+  const createTicketParams = {
+    title: `Lambda limit increase for Amplify Hosting - ${account.accountId}`,
+    description: `BOT PROCESS\nAWS ID: ${account.accountId}\nRequested ${
+      lambdaLimit.lambdaLimitName
+    }: ${lambdaLimit.limitValueFn(account)} \nRegion: ${account.airportCode.toUpperCase()}`,
+    assignedFolder: lambdaLimit.assignedFolder,
+    extensions: {
+      tt: {
+        category: "AWS",
+        type: "Lambda",
+        item: lambdaLimit.ctiItem,
+        assignedGroup: lambdaLimit.assignedGroup,
+        caseType: "Trouble Ticket",
+        impact: 3,
+      },
+    },
+  };
+
+  const command = `kcurl -X POST -d '${JSON.stringify(
+    createTicketParams
+  )}' -H 'Content-Type: application/json' https://maxis-service-prod-pdx.amazon.com/issues`;
+
+  console.log(command)
+
+  const rawOutput = await executeCommand(command);
+
+  let response: any;
+  try {
+    response = JSON.parse(rawOutput);
+  } catch (e) {
+    console.log(
+      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run kinit?"
+    );
+    console.log(rawOutput);
+    throw e;
+  }
+
+  if (response.id) {
+    return response.id;
+  }
+  throw new Error(
+    `Unexpected response from SIM ticketing: ${JSON.stringify(
+      response,
+      null,
+      2
+    )}`
+  );
+};
+
+export const requestMaxLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(null, maxLambdaConcurrencyLambdaLimit)
+export const requestMaxLambdaStorage = createLambdaLimitIncreaseTicket.bind(null, maxCodeStorageLambdaLimit)
