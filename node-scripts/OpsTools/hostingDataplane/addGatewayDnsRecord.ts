@@ -1,29 +1,28 @@
-import { computeServiceDataPlaneAccount, Region, Stage } from "../../Isengard";
+import { dataPlaneAccount, Region, Stage } from "../../Isengard";
 import yargs from "yargs";
 import { getCloudFormationOutputs } from "../../utils/cloudFormation";
-import { getDomainName } from "./utils/utils";
-import { changeResourceRecordSetsInGlobalAccount } from "./utils/route53";
+import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
+import { changeResourceRecordSetsInGlobalAccount } from "./../../route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 require("util").inspect.defaultOptions.depth = null;
 
-const addRecord = async (stage: Stage, region: Region, cellNumber: number) => {
-  const cellAccount = await computeServiceDataPlaneAccount(
+const addRecord = async (stage: Stage, region: Region) => {
+  const account = await dataPlaneAccount(
     stage,
-    region,
-    cellNumber
+    region
   );
-  const stackName = `ComputeServiceCellGateway-${stage}`;
+  const stackName = `HostingGateway-${stage}`;
   const outputs = await getCloudFormationOutputs({
-    amplifyAccount: cellAccount,
-    outputKeys: ["ALB", "CellGatewayLoadBalancerCanonicalHostedZoneId"],
+    amplifyAccount: account,
+    outputKeys: ["ALB", "HostingGatewayLoadBalancerCanonicalHostedZoneId"],
     stackName: stackName,
   });
 
-  const { ALB, CellGatewayLoadBalancerCanonicalHostedZoneId } = outputs;
-  if (!ALB || !CellGatewayLoadBalancerCanonicalHostedZoneId) {
+  const { ALB, HostingGatewayLoadBalancerCanonicalHostedZoneId } = outputs;
+  if (!ALB || !HostingGatewayLoadBalancerCanonicalHostedZoneId) {
     throw new Error(
-      `The ALB or CellGatewayLoadBalancerCanonicalHostedZoneId CFN outputs were not found in stack ${stackName}`
+      `The ALB or HostingGatewayLoadBalancerCanonicalHostedZoneId CFN outputs were not found in stack ${stackName}`
     );
   }
   const changeBatch: ChangeBatch = {
@@ -32,10 +31,10 @@ const addRecord = async (stage: Stage, region: Region, cellNumber: number) => {
         Action: "CREATE",
         ResourceRecordSet: {
           Type: "A",
-          Name: getDomainName(stage, region, cellNumber),
+          Name: getDomainName(stage, region),
           AliasTarget: {
             DNSName: ALB,
-            HostedZoneId: CellGatewayLoadBalancerCanonicalHostedZoneId,
+            HostedZoneId: HostingGatewayLoadBalancerCanonicalHostedZoneId,
             EvaluateTargetHealth: true,
           },
         },
@@ -44,7 +43,7 @@ const addRecord = async (stage: Stage, region: Region, cellNumber: number) => {
     Comment: "Add cell gateway A record",
   };
 
-  await changeResourceRecordSetsInGlobalAccount(changeBatch);
+  await changeResourceRecordSetsInGlobalAccount(HOSTED_ZONE_ID, changeBatch);
   console.log("SUCCESS");
 };
 
@@ -65,18 +64,13 @@ Adds an A record that points the cell subdomain to the gateway ALB url`
       type: "string",
       demandOption: true,
     })
-    .option("cellNumber", {
-      describe: "cell number. e.g. 1",
-      type: "number",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, cellNumber } = args;
+  const { stage, region } = args;
 
-  await addRecord(stage as Stage, region as Region, cellNumber);
+  await addRecord(stage as Stage, region as Region);
 };
 
 main()

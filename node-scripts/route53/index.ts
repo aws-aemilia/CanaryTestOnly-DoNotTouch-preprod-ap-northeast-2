@@ -1,16 +1,15 @@
 import {
-  ChangeResourceRecordSetsCommand,
-  ChangeResourceRecordSetsCommandInput,
-  InvalidChangeBatch,
-  Route53Client,
+    ChangeResourceRecordSetsCommand,
+    ChangeResourceRecordSetsCommandInput,
+    InvalidChangeBatch,
+    Route53Client,
 } from "@aws-sdk/client-route-53";
-import { getIsengardCredentialsProvider } from "../../../Isengard";
+import { getIsengardCredentialsProvider } from "../Isengard";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 export const DOMAIN_ACCOUNT = "673144583891"; // aws-mobile-aemilia-domain@amazon.com
-export const HOSTED_ZONE_ID = "Z05253462KGP3H4JNDOQD"; //computesvc-gateway.amplify.aws.dev
 
-export const changeResourceRecordSetsInGlobalAccount = async (changeBatch: ChangeBatch) => {
+export const changeResourceRecordSetsInGlobalAccount = async (hostedZoneId: string, changeBatch: ChangeBatch) => {
     const route53Client = new Route53Client({
         credentials: getIsengardCredentialsProvider(
             DOMAIN_ACCOUNT,
@@ -20,7 +19,7 @@ export const changeResourceRecordSetsInGlobalAccount = async (changeBatch: Chang
 
     const changeResourceRecordSetsCommandInput: ChangeResourceRecordSetsCommandInput = {
         ChangeBatch: changeBatch,
-        HostedZoneId: HOSTED_ZONE_ID,
+        HostedZoneId: hostedZoneId,
     };
 
     try {

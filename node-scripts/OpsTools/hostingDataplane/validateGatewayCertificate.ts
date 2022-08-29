@@ -8,15 +8,15 @@ import {
 } from "@aws-sdk/client-acm";
 import {
   AmplifyAccount,
-  computeServiceDataPlaneAccount,
+  dataPlaneAccount,
   getIsengardCredentialsProvider,
   Region,
   Stage,
 } from "../../Isengard";
 import sleep from "../../utils/sleep";
 import yargs from "yargs";
-import { getDomainName } from "./utils/utils";
-import { changeResourceRecordSetsInGlobalAccount } from "./utils/route53";
+import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
+import { changeResourceRecordSetsInGlobalAccount } from "../../route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 const pollDelayMilliseconds = 30_000;
@@ -37,7 +37,7 @@ const addValidationRecords = async (resourceRecord: ResourceRecord) => {
     Comment: "Add ACM validation records",
   };
 
-  await changeResourceRecordSetsInGlobalAccount(changeBatch);
+  await changeResourceRecordSetsInGlobalAccount(HOSTED_ZONE_ID, changeBatch);
 };
 
 const getGatewayCertificate: (
@@ -47,8 +47,7 @@ const getGatewayCertificate: (
 ) => {
   const domainName = getDomainName(
     account.stage,
-    account.region,
-    account.cellNumber!
+    account.region
   );
   const acmClient = new ACMClient({
     region: account.region,
@@ -88,13 +87,11 @@ const getGatewayCertificate: (
 
 const waitForAndValidtaeACMCertificate = async (
   stage: Stage,
-  region: Region,
-  cellNumber: number
+  region: Region
 ) => {
-  const account = await computeServiceDataPlaneAccount(
+  const account = await dataPlaneAccount(
     stage,
-    region,
-    cellNumber
+    region
   );
 
   let cert: CertificateDetail | undefined;
@@ -129,7 +126,7 @@ const main = async () => {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `
-Finds the ACM certificate for the cell gateway and performs dns validation by adding CNAME records on the computesvc-gateway.amplify.aws.dev hosted zone
+Finds the ACM certificate for the hosting gateway and performs dns validation by adding CNAME records on the gateway.amplify.aws.dev hosted zone
 
 For convenience this tool polls for ACM certs until it finds one, so you can run the tool before the CFN deployment and have the certificate validated as soon as it is created.
 `
@@ -145,21 +142,15 @@ For convenience this tool polls for ACM certs until it finds one, so you can run
       type: "string",
       demandOption: true,
     })
-    .option("cellNumber", {
-      describe: "cell number. e.g. 1",
-      type: "number",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, cellNumber } = args;
+  const { stage, region } = args;
 
   await waitForAndValidtaeACMCertificate(
     stage as Stage,
     region as Region,
-    cellNumber
   );
 };
 
