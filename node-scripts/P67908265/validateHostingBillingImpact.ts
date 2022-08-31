@@ -58,6 +58,10 @@ async function getLogs(region: string) {
     mkdirSync(`${__dirname}/output/${region}/usage-data`);
   }
 
+  if (!existsSync(`${__dirname}/output/${region}/track-next-token`)) {
+    mkdirSync(`${__dirname}/output/${region}/track-next-token`);
+  }
+
   if (!existsSync(`${__dirname}/output/${region}/log-streams`)) {
     const client = new CloudWatchLogsClient({
       region,
@@ -183,7 +187,7 @@ async function processLogStreamQueue(
   });
 
   const queue = new PQueue({
-    concurrency: 100,
+    concurrency: 24,
   });
 
   queue.on("add", () =>
@@ -232,21 +236,73 @@ async function getLogEventsFromLogStream(
   logStreamName: string,
   limiter: RateLimiter
 ) {
+  // @TODO: Fix issue with old log format
+
   const client = new CloudWatchLogsClient({
     region,
     credentials,
     maxAttempts: 8,
   });
 
-  const usageObject: UsageObject = {};
+  const timeBuckets = [
+    {
+      startTime: 1612166400000,
+      endTime: 1617260400000,
+    },
+    {
+      startTime: 1617260400000,
+      endTime: 1622530800000,
+    },
+    {
+      startTime: 1622530800000,
+      endTime: 1627801200000,
+    },
+    {
+      startTime: 1627801200000,
+      endTime: 1633071600000,
+    },
+    {
+      startTime: 1633071600000,
+      endTime: 1638345600000,
+    },
+    {
+      startTime: 1638345600000,
+      endTime: 1643702400000,
+    },
+    {
+      startTime: 1643702400000,
+      endTime: 1648796400000,
+    },
+    {
+      startTime: 1648796400000,
+      endTime: 1654066800000,
+    },
+    {
+      startTime: 1654066800000,
+      endTime: 1658818800000,
+    },
+  ];
 
-  await getLogEvents(client, logGroupName, logStreamName, limiter, usageObject);
+  const usageObjects = await Promise.all(
+    timeBuckets.map((timeBucket) => {
+      const { startTime, endTime } = timeBucket;
+      return getLogEvents(
+        region,
+        client,
+        logGroupName,
+        logStreamName,
+        startTime,
+        endTime,
+        limiter
+      );
+    })
+  );
 
   console.log(`Completed finding log events for log stream: ${logStreamName}`);
 
-  if (Object.keys(usageObject).length > 0) {
+  if (usageObjects.length > 0) {
     console.log(`Writing usage data for log stream ${logStreamName}`);
-    writeUsageDataToFile(region, logStreamName, usageObject);
+    writeUsageDataToFile(region, logStreamName, usageObjects);
   }
 
   appendFileSync(
@@ -256,13 +312,33 @@ async function getLogEventsFromLogStream(
 }
 
 async function getLogEvents(
+  region: string,
   client: CloudWatchLogsClient,
   logGroupName: string,
   logStreamName: string,
-  limiter: RateLimiter,
-  usageObject: UsageObject
+  startTime: number,
+  endTime: number,
+  limiter: RateLimiter
 ) {
+  let usageObject: UsageObject = {};
   let nextForwardToken: string | undefined;
+
+  const fileName = logStreamName.split("/")[0];
+
+  if (
+    existsSync(
+      `${__dirname}/output/${region}/track-next-token/${fileName}-${startTime}-${endTime}`
+    )
+  ) {
+    const nextTokenUsageDataString = readFileSync(
+      `${__dirname}/output/${region}/track-next-token/${fileName}-${startTime}-${endTime}`
+    ).toString();
+    const nextTokenUsageData = JSON.parse(nextTokenUsageDataString);
+
+    usageObject = nextTokenUsageData.usageObject;
+    nextForwardToken = nextTokenUsageData.nextForwardToken;
+  }
+
   let response: GetLogEventsCommandOutput;
 
   let exception = false;
@@ -274,6 +350,7 @@ async function getLogEvents(
 
     try {
       const remainingRequests = await limiter.removeTokens(1);
+
       if (remainingRequests < 0) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
@@ -284,22 +361,39 @@ async function getLogEvents(
     }
 
     try {
-      console.time(`GetLogEvents: ${logStreamName}-${i}`);
+      if (i % 100 === 0) {
+        if (nextForwardToken) {
+          const nextTokenUsageData = JSON.stringify({
+            usageObject,
+            nextForwardToken,
+          });
+          writeFileSync(
+            `${__dirname}/output/${region}/track-next-token/${fileName}-${startTime}-${endTime}`,
+            nextTokenUsageData
+          );
+        }
+      }
+
+      console.time(
+        `GetLogEvents: ${logStreamName}-${startTime}-${endTime}-${i}`
+      );
       response = await client.send(
         new GetLogEventsCommand({
           logGroupName,
           logStreamName,
           startFromHead: true,
           nextToken: nextForwardToken,
-          startTime: 1612166400000,
-          endTime: 1658818800000,
+          startTime,
+          endTime,
         })
       );
-      console.timeEnd(`GetLogEvents: ${logStreamName}-${i}`);
+      console.timeEnd(
+        `GetLogEvents: ${logStreamName}-${startTime}-${endTime}-${i}`
+      );
 
       if (response.events) {
         console.log(
-          `Found ${response.events.length} log events for log stream: ${logStreamName}`
+          `Found ${response.events.length} log events for log stream: ${logStreamName}-${startTime}-${endTime}`
         );
         response.events.map((event) => {
           const { message } = event;
@@ -369,7 +463,9 @@ async function getLogEvents(
       }
 
       if (nextForwardToken === response.nextForwardToken) {
-        console.log(`Found all log events for log stream: ${logStreamName}`);
+        console.log(
+          `Found all log events for log stream: ${logStreamName}-${startTime}-${endTime}`
+        );
         nextForwardToken = undefined;
       } else {
         nextForwardToken = response.nextForwardToken;
@@ -377,30 +473,23 @@ async function getLogEvents(
 
       if (nextForwardToken) {
         console.log(
-          `There are more log events for log stream: ${logStreamName}`
+          `There are more log events for log stream: ${logStreamName}-${startTime}-${endTime}`
         );
       }
     } catch (e) {
-      if (
-        (e as AWS.AWSError).code === "ThrottlingException" ||
-        (e as AWS.AWSError).code === "RequestLimitExceeded"
-      ) {
-        console.error(
-          `ThrottlingException while retrieving logEvents in getLogEvents`,
-          e
-        );
-        exception = true;
-        continue;
-      }
-      throw e;
+      console.error(`Exception while retrieving logEvents in getLogEvents`, e);
+      exception = true;
+      continue;
     }
   } while (nextForwardToken || exception);
+
+  return usageObject;
 }
 
 function writeUsageDataToFile(
   region: string,
   logStreamName: string,
-  usageObject: UsageObject
+  usageObjects: UsageObject[]
 ) {
   const fileName = logStreamName.split("/")[0];
 
@@ -409,18 +498,20 @@ function writeUsageDataToFile(
     "accountId,appId,bytes\n"
   );
 
-  Object.keys(usageObject).forEach((accountId) => {
-    const appIds = usageObject[accountId];
+  for (const usageObject of usageObjects) {
+    Object.keys(usageObject).forEach((accountId) => {
+      const appIds = usageObject[accountId];
 
-    Object.keys(appIds).forEach((appId) => {
-      const bytes = usageObject[accountId][appId];
+      Object.keys(appIds).forEach((appId) => {
+        const bytes = usageObject[accountId][appId];
 
-      appendFileSync(
-        `${__dirname}/output/${region}/usage-data/${fileName}`,
-        `${accountId},${appId},${bytes}\n`
-      );
+        appendFileSync(
+          `${__dirname}/output/${region}/usage-data/${fileName}`,
+          `${accountId},${appId},${bytes}\n`
+        );
+      });
     });
-  });
+  }
 }
 
 process
