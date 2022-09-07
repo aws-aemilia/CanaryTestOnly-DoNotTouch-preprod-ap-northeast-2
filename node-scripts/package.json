@@ -18,7 +18,8 @@
     "globalQuery": "ts-node globalQuery.ts",
     "migrateToCloudFrontPolicies": "ts-node migrateToCloudFrontPolicies.ts",
     "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
-    "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts"
+    "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
+    "mapAppIds": "ts-node OpsTools/mapAppIds.ts"
   },
   "author": "",
   "license": "ISC",
@@ -53,7 +54,8 @@
     "rate-limiter-flexible": "2.2.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "readline": "^1.3.0"
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
