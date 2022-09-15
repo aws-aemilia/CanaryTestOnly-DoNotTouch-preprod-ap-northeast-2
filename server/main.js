@@ -56,7 +56,8 @@ const supportUsers = [
     'mengb',
     'hruixin',
     'zanurag',
-    'vishnaya'
+    'vishnaya',
+    'ernestrd'
 ];
 
 
