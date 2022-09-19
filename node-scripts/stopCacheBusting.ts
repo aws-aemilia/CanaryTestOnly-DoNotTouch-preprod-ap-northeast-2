@@ -31,7 +31,8 @@ async function getArgs() {
       type: "string",
     })
     .option("stage", {
-      describe: "Stage to perform the mitigation. Defaults to \"prod\", should only ever be \"prod\" unless testing the script.",
+      describe:
+        'Stage to perform the mitigation. Defaults to "prod", should only ever be "prod" unless testing the script.',
       type: "string",
       default: "prod",
     })
@@ -42,22 +43,32 @@ dummy CloudFront distribution in beta-PDX, regardless of whether a cache-busting
       default: false,
     })
     .option("contributors", {
-      describe: "Number of highest-traffic Amplify apps to inspect for cache-busting attacks (defaults to 3).",
+      describe:
+        "Number of highest-traffic Amplify apps to inspect for cache-busting attacks (defaults to 3).",
       type: "number",
-      default: 3
+      default: 3,
     })
     .option("minutes", {
-      describe: "Number of minutes before now to test for cache-busting attacks (defaults to 30).",
+      describe:
+        "Number of minutes before now to test for cache-busting attacks (defaults to 30).",
       type: "number",
-      default: 30
+      default: 30,
     })
     .option("distribution", {
       describe: `Override the attack detection phase and immediately perform mitigation on a CloudFront distribution (e.g. "d165wb2oa9rktm" or "E3PJ2DYKW5YZVG").`,
       type: "string",
     })
+    .demandOption(["region"])
     .strict()
     .version(false)
-    .help().argv) as { region: Region, stage: Stage, dryrun: boolean, contributors: number, minutes: number, distribution: string };
+    .help().argv) as {
+    region: Region;
+    stage: Stage;
+    dryrun: boolean;
+    contributors: number;
+    minutes: number;
+    distribution: string;
+  };
 }
 
 async function getClients(stage: Stage, airportCode: AirportCode, regionName: RegionName, dryrun: boolean) {
