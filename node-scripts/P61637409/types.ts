@@ -22,6 +22,10 @@ export interface LambdaEdgeConfig {
   branchConfig?: {
     [branchName: string]: BranchConfig;
   };
+  customDomainIds : Set<string>;
+  hostNameConfig?: {
+    [domainName: string]: HostNameConfigs;
+  }
 }
 
 export interface AutoBranchCreationConfig {
@@ -29,9 +33,14 @@ export interface AutoBranchCreationConfig {
   branchConfig?: BranchConfig;
 }
 
+export interface HostNameConfigs {
+  targetBranch?: string;
+}
+
 export interface BranchConfig {
   basicAuthCredsV2?: string;
   basicAuthCreds?: string;
+  ssrDistributionId?: string;
 }
 
 export interface DynamoDBAttributeName {
