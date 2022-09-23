@@ -1,6 +1,6 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, PutItemInput } from '@aws-sdk/client-dynamodb';
 import {
-    DynamoDBDocumentClient, QueryCommand, ScanCommand, GetCommand
+    DynamoDBDocumentClient, QueryCommand, GetCommand, UpdateCommand
 } from "@aws-sdk/lib-dynamodb";
 import { writeFileSync } from 'fs';
 import { getIsengardCredentialsProvider } from '../Isengard/credentials';
@@ -9,8 +9,10 @@ import { AmplifyAccount } from "../types";
 import sleep from "../utils/sleep";
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 import yargs from "yargs";
+import commandLineArgs from 'command-line-args';
 
 const accounts: AmplifyAccount[] = [
+    { region: "test", accountId: "269539005542" },
     { region: "eu-west-2", accountId: "499901155257" },
     { region: "us-east-2", accountId: "264748200621" },
     { region: "ap-southeast-1", accountId: "148414518837" },
@@ -39,21 +41,25 @@ const accounts: AmplifyAccount[] = [
   // Each line should contain the appId of the SSR app being tested
   // Output is printed in a directory called "MisMatchedCustomDomains"
 async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
-    const args = await yargs(process.argv.slice(2))
+    /*const args = await yargs(process.argv.slice(2))
     .usage("Detect and possibly mitigate ssr distribution mismatch between app and custom domain")
-    .option("dryrun", {
+    .option("writeMode", {
       describe: "true for readOnly false otherwise",
       type: "string",
-      default: "true",
-      choices: ["true", "false"],
+      demandOption:true
     })
     .strict()
     .version(false)
     .help().argv;
 
-    const skipUpdate = args.dryrun;
+    console.log(typeof args.writeMode)
+    console.log(args.writeMode)
+    const writeModeOn = args.writeMode === "false";*/
 
-    console.log(`Script will update the Apps?: ${skipUpdate} `)
+
+    const writeModeOn = true;
+
+    console.log(`Script will update the Apps?: ${writeModeOn} `)
 
     const allFiles = fs.readdirSync(srcDir);
     let allMismatchedAppAndCustomDomains: InvalidApps[] = [];
@@ -65,7 +71,7 @@ async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
     for (const file of allFiles) {
 
         // Parse region and get credentials
-        const region = file.split(".")[0].toString();
+        const region = isForLocalStack(file) ? "us-west-2" : file.split(".")[0].toString();
         console.log(region);
         const accountConfig = accounts.find(acc => acc.region === region);
         if (!accountConfig) {
@@ -87,15 +93,22 @@ async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
                 continue;
             }
 
-            const ddbClient = new DynamoDBClient({ region: region, credentials: getIsengardCredentialsProvider(accountConfig.accountId, "ReadOnly") });
+            
+            const ddbClient = isForLocalStack(file) ? 
+                                                            new DynamoDBClient({ region: region}) 
+                                                            : new DynamoDBClient({ region: region, credentials: getIsengardCredentialsProvider(accountConfig.accountId, "ReadOnly") });
+            
             const dynamodb = DynamoDBDocumentClient.from(ddbClient);
 
-            const mismatchedApps = await getMisMatchedCustomDomains(dynamodb, 'prod', region, appId, edgeObjectsByAppId, branchesByAppId, domainsByAppId, skipUpdate);
+            const stage = isForLocalStack(file) ? "test" : "prod";
+
+            const mismatchedApps = await getMisMatchedCustomDomains(dynamodb, stage, region, appId, edgeObjectsByAppId, branchesByAppId, domainsByAppId, writeModeOn);
             if (mismatchedApps.length) {
                 mismatchedAppAndCustomDomains = [...mismatchedAppAndCustomDomains, ...mismatchedApps]
             }
         }
 
+        // Write to region specific files 
         const outputFileName = `P71985437/MisMatchedCustomDomains/${file}`
 
         writeFile(outputFileName, mismatchedAppAndCustomDomains)
@@ -104,6 +117,7 @@ async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
             allMismatchedAppAndCustomDomains = [...allMismatchedAppAndCustomDomains, ...mismatchedAppAndCustomDomains]
         }
     }
+    // write to aggregate file
     const outputFileName = `P71985437/MisMatchedCustomDomains/ALL_REGIONS.csv`
     writeFile(outputFileName, allMismatchedAppAndCustomDomains)
 }
@@ -116,7 +130,7 @@ async function getMisMatchedCustomDomains(
     edgeObjectsByAppId: Map<string, LambdaEdgeConfig>,
     branchesByAppId: Map<string, BranchItem[]>,
     domainsByAppId: Map<string, DomainItem[]>,
-    skipUpdate:boolean): Promise<InvalidApps[]> {
+    writeModeOn:boolean): Promise<InvalidApps[]> {
 
     const appConfig = await getEdgeConfig(dynamodb, appId, edgeObjectsByAppId);
 
@@ -125,6 +139,11 @@ async function getMisMatchedCustomDomains(
     }
     let invalidApps : InvalidApps[] = [];
 
+    // Steps:
+    // 1) Get LambdaEdge config of AppId, early return if it doesn't have custom domain
+    // 2) Get CustomDomain object, and BranchObject to map BranchName -> CustomDmainId
+    // 3) Get LambdaEdge config of CustomDomain, use branchName to access branch config and verify ssrDistributionId
+    
     console.log(`App : ${appConfig.appId} does have a custom domain`)
 
     const customDomains = await getDomains(dynamodb, stage, region, appId, domainsByAppId);
@@ -168,16 +187,32 @@ async function getMisMatchedCustomDomains(
             continue
         }
 
-        if (appConfig.branchConfig?.[appBranchNameInBranchConfig].ssrDistributionId !== customDomainConfig?.branchConfig?.[appBranchNameInBranchConfig]?.ssrDistributionId) {
+        const branchConfigFromApp = appConfig.branchConfig?.[appBranchNameInBranchConfig];
+        const ssrIdKey = 'ssrDistributionId' as keyof typeof branchConfigFromApp;
+
+        if(!branchConfigFromApp) {
+            console.log(`Unexpected App: ${appConfig.appId} Unable to find branchConfig for branchName: ${targetBranchName}`);
+            continue
+        }
+
+
+        const branchConfigFromCustomDomain = customDomainConfig?.branchConfig?.[appBranchNameInBranchConfig];
+        const ssrIdKeyForCustomDomain = 'ssrDistributionId' as keyof typeof branchConfigFromApp;
+
+        if(!branchConfigFromCustomDomain) {
+            console.log(`Unexpected CustomDomain: ${domainId} Unable to find ssrDistributionId for branchName: ${targetBranchName}`);
+            continue
+        }
+
+        if (branchConfigFromApp[ssrIdKey] !== branchConfigFromCustomDomain[ssrIdKeyForCustomDomain]) {
             invalidApps.push({
                 appId: appConfig.appId,
                 customDomainId: customDomainConfig.appId,
                 branch:appBranchNameInBranchConfig
             });
             console.log(`ERROR: Mismatch in ssrDistribution for app: ${appConfig.appId} and custom domain : ${customDomainConfig.appId}`);
-            if(!skipUpdate) {
-                await updateCustomDomainConfigFromAppConfig(dynamodb, appConfig, customDomainConfig);
-            }
+            await updateCustomDomainConfigFromAppConfig(dynamodb, appConfig, customDomainConfig, writeModeOn);
+            
         }
     }
 
@@ -204,8 +239,27 @@ async function getDomains(dynamodb: DynamoDBDocumentClient, stage: string, regio
     return domains.Items as DomainItem[];
 }
 
-async function updateCustomDomainConfigFromAppConfig(dynamodb: DynamoDBDocumentClient, appConfig: LambdaEdgeConfig, customDomainConfig: LambdaEdgeConfig) {
- // TODO: Update CustomDomainConfig from AppConfig without downloading customer data
+async function updateCustomDomainConfigFromAppConfig(dynamodb: DynamoDBDocumentClient, appConfig: LambdaEdgeConfig, customDomainConfig: LambdaEdgeConfig, writeModeOn: boolean) {
+    //console.log("ORIGINAL App Config:"+JSON.stringify(appConfig))
+    //console.log("\n")
+    //console.log("ORIGINAL Custom Domain Config:"+ JSON.stringify(customDomainConfig))
+    //console.log("\n")
+
+    customDomainConfig = {
+        appId: customDomainConfig.appId,
+        config: appConfig.config,
+        hostNameConfig: appConfig.hostNameConfig,
+        branchConfig: appConfig.branchConfig,
+        customRuleConfigs: appConfig.customRuleConfigs,
+        originKey: appConfig.originKey,
+        //customDomainIds: customDomainConfig.customDomainIds
+    }
+
+   //console.log("UPDATED Custom Domain Config:"+ JSON.stringify(customDomainConfig))
+   //console.log("\n")
+   if(writeModeOn) {
+     await updateCustomDomainConfig(dynamodb, customDomainConfig)
+   }
 }
 
 async function getBranch(dynamodb: DynamoDBDocumentClient, stage: string, region: string, appId: string, branchesByAppId: Map<string, BranchItem[]>) {
@@ -253,12 +307,30 @@ async function getEdgeConfig(dynamodb: DynamoDBDocumentClient, appId: string, ed
         config: item.Item.config,
         branchConfig: item.Item.branchConfig,
         customDomainIds: item.Item.customDomainIds,
-        hostNameConfig: item.Item.hostNameConfig
+        hostNameConfig: item.Item.hostNameConfig,
+        originKey: item.Item.originKey
     };
 
     edgeObjectsByAppId.set(appId, lambdaEdgeObject);
 
     return lambdaEdgeObject;
+}
+
+async function updateCustomDomainConfig(dynamodb: DynamoDBDocumentClient, customDomainConfig: LambdaEdgeConfig) {
+    console.log(`WRITING: ${JSON.stringify(customDomainConfig)}`)
+
+    const appId = customDomainConfig.appId;
+    //console.log(`APPID: ${appId}`)
+    const params = {
+        TableName: 'LambdaEdgeConfig',
+        Key: {
+            appId: appId
+        },
+        ExpressionAttributeValues: {":config": customDomainConfig.config, ":branchConfig": customDomainConfig.branchConfig, ":hostNameConfig": customDomainConfig.hostNameConfig, ":originKey":customDomainConfig.originKey},
+        UpdateExpression: "set config = :config, branchConfig = :branchConfig, hostNameConfig = :hostNameConfig, originKey=:originKey",
+    };
+    await sleep(100);
+    await dynamodb.send(new UpdateCommand(params));
 }
 
 function getDomainId(customDomains: DomainItem[], fullDomainName: string): string | undefined{
@@ -268,6 +340,10 @@ function getDomainId(customDomains: DomainItem[], fullDomainName: string): strin
 
 function getBranchForApp(branchName: string, allBranchesForApp: BranchItem[]): BranchItem | undefined{
     return allBranchesForApp.find(branches => branches.branchName === branchName);
+}
+
+function isForLocalStack(fileName: string): boolean{
+    return fileName.split(".")[0].toString() === "test"
 }
 
 function writeFile(outputFile: string, data: InvalidApps[]){

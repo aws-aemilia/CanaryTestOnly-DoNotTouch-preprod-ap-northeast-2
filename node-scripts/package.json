@@ -13,7 +13,7 @@
     "P61637409-ssr-apps-with-v1-creds": "ts-node P61637409/ssr-apps-with-v1-credentials.ts",
     "GetSSRAppsUsingBasicAuth": "ts-node GetSSRAppsUsingBasicAuth/index.ts",
     "customDomains": "ts-node customDomains.ts",
-    "customDomainsMismatch": "ts-node customDomainsMismatch.ts",
+    "customDomainsMisMatch": "ts-node P71985437/customDomainsMisMatch.ts",
     "abuseReport": "ts-node OpsTools/disableAbuseAccount.ts",
     "addAccountsToServicePrincipal": "ts-node OpsTools/computeService/addAccountsToServicePrincipal.ts",
     "globalQuery": "ts-node globalQuery.ts",

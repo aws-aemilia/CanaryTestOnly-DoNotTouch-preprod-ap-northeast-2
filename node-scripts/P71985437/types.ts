@@ -6,17 +6,16 @@ export interface Branch {
 
 export interface LambdaEdgeConfig {
     appId: string;
-    config?: {
-        basicAuthCreds?: string;
-        basicAuthCredsV2?: string;
-    };
+    config?: Map<string, string>;
     branchConfig?: {
-        [branchName: string]: BranchConfig;
+        [branchName: string]: Map<string, string>;
     };
-    customDomainIds: Set<string>;
+    customDomainIds?: Set<string>;
+    customRuleConfigs?: Set<CustomRuleConfigs>;
     hostNameConfig?: {
         [domainName: string]: HostNameConfigs;
-    }
+    };
+    originKey: string;
 }
 
 export interface HostNameConfigs {
@@ -44,4 +43,10 @@ export interface InvalidApps {
     "appId": string,
     "customDomainId": string,
     "branch": string,
+}
+
+export interface CustomRuleConfigs {
+    "source": string,
+    "status": string,
+    "target": string,
 }
