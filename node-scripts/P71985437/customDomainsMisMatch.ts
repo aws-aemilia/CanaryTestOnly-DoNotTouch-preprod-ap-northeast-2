@@ -3,27 +3,12 @@ import {
     DynamoDBDocumentClient, QueryCommand, ScanCommand, GetCommand
 } from "@aws-sdk/lib-dynamodb";
 import { writeFileSync } from 'fs';
-import { getIsengardCredentialsProvider } from './Isengard/credentials';
-import { LambdaEdgeConfig } from './P61637409/types';
-import { AmplifyAccount } from "./types";
-import sleep from "./utils/sleep";
+import { getIsengardCredentialsProvider } from '../Isengard/credentials';
+import { LambdaEdgeConfig, InvalidApps, BranchItem, DomainItem } from './types';
+import { AmplifyAccount } from "../types";
+import sleep from "../utils/sleep";
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
-
-interface DomainItem {
-    "appId": string,
-    "domainName": string,
-    "domainId": string,
-}
-
-interface BranchItem {
-    "branchName": string,
-    "displayName": string,
-}
-
-interface InvalidApps {
-    "appId": string,
-    "customDomainId": string
-}
+import yargs from "yargs";
 
 const accounts: AmplifyAccount[] = [
     { region: "eu-west-2", accountId: "499901155257" },
@@ -54,66 +39,91 @@ const accounts: AmplifyAccount[] = [
   // Each line should contain the appId of the SSR app being tested
   // Output is printed in a directory called "MisMatchedCustomDomains"
 async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
+    const args = await yargs(process.argv.slice(2))
+    .usage("Detect and possibly mitigate ssr distribution mismatch between app and custom domain")
+    .option("dryrun", {
+      describe: "true for readOnly false otherwise",
+      type: "string",
+      default: "true",
+      choices: ["true", "false"],
+    })
+    .strict()
+    .version(false)
+    .help().argv;
+
+    const skipUpdate = args.dryrun;
+
+    console.log(`Script will update the Apps?: ${skipUpdate} `)
+
     const allFiles = fs.readdirSync(srcDir);
+    let allMismatchedAppAndCustomDomains: InvalidApps[] = [];
+
+    if(!fs.existsSync('P71985437/MisMatchedCustomDomains')) {
+        fs.mkdirSync('P71985437/MisMatchedCustomDomains');
+    }
+
     for (const file of allFiles) {
 
+        // Parse region and get credentials
         const region = file.split(".")[0].toString();
         console.log(region);
         const accountConfig = accounts.find(acc => acc.region === region);
-        if(!accountConfig) {
-            throw new Error("Failed to get isengard creds"); 
+        if (!accountConfig) {
+            throw new Error("Failed to get isengard creds");
         }
 
+        // Read all the appIds for that region
         const allFileContents = fs.readFileSync(`${srcDir}/${file}`, 'utf-8');
         const appIds = allFileContents.split(/\r?\n/);
-        let mismatchedAppAndCustomDomains : InvalidApps[] = [];
+        let mismatchedAppAndCustomDomains: InvalidApps[] = [];
 
         const edgeObjectsByAppId = new Map<string, LambdaEdgeConfig>();
         const branchesByAppId = new Map<string, BranchItem[]>();
         const domainsByAppId = new Map<string, DomainItem[]>();
 
+        // For every AppId, check if it is tainted or not
         for (const appId of appIds) {
             if (appId.includes('applicationId')) {
                 continue;
             }
 
-            const ddbClient = new DynamoDBClient({ region:region, credentials: getIsengardCredentialsProvider(accountConfig.accountId, "ReadOnly")});
-
+            const ddbClient = new DynamoDBClient({ region: region, credentials: getIsengardCredentialsProvider(accountConfig.accountId, "ReadOnly") });
             const dynamodb = DynamoDBDocumentClient.from(ddbClient);
 
-            const mismatchedApps = await getMisMatchedCustomDomains(dynamodb, 'prod', region, appId, edgeObjectsByAppId, branchesByAppId, domainsByAppId);
-            if((await mismatchedApps).length) {
+            const mismatchedApps = await getMisMatchedCustomDomains(dynamodb, 'prod', region, appId, edgeObjectsByAppId, branchesByAppId, domainsByAppId, skipUpdate);
+            if (mismatchedApps.length) {
                 mismatchedAppAndCustomDomains = [...mismatchedAppAndCustomDomains, ...mismatchedApps]
             }
         }
 
-        const outputFileName = `MisMatchedCustomDomains/${file}`
-        writeFileSync(outputFileName, '',{
-            flag:'w'
-        });
-        const csvWriter = createCsvWriter({
-            path: outputFileName,
-            header: [
-              {id: 'appId', title: 'appId'},
-              {id: 'customDomainId', title: 'customDomainId'},
-            ],
-            append: false
-          });
-          csvWriter.writeRecords(mismatchedAppAndCustomDomains ).then(console.log(`Wrote ${mismatchedAppAndCustomDomains.length} records for region ${region}`));
+        const outputFileName = `P71985437/MisMatchedCustomDomains/${file}`
+
+        writeFile(outputFileName, mismatchedAppAndCustomDomains)
+
+        if (mismatchedAppAndCustomDomains.length) {
+            allMismatchedAppAndCustomDomains = [...allMismatchedAppAndCustomDomains, ...mismatchedAppAndCustomDomains]
+        }
     }
+    const outputFileName = `P71985437/MisMatchedCustomDomains/ALL_REGIONS.csv`
+    writeFile(outputFileName, allMismatchedAppAndCustomDomains)
 }
 
-async function getMisMatchedCustomDomains(dynamodb: DynamoDBDocumentClient, stage: string, region: string, appId: string,
+async function getMisMatchedCustomDomains(
+    dynamodb: DynamoDBDocumentClient, 
+    stage: string, 
+    region: string, 
+    appId: string,
     edgeObjectsByAppId: Map<string, LambdaEdgeConfig>,
     branchesByAppId: Map<string, BranchItem[]>,
-    domainsByAppId: Map<string, DomainItem[]>): Promise<InvalidApps[]> {
+    domainsByAppId: Map<string, DomainItem[]>,
+    skipUpdate:boolean): Promise<InvalidApps[]> {
 
     const appConfig = await getEdgeConfig(dynamodb, appId, edgeObjectsByAppId);
-    let invalidApps : InvalidApps[] = [];
 
     if (!appConfig?.customDomainIds || !appConfig?.customDomainIds.size) {
         return []
     }
+    let invalidApps : InvalidApps[] = [];
 
     console.log(`App : ${appConfig.appId} does have a custom domain`)
 
@@ -144,7 +154,7 @@ async function getMisMatchedCustomDomains(dynamodb: DynamoDBDocumentClient, stag
 
         const targetBranchName = hostNameConfig[1].targetBranch as string;
 
-        const branch = getBranchForApp(targetBranchName, branches);
+        const branch = getBranchForApp(targetBranchName, branches as BranchItem[]);
 
         if(!branch) {
             console.log(`Unexpected App: ${appConfig.appId} Unable to find branch object for branchName: ${targetBranchName}`)
@@ -161,9 +171,13 @@ async function getMisMatchedCustomDomains(dynamodb: DynamoDBDocumentClient, stag
         if (appConfig.branchConfig?.[appBranchNameInBranchConfig].ssrDistributionId !== customDomainConfig?.branchConfig?.[appBranchNameInBranchConfig]?.ssrDistributionId) {
             invalidApps.push({
                 appId: appConfig.appId,
-                customDomainId: customDomainConfig.appId
+                customDomainId: customDomainConfig.appId,
+                branch:appBranchNameInBranchConfig
             });
             console.log(`ERROR: Mismatch in ssrDistribution for app: ${appConfig.appId} and custom domain : ${customDomainConfig.appId}`);
+            if(!skipUpdate) {
+                await updateCustomDomainConfigFromAppConfig(dynamodb, appConfig, customDomainConfig);
+            }
         }
     }
 
@@ -190,12 +204,19 @@ async function getDomains(dynamodb: DynamoDBDocumentClient, stage: string, regio
     return domains.Items as DomainItem[];
 }
 
+async function updateCustomDomainConfigFromAppConfig(dynamodb: DynamoDBDocumentClient, appConfig: LambdaEdgeConfig, customDomainConfig: LambdaEdgeConfig) {
+ // TODO: Update CustomDomainConfig from AppConfig without downloading customer data
+}
+
 async function getBranch(dynamodb: DynamoDBDocumentClient, stage: string, region: string, appId: string, branchesByAppId: Map<string, BranchItem[]>) {
-    const domainsTableName = `${stage}-${region}-Branch`;
+    if(branchesByAppId.has(appId)) {
+        return branchesByAppId.get(appId);
+    }
+    const branchTableName = `${stage}-${region}-Branch`;
     await sleep(100);
     const branches = await dynamodb.send(
         new QueryCommand({
-            TableName: domainsTableName,
+            TableName: branchTableName,
             KeyConditionExpression: "appId = :appId",
             ExpressionAttributeValues: {
                 ":appId": appId,
@@ -249,4 +270,20 @@ function getBranchForApp(branchName: string, allBranchesForApp: BranchItem[]): B
     return allBranchesForApp.find(branches => branches.branchName === branchName);
 }
 
-readFileAndGetAppsWithInvalidCustomDomains('AppIds')
+function writeFile(outputFile: string, data: InvalidApps[]){
+    writeFileSync(outputFile, '', {
+        flag: 'w'
+    });
+    const csvWriter = createCsvWriter({
+        path: outputFile,
+        header: [
+            { id: 'appId', title: 'appId' },
+            { id: 'customDomainId', title: 'customDomainId' },
+            { id: 'branch', title: 'branch' },
+        ],
+        append: false
+    });
+    csvWriter.writeRecords(data).then(console.log(`Wrote ${data.length} records`));
+}
+
+readFileAndGetAppsWithInvalidCustomDomains('P71985437/AppIds')
