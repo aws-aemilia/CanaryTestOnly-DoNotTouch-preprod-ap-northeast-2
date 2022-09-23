@@ -1,46 +1,23 @@
-import {
-  DynamoDBClient,
-  PutItemCommand,
-  PutItemInput,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
-  QueryCommand,
   GetCommand,
+  QueryCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { writeFileSync } from "fs";
 import { getIsengardCredentialsProvider } from "../Isengard/credentials";
-import { LambdaEdgeConfig, InvalidApps, BranchItem, DomainItem } from "./types";
-import { AmplifyAccount } from "../types";
+import { BranchItem, DomainItem, InvalidApps, LambdaEdgeConfig } from "./types";
 import sleep from "../utils/sleep";
+import yargs from "yargs";
+import {
+  AmplifyAccount,
+  controlPlaneAccount,
+  Region,
+  Stage,
+} from "../Isengard";
 
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
-import yargs from "yargs";
-import commandLineArgs from "command-line-args";
-
-const accounts: AmplifyAccount[] = [
-  { region: "test", accountId: "269539005542" },
-  { region: "eu-west-2", accountId: "499901155257" },
-  { region: "us-east-2", accountId: "264748200621" },
-  { region: "ap-southeast-1", accountId: "148414518837" },
-  { region: "eu-west-1", accountId: "565036926641" },
-  { region: "us-east-1", accountId: "073653171576" },
-  { region: "ap-northeast-1", accountId: "550167628141" },
-  { region: "ap-northeast-2", accountId: "024873182396" },
-  { region: "ap-south-1", accountId: "801187164913" },
-  { region: "ap-southeast-2", accountId: "711974673587" },
-  { region: "eu-central-1", accountId: "644397351177" },
-  { region: "us-west-2", accountId: "395333095307" },
-  { region: "ca-central-1", accountId: "824930503114" },
-  { region: "eu-north-1", accountId: "315276288780" },
-  { region: "eu-west-3", accountId: "693207358157" },
-  { region: "sa-east-1", accountId: "068675532419" },
-  { region: "us-west-1", accountId: "214290359175" },
-  { region: "eu-south-1", accountId: "804516649577" },
-  { region: "ap-east-1", accountId: "574285171994" },
-  { region: "me-south-1", accountId: "183380703454" },
-];
 
 const fs = require("fs");
 
@@ -48,24 +25,11 @@ const fs = require("fs");
 // The name of the file should be "region".csv
 // Each line should contain the appId of the SSR app being tested
 // Output is printed in a directory called "MisMatchedCustomDomains"
-async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
-  /*const args = await yargs(process.argv.slice(2))
-      .usage("Detect and possibly mitigate ssr distribution mismatch between app and custom domain")
-      .option("writeMode", {
-        describe: "true for readOnly false otherwise",
-        type: "string",
-        demandOption:true
-      })
-      .strict()
-      .version(false)
-      .help().argv;
-  
-      console.log(typeof args.writeMode)
-      console.log(args.writeMode)
-      const writeModeOn = args.writeMode === "false";*/
-
-  const writeModeOn = true;
-
+async function readFileAndGetAppsWithInvalidCustomDomains(
+  srcDir: string,
+  controlPlaneAccount: AmplifyAccount,
+  writeModeOn = false
+) {
   console.log(`Script will update the Apps?: ${writeModeOn} `);
 
   const allFiles = fs.readdirSync(srcDir);
@@ -75,15 +39,22 @@ async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
     fs.mkdirSync("P71985437/MisMatchedCustomDomains");
   }
 
+  const ddbClient = new DynamoDBClient({
+    region: controlPlaneAccount.region,
+    credentials: getIsengardCredentialsProvider(
+        controlPlaneAccount.accountId,
+        "OncallOperator"
+    ),
+  });
+
+  const dynamodb = DynamoDBDocumentClient.from(ddbClient);
+
   for (const file of allFiles) {
-    // Parse region and get credentials
-    const region = isForLocalStack(file)
-      ? "us-west-2"
-      : file.split(".")[0].toString();
-    console.log(region);
-    const accountConfig = accounts.find((acc) => acc.region === region);
-    if (!accountConfig) {
-      throw new Error("Failed to get isengard creds");
+    const regionFromFile = file.split(".")[0].toString();
+    console.log("found file for region:", regionFromFile);
+
+    if (regionFromFile !== controlPlaneAccount.region) {
+      throw new Error("The input files do not match the region parameter");
     }
 
     // Read all the appIds for that region
@@ -97,28 +68,20 @@ async function readFileAndGetAppsWithInvalidCustomDomains(srcDir: string) {
 
     // For every AppId, check if it is tainted or not
     for (const appId of appIds) {
-      if (appId.includes("applicationId")) {
+      if ((appId as String).length === 0){
+        // skip empty lines
         continue;
       }
 
-      const ddbClient = isForLocalStack(file)
-        ? new DynamoDBClient({ region: region })
-        : new DynamoDBClient({
-            region: region,
-            credentials: getIsengardCredentialsProvider(
-              accountConfig.accountId,
-              "ReadOnly"
-            ),
-          });
-
-      const dynamodb = DynamoDBDocumentClient.from(ddbClient);
-
-      const stage = isForLocalStack(file) ? "test" : "prod";
+      if (appId.includes("applicationId")) {
+        continue;
+      }
+      console.log("AppId:", appId);
 
       const mismatchedApps = await getMisMatchedCustomDomains(
         dynamodb,
-        stage,
-        region,
+        controlPlaneAccount.stage,
+        controlPlaneAccount.region,
         appId,
         edgeObjectsByAppId,
         branchesByAppId,
@@ -161,6 +124,10 @@ async function getMisMatchedCustomDomains(
   writeModeOn: boolean
 ): Promise<InvalidApps[]> {
   const appConfig = await getEdgeConfig(dynamodb, appId, edgeObjectsByAppId);
+
+  if (!appConfig){
+    console.error(`WARNING: App ${appId} was not found in LambdaEdgeConfig. Either the App was deleted or the input file is wrong`)
+  }
 
   if (!appConfig?.customDomainIds || !appConfig?.customDomainIds.size) {
     return [];
@@ -342,6 +309,10 @@ async function updateCustomDomainConfigFromAppConfig(
   //console.log("UPDATED Custom Domain Config:"+ JSON.stringify(customDomainConfig))
   //console.log("\n")
   if (writeModeOn) {
+    // console.log("ORIGINAL App Config:"+JSON.stringify(appConfig, null, 2))
+    // console.log("\n")
+    // console.log("ORIGINAL Custom Domain Config:"+ JSON.stringify(customDomainConfig, null, 2))
+    // console.log("\n")
     await updateCustomDomainConfig(dynamodb, customDomainConfig);
   }
 }
@@ -392,7 +363,6 @@ async function getEdgeConfig(
   );
 
   if (!item.Item) {
-    console.log("L@E not found");
     return undefined;
   }
 
@@ -479,4 +449,43 @@ function writeFile(outputFile: string, data: InvalidApps[]) {
     .then(console.log(`Wrote ${data.length} records`));
 }
 
-readFileAndGetAppsWithInvalidCustomDomains("P71985437/AppIds");
+const main = async () => {
+  const args = await yargs(process.argv.slice(2))
+    .usage(
+      "Detect and possibly mitigate ssr distribution mismatch between app and custom domain"
+    )
+    .option("stage", {
+      describe: "stage to run the command",
+      type: "string",
+      choices: ["beta", "gamma", "prod"],
+      demandOption: true,
+    })
+    .option("region", {
+      describe: "region to run the command. e.g. us-west-2",
+      type: "string",
+      demandOption: true,
+    })
+    .option("writeModeOn", {
+      describe:
+        "When enabled, The script will update the records in DDB to fix them",
+      type: "boolean",
+      default: false,
+    })
+    .strict()
+    .version(false)
+    .help().argv;
+
+  const { stage, region, writeModeOn } = args;
+
+  const account = await controlPlaneAccount(stage as Stage, region as Region);
+
+  console.log("Using account:", account.accountId, account.email);
+
+  await readFileAndGetAppsWithInvalidCustomDomains(
+    "P71985437/AppIds",
+    account,
+    writeModeOn
+  );
+};
+
+main().then(console.log).catch(console.error);
