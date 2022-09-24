@@ -1,93 +1,16 @@
 import {
   CloudWatchLogsClient,
   DescribeLogGroupsCommand,
-  DescribeLogGroupsCommandOutput,
-  GetQueryResultsCommand,
-  GetQueryResultsCommandOutput,
-  StartQueryCommand,
+  DescribeLogGroupsCommandOutput
 } from "@aws-sdk/client-cloudwatch-logs";
 import fs from "fs";
 import path from "path";
 import yargs from "yargs";
-import sleep from "./utils/sleep";
 import {
-  AmplifyAccount,
-  controlPlaneAccounts,
-  getIsengardCredentialsProvider,
+  controlPlaneAccounts
 } from "./Isengard";
-
-async function doQuery(
-  account: AmplifyAccount,
-  logGroupPrefix: string,
-  query: string,
-  startDate: Date,
-  endDate: Date,
-  outputDir: string,
-) {
-  try {
-    const client = new CloudWatchLogsClient({
-      region: account.region,
-      credentials: getIsengardCredentialsProvider(
-        account.accountId,
-        "ReadOnly"
-      ),
-    });
-
-    const logGroupName = await getLogGroup(client, logGroupPrefix);
-
-    const command = new StartQueryCommand({
-      endTime: toEpochInSeconds(endDate),
-      startTime: toEpochInSeconds(startDate),
-      queryString: query,
-      logGroupNames: [logGroupName],
-    });
-
-    console.log(`Starting query in region ${account.region}`);
-    const response = await client.send(command);
-
-    if (!response.queryId) {
-      throw new Error("QueryId missing, something wrong happened");
-    }
-
-    const logs: string[] = [];
-    let queryResults: GetQueryResultsCommandOutput;
-
-    do {
-      await sleep(5000);
-      console.log("Polling for query", response.queryId, account.region);
-      queryResults = await client.send(
-        new GetQueryResultsCommand({
-          queryId: response.queryId,
-        })
-      );
-    } while (
-      queryResults.status === "Running" ||
-      queryResults.status === "Scheduled"
-    );
-
-    console.log("Query completed", account.region);
-
-    if (queryResults.results) {
-      for (const logLine of queryResults.results) {
-        // iterating over rows
-        let line: string[] = [];
-        for (const resultField of logLine) {
-          if (resultField.field !== "@ptr") {
-            line.push(resultField.value || "");
-          }
-        }
-        logs.push(line.join(","));
-      }
-    } else {
-      console.log(`Results not found for ${account.region}`);
-    }
-
-    const fileName = account.region.concat(".csv");
-    writeLogsToFile(outputDir, fileName, logs);
-  } catch (err) {
-    console.error("Failed to run query on region", account.region, err);
-  }
-}
+import { doQuery } from "./libs/CloudWatch";
+import sleep from "./utils/sleep";
 
 function writeLogsToFile(
   outputFolder: string,
@@ -184,7 +107,8 @@ async function main() {
       demandOption: true,
     })
     .option("outputDir", {
-      describe: "Folder where to write the CSV files that contain query results",
+      describe:
+        "Folder where to write the CSV files that contain query results",
       type: "string",
       demandOption: true,
     })
@@ -205,9 +129,11 @@ async function main() {
         args.logGroupPrefix,
         args.query,
         new Date(args.startDate),
-        new Date(args.endDate),
-        args.outputDir,
-      )
+        new Date(args.endDate)
+      ).then((logs) => {
+        const fileName = controlPLaneAccount.region.concat(".csv");
+        writeLogsToFile(args.outputDir, fileName, logs || []);
+      })
     );
   }
 

@@ -19,7 +19,9 @@
     "migrateToCloudFrontPolicies": "ts-node migrateToCloudFrontPolicies.ts",
     "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
     "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
-    "mapAppIds": "ts-node OpsTools/mapAppIds.ts"
+    "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
+    "billingAuditor": "ts-node DataStorageBillingAuditor/billingAuditor.ts",
+    "stopCacheBusting": "ts-node stopCacheBusting.ts --dryrun --region pdx"
   },
   "author": "",
   "license": "ISC",
@@ -43,6 +45,7 @@
     "@aws-sdk/client-secrets-manager": "^3.118.1",
     "@aws-sdk/client-service-quotas": "^3.9.0",
     "@aws-sdk/client-sqs": "^3.100.0",
+    "@aws-sdk/client-sns": "^3.100.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
     "@octokit/rest": "^19.0.4",
     "aws-sdk": "^2.851.0",
