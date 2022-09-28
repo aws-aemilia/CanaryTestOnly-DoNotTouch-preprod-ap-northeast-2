@@ -1,11 +1,10 @@
 import {
+  BatchGetItemCommand,
+  BatchGetItemCommandInput,
   DynamoDBClient,
-  GetItemCommand,
-  GetItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import fs from "fs";
-import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
@@ -18,13 +17,15 @@ import {
 import { doQuery } from "../libs/CloudWatch";
 import { parseBranchArn } from "../utils/arns";
 import { KonaFileReader } from "./KonaFileReader";
+import * as path from "path";
+import { BatchIterator } from "../utils/BatchIterator";
 
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
     .usage(
       `
 Generates a list of branch arns that should not have been billed
-ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konafiles/2022-09-01" --startDate "2022-08-01T00:00:00" --invalidArnsFile "artifacts/invalidArns-ap-northeast-2"
+ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konafiles/2022-09-01" --startDate "2022-08-01T00:00:00" --invalidArnsFile "artifacts/invalidArns-ap-northeast-2" --outDir "1"
       `
     )
     .option("stage", {
@@ -43,11 +44,10 @@ ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konaf
       type: "string",
       demandOption: true,
     })
-    .option("invalidArnsFile", {
-      describe:
-        "The path to the file where the invalid branch arns will be written",
+    .option("outDir", {
+      describe: "path to output directory",
       type: "string",
-      demandOption: true,
+      demandOption: false,
     })
     .option("startDate", {
       describe:
@@ -59,31 +59,61 @@ ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konaf
     .version(false)
     .help().argv;
 
-  const { konaFile, invalidArnsFile, stage, region, startDate } = args;
+  let { konaFile, outDir, stage, region, startDate } = args;
+  if (!outDir) {
+    outDir = "out";
+  }
+
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
 
   const account = await controlPlaneAccount(stage as Stage, region as Region);
 
-  const outStream = fs.createWriteStream(invalidArnsFile, { flags: "a" });
+  const billedArnsFileStream = fs.createWriteStream(
+    path.join(process.cwd(), outDir, `${account.region}-billedArns.txt`),
+    { flags: "a" }
+  );
 
   const billedArns = await getResourcesBilled(account, konaFile);
-  console.info("BilledArns:");
-  console.info(billedArns);
 
-  const deletedBranchArnsSinceBillingMonth = new Set(
-    (await getDeletedBranchArns(
+  for (const arn of billedArns) {
+    billedArnsFileStream.write(arn + "\n");
+  }
+  billedArnsFileStream.close();
+
+  const deletedBranchArnsSinceBillingMonth =
+    (await getDeletedPartialBranchArns(
       stage,
       region,
       new Date(startDate),
       new Date()
-    )) || []
+    )) || [];
+
+  const deletedBranchArnsSinceBillingMonthFileStream = fs.createWriteStream(
+    path.join(
+      process.cwd(),
+      outDir,
+      `${account.region}-deletedBranchSinceBillingMonth.txt`
+    ),
+    { flags: "a" }
   );
 
-  console.info("deletedBranchArnsSinceBillingMonth");
-  console.info(deletedBranchArnsSinceBillingMonth);
+  for (const arn of deletedBranchArnsSinceBillingMonth) {
+    deletedBranchArnsSinceBillingMonthFileStream.write(arn + "\n");
+  }
+  deletedBranchArnsSinceBillingMonthFileStream.close();
+
 
   const dynamodb = await getDDbClient(account);
+
+  const branchArnsNotDeletedBeforeBilling = [];
   for (const billedBranchArn of billedArns) {
-    if (deletedBranchArnsSinceBillingMonth.has(billedBranchArn)) {
+    if (
+      deletedBranchArnsSinceBillingMonth.find((arn) =>
+        billedBranchArn.includes(arn)
+      )
+    ) {
       console.log(
         billedBranchArn +
           " => ✅ valid bill: branch deleted during/after the billing month"
@@ -91,18 +121,36 @@ ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konaf
       continue;
     }
 
-    if (await getBranchByArn(dynamodb, billedBranchArn, account.region)) {
-      console.log(
-        billedBranchArn + " => ✅ valid bill: branch currently active"
-      );
-      continue;
-    }
-
-    console.log(billedBranchArn + " => ❌ invalid bill: branch does not exist");
-    outStream.write(billedBranchArn + "\n");
+    branchArnsNotDeletedBeforeBilling.push(billedBranchArn);
   }
 
-  outStream.close();
+  const invalidArnsFileStream = fs.createWriteStream(
+    path.join(process.cwd(), outDir, `${account.region}-invalidBilledArns.txt`),
+    {
+      flags: "a",
+    }
+  );
+
+  for (const billedArnsBatch of new BatchIterator(
+    branchArnsNotDeletedBeforeBilling,
+    50
+  )) {
+    const dbBatchResponse = await getBranchesByArns(
+      dynamodb,
+      Array.from(new Set(billedArnsBatch)), // naive deduping
+      account.region
+    );
+
+    const branchArnsInDb = dbBatchResponse.map((res) => res.branchArn.S);
+    for (const arn of billedArnsBatch) {
+      // branch not found in db
+      if (!branchArnsInDb.includes(arn)) {
+        invalidArnsFileStream.write(arn + "\n");
+      }
+    }
+  }
+
+  invalidArnsFileStream.close();
 };
 
 async function getDDbClient(account: AmplifyAccount, role = "ReadOnly") {
@@ -114,30 +162,53 @@ async function getDDbClient(account: AmplifyAccount, role = "ReadOnly") {
   return DynamoDBDocumentClient.from(dynamodbClient);
 }
 
-export async function getBranchByArn(
+export async function getBranchesByArns(
   db: DynamoDBDocumentClient,
-  branchArn: string,
+  branchArns: string[],
   region: string
 ) {
-  const { appId, branch } = parseBranchArn(branchArn);
-
-  var params: GetItemCommandInput = {
-    TableName: `prod-${region}-Branch`,
-    Key: {
+  const keys = branchArns
+    .map((arn) => parseBranchArn(arn))
+    .map(({ appId, branch }) => ({
       appId: {
         S: appId,
       },
       branchName: {
         S: branch,
       },
+    }));
+
+  const table = `prod-${region}-Branch`;
+  const params: BatchGetItemCommandInput = {
+    RequestItems: {
+      [table]: {
+        Keys: keys,
+        ProjectionExpression: "branchArn",
+      },
     },
-    ProjectionExpression: "branchArn",
   };
-  const result = await db.send(new GetItemCommand(params));
-  return result.Item;
+  const result = await db.send(new BatchGetItemCommand(params));
+  if (!result.Responses) {
+    console.info("Db returned no response for keys: ", keys);
+    return [];
+  }
+
+  if (
+    result.UnprocessedKeys &&
+    Object.keys(result.UnprocessedKeys).length > 0
+  ) {
+    console.error(result.UnprocessedKeys);
+    throw new Error("Db returned unprocessed keys");
+  }
+
+  return result.Responses[table] as { branchArn: { S: string } }[];
 }
 
-async function getDeletedBranchArns(
+/**
+ *
+ * @returns partial branchArn of the form ${appId}/branches/${branchName}
+ */
+async function getDeletedPartialBranchArns(
   stage: string,
   region: string,
   startDate: Date,
@@ -145,12 +216,12 @@ async function getDeletedBranchArns(
 ) {
   const account = await controlPlaneAccount(stage as Stage, region as Region);
   const query = `
-  fields @timestamp, @message
-  | filter strcontains(@message, "Cleanup finished for bucket")
-  | parse @message "Cleanup finished for bucket aws-amplify-prod-${account.region}-website-hosting with prefix *" as arn
-  | filter ispresent(arn)
-  | parse arn "*/*/*" as appId, branch
-  | display concat("arn:aws:amplify:${account.region}:${account.accountId}:apps/",appId,"/branches/",branch) as branchArn
+fields @timestamp, @message
+| filter strcontains(@message, "Cleanup finished for bucket")
+| parse @message "Cleanup finished for bucket aws-amplify-prod-${account.region}-website-hosting with prefix *" as arn
+| filter ispresent(arn)
+| parse arn "*/*/*" as appId, branch, jobId
+| display concat(appId,"/branches/",branch) as branchArn
   `;
   return doQuery(
     account,
@@ -162,31 +233,15 @@ async function getDeletedBranchArns(
 }
 
 async function getResourcesBilled(account: AmplifyAccount, konaFile: string) {
-  const arnsBilled = new Set<string>();
-
-  // const canaryAccounts = [
-  //   "024873182396",
-  //   "574285171994",
-  //   "190546094896",
-  //   "320933843292",
-  //   "664363737505",
-  // ];
-  // const canaryArnPrefixes = canaryAccounts.map(
-  //   (accountId) => arnRegionPrefix + accountId
-  // );
+  const arnsBilled: string[] = [];
 
   const arnRegionPrefix = `arn:aws:amplify:${account.region}:`;
 
   const konaFileReader = new KonaFileReader(konaFile);
   await konaFileReader.readLines((_, { resource }) => {
     if (resource.startsWith(arnRegionPrefix)) {
-      arnsBilled.add(resource);
+      arnsBilled.push(resource);
     }
-
-    // // Skip canary and integration test accounts
-    // if (canaryArnPrefixes.find((prefix) => resource.startsWith(prefix))) {
-    //   continue;
-    // }
   });
 
   return arnsBilled;

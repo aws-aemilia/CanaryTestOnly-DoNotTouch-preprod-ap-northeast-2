@@ -34,7 +34,7 @@ export async function doQuery(
       logGroupNames: [logGroupName],
     });
 
-    console.log(`Starting query in region ${account.region}`);
+    console.log(`Starting query in region ${account.region} | ${account.airportCode}`);
     const response = await client.send(command);
 
     if (!response.queryId) {
