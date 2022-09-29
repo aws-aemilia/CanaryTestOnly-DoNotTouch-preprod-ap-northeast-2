@@ -35,7 +35,8 @@ const adminUsers = [
     'xubham',
     'saazim',
     'mcscottm',
-    'olileung'
+    'olileung',
+    'arseniyk'
 ];
 
 // Add Support Engineer alias here
@@ -427,7 +428,7 @@ app.get("/customerinfoBranch", async (req, res) => {
         res.status(400);
         res.end('Invalid request');
     }
-    
+
     const params = {
         "TableName": `${stage}-${region}-Branch`,
         "ProjectionExpression": "activeJobId, appId, branchArn, branchName, config.enableAutoBuild, config.ejected, config.environmentVariables, config.enablePullRequestPreview, config.enablePerformanceMode, config.enableBasicAuth, config.enableNotification, createTime, deleting, displayName, framework, pullRequest, stage, totalNumberOfJobs, #ttl, updateTime, version",

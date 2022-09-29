@@ -19,9 +19,8 @@
     "migrateToCloudFrontPolicies": "ts-node migrateToCloudFrontPolicies.ts",
     "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
     "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
-    "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
-    "billingAuditor": "ts-node DataStorageBillingAuditor/billingAuditor.ts",
-    "stopCacheBusting": "ts-node stopCacheBusting.ts --dryrun --region pdx"
+    "stopCacheBusting": "ts-node stopCacheBusting.ts",
+    "mapAppIds": "ts-node OpsTools/mapAppIds.ts"
   },
   "author": "",
   "license": "ISC",
