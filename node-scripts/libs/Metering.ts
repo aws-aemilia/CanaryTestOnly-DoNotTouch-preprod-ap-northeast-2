@@ -139,8 +139,12 @@ export class MeteringServiceClient {
     private dryRun = false
   ) {}
 
-  public static generateStopMessage(branchArn: string): RemoRecord {
-    const { accountId, appId, branch, region } = parseBranchArn(branchArn);
+  public static generateStopMessage(
+    branchArn: string,
+    usageType: string,
+    storagePathPrefix: string
+  ): RemoRecord {
+    const { accountId } = parseBranchArn(branchArn);
     // const example = {
     //   messageVersion: "1",
     //   httpResponseCode: null,
@@ -158,17 +162,16 @@ export class MeteringServiceClient {
     // };
 
     return {
-      messageVersion: "1",
-      httpResponseCode: null,
-      accountId,
       branchArn,
+      usageType,
+      storagePathPrefix,
+      accountId,
+      messageVersion: "1",
+      actionType: "STOP",
       operation: "DELETE",
+      httpResponseCode: null,
       platformToken: null,
       productCode: null,
-      actionType: "STOP",
-      usageType: `${RIPHelper.getRegion(region).billingPrefix}-DataStorage`,
-      // storagePathPrefix: `"${appId}/${branch}/${job}/${meteringJobId}"`, <-- TODO: How do we get the meteringJobId of deleted resources
-      storagePathPrefix: `${appId}/${branch}`,
       storageBytes: null,
     };
   }
