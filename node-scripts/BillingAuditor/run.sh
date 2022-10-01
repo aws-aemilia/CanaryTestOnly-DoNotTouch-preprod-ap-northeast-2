@@ -20,28 +20,21 @@ regions=(
     us-west-2
 )
 
-out_dir="out-2"
-
-# for region in "${regions[@]}"
-# do
-# 	echo "Executing billingAuditor for $region; outDir=$out_dir"
-#     ts-node billingAuditor.ts --stage prod --region $region --konaFile "konafiles/2022-09-01" --startDate "2022-08-01T00:00:00" --outDir "$out_dir"
-#     ts-node generateAccountsImpacted --branchArnsFile "$out_dir/$region-invalidBilledArns.txt" --impactedAccountsFile "$out_dir/$region-impacted-accounts.txt"
-# done
-
-
-
-# for region in "${regions[@]}"
-# do
-# 	echo "Executing billingAuditor for $region"
-#     echo "ts-node billingAuditor.ts --stage prod --region $region --konaFile \"konafiles/2022-09-01\" --startDate \"2022-08-01T00:00:00\" --outDir \"out-1\""
-#     ts-node billingAuditor.ts --stage prod --region $region --konaFile "konafiles/2022-09-01" --startDate "2022-08-01T00:00:00" --outDir "out-1"
-# done
-# ts-node generateAccountsImpacted --branchArnsFile "out/icn-invalidBilledArns-2022-09-27T20:44:50.287Z.txt" --impactedAccountsFile "out/icn-impacted-accounts.txt"
-
+out_dir="out-3"
+for region in "${regions[@]}"
+do
+	echo "Executing billingAuditor for $region; outDir=$out_dir"
+    ts-node billingAuditor.ts --stage prod --region $region --konaFile "konafiles/2022-09-01" --startDate "2022-08-01T00:00:00" --outDir "$out_dir"
+done
 
 for region in "${regions[@]}"
 do
-	echo "Executing generateDeactivateMessages for $region"
-    ts-node generateDeactivateMessages --branchArnsFile "out-2/$region-invalidBilledArns.txt" --remoRecordFile "konafiles/metering-records-snapshot" --messagesOutFile "out-2/$region-deactivateMessages.txt"
+	echo "Generating deactivate messages for $region; outDir=$out_dir"
+    ts-node generateDeactivateMessages --branchArnsFile "$out_dir/$region-invalidBilledArns.txt" --remoRecordFile "konafiles/metering-records-snapshot" --messagesOutFile "$out_dir/$region-deactivateMessages.txt"
+done
+
+for region in "${regions[@]}"
+do
+    ada credentials update --account 301051227175 --role OncallOperator --once #metering preprod yul
+    ts-node publishMeteringEvents --stage prod --region ca-central-1 --messagesFile "out-3/$region-deactivateMessages.txt"
 done
