@@ -1,0 +1,2883 @@
+{
+  "templates": {
+    "DDB": "dynamodbv2/home?region=${region}#tables:selected=${body};tab=items",
+    "DDBItem": "dynamodbv2/home?region=${region}#edit-item?table=${tableName}&itemMode=2&pk=${primaryKey}&sk${typeof searchKey === 'undefined'?'':'=' + searchKey}&ref=%23item-explorer%3Ftable%3Fname%3D${tableName}&route=ROUTE_VIEW_TABLE",
+    "CloudFormation": "cloudformation/home?region=${region}#/stacks/stackinfo?filteringText=&filteringStatus=active&viewNested=true&hideStacks=false&stackId=arn%3A${partition}%3Acloudformation%3A${region}%3A${account}%3Astack%2F${stackName}%2F3a025d60-44f2-11eb-90fd-026238314c96",
+    "CWInsights": {
+      "link": "cloudwatch/home?region=${region}#logsV2:logs-insights$3FqueryDetail=~(end~0~start~${typeof start === 'undefined' ? '-3600' : start}~timeType~'RELATIVE~unit~'seconds~tz~'UTC~editorString~'${body}~isLiveTail~false~source~(~'${serviceLogGroup}))",
+      "serviceLogGroup": "${logGroup}-${typeof stage === 'undefined' ? (godModeServiceRegion.includes('-') ? godModeServiceRegion.substring(godModeServiceRegion.indexOf('-')+1).trim().toLowerCase() : 'prod') : stage}-${region}"
+    },
+    "CWInsightsGMTimestamp": {
+      "link": "cloudwatch/home?region=${region}#logsV2:logs-insights$3FqueryDetail=~(${gmTimestamp('cloudwatch')}~editorString~'${body}~isLiveTail~false~source~(~'${serviceLogGroup}))",
+      "serviceLogGroup": "${logGroup}-${typeof stage === 'undefined' ? (godModeServiceRegion.includes('-') ? godModeServiceRegion.substring(godModeServiceRegion.indexOf('-')+1).trim().toLowerCase() : 'prod') : stage}-${region}"
+    },
+    "CWAlarm": "cloudwatch/home?region=${region}#alarmsV2:alarm/${body}",
+    "CWEventRule": "cloudwatch/home?region=${region}#rules:name=${ruleName}",
+    "LambdaFunction": "lambda/home?region=${region}#/functions/${functionName}?tab=configuration",
+    "LambdaFunctionSettings": "lambda/home?region=${region}#/functions/${functionName}/edit/basic-settings?tab=configuration",
+    "StepFunctionsStateMachine": "states/home?region=${region}#/statemachines/view/arn:aws:states:${region}:${account}:stateMachine:${stateMachine}",
+    "StepFunctionExecution": "states/home?region=${region}#/executions/details/arn:aws:states:${region}:${account}:execution:${stateMachine}:~~~executionId {\"transform\":\"value.trim()\"}~~~",
+    "SQS": "sqs/v2/home?region=${region}#/queues/https%3A%2F%2Fsqs.${region}.amazonaws.com%2F${account}%2F${queue}/send-receive"
+  },
+  "role": "${username == 'hloriana' ? 'SupportOps' : 'ReadOnly'}",
+  "ripService": "amplify",
+  "stage": "prod",
+  "sdcConfigName": "MinervaLimitsProd",
+  "consoleOptions": {
+    "Home": "console",
+    "API Gateway": "apigateway",
+    "Amplify": "amplify",
+    "Athena": "athena/home?region=${region}#query",
+    "AutoScaling": "ec2/autoscaling/home?region=${region}#AutoScalingGroups:view=details",
+    "CloudFormation": "cloudformation",
+    "CloudWatch Alarms": "cloudwatch/home?region=${region}#alarmsV2:",
+    "CodeBuild": "codesuite/codebuild/projects?region=${region}",
+    "CodeDeploy": "codedeploy",
+    "DDB": "dynamodb",
+    "EC2": "ec2",
+    "ECS": "ecs",
+    "IAM": "iam",
+    "Lambda": "lambda",
+    "Route53": "route53",
+    "S3": "s3",
+    "SQS": "sqs"
+  },
+  "services": {
+    "AemiliaControlPlane": {
+      "logGroup": "AmplifyControlPlaneAPIAccessLogs",
+      "apigLogs": "AmplifyControlPlaneAPIAccessLogs-${stage}-${region}",
+      "lambdaLogs": "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-',logGroups),\"~'\")}",
+      "executionLogs": "${join(prefixSearch('API-Gateway-Execution-Logs_' + apiLookup['Amplify'],logGroups),\"~'\")}",
+      "logGroups": [],
+      "apiLookup": {},
+      "parameters": {
+        "NRT": {
+          "account": "550167628141",
+          "apiLookup": {
+            "SecurityAutomations-WAFBadBotAPI": "2ksbfbaz34",
+            "AemiliaWorkersLambda": "72xin8nee5",
+            "Amplify": "a3lsdnrs08",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "btfnv01aq2",
+            "AemiliaWebhookProcessorLambda-api": "nhdlno12m1",
+            "AemiliaWebhookProcessorLambda": "krl3eizir4"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-kQSVBq9xCxWI/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-OS93ZJWHZJSV",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-BHQ07B7BNUGB",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-KRMNX8VYWNMD",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1MNS07CXUSVJV",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-PSY7SYO0HSW0",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-6GJ3DEJUC7HO",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-QO3UPF8YCMQK",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-3KD602PTVYH9",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1XPA2KENKBFJY",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-16K5MZVCRCKLW",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1R1XSAI9TT36T",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1CGHNUKKXGIH1",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-FPZGIQJGZTVE",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-11A232VTWXAHT",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-FYPRF294LO11",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1SXR6YSQHJMVP",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-5UU5YIX89VLN",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-SQFBNW39Z1AF",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-SZW3RFR1346Q",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-FGIG61YKFPX5",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1OUCY8LANZP12",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-QNBM7P4CQ9S0",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1NFSRHCXDVRTF",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1L1QOE81B6E3J",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-X6GKPU558HHO",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1CDK514B6WHN8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-CP1Y0BXXCVOM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-XKEPNXO9Y4FM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-N4PRANLDSL0D",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-Y1XOAOQU30CG",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-V98NXUAV1H3I",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-18S8RV1OYXV5P",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-ISFJLBZAL29S",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-BF7UKQK0WSET",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1NWUF1RTGTTKK",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-SRJLPXJBKCVR",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-BBRBRFT4Z7HY",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-OYHJQNWMPPNC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-TEFBVNSKOSBS",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-9YFII01LU8KW",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-AWMEF6RPKB5K",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-4IN1VJ43T90M",
+            "/aws/lambda/BastionStack-DogfishLambda-GE5GU5FS8C9O",
+            "API-Gateway-Execution-Logs_a3lsdnrs08/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1SVHY07R9J5"
+          ]
+        },
+        "ICN": {
+          "account": "024873182396",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "ks48s21s20",
+            "AemiliaWebhookProcessorLambda": "afutkxji4j",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "axajh8whlk",
+            "AemiliaWorkersLambda": "iqxgz3l2mb",
+            "SecurityAutomations-WAFBadBotAPI": "qazqyz2f14",
+            "Amplify": "vcvh7pksz4"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-PDbCKXgyyOBI/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-16YIVGP1C8PVB",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-UQ97P233A3C9",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1H1FHY9NMW2A8",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1M7OJ3PUN7SVB",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1A4R8R2VQGSCZ",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-8V9ZTYSFK1PS",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1R4UFHYVJX4D6",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-18OT9BO7LF7RX",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1SH9VJZAOTLRZ",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-Q3ZH0THFEXXD",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-66I72R3UFS72",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1D0VUORQX3JG3",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1R3EYH12S1QQM",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1WAJK2XJRDX56",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-KNIRQ7DOZT4W",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1W87EKN1X810G",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-13UTGTWPWUZPM",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-I3B8ZEBO3S6Q",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-17BAP6X4TOZLZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1KSAH9LDXBWZQ",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-GS74VFFUIVMC",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-Q679V4T7NLXI",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1HPFHR2U3GWKV",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1VQBCDT7BPK32",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-FI0UXDJBLIN6",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1U7CM9HERX1KM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-14S0D3W6TJVP3",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-SGYFPJTHA5RU",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1MX0Z7B8U3UN6",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-K10S6ZUKAKQQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-PLCYPDT80DIH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1R5WFXFAVZKE0",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-1413QCF3Q2MKV",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-CW24M1FEV43L",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-D8M4AXNA5WRI",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-13H958SR9FU7E",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1C1CNOJ1SZ4I6",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-B9HIXHIPMOES",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-19ZXWIT4IXVOJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-QF3Y63HRI730",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-14P5GFG2RQF4U",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-Z2PJPL1HQJEC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1FBOSL5VMLOZO",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-1DF65I0D6VELI",
+            "/aws/lambda/BastionStack-DogfishLambda-1JM3P9VF7PFMF",
+            "API-Gateway-Execution-Logs_vcvh7pksz4/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-2SSBTYW9NJT1"
+          ]
+        },
+        "BOM": {
+          "account": "801187164913",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "b4llmki61h",
+            "SecurityAutomations-WAFBadBotAPI": "3nu2excri7",
+            "Amplify": "a5ns16kw30",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "blf6sy5emh",
+            "AemiliaWorkersLambda": "i38hzstkdi",
+            "AemiliaWebhookProcessorLambda": "nhhuoon3z5"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-VJXo3hPGC9gA/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-71YYDOEMHJLS",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-P3H30GC058MK",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1AVFZG4YR4S1K",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1SYISFOO1EV4F",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-3UYT7VZDGFJB",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-H002N4KA8ZTZ",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-15SQCOELJ5CRT",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-17RFHYWTX32XM",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-18VGSVJYFD10G",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1HKRX39GAG98Y",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-DVTA0H8HGEX5",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-YAZ2Y5KXPIAC",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1WKRTFNLQC03R",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1DSAJAUE9Q2TM",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-17XJTICHFRDWN",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-VDF2MNMNSKHE",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1UQP3R8FPA9KS",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-18OBTTTET3IZK",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-ZYJJTQGMKUKR",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-MF3GJ63BH81F",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-TEYF0QZ27M1U",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1CJMDO5E9T9SM",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1K7PVYZ7VKPDZ",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-10U65OB7CA813",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-113F2R3GEHVNX",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-17VRKQJS0RPLH",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1N8YYUC3QQKPL",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-993PB8JEKCGI",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1CL6FW4L77VFJ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-YB3M06GYHHIG",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-I70V0FVX41WJ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1UVH62NUWOXQ7",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-136YU3KY4188W",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-JWQ8W66CJH3J",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1CCP8NYQHXD4L",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-DDPW4WC5NJWN",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-G91BZW67YI23",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-EQEFI5QA8NY9",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-RV5KY251DGHU",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-F1YX2JACWAHP",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-CJK9K27914W6",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1XMN6XVJKSTIO",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-36W97CX8MRVX",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-16U1T2VO2RSMC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-Y54H7GBREJEI",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-D8KFQFW3JTYT",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-16AD2Z1MZXW7B",
+            "/aws/lambda/BastionStack-DogfishLambda-1WIFSVNP78W5U",
+            "API-Gateway-Execution-Logs_a5ns16kw30/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1GKHQQ9258P4Q"
+          ]
+        },
+        "SIN": {
+          "account": "148414518837",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-web-preview-api": "4ialeyid0m",
+            "SecurityAutomations-WAFBadBotAPI": "54ic5pqa8c",
+            "AemiliaWebhookProcessorLambda-api": "fy48xhitkb",
+            "AemiliaWorkersLambda": "fbq29oruia",
+            "AemiliaWebhookProcessorLambda": "jqv1qhupb9",
+            "Amplify": "ykifylndqg"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-yOk74JerjF7f/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-RZDXBHLRP83F",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1328JXGAANZGN",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1X3B1JNPZR2P7",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-HP3WTIYHKUCD",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1S3RSUGYBD2A7",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-JN47JMNL28XI",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-19XDMB7B4X9U3",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1P2XRWJZNB9XR",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1FMXVMXS0YR26",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-L3CWTJO8UDCC",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1X5ZTUNTDA65O",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-NI4UHI9TAXBG",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-12KMYJDII8KL6",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1WUK56N5GV3WT",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-P29LJ1WXPUXQ",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-PXBVKTAI3SKL",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-71JEQAUCGOMG",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-4PRGKE326PRH",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-EPUU49CI07IN",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1KNYN5UD4NPRU",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-IFUZH4SHT705",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-J7B0TE5CK8W6",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-GFVWFMCTCDZM",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1495BCGJIYC9S",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-ANV6S7A6H7JJ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1XKJ17CEMJK2C",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-BLXZ9X1BIOEQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-JY54AIKAW7PD",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1AKJ1KF29LJ0I",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1MHU96BHJ2ATI",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-7D2QLJNL3FGD",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-IPTWHSA3QDJM",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-9Q96TPK8DS6G",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-WCAFAPA5KVY1",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-L1NP7TMPJZD1",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1WNSZ0K376KON",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1M1FYNMBBQLIH",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-12GBYFNDBQN8F",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-O23QO0A99YWS",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1RUDUG6K17I8A",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1PJU3AR0YO0N6",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1GCMXIFWX08PJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-WM9KDOSCQ4KS",
+            "/aws/lambda/BastionStack-DogfishLambda-1NGFVPP0WKW2A",
+            "API-Gateway-Execution-Logs_ykifylndqg/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1CTICUN7UMPFN"
+          ]
+        },
+        "SYD": {
+          "account": "711974673587",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-web-preview-api": "22f0vx10i2",
+            "AemiliaWebhookProcessorLambda-api": "9jpwgnulgd",
+            "SecurityAutomations-WAFBadBotAPI": "doei8f9q12",
+            "AemiliaWorkersLambda": "kvcnzvdsm1",
+            "AemiliaWebhookProcessorLambda": "w7tp35wqn6",
+            "Amplify": "wvk9mtect0"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-6kmxy2fyfrFj/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-9SDG9KM4NJWI",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1FA89BI5A4T74",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-CMCR8217CCCA",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1Q67OWEF26AZI",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-N48RYJ5LWSWB",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1TPHVTXVTKLRJ",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1O3CU98NNX8JC",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-X01V149B8J5U",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-8Z1LHQYDUCAO",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-F7CW60QBDBOV",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1K410FXDVFXKW",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-RL26E30USPWK",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-N9RWBZEQNXN0",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1PLFWQSFXQFJE",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1PVWB0BQ6CK75",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-NDS65EHA6VBR",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1VDZNFND61IA4",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1W5LZ7TFW2K6I",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-BBKA94O3P791",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-M4HXEIX1OY0L",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-IGV9D35YBYNK",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-19ML3QOM2KO56",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1W5A8ENO7WF24",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-13K9KRASIVEH2",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-76UR8JCQ88K7",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-QETDLFJW4826",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-5PK0NZXTTH6D",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-UE8MS4DHEZGQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1TO60FO8X1RMZ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1BSGBH3BQIJEC",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1RB22MEAK5QWH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1MOJINOGNOOKX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-L3EH7ZOFH7M3",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-1FGAUCKC8VD31",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-XZG43E32R4YN",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1BM2Y6D9I8T4D",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1QXKB49J4E65A",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-17DU0TSXYEE7Q",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-ALYBQT4IHLW6",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-78RQ9B4XJYNX",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-ZOX58PH2SCNJ",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-AKHIIMSZX7Q7",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Add-79X206MF1I56",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-C4TI855GRTE2",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Divide-7TN83GZ000K1",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-BNMBRB2HIBIA",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Multiply-OOU1WXNLNEEV",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-UZ2G4BIAPHFY",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Subtract-1LZQ3AZ54VT3I",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1K1CAXHGM6X3F",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-YYDV96UHD5U8",
+            "/aws/lambda/BastionStack-DogfishLambda-1X72L7HY2XDAG",
+            "API-Gateway-Execution-Logs_9jpwgnulgd/prod",
+            "API-Gateway-Execution-Logs_kvcnzvdsm1/Prod",
+            "API-Gateway-Execution-Logs_w7tp35wqn6/Prod",
+            "API-Gateway-Execution-Logs_wvk9mtect0/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1KTL5NQIJV6OV"
+          ]
+        },
+        "YUL": {
+          "account": "824930503114",
+          "apiLookup": {
+            "Amplify": "16iuwy6tik",
+            "AemiliaWebhookProcessorLambda-api": "un4a78rc3g",
+            "SecurityAutomations-WAFBadBotAPI": "4e6pt0brtf",
+            "AemiliaWorkersLambda": "9mygx34sih",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "ep6p67llok",
+            "AemiliaWebhookProcessorLambda": "n2sw31wxf4"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-0pIaOIJWgxzE/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-NG2KUHVV1IL7",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1IAASZIVV7FQK",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1Q0MUS1LFQBV2",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-17PANRLYWFF80",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-ZJM12TXW3LEW",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1A2NFET311ZBQ",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-16GPFUK1RDHKK",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1M30LR8ES5RUI",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-WAPPR48E3X5Y",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-DH77X9UAAGRC",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-18ISZN7B04JCE",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1G2Y1SR9T42RJ",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1SA5QQEQ3R9CV",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-EUGS6D5CB0FM",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1VLLC6JN0ERD",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-D8Q6CJC1W7QZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-9LKAXNJNZ6LE",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1V7TZLX058EDL",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1X4BB63LH7BLW",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-GZ8OMCIP4GN5",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-KMNAP8U9XOXV",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-196RPO5W44WB8",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1FSE2R4OX58WW",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-H8GLVMXF4SZP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1JPZZXCNSZU39",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-UG16CI24TZ26",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-RIHSQVDVVGTN",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-13W8G0JZDBJTY",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1KFT3FOV1Z2KS",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1BW7OU4L78KHH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-14U9ASO95KNPM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-1E8L8NEUNR59R",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-1WOP89L4T952P",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1B1QMV97EFIIZ",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1XAXK6COUX7W3",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1FL5R35NHLAQL",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1JJEGKMUHYPGT",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-HUM5J6UD5NL1",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1KI5MO7XFH515",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1E3Y7HB2FA6KV",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-DUSVMHFGKMMC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1O6TI0KGCC1JE",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-M5N4HBSNBGIO",
+            "/aws/lambda/BastionStack-DogfishLambda-HO2DOZTUMD24",
+            "API-Gateway-Execution-Logs_16iuwy6tik/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TFURIXKZD630"
+          ]
+        },
+        "FRA": {
+          "account": "644397351177",
+          "apiLookup": {
+            "SecurityAutomations-WAFBadBotAPI": "3ig045a7xh",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "anrr5xxy8f",
+            "Amplify": "bv6wvxhay9",
+            "AemiliaWebhookProcessorLambda-api": "vxhkejyavk",
+            "AemiliaWorkersLambda": "ok9mhm0qc6",
+            "AemiliaWebhookProcessorLambda": "tbm3nwvot5"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-f9ay9KuKoAgN/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1N1UFOZKB4JS6",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1J4N3YP9FIQOC",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1Q0WGFQG4PHXT",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-PNGK6W5V90TL",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1NCV8GNHAC8UY",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-MG8FXBIGPHNR",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-B7IRVB2LVBGV",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-IDFF86K3K36I",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-BQ5MFEJLXJS8",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1X1KMWNOWDBJX",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-HGL00VLX0HA3",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-UKYVXD0L2LXV",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-OINMMBZJ7T2G",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-CBX7SOQ17I1V",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-QK22GG7UFRLC",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1F73C53YZAIQP",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1OXCB5KK213SO",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-4M8RFSDYXJCE",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-4SLY1M7EKXZ5",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1E1E03ZJPPBBZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1O71SGZJ23F02",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-13KZ1YQEYB8Q2",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-GM2XXCOXH6WS",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1Y1J5ITDC9QQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-M1UAB6OXFJ6E",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-9M1ZNJ2TO3I3",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1VY40TLIURDPL",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1V3Q2TLYSZNNF",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-183NSRGKKNKL0",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1P6OQF73ZNRU3",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-11V2Y65WU3A2Q",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-2ZEDL58YLSM2",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-V9EPNRT19TFQ",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1HYVOOS9L2UHD",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-7CUR86A8YAHZ",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-I0EXA7HCNYTN",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-FUOYZZ4YGPIG",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-6CQFKGBGREKJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-RM6B55QCNEN3",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-WOLYUVGL5LQD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1QXCDJZR3RM5K",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-JN7ZI6XA4M9O",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-HP6KOK8EV3HA",
+            "/aws/lambda/BastionStack-DogfishLambda-59RQ8JSOVWJN",
+            "API-Gateway-Execution-Logs_bv6wvxhay9/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1MA0DX7RN2EAN"
+          ]
+        },
+        "ARN": {
+          "account": "315276288780",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "r5klq5dkr3",
+            "AemiliaWorkersLambda": "5tbqtnl3uf",
+            "Amplify": "lm7kebzyr0",
+            "SecurityAutomations-WAFBadBotAPI": "o8teo6gc19",
+            "AemiliaWebhookProcessorLambda": "sqkc5d0iof",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "zll2tm2v39"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-DdCuQYvVV8DR/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1GJ6X6YYOMTLY",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-13WVXQ2J1ISFM",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1VSCDIF3GO9ZZ",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-GFTPVMEUHJ8Z",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-IPNS8TK1Q27R",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-COJESMQMY81E",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-16L9YK6731E5U",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-GIE74SD3RGDY",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-YOHJKJN59VV0",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-V446UU7PL1RK",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1SF0J9XX5PNL7",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-DWGPE6SP28HK",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-TXXDO1T2M1HD",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1UIVO4A1ZRUAR",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1GPXKKYXYJ7FA",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1MOUXTK1I3MII",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1EN8CZX9ZOQZ0",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-SZ4OGY53N47L",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-18CPHS8T44G3N",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-OXV6EXRDU9I0",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1FUVVU9KBOBK0",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-QL60QD4J3QOY",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-TL0V2LCEKM00",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-GB9W3KE15GZY",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-19ZEU3SMQU5LC",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1IABWW3P1W5F9",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-FBX0N2L4CZOH",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-JBHUIB5YZNF2",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-MUJ1P9GSI7OC",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-YP4P6FFDDYKZ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-EZ5EOTKWYU09",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-35Q2WIRYHQ96",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-17JC16RKDL5DH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-19KN8UOPCY3NY",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-WGW9THA23RTK",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1PIHCG1JKUYO8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-9XJ1PFY7MQYM",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-13DIR2BZUDWQN",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-5U0D8ROCF3PH",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-XMDQ73KV4V2E",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1N4SYPQ3GLJEP",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1L1QYESRIYVKU",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-MQ9I7WASMRBU",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1LDX825K5WRY1",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1RERT0EZD7NYM",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-4IMKJ2YZ00AU",
+            "/aws/lambda/BastionStack-DogfishLambda-1PC6ISSJ892AZ",
+            "API-Gateway-Execution-Logs_lm7kebzyr0/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1SBIC3KTY1QTD"
+          ]
+        },
+        "DUB": {
+          "account": "565036926641",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "5k4xitk02h",
+            "AemiliaWebhookProcessorLambda": "1rovkzxk20",
+            "Amplify": "bd9k84izqe",
+            "SecurityAutomations-WAFBadBotAPI": "eiy5qizeu3",
+            "AemiliaWorkersLambda": "rx7yntjx68",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "sdjk1l62ef"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-EjGuiIijX70e/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-NH1WEZJ4AYDS",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1840G111RZDBF",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-PNUAPLWU7QOB",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-12KIW3BXGWUV8",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-63ZBF5NJO7EC",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-U1AIKOKLJGNO",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1QV7UJHGCPVJX",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1N4WYZ1EQ8MJW",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-16GWQYFJQJHHH",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-19VUP56E3AGZL",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-188P6CQ8U85A",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-BZTZXOR5Z3A3",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-13Q601T2WQMPZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-10OTDQ9LFSP1K",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-WDR1GKK32JGT",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-CMNX1Z74EQ61",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-2BYCANUGDFFL",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-Q3SR00XAGLB1",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1TMC37A2DPPPP",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1X631GLAHP8AE",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1JNFA584EUMQC",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-PZ7G51YYLGU6",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-GSLMB55LDXVF",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1QM2LQRXJF4AM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1OVER7AOK7W41",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-MKB569T3P66J",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-V98CLA8N44UN",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-MRNIEVSTWPC8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1C2W65P494T54",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-7XJ8ESV92DTL",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-35YXERL60OAI",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-UK03YFMD552P",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-EZ7CYJ6QSAR9",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1JHQL58T12DJG",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-12GBJWAY8I0P9",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-1N80OV9P9KIJW",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-16V3AGFRW6HCC",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1UOE9S220NL7U",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-TBYVY5XKJ57T",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1BO94ZCG1ZJ6H",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1FTSZL0WF1GDO",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-DNBXPLJNU6TF",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-4TDM4PQD602T",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1MZIKUR426V0Y",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-1BA0B61G3LG0H",
+            "/aws/lambda/BastionStack-DogfishLambda-5X447AHLLUVJ",
+            "API-Gateway-Execution-Logs_0omrgi91sj/prod",
+            "API-Gateway-Execution-Logs_1rovkzxk20/Prod",
+            "API-Gateway-Execution-Logs_bd9k84izqe/prod",
+            "API-Gateway-Execution-Logs_rx7yntjx68/Prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-112C07FWWRE54"
+          ]
+        },
+        "LHR": {
+          "account": "499901155257",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "qc246zirxa",
+            "AemiliaWorkersLambda": "4nst4v159g",
+            "Amplify": "ciak2lq4f8",
+            "SecurityAutomations-WAFBadBotAPI": "fez6bega4i",
+            "AemiliaWebhookProcessorLambda": "uklk8g3g71",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "z44j7q3y43"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-rmoLFEorKwhj/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-K7OKPU4OLUTL",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-3NK8BZS90IAH",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-KJ0SP2ZIOBSO",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-170BQXMS8JFB3",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1WDNNPX80FZ7Z",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-7H4GIRFCH488",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1AMSN2YSWRBJQ",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1SV8783FZVRTL",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-WLZEVYOMO1RF",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1CUEMYD9FM8FE",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-9C7Q4ELH8KOT",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1Q32XFLFAXKF1",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-3NQD3YZYKKE2",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-WBME2V34N06Z",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1WT3TKRQ208B2",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-J74E78O1PLNM",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-3M7TO4L6O4KQ",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-PZTDLIVBU9BH",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-L60XVEYEM2I8",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-WLELXCN95BRB",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-17D9FUBTF1ZOD",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-9BQAAJ50MJN7",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1PR3JANYUFWGS",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-NHC6TLAFEQ57",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-YURUMO6VFYXD",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1T52DVUYKA53N",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1VQ4RND02CK31",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-BP1JW1XRZB2F",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1SDT9WG48NANS",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-336IM6AQXHA4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1S02BC5TBS2U8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-FY4WHDP90SNU",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-FWR2Y5TQA4ET",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-VCPPUNX9KQIR",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1HUC1LNR7KIBU",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-FHRTEACJ512L",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-VUOJ0KPDQ3NX",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1P0SAVWRMUZ8M",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-XO8W2D1HHDNG",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-OHAKODBZHACC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-8UCTPONNLTSN",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-68PDQDH054AD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-WLMKQRDI5JP0",
+            "/aws/lambda/BastionStack-DogfishLambda-A8QWJKRPAJCL",
+            "/aws/lambda/BastionStack-DogfishLambda-NX22PSGSR9UN",
+            "API-Gateway-Execution-Logs_ciak2lq4f8/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-A93RX6SU8AOP"
+          ]
+        },
+        "CDG": {
+          "account": "693207358157",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-web-preview-api": "5d2nl6e2j3",
+            "AemiliaWebhookProcessorLambda": "7jkh2ruxnh",
+            "AemiliaWorkersLambda": "g3w3l6usd2",
+            "Amplify": "k6wlf90lv2",
+            "AemiliaWebhookProcessorLambda-api": "lh85rhdxc8",
+            "SecurityAutomations-WAFBadBotAPI": "zjcvq9lyoe"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-c7lVoih2HRV2/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1LUUICYZNXKZ4",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-2KUSIIAZNNMJ",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-ABIVEK3KXKS0",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-73MUPHUE5FL4",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1RMWXY1SWC2DA",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-8JTNZI24GJ0D",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1NZ9CV6IA62SV",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1AR3F55ZNE2J6",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-X97MDAOYQ8UT",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-194LCENU6GCJM",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1GMDPVM20OAAB",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1SXZOQM59YCO7",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-16OFYWX1D01DY",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1MKKI4IBHJ0A",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1KM7XXGVUUFYQ",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1JHD02MY09W75",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-XC71ZTONQPP4",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-11CXMNXPU8R39",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-18HCSW3H0I3B",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1ASR0QEEJ7JIL",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-H56YB23POH85",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-CSU5B5O793VM",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1CHRUSIHPV5EM",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-PCFTA7PCJ8A8",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-D9I30NKB0WB7",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-Z9VV6LHURGQM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1VULNH1GA9IJR",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-9IEY46134Q9O",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-RYK1YCXWB2XH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-W3NRQSNMISWD",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1S5OYO3G55Z5I",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1WMK1NBTHCYDD",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-18MV6O8FYQ717",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-1B36OCAX9X9HP",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1SAXJ5P7HRGXS",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1V55TAX73MEU0",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-9GRTLV3XLOOY",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-D4NA8AT8ZRI1",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1VZEVEMT7NE0X",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-2BIP5Z8SIUNF",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-SRBXRL0QLZ9V",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-4GEDTTWW83N8",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1W4UBG6THH1ZT",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-OWO6Q2GNUEZF",
+            "/aws/lambda/BastionStack-DogfishLambda-PV6BOVBAMGIL",
+            "API-Gateway-Execution-Logs_k6wlf90lv2/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-186X0QAMH0E7C"
+          ]
+        },
+        "GRU": {
+          "account": "068675532419",
+          "apiLookup": {
+            "SecurityAutomations-WAFBadBotAPI": "39mig36iak",
+            "AemiliaWebhookProcessorLambda-api": "f841aqyuej",
+            "AemiliaWebhookProcessorLambda": "brkwrgaecc",
+            "Amplify": "d05svto9qc",
+            "AemiliaWorkersLambda": "f1ngtg75og",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "xgqlk5mk0l"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-eMFYraee2DLG/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-Y0D81F989BWR",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-BVVLZ5M2H9T2",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-SSWGM5PY7VT8",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-139HY84HCAO71",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-CLRWKWDMQQEB",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-HM3FADRCSJ9J",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-HEMQ88QLGYZ5",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-UN0HFJGKWC3H",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-BWDF1TQIQQGD",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-J48D8XUE2LH4",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1U2LCUDURGTA3",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-6W3DHAFMJMTN",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1O9BTHXRWFXO2",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-14YXZUB4VPX0B",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-JU9IIO01EJDS",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-15E6T5PM91FXA",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-7Q8JJXW52IAY",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1S0W386C6ASSE",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1R1P8WXPQHFMW",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1DEOQIG5RW82I",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-SDAI4HFC30Y7",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-R77E4WLXBG3Z",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1WRY8Y84NLL7B",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1EW7XM20FNJ5Q",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1WBVRRLUQFIX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-146K1C5IFLIE4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-DKSY27ARVSRJ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-12WE6T2GUSMRH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-LH2WQC6ZJM96",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-BSZU4SF5ZSTP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1L9ZKK8TOUMV4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-GSL2GZCF6GB9",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-10QXC6AVESGS7",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-19YEM0V2QIAS9",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1HB6T1IARJABT",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-R13FGE45F4S5",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-G83QZEJ9VPWZ",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-LAVGJ9X42CW8",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-BUIILJQGGEXJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-7YAOP5HARSWM",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-LOA4K2MDBSLD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-S88OA563GXAG",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-166K2KPVBZUUY",
+            "/aws/lambda/BastionStack-DogfishLambda-PNA2V0P6DPJJ",
+            "API-Gateway-Execution-Logs_d05svto9qc/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-JS0R585DAQWZ"
+          ]
+        },
+        "IAD": {
+          "account": "073653171576",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "ypj49z6303",
+            "AemiliaWorkersLambda": "3v4rf8i2dc",
+            "AemiliaWebhookProcessorLambda": "h0r5ans333",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "iie2ak55fh",
+            "Amplify": "n79usow26a",
+            "SecurityAutomations-WAFBadBotAPI": "qvorfdukyc"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-O7hm2zRh0Pmw/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1CMQ3FSOQYOBZ",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-LJHAMS1FHOP6",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1MJL5SJKVCU81",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1XC7TD9OBBRTH",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1OIA82Z02N7IZ",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-YFJ4UL1SZHR8",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-16EPR6L9VXB7U",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-7JFHIIYLVHLM",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-8I2WGNITKIIP",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-7HB88RB4SZES",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-VH6PZKK930QF",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-N0B5X8I5OUQD",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-OWH6ZPJT95MX",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-15C07KGIVM7O5",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-Q3NEL76A5FZE",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1M3V8P0X1P54F",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1SPKOFUFWAZXF",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-174DNBJ7UTNLU",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-71EI6N921AZ0",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1GKNBR67D04H6",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1LPC625MT5YVO",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-PVTD5SOORO94",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1VHZGWVPKWWNZ",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1WCNIEMBDK7JP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1COE17IY1NMZF",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-Z6XM70ESJ6ZI",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1XQ0C79XXYR8V",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-8XKBYPOMV9ID",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-12O09IRAEWDB2",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-JNY2TW64PG6R",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-10A9QC6HL5C2V",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-PI1086A5JAMO",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-1CI8W7B69GEA5",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-10CF74N1ZUC3V",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1S6ATR3HOAAJJ",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-1ITY3PG3YKVXH",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-1OR6ICS4ATYW6",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1UEFV5ZFNKLHJ",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-OTI3W9GQE0HI",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-17QCQZLME673H",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-61991ET5O2Z3",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Add-1QIZXGBPKWXVJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-EOCL4RSYWA6Y",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Divide-499SLBK1VW6A",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-H4PY4PPOWR2B",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Multiply-1LKWTTRK9CZNV",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-GS3FF2P871QZ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Subtract-UXSGMT5KVD99",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1WBWO1XT4GTL",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-10VI7Y1MVWKJM",
+            "/aws/lambda/BastionStack-DogfishLambda-1JTFVWQRUYS73",
+            "API-Gateway-Execution-Logs_3v4rf8i2dc/Prod",
+            "API-Gateway-Execution-Logs_h0r5ans333/Prod",
+            "API-Gateway-Execution-Logs_n79usow26a/prod",
+            "API-Gateway-Execution-Logs_ypj49z6303/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1L7FPE26PHWH9"
+          ]
+        },
+        "CMH": {
+          "account": "264748200621",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-web-preview-api": "1p2raarxc3",
+            "AemiliaWebhookProcessorLambda": "3534uh9c6k",
+            "Amplify": "75prm1ll6l",
+            "SecurityAutomations-WAFBadBotAPI": "856qy3b0tk",
+            "AemiliaWebhookProcessorLambda-api": "urbbmnhqzf",
+            "AemiliaWorkersLambda": "j84z9f8m0d"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-Ye5FKZvQxWfp/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1VD9VZN0HS3TJ",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-YAWF1H6Q4K01",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-OP9BMIPDO6FO",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1LKX614GX6HUC",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-9SFRLNN63BN6",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-D0RFAQ4WTTH0",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1VYQ8FVM538U2",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1WEBVEMJOBYVQ",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-CW7IS1D1X9TT",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1U7RZAOP419K9",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-EWBHYM8ZN2HZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-TL4NNU3KXKVH",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1HNQ73I3TQ7E4",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-VKF26Y9E2EML",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1Q8XUQ8DH3DSI",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-JCAN0G9MCKMD",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-17MEZD17H9I5O",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-UCGMI8NUF7HN",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1GB3F7987ER3A",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1T7Z0ZGBDD1QH",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-VBW8941R5FA1",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-15L3DAKKL81ZT",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-V6NR3GKYZOQJ",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-N6UWBVCK6Q1A",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-RG508HX6AGSX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-2QLJIB39OZSV",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-XFJMSBSTBY16",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1THKJ5ZV3V90U",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1FUNV3F622UU8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-LXJL713DRGNM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1KS7FXL5W7TCS",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-134Y6IUN2QV5I",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-1AXEWCE16WVOF",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-XLSYPLF74ZKS",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-HSMZ931U6G2N",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-1IVRFRSXIXR8T",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-R245ZWNSICGO",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1VLB3AHXFTWZE",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1IL8DTFWTAAR9",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1EP36CUDGM786",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-483RYMUMX2FA",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-K1EHHUW9S40C",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1N9PCXDV0VX2H",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-AOXTPPZNWQIY",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-LH5IR2MAFUHY",
+            "/aws/lambda/BastionStack-DogfishLambda-1ESXQ33Y99IX7",
+            "/aws/lambda/BastionStack-DogfishLambda-E4S2F8XI95BC",
+            "/aws/lambda/BastionStack-DogfishLambda-WQJDVWIEFFYI",
+            "API-Gateway-Execution-Logs_3534uh9c6k/Prod",
+            "API-Gateway-Execution-Logs_75prm1ll6l/prod",
+            "API-Gateway-Execution-Logs_fik71wod62/prod",
+            "API-Gateway-Execution-Logs_j84z9f8m0d/Prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1S228LSNJFQ6Q"
+          ]
+        },
+        "SFO": {
+          "account": "214290359175",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda": "2ej7xd5jw1",
+            "AemiliaWebhookProcessorLambda-api": "5u58sf6pqi",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "4s68zjobpa",
+            "Amplify": "52nnfsgc4m",
+            "AemiliaWorkersLambda": "mn0l2adj6e",
+            "SecurityAutomations-WAFBadBotAPI": "rweszv32d0"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-7KsBITate79r/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-RCTUIZPK2P4B",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-11K1KHFTBUCNY",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-YYZJL4VT2W1Y",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-157NM4RMVXYVN",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1TBTWYMLHV4TB",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-3WTQD5Y8I5B5",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-19RYDN5BI3XVO",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-GDTTTCBY78AQ",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1DJU65WN950EJ",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1WNARIWA5N2HZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1C5NB2G3R1JLD",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-ZUNCKY4LP5XI",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1W8OV6F22ZAN6",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1OARHMJEF122J",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-351IY1YATX56",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-NA8GQ00SQWO7",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-17BA9OMEI775F",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1Q98ZIRY857MR",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-M3YD8TGB39TA",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-8G417ZUWMK8J",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1CLG3IHZWT8D3",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-6EL7VPNZ6IDB",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-7N8AUL407MNE",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-JZCY8EXLU8TF",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1OMRQZJBQXORH",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-I8NDZ9RRUDBG",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-X0HHMNMDXMX7",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-O9A6U06J1QYG",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1QKORTVZDZ3M8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-F0I5VA0N68AM",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1IPHWR2NN3L7H",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-18IYY1K85K2LX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-134OD8A6D8PAX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1JI9YT6SEQJ91",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-F56ZWY2T8SR5",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-J0W5NPLDSIM1",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-O3PXMK3GEMNV",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-191RIY14NSHBF",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-XSBL5SIG6SYR",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1BRP69M69OL40",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-3TVMSNYHHNJ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-YWD3C32OSJBD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1FTJII505TMCD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1T7ONJYPX903P",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-3NWI5U8X24FF",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-I7CX9L11SHG1",
+            "/aws/lambda/BastionStack-DogfishLambda-ECMIWF1P11C4",
+            "API-Gateway-Execution-Logs_52nnfsgc4m/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-LEzkAZaftyyv"
+          ]
+        },
+        "PDX": {
+          "account": "395333095307",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "b9uarm8730",
+            "SecurityAutomations-WAFBadBotAPI": "6yme662hga",
+            "AemiliaWebhookProcessorLambda": "amcricpagd",
+            "AemiliaWorkersLambda": "fgzzlu32gb",
+            "Amplify": "l88nrvl6q8",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "tiswtetoyi"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-JPCYZgZ08B2a/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-18KFZWSX61MPV",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-WMHB4OQ43VBT",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1WKHHWA4ZSXYQ",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1X4E3NHFY0WUZ",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-29CKG1UXQF6T",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-TLEJMG8MN913",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-FK6V7X9B0DZ9",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-I622UQT5NSX1",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1QMC6GU9GWXU4",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1ALPQEDEWQ7XV",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1UK0E8NM0NNIX",
+            "/aws/lambda/AemiliaCanaryLambda-Rout53ServiceLimitChecker-1M9DX1S2XVNVS",
+            "/aws/lambda/AemiliaCanaryLambda-Route53ServiceLimitChecker-RWK4TTJ32YGW",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-3E33PVFTJNPD",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-708JC5JAQUSR",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-19K3Z58MEZCPU",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1VAFTLNWMYW4M",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-MKGA7FWBHWV1",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-T2KFXQ227Z2X",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1LV9N6RQUUUBT",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1SLW3XFT5DAUH",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-IRQYLNYBFMV7",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1OH66R4ZR1UIR",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-L2SGQP08PUT7",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-1NPBTDG3CQQYH",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1HV0SR6ZT2SQ6",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-N6Z1U1OJ9YBO",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-1SGRDTSE5MM7B",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-39UOXBWG5RCH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1P91KZMK9O8SQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-4Z03H6NVGJVO",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-1SROG9LP94PZ9",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-3FG715OARVYX",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-X5VUC04WEB2M",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-4QGSP1T8VOYU",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-SHSL49IBOTF0",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-UXLU4EO3HSVM",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-TPCSRA0938JN",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1AYV4BMDAZNKU",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-24I6YWPPCDPV",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-15UZD1JNOC6EI",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-NYGESBAMLPSM",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-MYDZN4YEFQIU",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-OIZ2036Q9L4E",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1S6UEOP3VR2OU",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-136F64N51KFRQ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-M9BPGT0GWF9I",
+            "/aws/lambda/BastionStack-DogfishLambda-189L7UWK64SD6",
+            "/aws/lambda/BastionStack-DogfishLambda-1BJIOXMZM9ZLH",
+            "/aws/lambda/BastionStack-DogfishLambda-1PMAQQN5JL32Z",
+            "API-Gateway-Execution-Logs_amcricpagd/Prod",
+            "API-Gateway-Execution-Logs_b9uarm8730/prod",
+            "API-Gateway-Execution-Logs_fgzzlu32gb/Prod",
+            "API-Gateway-Execution-Logs_l88nrvl6q8/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1LRZLYYO2ABMS"
+          ]
+        },
+        "MXP": {
+          "account": "804516649577",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "lxitjqgllh",
+            "SecurityAutomations-WAFBadBotAPI": "5x6mebayi3",
+            "Amplify": "gd2204hdrg",
+            "AemiliaWebhookProcessorLambda": "o2c8gz68ue",
+            "AemiliaWorkersLambda": "zbpf9bpweg",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "zt1aufsfvd"
+          },
+          "logGroups": [
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1CQOTR4QX97M",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-LAY0LG26734N",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1TMDPQMDSZXH7",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-SZ2ME3M7R40W",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-MOH13L3SOIE9",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-MENCDDC50I0V",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1UW5E1TVISVPN",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-NVZABI1Z7V04",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-16VE7L9B5LU5O",
+            "/aws/lambda/AemiliaCanaryLambda-CrossRegionReplicationResource-8PJ29GMX6YJI",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1LHI3JZUKF915",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-T3VTAHO0IK69",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1T3PZ5ECYQJB9",
+            "/aws/lambda/AemiliaCanaryLambda-OptInRegionResourceDeployer-AA94Y0X2PQ2F",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-NCOECICJYV8A",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-E3B63BRDDUOF",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1UNYT2SZL47ZW",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-1QOQ3JSTW3PFJ",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-11PBU0OFQJIYC",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-YQ3VX3JNQTUY",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-110006UZCTEJH",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-XWHFJT1LLBI7",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1JBUC2WY31FC9",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-VLSD3U387ZTI",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-17CX2DMSAJ700",
+            "/aws/lambda/AemiliaDynamoDBStreamLamb-OptInCloudFrontLogSyncDe-1FMA35030NZH9",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-K9J84FRKM5ZO",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-11A7PLFB8GKD1",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1VTEI8I9JOOPR",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-H4M7QKGF2HKF",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1G6MT03TMBDY6",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-12RM8MFL8WK1K",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-RTHDF4Y84200",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1MUY7D0FDPZK1",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-1CYDSEJ5CSI9J",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-F2KJVHHVSK8T",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-13WRT6111VDDQ",
+            "/aws/lambda/AemiliaWebhookProcessorLambd-ReputationListsParser-197P0DWETK5Q6",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Cloud-CustomResource-1DEPSP5BHGDO3",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFront-LogParser-MD5XSXNB0R69",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-1JP75LHZKUTWI",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-TA6CI1GPNKBA",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-PBTVSK4PY1PO",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-129VMZBQTABJN",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1XW1RBA2808Y3",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-54KDUFRKVLLI",
+            "/aws/lambda/BastionStack-DogfishLambda-SDZF44FOE8FX",
+            "API-Gateway-Execution-Logs_gd2204hdrg/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-QeMlegbwSNWm"
+          ]
+        },
+        "HKG": {
+          "account": "574285171994",
+          "apiLookup": {
+            "SecurityAutomations-WAFBadBotAPI": "1rk9ybvtpg",
+            "AemiliaWebhookProcessorLambda-api": "x0d7jbvsd4",
+            "Amplify": "fak6aaboj3",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "fcc7qv8j83",
+            "AemiliaWorkersLambda": "njv6i38sm7",
+            "AemiliaWebhookProcessorLambda": "qisgswm4yi"
+          },
+          "logGroups": [
+            "aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-5XKOELHTEU7N",
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-lE5PqyBQsu4p/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1FQ8J3AXKCNYV",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-7NTTVL03X5ZS",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-GQGRDT0SK56C",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1PY8W6FAEYGWA",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1VKNM8N0NMWGV",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-ONBFBM9GCY76",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-LFRYDRX6YOCR",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-15CVHRL00D8T4",
+            "/aws/lambda/AemiliaCanaryLambda-CrossRegionReplicationResource-1WJ75MA2V3MO6",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-DETWKIEAK859",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-13JKDFNXW8P0X",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1X38VWSMKEY2D",
+            "/aws/lambda/AemiliaCanaryLambda-OptInRegionResourceDeployer-173YX7WNXPI6T",
+            "/aws/lambda/AemiliaCanaryLambda-OptInRegionResourceDeployer-1FO2WWEX3K2D3",
+            "/aws/lambda/AemiliaCanaryLambda-OptInRegionResourceDeployer-PEFN3C8RH4YN",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1QRRM3H68QCXV",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-9LK69YIX8FLC",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-YHMD8J426G1P",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-RNX1YQ2WMLIY",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-BXL80H85KYFJ",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1DWRXCK7J0C2F",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1R7KNFJ3A6NUX",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-14UBH09JBPL0V",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-13HJHSOJ5FL8E",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-16DNS0U67MZ6U",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-TRQ7D2TQRGWX",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-14IEDM0IC3SYW",
+            "/aws/lambda/AemiliaDynamoDBStreamLamb-OptInCloudFrontLogSyncDe-1KNPWUJLVQQ9Q",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-5JAY64RNN6XQ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-5BU7JUIL04SP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-QVTECH6KVAAP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1540INJIPTIED",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-GVOKIYG5Z1IP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-JGZUW4PCZ6MW",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-12O9TK7VOYBCL",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1JAS98H9PXI0D",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-5HBRHM4K8TAA",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-X7SZDT5C9AI4",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-533ET31XGLFU",
+            "/aws/lambda/AemiliaWebhookProcessorLambd-ReputationListsParser-11UOVWN0I0NKZ",
+            "/aws/lambda/AemiliaWebhookProcessorLambd-ReputationListsParser-IOPUGEU4TDR4",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Cloud-CustomResource-1O9MXR9IKIQWG",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Cloud-CustomResource-HYTABA0ASHWP",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFront-LogParser-MSLMOQSRJ44Z",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-1901Q8MYFKBXN",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-ELXRE6W8LFIS",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1V2ZLS299BKC1",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-AOTP3VCPFRYF",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1OZ8BFZC4GKTM",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-MNP0VHZFDFHP",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-19AIRIHO865C8",
+            "/aws/lambda/BastionStack-DogfishLambda-1LXRH9BU24VYN",
+            "/aws/lambda/BastionStack-DogfishLambda-BHTLKE3TTAC1",
+            "API-Gateway-Execution-Logs_fak6aaboj3/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-8Zy9YEoTl68d"
+          ]
+        },
+        "BAH": {
+          "account": "183380703454",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "5spchdxcch",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "100if1pqyl",
+            "AemiliaWebhookProcessorLambda": "bzs1pxxy75",
+            "SecurityAutomations-WAFBadBotAPI": "o746822uw3",
+            "AemiliaWorkersLambda": "sqpnc5lscj",
+            "Amplify": "ykw0hmk700"
+          },
+          "logGroups": [
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-O98S5ELNYYR3",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-155T3NMAN3G6D",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1NFMK4EGYPOXY",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1G46SOY2KQDRA",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-QIDCVM70IVZT",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1TKG1688R3169",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-5CSHXPUFGGV6",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-3EI2OEELG51I",
+            "/aws/lambda/AemiliaCanaryLambda-CrossRegionReplicationResource-15NRKS53ZN881",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1W3PDFAIXWRDH",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-WFYBXE0F9RVX",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-VYXKCKPXEALV",
+            "/aws/lambda/AemiliaCanaryLambda-OptInRegionResourceDeployer-11PGKD30VFHIU",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-IR8DHH8DO3JQ",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1JZ5DNBGE0PPS",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1KB9WAWJ1OKUD",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-19MLKG8OG5KJI",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1XT63P2LJ8NW0",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-1LFEL077J9G20",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-8W0N0LRKZ0EV",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-7SSO5QYT0I3U",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-SFRFGVQP67AV",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-CJ1EO52T7NU0",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-EZLOA4VEAPFM",
+            "/aws/lambda/AemiliaDynamoDBStreamLamb-OptInCloudFrontLogSyncDe-134AS75MXT7UP",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-16ZAQ7KJCMS4D",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1HLKLP6GC32TR",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1MVSP8R04QMPT",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-5BP63C62FTCC",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-NDEQA3WCH24S",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-YCAR00WX2CJT",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-13ZQGMB9GR4H4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1FHFLAT4N4MRZ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1JLNITKUFUY7I",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-ZY2H4L5M2RHG",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-LS4UZZ3PV6ZZ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-167TM3CHS72V0",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-NGG2PNFT3WM4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-OMJH12Z4EFEW",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-MUFG60NIUH1V",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-RY9AZ2F7J32P",
+            "/aws/lambda/AemiliaWebhookProcessorLambd-ReputationListsParser-P680IA2W46D4",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-Cloud-CustomResource-1PC3MO7VZJR21",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFront-LogParser-9EGVNMR1GGTQ",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-3QQBGDS6KNP7",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-YN9NTEZSOHYS",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1VYU9PKYFALFR",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1DEO9FLBJXJN",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-16BIWZGFX2BPF",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-ASMOG398P9C1",
+            "/aws/lambda/BastionStack-DogfishLambda-P1291N0VMFO5",
+            "/aws/lambda/BastionStack-DogfishLambda-V8GXKOGIATC1",
+            "API-Gateway-Execution-Logs_ykw0hmk700/prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TiN4HdbDOKNp"
+          ]
+        },
+        "PDX - Beta": {
+          "account": "033345365959",
+          "ripService": "amplify/amplify_beta",
+          "stage": "beta",
+          "sdcConfigName": "MinervaLimitsBeta",
+          "apiLookup": {
+            "AmplifyBackendManager": "3lcpy3pyp5",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "bx22epm7ef",
+            "AemiliaWorkersLambda": "gpt6me6uv8",
+            "AemiliaWebhookProcessorLambda-api": "o6jfoe263a",
+            "Amplify": "ntb76nklh1",
+            "AemiliaWebhookProcessorLambda": "q500kwqnq9",
+            "SecurityAutomations-WAFBadBotAPI": "v4tau12lck"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeployment-ECSCLUSTER-ClusterEB0386A7-RORcw5xwjdPf/performance",
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-dJ6yM4tXk0dk/performance",
+            "/aws/ecs/containerinsights/ECSCLUSTER-INF-ClusterEB0386A7-Mwyh207Ji3jc/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-194IO7ZBSZOVU",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1ULD6C9BFOD1B",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-4QVILQ69NORB",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-68BZE0NNBLCT",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1S5WI8R9FJAKJ",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-GSGDOJ8LYAAI",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1UK3OA0Q7TK1Z",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-N3L7PNRXA771",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-17O4EACC05NKU",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-9APT84LPU21J",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-OJJIY1BD3E6H",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-SLITVS25ZXHE",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-11JWZZSBEEJRO",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-7U9T39MGSD6T",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-8NNT50WL22QH",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-QCOGH8STEEIF",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-QPVP3XVUK6HL",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-3LBOYHW5RG0F",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-TI4E3WGI1TYX",
+            "/aws/lambda/AemiliaCanaryLambda-Rout53ServiceLimitChecker-1L6ZSL832Q0RO",
+            "/aws/lambda/AemiliaCanaryLambda-Route53ServiceLimitChecker-VSUO1XR538GA",
+            "/aws/lambda/AemiliaCanaryLambda-ServiceLimitChecker-147EC0NI8WD3A",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-3B32Z7J6PNVG",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-NAPZLGAIM864",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-J0QDFC5THAEN",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-12JXA4DNMH8X0",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-1AWN8JTFJATRY",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1J4Y5B8YV10FW",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-N59IG6U1ML2O",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-RL96APMORJ2N",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-RUE83SN7ZJBJ",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-WUQ4F5C0DF11",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-15W4OMRK7ZP7B",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1MJD2DHFOGAX",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-1J84GVI2AXT47",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1I5G4RF7DJ9AN",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-AB4W9LQUCQR8",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1J1LHSARF115N",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1MRJICIC9L3AV",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-OMZ29ODYMO3D",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-1TQRSEQ0I0B6",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-8T6RWJQP8QM5",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-XXMR0YPPSXTY",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-3DWPXAI9RHW8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-AA7VYBBQ084X",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-HTG01N1LFFP4",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-MX9C7VSYMY59",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-18E2BS6PQDDSH",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1KKC453M2T9IL",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-5X5LZUDLINBN",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-D5ZC01UTT08E",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-1ONMTAKB7RST2",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-LHSWY5BL06UM",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-10EPYW4HD0OUE",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-1EK21BAHFRYR0",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-B61H5XTAMQTP",
+            "/aws/lambda/AemiliaWebhookProcessorLam-CancelledJobHealthCheck-KGZZLBYQVFU3",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-15PENKZ9VXEU0",
+            "/aws/lambda/AemiliaWebhookProcessorLambd-PendingJobHealthCheck-12XYGVHZ05ODU",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-K0PWSO7FG382",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-DEQN8GWKWZRW",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1RDK1NGV6R5ZY",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-DIS9HUWVT5IX",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-1KTEEU14UR52M",
+            "/aws/lambda/AmplifyBackendManagerCont-FargateManagerLambdaFunc-1RI4S39F5AR2V",
+            "/aws/lambda/AmplifyBackendManagerControlPlaneLa-LambdaFunction-RU3FOUNBWNRW",
+            "/aws/lambda/amplify-authcra-devr-2231-UpdateRolesWithIDPFuncti-1RIUJNDA75PRW",
+            "/aws/lambda/amplify-authcra-devr-223124-a-UserPoolClientLambda-EGCRF4RFDZXI",
+            "/aws/lambda/amplify-multi-env-amplify-201-UserPoolClientLambda-11ZPY7MTZIS7S",
+            "/aws/lambda/amplify-multi-env-amplify-UpdateRolesWithIDPFuncti-1GG9YLQKJLEVU",
+            "API-Gateway-Execution-Logs_3lcpy3pyp5/beta",
+            "API-Gateway-Execution-Logs_gpt6me6uv8/Prod",
+            "API-Gateway-Execution-Logs_iikap27npa/prod",
+            "API-Gateway-Execution-Logs_kj8fw0g0c3/beta",
+            "API-Gateway-Execution-Logs_ntb76nklh1/beta",
+            "API-Gateway-Execution-Logs_ntb76nklh1/test",
+            "API-Gateway-Execution-Logs_q500kwqnq9/Prod",
+            "AmplifyDeployment-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-GIZ2L3VDBT4Q",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-6UVOJOFUI9I4",
+            "AmplifyMobileHubMigratorInfrastructureCDK-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1N26LSDRTFJKJ",
+            "BackendProcessorInfrastructureCDK-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1VM4G1VUQVV",
+            "BackendProcessorInfrastructureCDK-MigratorECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-BFEN5SOIVKZ0",
+            "ECSSERVICE-INF-AWSAmplifyDeploymentServiceTaskDefinitionDeploymentContainerLogGroup600521BA-ULOY3ASETPFB",
+            "ECSSERVICE-INF-AmplifyDeploymentFargateServiceQueueProcessingTaskDefQueueProcessingContainerLogGroup7AB5EA4B-18I9GTRPHBGVG"
+          ]
+        },
+        "PDX - Gamma": {
+          "account": "457974620857",
+          "ripService": "amplify/amplify_gamma",
+          "stage": "gamma",
+          "sdcConfigName": "MinervaLimitsGamma",
+          "apiLookup": {
+            "AemiliaWebhookProcessorLambda-api": "e8j1m95zt5",
+            "AemiliaWebhookProcessorLambda": "5wwpfpy9rh",
+            "SecurityAutomations-WAFBadBotAPI": "axshx7oped",
+            "Amplify": "e3alza85jk",
+            "AemiliaWorkersLambda": "j350vax7h4",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "r7o8d53yc7"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-bKSvqgdw9fhr/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-1W5UUF1831SVI",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-1XDFZ3Z03GAN0",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-10Y9BBZTH4JUC",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-I1ZNOKUHUWVO",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-1NRBV9HIIVWLT",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-1W1LNGIRPRX8M",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-KL819VA5OYCG",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1L4DK1FK3CCN",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1TPCUAULXMSQ5",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1JM70GESE0WGF",
+            "/aws/lambda/AemiliaCanaryLambda-Rout53ServiceLimitChecker-23BCGPIHENZC",
+            "/aws/lambda/AemiliaCanaryLambda-Route53ServiceLimitChecker-1CGMCVINN1LL5",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-1QD8CYY6HDQ5P",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-VUBXSG24R6AP",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-101CIZ0ACCLPZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-OFAKESBQXXW9",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1XMQP68MZ45FV",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-AJ04AGI2G6XV",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-2Y8T0HVYG1NB",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-1T97LGBV7681P",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-1ALJZ4HXVNI5P",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-8ZFZ4B0F759N",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-1DPGG3WCSU1T3",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-YC23RZIL22FX",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1IV9ULA3M43X7",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-CleanUpOldResourcesFunct-EGNPZRLQ6G8S",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1RG7AJVCT4VSI",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1J258CIMEGNRB",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-19GK1FC190OGB",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-11GIQNA9V6U3G",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-15OFW9RW02TON",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1FA91241ZLFZP",
+            "/aws/lambda/AemiliaEdgeLambdaAssociationDe-ReleaseLockFunction-14MZYID1O8Z97",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-124DAK9NWXQXD",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-YFZOFJK79883",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-1SA51USH5V3SG",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-1857I19QIOSYK",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-N5W1306X9EJR",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-R99GW6XBQAI6",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-14BBLCA8T3T1C",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-Y45LURP2L7CV",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-60EJJBSXJX1L",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-19FQMG7LR4UZ0",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1HIA6A8OOUY93",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-6U6QF9W9HMV0",
+            "/aws/lambda/BastionStack-DogfishLambda-1B6RTKIFUYX1Z",
+            "API-Gateway-Execution-Logs_36oir3aoy9/prod",
+            "API-Gateway-Execution-Logs_5wwpfpy9rh/Prod",
+            "API-Gateway-Execution-Logs_e3alza85jk/gamma",
+            "API-Gateway-Execution-Logs_j350vax7h4/Prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1C4IU1E9FL2FF"
+          ]
+        },
+        "IAD - Gamma": {
+          "account": "396176200477",
+          "ripService": "amplify/amplify_gamma",
+          "stage": "gamma",
+          "sdcConfigName": "MinervaLimitsGamma",
+          "apiLookup": {
+            "SecurityAutomations-WAFBadBotAPI": "b0w6ul5lta",
+            "Amplify": "l0c840snn2",
+            "AemiliaWebhookProcessorLambda-web-preview-api": "mk3uz41417",
+            "AemiliaWebhookProcessorLambda-api": "wxystebv04",
+            "AemiliaWorkersLambda": "rmkfs7kx6d",
+            "AemiliaWebhookProcessorLambda": "z75rxy2p60"
+          },
+          "logGroups": [
+            "/aws/ecs/containerinsights/AmplifyDeploymentService-ECSCLUSTER-ClusterEB0386A7-96CfRUtgQvhd/performance",
+            "/aws/lambda/AemiliaCanaryLambda-ACMServiceLimitChecker-E2Z578W9U05Z",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaControlPlaneCanary-CFFXJGKC6LZB",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobScheduler-1O4L2Z5YJ5CX4",
+            "/aws/lambda/AemiliaCanaryLambda-AemiliaJobVerifier-1HBU3P7NF3NXZ",
+            "/aws/lambda/AemiliaCanaryLambda-BATSComponentLocatorLambda-I98MT64EV1K9",
+            "/aws/lambda/AemiliaCanaryLambda-BastionRecyclerFunction-TTV7FK2I10C5",
+            "/aws/lambda/AemiliaCanaryLambda-CloudFrontServiceLimitChecker-1IC93E5AS94PC",
+            "/aws/lambda/AemiliaCanaryLambda-CodeBuildServiceLimitChecker-1NSKGIJA0PKFA",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1FM3VNI6S0UG7",
+            "/aws/lambda/AemiliaCanaryLambda-HostingCanaryDeployerFunction-1I7Z4FJHZ2ZBL",
+            "/aws/lambda/AemiliaCanaryLambda-HostingHealthCheckDeployerFunc-1X2QFU7O3F9OB",
+            "/aws/lambda/AemiliaCanaryLambda-LambdaEdgeServiceLimitChecker-1QVT7F485OTJY",
+            "/aws/lambda/AemiliaCanaryLambda-Rout53ServiceLimitChecker-121F4SC0FXWFI",
+            "/aws/lambda/AemiliaCanaryLambda-Route53ServiceLimitChecker-JXNX2A54O6EO",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-EMPGKVQ1EP8L",
+            "/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-1WXYHRE0B6PVK",
+            "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun-1BAEAJO64SV0A",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanupFunction-XAKWQ614B1S1",
+            "/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-162YB2WU1XEW2",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-11037HPK31NYK",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-1Y212PX901UP0",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeleteBranchTopicHandler-JENEZLDHU5CE",
+            "/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-6BKL5W7GKELX",
+            "/aws/lambda/AemiliaControlPlaneLambda-DistributionDeletionFunc-DO8G9KCR7ETM",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-12SCVXN18YALP",
+            "/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-AQ3K59PISCQE",
+            "/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-18EQ5KOGQJ0OI",
+            "/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-157AT6YZRUJFL",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-1OV0PG552OQO5",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-H7QK4THMYWQ6",
+            "/aws/lambda/AemiliaControlPlaneLambda-UpdateDomainTopicHandler-WX7DUTEV66GM",
+            "/aws/lambda/AemiliaEdgeLambda-GlobalTableDeploymentFunction-HRPPAVQGSWDZ",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionConfigPropag-1ROQ98G2YECG8",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-1T6DZNF9FY4M9",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionsToUpdateFet-1OPXPXU969JRA",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDeployerConfigurat-A3KALXXX1N77",
+            "/aws/lambda/AemiliaEdgeLambdaAssociat-UpdateDistributionConfig-1PHDWC9A4C61B",
+            "/aws/lambda/AemiliaEdgeLambdaAssociatio-DeployerDaemonFunction-1T7S4NHGFK2I4",
+            "/aws/lambda/AemiliaWarmingPool-DistributionPatchApplier-GGVYZ120D9K3",
+            "/aws/lambda/AemiliaWarmingPool-FrontEndResourceWarmingPool-ZNIHC60JK53W",
+            "/aws/lambda/AemiliaWarmingPool-LambdaEdgeManager-10W39JTVF3BJ1",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFCustomResourceF-3X4G8IQINWYB",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFLogParserFuncti-6Y4Z7FS05PAS",
+            "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1R6PMHGYHEDI",
+            "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-37OHHRP3YYQD",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1O1ZWL4S1KPSC",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-899SV68BF9FW",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-YHF6U6H14939",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-5CZYN8KQXJIL",
+            "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-JOCU5NKDQUNG",
+            "/aws/lambda/BastionStack-DogfishLambda-R7MA5URXD7R2",
+            "API-Gateway-Execution-Logs_l0c840snn2/gamma",
+            "API-Gateway-Execution-Logs_rmkfs7kx6d/Prod",
+            "API-Gateway-Execution-Logs_wxystebv04/prod",
+            "API-Gateway-Execution-Logs_z75rxy2p60/Prod",
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-RWWWE85XDV1O"
+          ]
+        },
+        "ARN - PreProd": {
+          "account": "241572322679"
+        },
+        "BAH - PreProd": {
+          "account": "905484389639"
+        },
+        "BOM - PreProd": {
+          "account": "414549345730"
+        },
+        "CDG - PreProd": {
+          "account": "130362053750"
+        },
+        "CMH - PreProd": {
+          "account": "795328988917"
+        },
+        "DUB - PreProd": {
+          "account": "261067636671"
+        },
+        "FRA - PreProd": {
+          "account": "645662906121"
+        },
+        "GRU - PreProd": {
+          "account": "250849867218"
+        },
+        "HKG - PreProd": {
+          "account": "014224714919"
+        },
+        "IAD - PreProd": {
+          "account": "373263430287"
+        },
+        "ICN - PreProd": {
+          "account": "664363737505"
+        },
+        "KIX - PreProd": {
+          "account": "880523927286"
+        },
+        "LHR - PreProd": {
+          "account": "217549701435"
+        },
+        "MXP - PreProd": {
+          "account": "105889380570"
+        },
+        "NRT - PreProd": {
+          "account": "521901182269"
+        },
+        "PDX - PreProd": {
+          "account": "808545654877"
+        },
+        "SFO - PreProd": {
+          "account": "652616700988"
+        },
+        "SIN - PreProd": {
+          "account": "869518299611"
+        },
+        "SYD - PreProd": {
+          "account": "606839312539"
+        },
+        "YUL - PreProd": {
+          "account": "968464305406"
+        }
+      }
+    },
+    "AemiliaDeploymentProcessor.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(prefixSearch('AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroup',logGroups),\"~'\")}"
+    },
+    "AemiliaEdgeLambda.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
+      "version": "19",
+      "serviceLogs": [
+        "/aws/lambda/us-east-1.AemiliaEdgeLambdaCloneRequest_v${version}",
+        "/aws/lambda/us-east-1.AemiliaEdgeLambdaCloneResponse_v${version}"
+      ]
+    },
+    "AemiliaWebhookProcessorLambda.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
+      "accessLogs": "AmplifyWebhookAPIAccessLogs-${stage}-${region}~'AmplifyWebhookPreviewAPIAccessLogs-${stage}-${region}~'AmplifyIncomingWebhookAPIAccessLogs-${stage}-${region}",
+      "serviceLogs": [
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-',logGroups),\"~'\")}",
+        "/aws/lambda/TriggerBuild",
+        "/aws/lambda/RunNextJob"
+      ]
+    },
+    "CustomDomainStepFunction.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
+      "serviceLogs": [
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-CreateDistributionFuncti-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-DeployToCloudFrontDistri-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-',logGroups),\"~'\")}"
+      ]
+    },
+    "AmplifyConsole.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
+      "serviceLogs": [
+        "AWSAppHubConsole-Server/${airportCode}_service_log.log",
+        "AWSAppHubConsole-Server/${airportCode}/OneBox_service_log.log"
+      ],
+      "applicationLogs": [
+        "AWSAppHubConsole-Server/${airportCode}_application.log",
+        "AWSAppHubConsole-Server/${airportCode}/OneBox_application.log"
+      ]
+    },
+    "AmplifyAdmin.AemiliaControlPlane": {
+      "parameters": {
+        "SYD": {
+          "distributionId": "EYPVPL1Z77GY5"
+        },
+        "SIN": {
+          "distributionId": "E1HE3Y5UU6B7K0"
+        },
+        "LHR": {
+          "distributionId": "E2JKUSUYGAYH6F"
+        },
+        "ICN": {
+          "distributionId": "E2HY5H5TQ1OJQ0"
+        },
+        "PDX": {
+          "distributionId": "E1QDLRC81LSGPR"
+        },
+        "BOM": {
+          "distributionId": "E3DYZB21OMF355"
+        },
+        "IAD": {
+          "distributionId": "E3PUFL4UX8URL4"
+        },
+        "YUL": {
+          "distributionId": "E1PP9EDGA0XSZP"
+        },
+        "NRT": {
+          "distributionId": "E1I85XM1AIKM47"
+        },
+        "FRA": {
+          "distributionId": "E1TDCCP62YI6RT"
+        },
+        "DUB": {
+          "distributionId": "E3KQLGVK08XXTP"
+        },
+        "CMH": {
+          "distributionId": "E215BAGWOFNO53"
+        }
+      }
+    },
+    "AemiliaEdgeLambdaAssociationDeployerLambda.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(prefixSearch('/aws/lambda/AemiliaEdgeLambdaAssociat-DistributionUpdaterFunct-',logGroups),\"~'\")}"
+    },
+    "AemiliaWorkersLambda.AemiliaControlPlane": {
+      "serviceLogGroup": "/aws/lambda/AemiliaWorkersLambdaScreenshot"
+    },
+    "AemiliaWarmingPool.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(includesSearch('FrontEndResourceWarmingPool',logGroups),\"~'\")}"
+    },
+    "Canary.AemiliaControlPlane": {
+      "serviceLogGroup": "${includesSearch('AemiliaCanaryLambda-AemiliaControlPlaneCanary',logGroups)}"
+    },
+    "HostingCanary.AemiliaControlPlane": {
+      "serviceLogGroup": "/aws/lambda/AemiliaHostingCanaryLambda-${region}"
+    },
+    "CustomerMetricsKinesisConsumer": {
+      "serviceLogGroup": "/aws/fargate/AmplifyHostingKinesisConsumer-${capitalize(godModeServiceRegion.includes('-') ? godModeServiceRegion.substring(godModeServiceRegion.indexOf('-')+1).trim() : 'Prod')}/${typeof logName === 'undefined' ? 'service_log' : logName}",
+      "parameters": {
+        "PDX - Beta": {
+          "account": "863269366779"
+        },
+        "IAD - Gamma": {
+          "account": "194691016414"
+        },
+        "PDX - Gamma": {
+          "account": "218618075297"
+        },
+        "LHR": {
+          "account": "011359086581"
+        },
+        "CMH": {
+          "account": "091431976996"
+        },
+        "SIN": {
+          "account": "924747526517"
+        },
+        "DUB": {
+          "account": "047809407788"
+        },
+        "IAD": {
+          "account": "967043042790"
+        },
+        "NRT": {
+          "account": "931081886687"
+        },
+        "ICN": {
+          "account": "304266899053"
+        },
+        "BOM": {
+          "account": "800446343048"
+        },
+        "SYD": {
+          "account": "714614077941"
+        },
+        "FRA": {
+          "account": "707127615593"
+        },
+        "PDX": {
+          "account": "687671821342"
+        },
+        "YUL": {
+          "account": "714464483917"
+        },
+        "ARN": {
+          "account": "385179314969"
+        },
+        "CDG": {
+          "account": "181670507818"
+        },
+        "GRU": {
+          "account": "492053135252"
+        },
+        "SFO": {
+          "account": "339592847097"
+        },
+        "MXP": {
+          "account": "833498015092"
+        },
+        "HKG": {
+          "account": "686810132325"
+        },
+        "BAH": {
+          "account": "381391443810"
+        },
+        "ARN - PreProd": {
+          "account": "842441749490"
+        },
+        "BAH - PreProd": {
+          "account": "351498045964"
+        },
+        "BOM - PreProd": {
+          "account": "715664251267"
+        },
+        "CDG - PreProd": {
+          "account": "495628225055"
+        },
+        "CMH - PreProd": {
+          "account": "735042163094"
+        },
+        "DUB - PreProd": {
+          "account": "248723662883"
+        },
+        "FRA - PreProd": {
+          "account": "656881829195"
+        },
+        "GRU - PreProd": {
+          "account": "449285739855"
+        },
+        "HKG - PreProd": {
+          "account": "615258162751"
+        },
+        "IAD - PreProd": {
+          "account": "228316975685"
+        },
+        "ICN - PreProd": {
+          "account": "022713752850"
+        },
+        "LHR - PreProd": {
+          "account": "879674021364"
+        },
+        "MXP - PreProd": {
+          "account": "010363596716"
+        },
+        "NRT - PreProd": {
+          "account": "870492274573"
+        },
+        "PDX - PreProd": {
+          "account": "978304303494"
+        },
+        "SFO - PreProd": {
+          "account": "040317778577"
+        },
+        "SIN - PreProd": {
+          "account": "801076284277"
+        },
+        "SYD - PreProd": {
+          "account": "253905123761"
+        },
+        "YUL - PreProd": {
+          "account": "383301241891"
+        }
+      }
+    },
+    "AmplifyMeteringService": {
+      "logs": {
+        "handler": {
+          "buildTime": "/aws/lambda/MeteringBuildTimeHandler",
+          "hostingDataTransfer": "/aws/lambda/MeteringHostingDataTransferHandler",
+          "hostingStorage": "/aws/lambda/MeteringHostingStorageHandler"
+        },
+        "persistor": {
+          "buildTime": "/aws/lambda/MeteringBuildTimeEventsPersistor",
+          "hostingDataTransfer": "/aws/lambda/MeteringHostingDataTransferPersistor",
+          "hostingStorage": "/aws/lambda/MeteringHostingStoragePersistor"
+        },
+        "auditor": {
+          "buildTime": "/aws/lambda/MeteringBuildTimeEventsAuditor",
+          "hostingDataTransfer": "/aws/lambda/MeteringHostingDataTransferAuditor",
+          "hostingStorage": "/aws/lambda/MeteringHostingStorageAuditor"
+        }
+      },
+      "parameters": {
+        "BOM": {
+          "account": "836341844952",
+          "stage": "prod"
+        },
+        "FRA - PreProd": {
+          "account": "819946664271",
+          "stage": "preprod"
+        },
+        "DUB": {
+          "account": "429558802523",
+          "stage": "prod"
+        },
+        "SIN - PreProd": {
+          "account": "505149257025",
+          "stage": "preprod"
+        },
+        "NRT": {
+          "account": "732582093327",
+          "stage": "prod"
+        },
+        "BOM - PreProd": {
+          "account": "099299858016",
+          "stage": "preprod"
+        },
+        "CMH - PreProd": {
+          "account": "336434185198",
+          "stage": "preprod"
+        },
+        "NRT - PreProd": {
+          "account": "550914217460",
+          "stage": "preprod"
+        },
+        "BAH - PreProd": {
+          "account": "055452342221",
+          "stage": "preprod"
+        },
+        "SYD": {
+          "account": "677329203012",
+          "stage": "prod"
+        },
+        "MXP": {
+          "account": "806145024516",
+          "stage": "prod"
+        },
+        "SFO - PreProd": {
+          "account": "517852948606",
+          "stage": "preprod"
+        },
+        "BAH": {
+          "account": "038057254658",
+          "stage": "prod"
+        },
+        "ARN - PreProd": {
+          "account": "478018639568",
+          "stage": "preprod"
+        },
+        "IAD": {
+          "account": "075333837457",
+          "stage": "prod"
+        },
+        "PDX - Beta": {
+          "account": "976580375281",
+          "stage": "prod"
+        },
+        "CDG": {
+          "account": "814159152259",
+          "stage": "prod"
+        },
+        "ICN": {
+          "account": "625673226202",
+          "stage": "prod"
+        },
+        "DUB - PreProd": {
+          "account": "401512038730",
+          "stage": "preprod"
+        },
+        "KIX - PreProd": {
+          "account": "883295285751",
+          "stage": "preprod"
+        },
+        "HKG": {
+          "account": "303580556152",
+          "stage": "prod"
+        },
+        "YUL": {
+          "account": "216941712347",
+          "stage": "prod"
+        },
+        "LHR": {
+          "account": "370736552814",
+          "stage": "prod"
+        },
+        "IAD - Gamma": {
+          "account": "067304508313",
+          "stage": "prod"
+        },
+        "SYD - PreProd": {
+          "account": "418160313600",
+          "stage": "preprod"
+        },
+        "ARN": {
+          "account": "164042274351",
+          "stage": "prod"
+        },
+        "CMH": {
+          "account": "826784040609",
+          "stage": "prod"
+        },
+        "HKG - PreProd": {
+          "account": "525298039813",
+          "stage": "preprod"
+        },
+        "FRA": {
+          "account": "862195064974",
+          "stage": "prod"
+        },
+        "MXP - PreProd": {
+          "account": "939022029418",
+          "stage": "preprod"
+        },
+        "PDX - Gamma": {
+          "account": "886159994414",
+          "stage": "prod"
+        },
+        "CDG - PreProd": {
+          "account": "925178205550",
+          "stage": "preprod"
+        },
+        "SFO": {
+          "account": "841117692638",
+          "stage": "prod"
+        },
+        "PDX - PreProd": {
+          "account": "740794023144",
+          "stage": "preprod"
+        },
+        "GRU": {
+          "account": "900160924945",
+          "stage": "prod"
+        },
+        "YUL - PreProd": {
+          "account": "301051227175",
+          "stage": "preprod"
+        },
+        "GRU - PreProd": {
+          "account": "708655699849",
+          "stage": "preprod"
+        },
+        "ICN - PreProd": {
+          "account": "670188684373",
+          "stage": "preprod"
+        },
+        "SIN": {
+          "account": "559733813024",
+          "stage": "prod"
+        },
+        "PDX": {
+          "account": "748599178717",
+          "stage": "prod"
+        },
+        "IAD - PreProd": {
+          "account": "149581343455",
+          "stage": "preprod"
+        },
+        "LHR - PreProd": {
+          "account": "193563748690",
+          "stage": "preprod"
+        }
+      }
+    },
+    "AmplifyCFNRegistry": {
+      "logs": {
+        "canary": {
+          "app": "CloudFormationCanary/${account}/AWS--Amplify--App",
+          "branch": "CloudFormationCanary/${account}/AWS--Amplify--Branch",
+          "domain": "CloudFormationCanary/${account}/AWS--Amplify--Domain"
+        },
+        "handler": {
+          "app": "${prefixSearch('CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp',logGroups)}",
+          "branch": "${prefixSearch('CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch',logGroups)}",
+          "domain": "${prefixSearch('CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain',logGroups)}"
+        }
+      },
+      "parameters": {
+        "PDX - Beta": {
+          "account": "730551054103",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1AEWYXMLC5ET6",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-PDX-beta-BATSLogGroup-vaNtiIBJ68ud",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-RRXXd405OCzk",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-CvyHQsJbjDLl",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-HWYuo9OCAdfK",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-IBjxR0x92GL5",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-HWjBw9wjN1nO",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-L8LbbIIwJjc2",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-TRdLoLMZf9cA",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-mcHtSxkCyNEP",
+            "CODETEST-Logs-CodeTestEntities-730551054103-73917f34eab3f17dfdb532deaf51b69a"
+          ]
+        },
+        "HKG - Prod": {
+          "account": "705576203731",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App705576203731-bootstrap-LambdaWaiter-N8C1N3G0W83D",
+            "/aws/lambda/AWS-Amplify-Branch705576203731-bootst-LambdaWaiter-CKIB6HFXNXLO",
+            "/aws/lambda/AWS-Amplify-Domain705576203731-bootst-LambdaWaiter-LFW70M2DTNLX",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1UR670ZPGIQYL",
+            "BONESBootstrap-HKG-prod-BATSLogGroup-3qppO4b233f5",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-H1I7JpKAoQv1",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-I9uuNduAgnsG",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-Ckg5JIE0DlLx",
+            "CODETEST-Logs-CodeTestEntities-705576203731-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/705576203731/AWS--Amplify--App",
+            "CloudFormationCanary/705576203731/AWS--Amplify--Branch",
+            "CloudFormationCanary/705576203731/AWS--Amplify--Domain"
+          ]
+        },
+        "NRT - Prod": {
+          "account": "513206504262",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App513206504262-bootstrap-LambdaWaiter-1QJHFS9U6CYT6",
+            "/aws/lambda/AWS-Amplify-Branch513206504262-bootst-LambdaWaiter-X53V956U3D2O",
+            "/aws/lambda/AWS-Amplify-Domain513206504262-bootst-LambdaWaiter-16R4YMRUY3A86",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-114AN2ROHL8O4",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-NRT-prod-BATSLogGroup-PLJbRilXryrt",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Dv2Rz5Zf3BwT",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-73VanxnnXcAG",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-TSGW294K41yG",
+            "CODETEST-Logs-CodeTestEntities-513206504262-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/513206504262/AWS--Amplify--App",
+            "CloudFormationCanary/513206504262/AWS--Amplify--Branch",
+            "CloudFormationCanary/513206504262/AWS--Amplify--Domain"
+          ]
+        },
+        "ICN - Prod": {
+          "account": "748177059602",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App748177059602-bootstrap-LambdaWaiter-PYPD4EHK2LN6",
+            "/aws/lambda/AWS-Amplify-Branch748177059602-bootst-LambdaWaiter-1N94GG0REEHFW",
+            "/aws/lambda/AWS-Amplify-Domain748177059602-bootst-LambdaWaiter-1B5H2H97RJLO1",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-IIOVEVPUF1NX",
+            "BONESBootstrap-ICN-prod-BATSLogGroup-2WjIV8zq1mkr",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Y1SZpElTGDrG",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-WsMymivpzzuD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-7VFidoSGsNgV",
+            "CODETEST-Logs-CodeTestEntities-748177059602-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/748177059602/AWS--Amplify--App",
+            "CloudFormationCanary/748177059602/AWS--Amplify--Branch",
+            "CloudFormationCanary/748177059602/AWS--Amplify--Domain"
+          ]
+        },
+        "BOM - Prod": {
+          "account": "206791744876",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App206791744876-bootstrap-LambdaWaiter-1Q43XELYCRN34",
+            "/aws/lambda/AWS-Amplify-Branch206791744876-bootst-LambdaWaiter-17IBM4O7PY2VT",
+            "/aws/lambda/AWS-Amplify-Domain206791744876-bootst-LambdaWaiter-MYUB4WPDVS4T",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1LFOY51W4DZ5T",
+            "BONESBootstrap-BOM-prod-BATSLogGroup-uDlR5aXxOQiQ",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Z93zDXDWbADj",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-cOaO7dEEkI5Y",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-wsWPFVpyi3zi",
+            "CODETEST-Logs-CodeTestEntities-206791744876-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/206791744876/AWS--Amplify--App",
+            "CloudFormationCanary/206791744876/AWS--Amplify--Branch",
+            "CloudFormationCanary/206791744876/AWS--Amplify--Domain"
+          ]
+        },
+        "SIN - Prod": {
+          "account": "233642751098",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App233642751098-bootstrap-LambdaWaiter-1UIXUVPMKRB5U",
+            "/aws/lambda/AWS-Amplify-Branch233642751098-bootst-LambdaWaiter-13HD1ESPO9BVB",
+            "/aws/lambda/AWS-Amplify-Domain233642751098-bootst-LambdaWaiter-6Z3Y25BZ2QLX",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-XRBQ9GN5LBY",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-SIN-prod-BATSLogGroup-nSNKfmKhZhsr",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-bHV28NvAv282",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-u624FJTb0ZSH",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-x1j0YQpk7YH6",
+            "CODETEST-Logs-CodeTestEntities-233642751098-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/233642751098/AWS--Amplify--App",
+            "CloudFormationCanary/233642751098/AWS--Amplify--Branch",
+            "CloudFormationCanary/233642751098/AWS--Amplify--Domain"
+          ]
+        },
+        "SYD - Prod": {
+          "account": "387972705246",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App387972705246-bootstrap-LambdaWaiter-8JOJF9LJBKQY",
+            "/aws/lambda/AWS-Amplify-Branch387972705246-bootst-LambdaWaiter-OUONDJG7V4FN",
+            "/aws/lambda/AWS-Amplify-Domain387972705246-bootst-LambdaWaiter-ZPUE1L6GWBFH",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-R20ZZZBG5P5K",
+            "BONESBootstrap-SYD-prod-BATSLogGroup-VpuDXrvN2Hoe",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-aRvynPvBTpES",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-E8Faggzn26Mo",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-JsYvIks0e7Nu",
+            "CODETEST-Logs-CodeTestEntities-387972705246-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/387972705246/AWS--Amplify--App",
+            "CloudFormationCanary/387972705246/AWS--Amplify--Branch",
+            "CloudFormationCanary/387972705246/AWS--Amplify--Domain"
+          ]
+        },
+        "YUL - Prod": {
+          "account": "616700955674",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App616700955674-bootstrap-LambdaWaiter-IIFXCC5V6OVC",
+            "/aws/lambda/AWS-Amplify-Branch616700955674-bootst-LambdaWaiter-147R6VV2JH3FP",
+            "/aws/lambda/AWS-Amplify-Domain616700955674-bootst-LambdaWaiter-LPVCJKJIIB1W",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-ZQQ871B0G6QZ",
+            "BONESBootstrap-YUL-prod-BATSLogGroup-jQX4IJBDucd0",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-1egHtMWic7Rc",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-tn1mEG4ZGyEn",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-jTicHDRuCbP5",
+            "CODETEST-Logs-CodeTestEntities-616700955674-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/616700955674/AWS--Amplify--App",
+            "CloudFormationCanary/616700955674/AWS--Amplify--Branch",
+            "CloudFormationCanary/616700955674/AWS--Amplify--Domain"
+          ]
+        },
+        "FRA - Prod": {
+          "account": "183321375287",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App183321375287-bootstrap-LambdaWaiter-1XKUJ87U4DSSF",
+            "/aws/lambda/AWS-Amplify-Branch183321375287-bootst-LambdaWaiter-1VDTAKFZ764LO",
+            "/aws/lambda/AWS-Amplify-Domain183321375287-bootst-LambdaWaiter-1E3G0Y9AO1DWS",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-17YQMKM1QWQNS",
+            "BONESBootstrap-FRA-prod-BATSLogGroup-DqKfWjB62srP",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-PJiBgmSueFqS",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-94BsJEpsWGb5",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-BhxVGQOogRiQ",
+            "CODETEST-Logs-CodeTestEntities-183321375287-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/183321375287/AWS--Amplify--App",
+            "CloudFormationCanary/183321375287/AWS--Amplify--Branch",
+            "CloudFormationCanary/183321375287/AWS--Amplify--Domain"
+          ]
+        },
+        "ARN - Prod": {
+          "account": "268121754429",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App268121754429-bootstrap-LambdaWaiter-19P197D9TFXHB",
+            "/aws/lambda/AWS-Amplify-Branch268121754429-bootst-LambdaWaiter-14K2AG1G18T6T",
+            "/aws/lambda/AWS-Amplify-Domain268121754429-bootst-LambdaWaiter-1JH7021DN18HL",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-7Q90ESBCOL11",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-ARN-prod-BATSLogGroup-mgUOdIuXWAIP",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-jMpDPRF5M9rk",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-SCbHdX6b70OV",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-ZJvtKvEtlCAw",
+            "CODETEST-Logs-CodeTestEntities-268121754429-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/268121754429/AWS--Amplify--App",
+            "CloudFormationCanary/268121754429/AWS--Amplify--Branch",
+            "CloudFormationCanary/268121754429/AWS--Amplify--Domain"
+          ]
+        },
+        "MXP - Prod": {
+          "account": "293926900477",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App293926900477-bootstrap-LambdaWaiter-76QJS8AK0M7",
+            "/aws/lambda/AWS-Amplify-Branch293926900477-bootst-LambdaWaiter-PYFSG1FW3V7I",
+            "/aws/lambda/AWS-Amplify-Domain293926900477-bootst-LambdaWaiter-KEZKCCH2GYR6",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1299LU9XOE6L1",
+            "BONESBootstrap-MXP-prod-BATSLogGroup-idIis83Kd47B",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-fcYqfqlxG52C",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-z72ILZ6vkIkY",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-b4cPQXhPSV1N",
+            "CODETEST-Logs-CodeTestEntities-293926900477-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/293926900477/AWS--Amplify--App",
+            "CloudFormationCanary/293926900477/AWS--Amplify--Branch",
+            "CloudFormationCanary/293926900477/AWS--Amplify--Domain"
+          ]
+        },
+        "DUB - Prod": {
+          "account": "942070128340",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App942070128340-bootstrap-LambdaWaiter-RZPZLMA2ARYI",
+            "/aws/lambda/AWS-Amplify-Branch942070128340-bootst-LambdaWaiter-1EBTBW60QDD4P",
+            "/aws/lambda/AWS-Amplify-Domain942070128340-bootst-LambdaWaiter-8O0MW2MLH0UQ",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-15T2DJIJ6PESI",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-DUB-prod-BATSLogGroup-j3XAYUPbSu8S",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Sn6aWmUwURQ4",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-naj7VwTo9d03",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-BGISHYkKAaq3",
+            "CODETEST-Logs-CodeTestEntities-942070128340-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/942070128340/AWS--Amplify--App",
+            "CloudFormationCanary/942070128340/AWS--Amplify--Branch",
+            "CloudFormationCanary/942070128340/AWS--Amplify--Domain"
+          ]
+        },
+        "LHR - Prod": {
+          "account": "244814403712",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App244814403712-bootstrap-LambdaWaiter-FL1LO2OJJD7S",
+            "/aws/lambda/AWS-Amplify-Branch244814403712-bootst-LambdaWaiter-1HOI7N9WANOUU",
+            "/aws/lambda/AWS-Amplify-Domain244814403712-bootst-LambdaWaiter-IRKU39LXCXDC",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-G8K2PUP2E22A",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-LHR-prod-BATSLogGroup-oJT0JlRWKRKf",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-JvWGSZqN77NF",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-sAcD6T7xhGDb",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-kUmb8RcOHDyT",
+            "CODETEST-Logs-CodeTestEntities-244814403712-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/244814403712/AWS--Amplify--App",
+            "CloudFormationCanary/244814403712/AWS--Amplify--Branch",
+            "CloudFormationCanary/244814403712/AWS--Amplify--Domain"
+          ]
+        },
+        "CDG- Prod": {
+          "account": "763905227024",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App763905227024-bootstrap-LambdaWaiter-LVLL91ZQ7A9R",
+            "/aws/lambda/AWS-Amplify-Branch763905227024-bootst-LambdaWaiter-16SF38ANPDRJQ",
+            "/aws/lambda/AWS-Amplify-Domain763905227024-bootst-LambdaWaiter-1KEERTZ9CVBF5",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-14Q406VZUBLV2",
+            "BONESBootstrap-CDG-prod-BATSLogGroup-vkr1NsoE2F4o",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-BSk5F1hV0S48",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-LpxwdN6ft7pg",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-yk1ys6tm9NFs",
+            "CODETEST-Logs-CodeTestEntities-763905227024-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/763905227024/AWS--Amplify--App",
+            "CloudFormationCanary/763905227024/AWS--Amplify--Branch",
+            "CloudFormationCanary/763905227024/AWS--Amplify--Domain"
+          ]
+        },
+        "BAH - Prod": {
+          "account": "032030562532",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App032030562532-bootstrap-LambdaWaiter-11ZIIANKZY3ZL",
+            "/aws/lambda/AWS-Amplify-Branch032030562532-bootst-LambdaWaiter-SP00BXMD3AH7",
+            "/aws/lambda/AWS-Amplify-Domain032030562532-bootst-LambdaWaiter-1MU3HEFMK3VX0",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-17CNNCBZ75ZQS",
+            "BONESBootstrap-BAH-prod-BATSLogGroup-LQVLnvXvghVx",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-6gJlkQthx7TY",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-bspaYZTOUlD5",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-26lOJspN6vJL",
+            "CODETEST-Logs-CodeTestEntities-032030562532-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/032030562532/AWS--Amplify--App",
+            "CloudFormationCanary/032030562532/AWS--Amplify--Branch",
+            "CloudFormationCanary/032030562532/AWS--Amplify--Domain"
+          ]
+        },
+        "GRU - Prod": {
+          "account": "762988384409",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App762988384409-bootstrap-LambdaWaiter-RC6ZCNWAZD3G",
+            "/aws/lambda/AWS-Amplify-Branch762988384409-bootst-LambdaWaiter-1L0PGI0AVCC6J",
+            "/aws/lambda/AWS-Amplify-Domain762988384409-bootst-LambdaWaiter-CU0M0L4WFKMR",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1TCXD9R22WL5G",
+            "BONESBootstrap-GRU-prod-BATSLogGroup-9LMVME99Bb8m",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-YQsiTf6eYVZd",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-yVR2qFNtAadR",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-XD0DNrKYXw5t",
+            "CODETEST-Logs-CodeTestEntities-762988384409-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/762988384409/AWS--Amplify--App",
+            "CloudFormationCanary/762988384409/AWS--Amplify--Branch",
+            "CloudFormationCanary/762988384409/AWS--Amplify--Domain"
+          ]
+        },
+        "IAD - Prod": {
+          "account": "585708266178",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App585708266178-bootstrap-LambdaWaiter-3R513U71OOHR",
+            "/aws/lambda/AWS-Amplify-Branch585708266178-bootst-LambdaWaiter-N4EOVF0OKDDM",
+            "/aws/lambda/AWS-Amplify-Domain585708266178-bootst-LambdaWaiter-1FG17XTQPZF0A",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1WVIHFV8UK0I1",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-IAD-prod-BATSLogGroup-UCFQjIXlaMWJ",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-7qUzDAwD3c3w",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-4zoijI9DJkfI",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-qRRzIzcPWKoJ",
+            "CODETEST-Logs-CodeTestEntities-585708266178-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/585708266178/AWS--Amplify--App",
+            "CloudFormationCanary/585708266178/AWS--Amplify--Branch",
+            "CloudFormationCanary/585708266178/AWS--Amplify--Domain"
+          ]
+        },
+        "CMH - Prod": {
+          "account": "651127421908",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App651127421908-bootstrap-LambdaWaiter-1BLADS9GQ5Q9B",
+            "/aws/lambda/AWS-Amplify-Branch651127421908-bootst-LambdaWaiter-DX7MV14CEYJ7",
+            "/aws/lambda/AWS-Amplify-Domain651127421908-bootst-LambdaWaiter-1AGF1UAZSOD5T",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-10BDLKS4ALT19",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-CMH-prod-BATSLogGroup-tPXSKQ2qwMqF",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-nZFvTFXSytJT",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-hZEt633aK5RS",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-g9bKaUZCQHxc",
+            "CODETEST-Logs-CodeTestEntities-651127421908-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/651127421908/AWS--Amplify--App",
+            "CloudFormationCanary/651127421908/AWS--Amplify--Branch",
+            "CloudFormationCanary/651127421908/AWS--Amplify--Domain"
+          ]
+        },
+        "SFO - Prod": {
+          "account": "281963666553",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App281963666553-bootstrap-LambdaWaiter-601FSGK4BFMM",
+            "/aws/lambda/AWS-Amplify-Branch281963666553-bootst-LambdaWaiter-DVQK1ZD6BOIL",
+            "/aws/lambda/AWS-Amplify-Domain281963666553-bootst-LambdaWaiter-GUPZ2LU4ZY8J",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-NZVQXT5BEG7T",
+            "BONESBootstrap-SFO-prod-BATSLogGroup-5yqgaFRZTORc",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Gq8g2oOHpMYD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-elWayxYoyTcB",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-jMK4zVG6u4F0",
+            "CODETEST-Logs-CodeTestEntities-281963666553-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/281963666553/AWS--Amplify--App",
+            "CloudFormationCanary/281963666553/AWS--Amplify--Branch",
+            "CloudFormationCanary/281963666553/AWS--Amplify--Domain"
+          ]
+        },
+        "PDX - Prod": {
+          "account": "507369665706",
+          "logGroups": [
+            "/aws/lambda/AWS-Amplify-App507369665706-bootstrap-LambdaWaiter-17E6FMN808FFR",
+            "/aws/lambda/AWS-Amplify-Branch507369665706-bootst-LambdaWaiter-133OWSB7FDSQ6",
+            "/aws/lambda/AWS-Amplify-Domain507369665706-bootst-LambdaWaiter-1ASF95MZFUS3R",
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-PO2MBGK9KYOV",
+            "BONESBootstrap-PDX-prod-BATSLogGroup-d7fqyZIG5pyv",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-0t2VX0grtR4p",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-xy1l2Jk6Eccq",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-jlsGpTKg3sKY",
+            "CODETEST-Logs-CodeTestEntities-507369665706-98e1563f3153aa2fe5b19257831d6734",
+            "CloudFormationCanary/507369665706/AWS--Amplify--App",
+            "CloudFormationCanary/507369665706/AWS--Amplify--Branch",
+            "CloudFormationCanary/507369665706/AWS--Amplify--Domain"
+          ]
+        },
+        "HKG - Gamma": {
+          "account": "822194296002",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-WWZR1AIQJ26A",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-HKG-gamma-BATSLogGroup-65gomp2pRgsz",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-ZP84Ob9VmRGD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-7Symnh6CDQyD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-0kAO1fvyT6in",
+            "CODETEST-Logs-CodeTestEntities-822194296002-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "NRT - Gamma": {
+          "account": "752724027668",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-HO0V22YDC77K",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-NRT-gamma-BATSLogGroup-MmKCzcNRDH8D",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-cufvsbwSN37J",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-jMrc5kArfZa9",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-126vxA0oos8X",
+            "CODETEST-Logs-CodeTestEntities-752724027668-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "ICN - Gamma": {
+          "account": "098714433691",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1FFGCQJCVQBUD",
+            "BONESBootstrap-ICN-gamma-BATSLogGroup-zW9tlasVfxSB",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-551rS4kx4zy8",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-3ZcsGkJrsseC",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-dKsNqLnzIK9E",
+            "CODETEST-Logs-CodeTestEntities-098714433691-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "BOM - Gamma": {
+          "account": "756161220785",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1UACO23U4Y612",
+            "BONESBootstrap-BOM-gamma-BATSLogGroup-jovaGu6rEgAa",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-PlLHaE5Zkflg",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-Qn21iCfuLfOw",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-xG4Ps9FoTBEs",
+            "CODETEST-Logs-CodeTestEntities-756161220785-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "SIN - Gamma": {
+          "account": "775939485512",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-R3XRCIMC1NE0",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-SIN-gamma-BATSLogGroup-PhPonTsHB7k4",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-M4XRG8qOEQB6",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-duJ0gvd4gDrU",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-6Yp16BWAMxmb",
+            "CODETEST-Logs-CodeTestEntities-775939485512-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "SYD - Gamma": {
+          "account": "874432100533",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-5Z4S1VVQ3IA8",
+            "BONESBootstrap-SYD-gamma-BATSLogGroup-Do18zHpjJ3b4",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-zpAkfa4cNoIj",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-AaMiQGAQhvoi",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-Ki9dkmsVLbUU",
+            "CODETEST-Logs-CodeTestEntities-874432100533-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "YUL - Gamma": {
+          "account": "553599238310",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1AEN892TAEEFU",
+            "BONESBootstrap-YUL-gamma-BATSLogGroup-n8B0BKkRZcnD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-ZG4i0uBsDd7A",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-zL3w6tPMfMI2",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-LAr54pB1IP0J",
+            "CODETEST-Logs-CodeTestEntities-553599238310-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "FRA - Gamma": {
+          "account": "399799467803",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-CM26KQLHR5CG",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-FRA-gamma-BATSLogGroup-peqq94K1DwsS",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-arENJrmiQEOy",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-UFQwvnErIUwe",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-vqrQsHjggZc8",
+            "CODETEST-Logs-CodeTestEntities-399799467803-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "ARN - Gamma": {
+          "account": "543179034495",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-K3QFDS96BDPE",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-ARN-gamma-BATSLogGroup-s4G1dl0ocfx7",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-DdeIz2Pnm4IF",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-ISb0rO7VdCgQ",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-O837u2JEYuZX",
+            "CODETEST-Logs-CodeTestEntities-543179034495-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "MXP - Gamma": {
+          "account": "143707965050",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1EWZD4CR4C1SK",
+            "BONESBootstrap-MXP-gamma-BATSLogGroup-Z6znLphO946j",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-hmv2aNsYwfZ9",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-In9ElFYjpEom",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-dnQIEaz3vEsi",
+            "CODETEST-Logs-CodeTestEntities-143707965050-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "DUB - Gamma": {
+          "account": "594544945943",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-8G8LKV6NWYS1",
+            "BONESBootstrap-DUB-gamma-BATSLogGroup-6bDc2jGvLUYF",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-FjCDnsWYUb09",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-OF0SGrxTb1Vk",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-HQHx4po4CCjm",
+            "CODETEST-Logs-CodeTestEntities-594544945943-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "LHR - Gamma": {
+          "account": "371293956187",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-7VGTDVYCL5KE",
+            "BONESBootstrap-LHR-gamma-BATSLogGroup-GaFI83SM46St",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-MlDj4PSDXS81",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-PprNGMwZ6U0j",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-RmkZXAncR4Eq",
+            "CODETEST-Logs-CodeTestEntities-371293956187-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "CDG - Gamma": {
+          "account": "455556116702",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1XKTX1O8YOROK",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-CDG-gamma-BATSLogGroup-j3PdyVSlUFEr",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Eb16f3e3Nt6c",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-REbGvvzNMzfS",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-E5oAQo0HZ8gM",
+            "CODETEST-Logs-CodeTestEntities-455556116702-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "BAH - Gamma": {
+          "account": "735886159871",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-CL24SA6KKR2W",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-BAH-gamma-BATSLogGroup-YEQ00Uvv3v0c",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-dPuWb8oGFg6k",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-6wgJ61YNUKWp",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-O4gtoDBzFN1C",
+            "CODETEST-Logs-CodeTestEntities-735886159871-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "GRU - Gamma": {
+          "account": "427966257366",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-TMREG69DHMEM",
+            "BONESBootstrap-GRU-gamma-BATSLogGroup-YKRY7Ni35yyD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-Pamm12f3XRt2",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-8pfKQUJtgNCB",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-VU70jQP1vfAe",
+            "CODETEST-Logs-CodeTestEntities-427966257366-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "IAD - Gamma": {
+          "account": "889997773072",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-6LVA9QCGE3P6",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-IAD-gamma-BATSLogGroup-ifoQUIiWWS0L",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-EnbZUNIolqga",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-0jTbKrpM2Wi7",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-2UiubSBadZEE",
+            "CODETEST-Logs-CodeTestEntities-889997773072-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "CMH - Gamma": {
+          "account": "732293918938",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-G62Y6CW87N1Q",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-CMH-gamma-BATSLogGroup-F4ldifldBOse",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-5qI8gFvASyZK",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-XRHa3bQlR1eD",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-PW7o7pKNnLZt",
+            "CODETEST-Logs-CodeTestEntities-732293918938-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "SFO - Gamma": {
+          "account": "185811714094",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-IR0KTKUCPTGI",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-SFO-gamma-BATSLogGroup-MVWzLK2RO0oJ",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-YugWAAEriJlN",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-Ak2rQdzGGEtp",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-RZuar7G0h9rn",
+            "CODETEST-Logs-CodeTestEntities-185811714094-3f0dc226adffbfb953efe80271077c79"
+          ]
+        },
+        "PDX - Gamma": {
+          "account": "882906606952",
+          "logGroups": [
+            "/aws/lambda/CFNRegistryAWSAmplifyStac-CFNRegistryHandlerCopyLa-1E6HUI8QFENB7",
+            "/aws/lambda/CODETEST_CodeTestHistoryViewLambda_DO-NOT-DELETE",
+            "BONESBootstrap-PDX-gamma-BATSLogGroup-yyaZLhfurvPh",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyApp-0Tw5Np8T06w5",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyBranch-ZFRshaZnljMa",
+            "CFNRegistryAWSAmplifyStack-HandlerDestinationLogGroupAWSAmplifyDomain-rxsrMeLVZkKX",
+            "CODETEST-Logs-CodeTestEntities-882906606952-3f0dc226adffbfb953efe80271077c79"
+          ]
+        }
+      }
+    },
+    "AmplifyConsoleTangerineBox": {
+      "serviceLogGroup": "TelemetryLogs",
+      "parameters": {
+        "PDX - Beta": {
+          "account": "863269366779"
+        },
+        "IAD - Gamma": {
+          "account": "194691016414"
+        },
+        "PDX - Gamma": {
+          "account": "218618075297"
+        },
+        "LHR": {
+          "account": "677143461647"
+        },
+        "CMH": {
+          "account": "162108643345"
+        },
+        "SIN": {
+          "account": "524545448442"
+        },
+        "DUB": {
+          "account": "919144713671"
+        },
+        "IAD": {
+          "account": "363699358324"
+        },
+        "NRT": {
+          "account": "483838015901"
+        },
+        "ICN": {
+          "account": "744164304127"
+        },
+        "BOM": {
+          "account": "670962053594"
+        },
+        "SYD": {
+          "account": "307205455551"
+        },
+        "FRA": {
+          "account": "039068071473"
+        },
+        "PDX": {
+          "account": "483612474985"
+        },
+        "YUL": {
+          "account": "500327539313"
+        },
+        "ARN": {
+          "account": "285725869593"
+        },
+        "CDG": {
+          "account": "718335416750"
+        },
+        "GRU": {
+          "account": "909518030721"
+        },
+        "SFO": {
+          "account": "852317390280"
+        },
+        "MXP": {
+          "account": "421605908834"
+        },
+        "HKG": {
+          "account": "591174092451"
+        },
+        "BAH": {
+          "account": "587873077960"
+        },
+        "ARN - PreProd": {
+          "account": "842441749490"
+        },
+        "BAH - PreProd": {
+          "account": "351498045964"
+        },
+        "BOM - PreProd": {
+          "account": "715664251267"
+        },
+        "CDG - PreProd": {
+          "account": "495628225055"
+        },
+        "CMH - PreProd": {
+          "account": "735042163094"
+        },
+        "DUB - PreProd": {
+          "account": "248723662883"
+        },
+        "FRA - PreProd": {
+          "account": "656881829195"
+        },
+        "GRU - PreProd": {
+          "account": "449285739855"
+        },
+        "HKG - PreProd": {
+          "account": "615258162751"
+        },
+        "IAD - PreProd": {
+          "account": "363699358324"
+        },
+        "ICN - PreProd": {
+          "account": "022713752850"
+        },
+        "LHR - PreProd": {
+          "account": "879674021364"
+        },
+        "MXP - PreProd": {
+          "account": "010363596716"
+        },
+        "NRT - PreProd": {
+          "account": "870492274573"
+        },
+        "PDX - PreProd": {
+          "account": "978304303494"
+        },
+        "SFO - PreProd": {
+          "account": "040317778577"
+        },
+        "SIN - PreProd": {
+          "account": "801076284277"
+        },
+        "SYD - PreProd": {
+          "account": "253905123761"
+        },
+        "YUL - PreProd": {
+          "account": "383301241891"
+        }
+      }
+    },
+    "AmplifyComputeService": {
+      "parameters": {
+        "ARN": {
+          "account": "324083443363"
+        },
+        "ARN - Cell1": {
+          "account": "947573580920"
+        },
+        "ARN - Cell2": {
+          "account": "449879167594"
+        },
+        "BAH": {
+          "account": "778656315944"
+        },
+        "BAH - Cell1": {
+          "account": "787521425488"
+        },
+        "BAH - Cell2": {
+          "account": "993828787059"
+        },
+        "BOM": {
+          "account": "961089157158"
+        },
+        "BOM - Cell1": {
+          "account": "691591124619"
+        },
+        "BOM - Cell2": {
+          "account": "193673746969"
+        },
+        "CDG": {
+          "account": "067021532459"
+        },
+        "CDG - Cell1": {
+          "account": "302291509655"
+        },
+        "CDG - Cell2": {
+          "account": "281366225315"
+        },
+        "CMH": {
+          "account": "763602849397"
+        },
+        "CMH - Cell1": {
+          "account": "714405387466"
+        },
+        "CMH - Cell2": {
+          "account": "700783956012"
+        },
+        "DUB": {
+          "account": "721353850853"
+        },
+        "DUB - Cell1": {
+          "account": "627206211417"
+        },
+        "DUB - Cell2": {
+          "account": "125040593840"
+        },
+        "FRA": {
+          "account": "661687143689"
+        },
+        "FRA - Cell1": {
+          "account": "970688540196"
+        },
+        "FRA - Cell2": {
+          "account": "458922657309"
+        },
+        "GRU": {
+          "account": "029015999262"
+        },
+        "GRU - Cell1": {
+          "account": "140988449436"
+        },
+        "GRU - Cell2": {
+          "account": "649764730746"
+        },
+        "HKG": {
+          "account": "884941116652"
+        },
+        "HKG - Cell1": {
+          "account": "342470307229"
+        },
+        "HKG - Cell2": {
+          "account": "041247672062"
+        },
+        "IAD": {
+          "account": "739217192896"
+        },
+        "IAD - Cell1": {
+          "account": "634225504678"
+        },
+        "IAD - Cell2": {
+          "account": "911609056400"
+        },
+        "IAD - Cell3": {
+          "account": "246746169199"
+        },
+        "ICN": {
+          "account": "448766840572"
+        },
+        "ICN - Cell1": {
+          "account": "272880359961"
+        },
+        "ICN - Cell2": {
+          "account": "256194760755"
+        },
+        "LHR": {
+          "account": "735893892429"
+        },
+        "LHR - Cell1": {
+          "account": "735357069816"
+        },
+        "LHR - Cell2": {
+          "account": "031892202758"
+        },
+        "MXP": {
+          "account": "182690974485"
+        },
+        "MXP - Cell1": {
+          "account": "333266953404"
+        },
+        "MXP - Cell2": {
+          "account": "036695738573"
+        },
+        "NRT": {
+          "account": "966594649980"
+        },
+        "NRT - Cell1": {
+          "account": "122036202445"
+        },
+        "NRT - Cell2": {
+          "account": "410510665291"
+        },
+        "PDX": {
+          "account": "583090263836"
+        },
+        "PDX - Cell1": {
+          "account": "586674168778"
+        },
+        "PDX - Cell2": {
+          "account": "571996173305"
+        },
+        "SFO": {
+          "account": "924418769215"
+        },
+        "SFO - Cell1": {
+          "account": "529144562290"
+        },
+        "SFO - Cell2": {
+          "account": "548652960811"
+        },
+        "SIN": {
+          "account": "406015739782"
+        },
+        "SIN - Cell1": {
+          "account": "447859346783"
+        },
+        "SIN - Cell2": {
+          "account": "243705942306"
+        },
+        "SYD": {
+          "account": "352487128082"
+        },
+        "SYD - Cell1": {
+          "account": "630291408315"
+        },
+        "SYD - Cell2": {
+          "account": "731997013353"
+        },
+        "YUL": {
+          "account": "280608668128"
+        },
+        "YUL - Cell1": {
+          "account": "616657649725"
+        },
+        "YUL - Cell2": {
+          "account": "872145348394"
+        }
+      }
+    }
+  }
+}
