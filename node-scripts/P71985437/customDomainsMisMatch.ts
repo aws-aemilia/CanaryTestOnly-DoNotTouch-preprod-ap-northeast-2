@@ -5,6 +5,7 @@ import {
   QueryCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { writeFileSync } from "fs";
 import { getIsengardCredentialsProvider } from "../Isengard/credentials";
 import { BranchItem, DomainItem, InvalidApps, LambdaEdgeConfig } from "./types";
@@ -21,6 +22,9 @@ const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const fs = require("fs");
 
+let numberOfUpdatedApps = 0;
+const maxNumberOfUpdatedApps = 5;
+
 // This script reads all the files in a directory by name "AppIds"
 // The name of the file should be "region".csv
 // Each line should contain the appId of the SSR app being tested
@@ -28,7 +32,8 @@ const fs = require("fs");
 async function readFileAndGetAppsWithInvalidCustomDomains(
   srcDir: string,
   controlPlaneAccount: AmplifyAccount,
-  writeModeOn = false
+  bucketName: string,
+  writeModeOn = false,
 ) {
   console.log(`Script will update the Apps?: ${writeModeOn} `);
 
@@ -48,7 +53,7 @@ async function readFileAndGetAppsWithInvalidCustomDomains(
   });
 
   const dynamodb = DynamoDBDocumentClient.from(ddbClient);
-
+ 
   for (const file of allFiles) {
     const regionFromFile = file.split(".")[0].toString();
     console.log("found file for region:", regionFromFile);
@@ -56,6 +61,11 @@ async function readFileAndGetAppsWithInvalidCustomDomains(
     if (regionFromFile !== controlPlaneAccount.region) {
       throw new Error("The input files do not match the region parameter");
     }
+
+    var s3 = new S3Client({region: regionFromFile, credentials: getIsengardCredentialsProvider(
+        controlPlaneAccount.accountId,
+        "OncallOperator"
+    )});
 
     // Read all the appIds for that region
     const allFileContents = fs.readFileSync(`${srcDir}/${file}`, "utf-8");
@@ -73,6 +83,10 @@ async function readFileAndGetAppsWithInvalidCustomDomains(
         continue;
       }
 
+      if(numberOfUpdatedApps >= maxNumberOfUpdatedApps) {
+          break;
+      }
+
       if (appId.includes("applicationId")) {
         continue;
       }
@@ -86,7 +100,9 @@ async function readFileAndGetAppsWithInvalidCustomDomains(
         edgeObjectsByAppId,
         branchesByAppId,
         domainsByAppId,
-        writeModeOn
+        writeModeOn,
+        s3,
+        bucketName
       );
       if (mismatchedApps.length) {
         mismatchedAppAndCustomDomains = [
@@ -110,6 +126,7 @@ async function readFileAndGetAppsWithInvalidCustomDomains(
   }
   // write to aggregate file
   const outputFileName = `P71985437/MisMatchedCustomDomains/ALL_REGIONS.csv`;
+  
   writeFile(outputFileName, allMismatchedAppAndCustomDomains);
 }
 
@@ -121,13 +138,16 @@ async function getMisMatchedCustomDomains(
   edgeObjectsByAppId: Map<string, LambdaEdgeConfig>,
   branchesByAppId: Map<string, BranchItem[]>,
   domainsByAppId: Map<string, DomainItem[]>,
-  writeModeOn: boolean
+  writeModeOn: boolean,
+  s3: any,
+  bucketName: string
 ): Promise<InvalidApps[]> {
   const appConfig = await getEdgeConfig(dynamodb, appId, edgeObjectsByAppId);
 
   if (!appConfig){
     console.error(`WARNING: App ${appId} was not found in LambdaEdgeConfig. Either the App was deleted or the input file is wrong`)
   }
+
 
   if (!appConfig?.customDomainIds || !appConfig?.customDomainIds.size) {
     return [];
@@ -170,7 +190,8 @@ async function getMisMatchedCustomDomains(
     const customDomainConfig = await getEdgeConfig(
       dynamodb,
       domainId,
-      edgeObjectsByAppId
+      edgeObjectsByAppId,
+      true
     );
 
     if (!customDomainConfig) {
@@ -243,6 +264,7 @@ async function getMisMatchedCustomDomains(
         appId: appConfig.appId,
         customDomainId: customDomainConfig.appId,
         branch: appBranchNameInBranchConfig,
+        updateTime: appConfig.updateTime
       });
       console.log(
         `ERROR: Mismatch in ssrDistribution for app: ${appConfig.appId} and custom domain : ${customDomainConfig.appId}`
@@ -251,8 +273,12 @@ async function getMisMatchedCustomDomains(
         dynamodb,
         appConfig,
         customDomainConfig,
-        writeModeOn
+        writeModeOn,
+        s3,
+        bucketName
       );
+
+      numberOfUpdatedApps = numberOfUpdatedApps + 1;
     }
   }
 
@@ -289,12 +315,22 @@ async function updateCustomDomainConfigFromAppConfig(
   dynamodb: DynamoDBDocumentClient,
   appConfig: LambdaEdgeConfig,
   customDomainConfig: LambdaEdgeConfig,
-  writeModeOn: boolean
+  writeModeOn: boolean,
+  s3:any,
+  bucketName: string
 ) {
   //console.log("ORIGINAL App Config:"+JSON.stringify(appConfig))
   //console.log("\n")
   //console.log("ORIGINAL Custom Domain Config:"+ JSON.stringify(customDomainConfig))
   //console.log("\n")
+
+  const date = new Date();
+
+  const keySuffix =  date.toLocaleDateString()+"/"+date.getHours()+"/"+date.getMinutes();
+  // Write Original
+  if(writeModeOn) {
+    await writeToS3(customDomainConfig, customDomainConfig.appId + "/original/" + keySuffix, s3, bucketName)
+  }
 
   customDomainConfig = {
     appId: customDomainConfig.appId,
@@ -303,6 +339,7 @@ async function updateCustomDomainConfigFromAppConfig(
     branchConfig: appConfig.branchConfig,
     customRuleConfigs: appConfig.customRuleConfigs,
     originKey: appConfig.originKey,
+    updateTime: customDomainConfig.updateTime
     //customDomainIds: customDomainConfig.customDomainIds
   };
 
@@ -314,6 +351,7 @@ async function updateCustomDomainConfigFromAppConfig(
     // console.log("ORIGINAL Custom Domain Config:"+ JSON.stringify(customDomainConfig, null, 2))
     // console.log("\n")
     await updateCustomDomainConfig(dynamodb, customDomainConfig);
+    await writeToS3(customDomainConfig, customDomainConfig.appId + "/updated/" + keySuffix, s3, bucketName)
   }
 }
 
@@ -343,12 +381,42 @@ async function getBranch(
   return branches.Items as BranchItem[];
 }
 
+async function writeToS3(
+    data: LambdaEdgeConfig,
+    keySuffix: string,
+    s3: any,
+    bucketName: string
+  ) {
+    const bucketParams = {
+        Bucket: bucketName,
+        // Specify the name of the new object. For example, 'index.html'.
+        // To create a directory for the object, use '/'. For example, 'myApp/package.json'.
+        Key: "customdomains_mismatch/"+keySuffix,
+        // Content of the new object.
+        Body: Buffer.from(JSON.stringify(data)),
+      };
+    try {
+        const data = await s3.send(new PutObjectCommand(bucketParams));
+        console.log(
+            "Successfully uploaded object: " +
+              bucketParams.Bucket +
+              "/" +
+              bucketParams.Key
+          );
+        return data;
+      } catch (err) {
+        console.log("Error", err);
+      }
+  }
+
 async function getEdgeConfig(
   dynamodb: DynamoDBDocumentClient,
   appId: string,
-  edgeObjectsByAppId: Map<string, LambdaEdgeConfig>
+  edgeObjectsByAppId: Map<string, LambdaEdgeConfig>,
+  skipCache = false
 ): Promise<LambdaEdgeConfig | undefined> {
-  if (edgeObjectsByAppId.has(appId)) {
+
+  if (!skipCache && edgeObjectsByAppId.has(appId)) {
     return edgeObjectsByAppId.get(appId);
   }
 
@@ -373,6 +441,7 @@ async function getEdgeConfig(
     customDomainIds: item.Item.customDomainIds,
     hostNameConfig: item.Item.hostNameConfig,
     originKey: item.Item.originKey,
+    updateTime: item.Item.updateTime
   };
 
   edgeObjectsByAppId.set(appId, lambdaEdgeObject);
@@ -384,8 +453,6 @@ async function updateCustomDomainConfig(
   dynamodb: DynamoDBDocumentClient,
   customDomainConfig: LambdaEdgeConfig
 ) {
-  console.log(`WRITING: ${JSON.stringify(customDomainConfig)}`);
-
   const appId = customDomainConfig.appId;
   //console.log(`APPID: ${appId}`)
   const params = {
@@ -398,9 +465,10 @@ async function updateCustomDomainConfig(
       ":branchConfig": customDomainConfig.branchConfig,
       ":hostNameConfig": customDomainConfig.hostNameConfig,
       ":originKey": customDomainConfig.originKey,
+      ":customRuleConfigs": customDomainConfig.customRuleConfigs
     },
     UpdateExpression:
-      "set config = :config, branchConfig = :branchConfig, hostNameConfig = :hostNameConfig, originKey=:originKey",
+      "set config = :config, hostNameConfig = :hostNameConfig, branchConfig = :branchConfig, customRuleConfigs=:customRuleConfigs, originKey=:originKey"
   };
   await sleep(100);
   await dynamodb.send(new UpdateCommand(params));
@@ -444,6 +512,7 @@ function writeFile(outputFile: string, data: InvalidApps[]) {
     ],
     append: false,
   });
+
   csvWriter
     .writeRecords(data)
     .then(console.log(`Wrote ${data.length} records`));
@@ -471,11 +540,17 @@ const main = async () => {
       type: "boolean",
       default: false,
     })
+    .option("bucket", {
+        describe:
+          "s3 bucket to for storing audit records",
+        type: "string",
+        demandOption: true,
+      })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, writeModeOn } = args;
+  const { stage, region, writeModeOn, bucket } = args;
 
   const account = await controlPlaneAccount(stage as Stage, region as Region);
 
@@ -484,6 +559,7 @@ const main = async () => {
   await readFileAndGetAppsWithInvalidCustomDomains(
     "P71985437/AppIds",
     account,
+    bucket,
     writeModeOn
   );
 };

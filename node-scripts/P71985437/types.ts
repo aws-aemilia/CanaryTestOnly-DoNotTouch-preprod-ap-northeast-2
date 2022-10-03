@@ -16,6 +16,7 @@ export interface LambdaEdgeConfig {
         [domainName: string]: HostNameConfigs;
     };
     originKey: string;
+    updateTime: string;
 }
 
 export interface HostNameConfigs {
@@ -43,10 +44,16 @@ export interface InvalidApps {
     "appId": string,
     "customDomainId": string,
     "branch": string,
+    "updateTime": string | undefined,
 }
 
 export interface CustomRuleConfigs {
     "source": string,
     "status": string,
     "target": string,
+}
+
+export interface AmplifyIssueTimeLine {
+    "region": string,
+    "cutoffTime": string
 }
