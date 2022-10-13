@@ -20,6 +20,25 @@ import { KonaFileReader } from "./KonaFileReader";
 import * as path from "path";
 import { BatchIterator } from "../utils/BatchIterator";
 
+
+/**
+ * Branch A
+ * 
+ * 08/01 Billing Start
+ * 
+ * 
+ * 
+ * 09/01 Kona files (contains Branch A)
+ * 
+ * 
+ * Deleted Branch A + STOP metering message sent
+ * 
+ * 09/26 Generated Invalid ARNs based on Branche DDB --> invalid ARNS = ARNS not longer exist in DB
+ * 
+ * 09/28 RemoSnapshot -> branchARNs + storagePrefix currently active 
+ */
+
+
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
     .usage(
@@ -222,6 +241,7 @@ fields @timestamp, @message
 | filter ispresent(arn)
 | parse arn "*/*/*" as appId, branch, jobId
 | display concat(appId,"/branches/",branch) as branchArn
+| limit 10000
   `;
   return doQuery(
     account,

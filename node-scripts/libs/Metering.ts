@@ -1,11 +1,8 @@
-import RIPHelper from "@amzn/rip-helper";
 import {
-  controlPlaneAccount,
-  getIsengardCredentialsProvider,
-  Region,
-  Stage,
-} from "../Isengard";
-import { SNSClient, PublishCommand } from "@aws-sdk/client-sns"; // ES Modules import
+  PublishCommand,
+  SNSClient,
+  PublishBatchCommand,
+} from "@aws-sdk/client-sns"; // ES Modules import
 import { parseBranchArn } from "../utils/arns";
 
 type MeteringType = "build-time" | "hosting-storage" | "hosting-data-transfer";
@@ -13,34 +10,19 @@ type MeteringType = "build-time" | "hosting-storage" | "hosting-data-transfer";
 // It doesn't matter which region the metering msg goes to, so we use wave1
 const meteringQueues = {
   "build-time": {
-    queueUrls: {
-      gamma:
-        "https://sqs.us-west-2.amazonaws.com/886159994414/gamma-us-west-2-MeteringBuildTimeQueue.fifo",
-      prod: "https://sqs.ca-central-1.amazonaws.com/216941712347/prod-ca-central-1-MeteringBuildTimeQueue.fifo",
-    },
     topicArns: {
       gamma: "arn:aws:sns:us-west-2:886159994414:MeteringBuildTimeTopic.fifo",
       prod: "arn:aws:sns:ca-central-1:216941712347:MeteringBuildTimeTopic.fifo",
     },
   },
   "hosting-storage": {
-    queueUrls: {
-      gamma:
-        "https://sqs.us-west-2.amazonaws.com/886159994414/gamma-us-west-2-MeteringHostingStorageQueue.fifo",
-      prod: "https://sqs.ca-central-1.amazonaws.com/216941712347/prod-ca-central-1-MeteringHostingStorageQueue.fifo",
-    },
     topicArns: {
       gamma:
         "arn:aws:sns:us-west-2:886159994414:MeteringHostingStorageTopic.fifo",
-      prod: "arn:aws:sns:ca-central-1:216941712347:MeteringHostingStorageTopic.fifo",
+      prod: "arn:aws:sns:ca-central-1:301051227175:MeteringHostingStorageTopic.fifo", // actually preprod yul
     },
   },
   "hosting-data-transfer": {
-    queueUrls: {
-      gamma:
-        "https://sqs.us-west-2.amazonaws.com/886159994414/gamma-us-west-2-MeteringDataTransferQueue.fifo",
-      prod: "https://sqs.ca-central-1.amazonaws.com/216941712347/prod-ca-central-1-MeteringDataTransferQueue.fifo",
-    },
     topicArns: {
       gamma:
         "arn:aws:sns:us-west-2:886159994414:MeteringHostingDataTransferTopic.fifo",
@@ -92,7 +74,7 @@ interface BaseMeteringRecord {
   }
 ````
  */
-interface RemoRecord extends BaseMeteringRecord {
+export interface RemoRecord extends BaseMeteringRecord {
   accountId: string;
   /**
    * Version of this metering message.
@@ -133,11 +115,7 @@ interface RemoRecord extends BaseMeteringRecord {
 export class MeteringServiceClient {
   private client: SNSClient | undefined;
 
-  constructor(
-    private stage: "gamma" | "prod",
-    private region: string,
-    private dryRun = false
-  ) {}
+  constructor(private stage: "gamma" | "prod", private dryRun = false) {}
 
   public static generateStopMessage(
     branchArn: string,
@@ -159,6 +137,7 @@ export class MeteringServiceClient {
     //   storagePathPrefix:
     //     "d2ivfnnt8ut41u/pr-29/0000000008/zzsxm2w5angtbgcyolelhnhzqa",
     //   storageBytes: null,
+    // skipValidation: true,
     // };
 
     return {
@@ -173,7 +152,43 @@ export class MeteringServiceClient {
       platformToken: null,
       productCode: null,
       storageBytes: null,
+      skipValidation: true,
     };
+  }
+
+  public async batchSendMessage(
+    batchId: string,
+    meteringType: MeteringType,
+    messages: string[],
+    messageGroupId: string
+  ) {
+    const topicArn: string =
+      meteringQueues[meteringType]["topicArns"][this.stage];
+
+    const cmd = new PublishBatchCommand({
+      TopicArn: topicArn,
+      PublishBatchRequestEntries: messages.map((m, i) => ({
+        Id: `${batchId}-${i}`,
+        Message: m,
+        MessageGroupId: messageGroupId,
+      })),
+    });
+
+    if (this.dryRun) {
+      console.log(`sending message to ${topicArn}: `, cmd.input);
+      return;
+    }
+
+    const cmdOutput = await this.getSnsClient().then((c) => {
+      return c.send(cmd);
+    });
+
+    // console.log(JSON.stringify(cmdOutput, null, 2));
+    if (cmdOutput?.Failed!.length > 0) {
+      throw new Error("Send failed");
+    }
+
+    return cmdOutput;
   }
 
   public async sendMessage(
@@ -190,15 +205,19 @@ export class MeteringServiceClient {
       MessageGroupId: messageGroupId,
     });
 
-    console.log(`sending message to ${topicArn}: `, publishCommand.input);
+    // console.log(`sending message to ${topicArn}: `, publishCommand.input);
+
+    const publishCommandOutput = await this.getSnsClient().then((c) => {
+      if (this.dryRun) {
+        return;
+      }
+
+      c.send(publishCommand);
+    });
 
     if (this.dryRun) {
       return;
     }
-
-    const publishCommandOutput = await this.getSnsClient().then((c) =>
-      c.send(publishCommand)
-    );
 
     console.log(JSON.stringify(publishCommandOutput, null, 2));
     return publishCommandOutput;
@@ -209,18 +228,10 @@ export class MeteringServiceClient {
       return this.client;
     }
 
-    const account = await controlPlaneAccount(
-      this.stage as Stage,
-      this.region as Region
-    );
-
-    const credentials = getIsengardCredentialsProvider(
-      account.accountId,
-      "OnCallOperator"
-    );
+    console.info("Creating SNS client for region: ", "ca-central-1");
     this.client = new SNSClient({
-      region: account.region,
-      credentials,
+      region: this.stage === "prod" ? "ca-central-1" : "us-west-2",
+      maxAttempts: 15,
     });
 
     return this.client;
