@@ -56,6 +56,16 @@ const getIntegTestsConfig = async () => {
 
   console.log("//======== integrationTestAccounts =========");
   console.log(toJavaMapBuilderPut(testAccounts));
+
+  const controlPlaneAccountIds: Record<string, string> = {};
+
+  accounts.forEach((account) => {
+    controlPlaneAccountIds[`${account.stage}.${account.region}.controlPlaneAccountId`] = account.accountId
+  });
+
+  console.log("//======== controlPlaneAccounts =========");
+  console.log(toJavaMapBuilderPut(controlPlaneAccountIds));
+
 };
 
 /**
