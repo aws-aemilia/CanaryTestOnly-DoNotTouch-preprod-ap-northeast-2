@@ -29,9 +29,11 @@ const buildCFNHostingDataplaneMapping = async () => {
     for (const stage of controlPlaneStages) {
       cfnMap[region] = cfnMap[region] ?? {};
 
+      const dataPlaneStage = stage === "preprod" ? "gamma" : stage;
+
       const dataPlaneAccountsList = await dataPlaneAccounts({
         // preprod control plane uses gamma stack
-        stage: (stage === "preprod" ? "gamma" : stage) as Stage,
+        stage: dataPlaneStage as Stage,
         region: region as Region,
       });
 
@@ -48,7 +50,10 @@ const buildCFNHostingDataplaneMapping = async () => {
 
       const hostingGatewayRole =
         dataPlaneAccountsList.length > 0
-          ? toExecutionRoleArn(stage, dataPlaneAccountsList[0].accountId)
+          ? toExecutionRoleArn(
+              dataPlaneStage,
+              dataPlaneAccountsList[0].accountId
+            )
           : noAccountMarker;
 
       cfnMap[region][stage] = hostingGatewayRole;
