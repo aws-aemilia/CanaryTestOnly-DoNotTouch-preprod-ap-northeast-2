@@ -1,6 +1,21 @@
 import { exec } from "child_process";
 import { Credentials } from "../types";
 
+/**
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ * THIS FILE IS DEPRECATED!!!!
+ *
+ * PLEASE USE THIS INSTEAD:
+ *
+ * import { getIsengardCredentialsProvider } from "../Isengard";
+ */
+
 interface StdIoResp {
   stdout: string;
   stderr: string;

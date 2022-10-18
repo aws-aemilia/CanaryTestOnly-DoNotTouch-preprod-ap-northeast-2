@@ -20,7 +20,8 @@
     "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
     "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
     "stopCacheBusting": "ts-node stopCacheBusting.ts",
-    "mapAppIds": "ts-node OpsTools/mapAppIds.ts"
+    "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
+    "createCustomDomains": "ts-node custom-domain-maker"
   },
   "author": "",
   "license": "ISC",
@@ -63,6 +64,7 @@
     "@types/aws-sdk": "^2.7.0",
     "@types/command-line-args": "^5.0.0",
     "@types/crypto-js": "^4.1.1",
+    "@types/inquirer": "9.0.1",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^14.14.35",
     "@types/ramda": "^0.28.14",

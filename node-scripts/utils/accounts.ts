@@ -1,5 +1,19 @@
 import { AmplifyAccount } from "../types";
 
+/**
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ * THIS IS DEPRECATED!!!
+ *
+ * PLEASE USE THIS INSTEAD:
+ *
+ * import { controlPlaneAccounts } from '../Isengard/accounts';
+ */
 export const accounts: AmplifyAccount[] = [
   { region: "us-west-2", accountId: "357128036178", stage: "test" },
   { region: "us-west-2", accountId: "033345365959", stage: "beta" },
