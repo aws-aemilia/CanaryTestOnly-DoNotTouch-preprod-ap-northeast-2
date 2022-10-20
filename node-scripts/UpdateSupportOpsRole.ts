@@ -32,7 +32,7 @@ const main = async () => {
       console.log(grantUserPermissionResponse);
     } catch (e) {
       if (
-        e.message ===
+          (e as Error).message ===
         "Unable to grant user permission: User Permission already exists"
       ) {
         console.log("User Permission already exists. skipping...");
