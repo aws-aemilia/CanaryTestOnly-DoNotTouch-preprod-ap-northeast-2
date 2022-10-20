@@ -15,8 +15,8 @@ import {
 const checkPreRequisites = async (
   namedSecretLocations: NamedSecretLocations
 ) => {
-  const { edgeLambda, integTest, gatewayA, gatewayB } = namedSecretLocations;
-  const others = [integTest, ...gatewayB];
+  const { edgeLambda, integTest, hostingDataplaneIntegTest, gatewayA, gatewayB } = namedSecretLocations;
+  const others = [integTest, hostingDataplaneIntegTest,  ...gatewayB];
 
   const edgeLambdaSecret = await edgeLambda.secretStore.readSecret(
     edgeLambda.account
@@ -58,7 +58,7 @@ const checkPreRequisites = async (
 };
 
 const rotateSecret = async (namedSecretLocations: NamedSecretLocations) => {
-  const { edgeLambda, integTest, gatewayA, gatewayB } = namedSecretLocations;
+  const { edgeLambda, integTest, hostingDataplaneIntegTest, gatewayA, gatewayB } = namedSecretLocations;
 
   const edgeLambdaSecret = await edgeLambda.secretStore.readSecret(
     edgeLambda.account
@@ -80,6 +80,7 @@ const rotateSecret = async (namedSecretLocations: NamedSecretLocations) => {
   console.log("Writing new secret to EdgeLambda and integ test locations");
   await edgeLambda.secretStore.writeSecret(edgeLambda.account, newSecretValue);
   await integTest.secretStore.writeSecret(integTest.account, newSecretValue);
+  await hostingDataplaneIntegTest.secretStore.writeSecret(hostingDataplaneIntegTest.account, newSecretValue);
 
   console.log(
     "Waiting 30 seconds to allow inflight SSR request that used the old secret to complete..."
@@ -100,6 +101,7 @@ const rotateSecret = async (namedSecretLocations: NamedSecretLocations) => {
       ...gatewayA,
       ...gatewayB,
       integTest,
+      hostingDataplaneIntegTest
     ])
   );
 };
