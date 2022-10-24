@@ -1,10 +1,9 @@
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { getAccount, getArg, getArgs, getRegion, getStage } from "../P61637409/helpers";
+import { DynamoDBDocumentClient, paginateScan, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
 import { mkdirSync, writeFileSync } from "fs";
-import Isengard from "../utils/isengardCreds";
-import { exhaustiveScan } from "../P61637409/helpers/dynamo-util";
+import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../Isengard";
+import yargs from "yargs";
 
 export interface Credentials {
     accessKeyId: string;
@@ -18,19 +17,11 @@ export interface App {
     accountId: string;
 }
 
-const getAction = (args: string[]) => {
-    const action = getArg("action", args);
-    if (!["get-impact"].includes(action)) {
-        throw new Error(`Invalid action provided: ${action}`);
-    }
-    return action;
-};
-
 const getAppsUsingBasicAuthAndSSR = async (
     tableName: string,
     ddbClient: DynamoDBDocumentClient
 ) => {
-    const scan = new ScanCommand({
+    const scanCommandInput: ScanCommandInput = {
         TableName: tableName,
         ProjectionExpression:
             "appId,accountId,basicAuthCreds,basicAuthCredsV2,autoBranchCreationConfig,platform",
@@ -41,9 +32,15 @@ const getAppsUsingBasicAuthAndSSR = async (
             "(attribute_exists(basicAuthCreds) OR attribute_exists(basicAuthCredsV2) OR " +
             "attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCreds) OR " +
             'attribute_exists(autoBranchCreationConfig.branchConfig.basicAuthCredsV2)) AND platform = :ssr',
-    });
+    };
 
-    const items = await exhaustiveScan(scan, ddbClient);
+    let items = [];
+    for await (const page of paginateScan(
+        { client: ddbClient },
+        scanCommandInput
+    )) {
+        items.push(...(page.Items || []));
+    }
 
     if (items.length < 1) {
         return [];
@@ -52,41 +49,41 @@ const getAppsUsingBasicAuthAndSSR = async (
     return items as App[];
 };
 
-const getReadOnlyCredentials = async (accountId: string, stage: string) => {
-    // ** USE READ ONLY ROLE **
-    const roleName = stage === "prod" ? "ReadOnly" : "Admin";
-    const credentials = await Isengard.getCredentials(accountId, roleName);
-
-    if (!credentials) {
-        throw new Error("Failed to get isengard creds");
-    }
-
-    return credentials;
-};
-
 async function run() {
-    const args = getArgs();
-    const region = getRegion(args);
-    const stage = getStage(args);
-    const action = getAction(args);
-    const account = getAccount(region, stage);
+
+    const args = await yargs(process.argv.slice(2))
+        .usage(
+            `
+This tool will scan the App table for a given region for apps that use SSR and Basic Auth.
+It will then write the accountIds for the owners of these apps to "GetSSRAppsUsingBasicAuth/output"
+`
+        )
+        .option("stage", {
+            describe: "stage to run the command",
+            type: "string",
+            choices: ["beta", "gamma", "prod"],
+            demandOption: true,
+        })
+        .option("region", {
+            describe: "region to run the command. e.g. us-west-2",
+            type: "string",
+            demandOption: true,
+        })
+        .strict()
+        .version(false)
+        .help().argv;
+
+    const { region, stage} = args
+    const account = await controlPlaneAccount(stage as Stage, region as Region)
     const { accountId } = account;
     console.log('search input')
-    console.log({ region, stage, action, accountId });
-
-    console.log('setup ReadOnly Credentials')
-    const credentials = await getReadOnlyCredentials(accountId, stage);
+    console.log({ region, stage, accountId });
 
     const tableName = `${stage}-${region}-App`;
     console.log(`scanning table: ${tableName}`)
     const ddb = new DynamoDBClient({
-        region,
-        credentials: {
-            accessKeyId: credentials.accessKeyId,
-            secretAccessKey: credentials.secretAccessKey,
-            sessionToken: credentials.sessionToken,
-            expiration: new Date(credentials.expiration),
-        },
+        region: account.region,
+        credentials: getIsengardCredentialsProvider(accountId),
     });
     const ddbClient = DynamoDBDocumentClient.from(ddb);
     const apps = await getAppsUsingBasicAuthAndSSR(tableName, ddbClient);

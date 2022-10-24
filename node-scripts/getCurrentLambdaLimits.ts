@@ -4,8 +4,7 @@ import {
 } from "@aws-sdk/client-service-quotas";
 import yaml from "js-yaml";
 import fs from "fs";
-import Isengard from "./utils/isengardCreds";
-import { AmplifyAccount } from "./types";
+import { controlPlaneAccounts, getIsengardCredentialsProvider } from "./Isengard";
 
 // This script is useful to fetch the current Lambda Concurrency quota that we have on
 // each region per production account. Since we use Lambda@Edge and it consumes Lambda
@@ -18,28 +17,6 @@ import { AmplifyAccount } from "./types";
 // It produces a YAML file at the end with all the values.
 // The script automatically gets credentials from Isengard for each account. So, make
 // sure you have a valid midway token when running it. `midway -o`
-
-const accounts: AmplifyAccount[] = [
-  { region: "eu-west-2", accountId: "499901155257" },
-  { region: "us-east-2", accountId: "264748200621" },
-  { region: "ap-southeast-1", accountId: "148414518837" },
-  { region: "eu-west-1", accountId: "565036926641" },
-  { region: "us-east-1", accountId: "073653171576" },
-  { region: "ap-northeast-1", accountId: "550167628141" },
-  { region: "ap-northeast-2", accountId: "024873182396" },
-  { region: "ap-south-1", accountId: "801187164913" },
-  { region: "ap-southeast-2", accountId: "711974673587" },
-  { region: "eu-central-1", accountId: "644397351177" },
-  { region: "us-west-2", accountId: "395333095307" },
-  { region: "ca-central-1", accountId: "824930503114" },
-  { region: "eu-north-1", accountId: "315276288780" },
-  { region: "eu-west-3", accountId: "693207358157" },
-  { region: "sa-east-1", accountId: "068675532419" },
-  { region: "us-west-1", accountId: "214290359175" },
-  { region: "eu-south-1", accountId: "804516649577" },
-  { region: "ap-east-1", accountId: "574285171994" },
-  { region: "me-south-1", accountId: "183380703454" },
-];
 
 const lambdaEdgeRegions = [
   "us-east-1",
@@ -61,12 +38,10 @@ async function main() {
   const limits: any = {};
   const concurrencyQuotaCode = "L-B99A9384";
 
+  const accounts = await controlPlaneAccounts({stage: "prod"})
+
   for await (const account of accounts) {
     console.log("Fetching credentials for", account.accountId);
-    const credentials = await Isengard.getCredentials(account.accountId);
-    if (!credentials) {
-      throw new Error("Failed to get isengard creds");
-    }
 
     // Add accountId to the response
     limits[account.accountId] = {};
@@ -79,12 +54,7 @@ async function main() {
     for await (const region of regions) {
       const quotas = new ServiceQuotasClient({
         region,
-        credentials: {
-          accessKeyId: credentials.accessKeyId,
-          secretAccessKey: credentials.secretAccessKey,
-          sessionToken: credentials.sessionToken,
-          expiration: new Date(credentials.expiration),
-        },
+        credentials: getIsengardCredentialsProvider(account.accountId)
       });
 
       console.log("Fetching quota for", region);

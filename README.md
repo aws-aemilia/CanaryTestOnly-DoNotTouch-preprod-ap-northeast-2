@@ -86,13 +86,6 @@ ts-node disableAbuseAccount.ts \
 --unblock false
 ```
 
-### Instructions to run GetSSRAppsUsingBasicAuth
-This tool will scan the App table for a givin region for apps that use SSR and Basic Auth.
-It will then write the accountIds for the owners of these apps to `GetSSRAppsUsingBasicAuth/outpout`
-```
-npm run GetSSRAppsUsingBasicAuth -- --region=ca-central-1 --stage=prod --action=get-impact
-```
-
 
 ### Instructions to run cleanupGitHubWebhooks tool
 This tool allows you to cleanup your GitHub Webhooks for a repo. Useful for when you hit the 20 webhook limit.

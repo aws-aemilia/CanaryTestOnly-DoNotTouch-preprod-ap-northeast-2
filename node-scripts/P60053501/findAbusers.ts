@@ -11,8 +11,8 @@ import {
 import { AWSError } from "aws-sdk";
 
 import serviceAccounts from "../utils/static/accounts.json";
-import isengardCreds from "../utils/isengardCreds";
 import sleep from "../utils/sleep";
+import { getIsengardCredentialsProvider } from "../Isengard";
 
 function getAccountIdFromRoleArn(roleArn: string): string | null {
   const regex = new RegExp(/[0-9]+:role/g);
@@ -36,14 +36,9 @@ async function main() {
     console.log(`============ ${serviceAccount.region} ===========`);
 
     const { account, region } = serviceAccount;
-    const creds = await isengardCreds.getCredentials(account);
     const ddb = new DynamoDBClient({
       region: region,
-      credentials: {
-        accessKeyId: creds.accessKeyId,
-        secretAccessKey: creds.secretAccessKey,
-        sessionToken: creds.sessionToken,
-      },
+      credentials: getIsengardCredentialsProvider(account),
     });
 
     const dynamodb = DynamoDBDocumentClient.from(ddb);
