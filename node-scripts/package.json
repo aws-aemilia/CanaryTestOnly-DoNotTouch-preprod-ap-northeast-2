@@ -21,7 +21,11 @@
     "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
     "stopCacheBusting": "ts-node stopCacheBusting.ts",
     "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
-    "createCustomDomains": "ts-node custom-domain-maker"
+    "createCustomDomains": "ts-node custom-domain-maker",
+    "validateGatewayCertificate": "ts-node OpsTools/hostingDataplane/validateGatewayCertificate.ts",
+    "registerComputeCell": "ts-node OpsTools/computeService/registerCellAtControlPlane.ts",
+    "unsafeResetSecret": "ts-node OpsTools/computeService/manageGatewaySecret/unsafeResetSecret.ts",
+    "addGatewayDnsRecord": "ts-node OpsTools/hostingDataplane/addGatewayDnsRecord.ts"
   },
   "author": "",
   "license": "ISC",
