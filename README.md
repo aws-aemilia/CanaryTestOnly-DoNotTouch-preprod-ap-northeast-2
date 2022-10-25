@@ -27,6 +27,15 @@ node {script_name}.js
 npx ts-node {script_name}.ts
 ```
 
+## Contingent Authorization
+
+For Isengard contingent authorization you will need to set one of the following environment variables to access accounts marked as production:
+
+- `ISENGARD_MCM` - MCM ID 
+- `ISENGARD_REVIEW_ID` - Consensus Review ID 
+- `ISENGARD_SIM` - SIM Ticket ID
+
+
 ### Global Query Script
 
 ```

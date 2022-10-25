@@ -1,5 +1,6 @@
 import { Credentials, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
+import { getCAZToken, isContingentAuthNeeded } from "./contingentAuthZ";
 
 const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin', 'Route53Manager'];
 
@@ -11,9 +12,17 @@ const getIsengardCredentials = async (
     throw new Error(`Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`)
   }
 
+  const cazToken: string | undefined = (await isContingentAuthNeeded(
+    accountId,
+    iamRoleName
+  ))
+    ? await getCAZToken(accountId)
+    : undefined;
+
   const creds = await getAssumeRoleCredentials({
     awsAccountID: accountId,
-    iamRoleName
+    iamRoleName,
+    cazToken,
   });
   return {
     ...creds,
