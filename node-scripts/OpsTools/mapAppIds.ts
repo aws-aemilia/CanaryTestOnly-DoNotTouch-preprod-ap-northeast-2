@@ -14,7 +14,7 @@ import {
 } from "../Isengard";
 
 /*
-This ops tool receives a file with AppIds (one per line) and outputs another
+This ops tool receives a file with AppIds & DomainIds (one per line) and outputs another
 file with the corresponding customer account ID for each app. 
 
 Example for how to run it
@@ -37,7 +37,7 @@ const main = async () => {
   const args = await yargs(hideBin(process.argv))
     .usage(
       `
-        Takes a list of appIds from a text file and finds the corresponding
+        Takes a list of appIds and domainIds from a text file and finds the corresponding
         customer account ID in the DynamoDB App table. 
         `
     )
@@ -53,7 +53,7 @@ const main = async () => {
       demandOption: true,
     })
     .option("inputFile", {
-      describe: "The path to the file where the appIds are",
+      describe: "The path to the file where the appIds and domainIds are",
       type: "string",
       demandOption: true,
     })
@@ -81,17 +81,17 @@ const main = async () => {
   const dynamodbClient = new DynamoDBClient({ region, credentials });
   const dynamodb = DynamoDBDocumentClient.from(dynamodbClient);
 
-  for await (const appId of rl) {
+  for await (const domainOrAppId of rl) {
     await sleep(100);
     const customerAccountId = await lookupCustomerAccountId(
       dynamodb,
       stage,
       region,
-      appId
+      domainOrAppId
     );
 
     if (customerAccountId) {
-      outStream.write(`${appId}\t${customerAccountId}\n`);
+      outStream.write(`${domainOrAppId}\t${customerAccountId}\n`);
     }
   }
 
