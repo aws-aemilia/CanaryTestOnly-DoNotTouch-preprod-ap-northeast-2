@@ -1,11 +1,7 @@
 import { createAWSAccount } from "@amzn/isengard";
 import { Region, Stage } from "../types";
 import { isOptInRegion, toRegionName } from "../../utils/regions";
-import {
-  adminRole,
-  oncallOperatorRole,
-  readOnlyRole,
-} from "../roles/standardRoles";
+import { getRolesForStage } from "../roles/standardRoles";
 import { upsertRole } from "../roles/upsertRole";
 import { AccountPurposeFn } from "./accountPuporses/types";
 import { CreateAwsAccountRequest } from "@amzn/isengard/dist/src/accounts/types";
@@ -81,7 +77,7 @@ export const createAmplifyAccount = async (
   const accountId = await getOrCreateAccount(request);
 
   console.log("Creating default roles...");
-  const defaultRoles = [oncallOperatorRole, adminRole, readOnlyRole];
+  const defaultRoles = getRolesForStage(stage);
   for (const defaultRole of defaultRoles) {
     await upsertRole(accountId, defaultRole);
   }
