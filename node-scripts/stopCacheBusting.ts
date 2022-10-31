@@ -21,7 +21,7 @@ import sleep from "./utils/sleep";
 const { hideBin } = require("yargs/helpers");
 
 const DRYRUN_DOMAIN = "d36u6xuby93zq0";
-const ATTACK_THRESHOLD = 1000000;
+const ATTACK_THRESHOLD = 100000;
 
 async function getArgs() {
   return (await yargs(hideBin(process.argv))
