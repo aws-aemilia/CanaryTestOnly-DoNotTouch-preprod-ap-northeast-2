@@ -102,7 +102,7 @@ async function getClients(stage: Stage, airportCode: AirportCode, regionName: Re
   // DynamoDB client for mapping CloudFront domain ID's to distribution ID's
   const dynamoDb = new DynamoDB({
     region: regionName,
-    credentials: getIsengardCredentialsProvider(controlPlaneAccount_.accountId),
+    credentials: getIsengardCredentialsProvider(controlPlaneAccount_.accountId, "FullReadOnly"),
   });
 
   // CloudFront client for removing query parameter from cache key

@@ -77,7 +77,7 @@ const main = async () => {
     crlfDelay: Infinity,
   });
 
-  const credentials = getIsengardCredentialsProvider(account.accountId);
+  const credentials = getIsengardCredentialsProvider(account.accountId, "FullReadOnly");
   const dynamodbClient = new DynamoDBClient({ region, credentials });
   const dynamodb = DynamoDBDocumentClient.from(dynamodbClient);
 
