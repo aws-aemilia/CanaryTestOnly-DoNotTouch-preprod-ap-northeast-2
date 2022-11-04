@@ -5,7 +5,7 @@ import readline from "readline";
 import sleep from "../utils/sleep";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { lookupCustomerAccountId } from "../utils/dynamodb";
+import { lookupCustomerAccountId } from "../dynamodb";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
@@ -77,7 +77,10 @@ const main = async () => {
     crlfDelay: Infinity,
   });
 
-  const credentials = getIsengardCredentialsProvider(account.accountId, "FullReadOnly");
+  const credentials = getIsengardCredentialsProvider(
+    account.accountId,
+    "FullReadOnly"
+  );
   const dynamodbClient = new DynamoDBClient({ region, credentials });
   const dynamodb = DynamoDBDocumentClient.from(dynamodbClient);
 
