@@ -11,6 +11,7 @@ import {
 } from "../Isengard";
 import yargs from "yargs";
 import { deleteCache } from "../Isengard/cache";
+import { increaseIAMRoles } from "../service-quotas";
 import { requestMaxLambdaConcurrency, requestMaxLambdaStorage } from "../SimT";
 import sleep from "../utils/sleep";
 
@@ -80,6 +81,7 @@ Create an Isengard AWS account
             await deleteCache('computeServiceDataPlaneAccounts');
             const cellAccount = await computeServiceDataPlaneAccount(stage, region, cellNumber!)
             await cutTicketsLambdaLimitIncrease(cellAccount)
+            await increaseIAMRoles(cellAccount);
             break;
         case 'dataPlane':
           await createDataPlaneAccount(stage, region, cellNumber);
