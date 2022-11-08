@@ -1,3 +1,5 @@
+import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
+
 import {
   DynamoDBDocumentClient,
   GetCommand,
@@ -66,5 +68,52 @@ export const lookupCustomerAccountId = async (
   } catch (err) {
     console.error("App not found", err);
     return null;
+  }
+};
+
+/**
+ * Checks in the app table to determine if an App exists with the given
+ * appId. Returns true if it does, or false otherwise.
+ *
+ * @param dynamodb Document Client from @aws-sdk/lib-dynamodb
+ * @param stage i.e. beta, gamma, prod
+ * @param region i.e. us-west-2
+ * @param appId The appId to lookup
+ * 
+ * @returns true or false
+ */
+ export const checkAppExists = async (
+  dynamodb: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  appId: string,
+): Promise<boolean> => {
+  try {
+    console.log("Looking up appId in App table", appId);
+    const queryResponse = await dynamodb.send(
+      new GetCommand({
+        TableName: `${stage}-${region}-App`,
+        ProjectionExpression: "appId",
+        Key: {
+          appId
+        }
+      })
+    );
+
+    if (!queryResponse.Item) {
+      console.log("App not found", appId);
+      return false;
+    }
+
+    console.log("App exists", appId);
+    return true;
+  } catch (err) {
+    if (err instanceof ResourceNotFoundException) {
+      console.log("App not found", appId);
+      return false;
+    } else {
+      console.error("Failed to lookup app", appId);
+      throw err;
+    }
   }
 };
