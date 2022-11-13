@@ -73,6 +73,9 @@ const validateAbuseTicket = async (
       `The provided accountId (${accountId}) does not match the accountId found in the ${ticket} ticket (${uniqueAccountIds[0]})`
     );
   }
+
+  // Export ticket ID to environment, as it's needed for Contingent Authorization.
+  process.env["ISENGARD_SIM"] = ticket;
 };
 
 const sendMessage = async (
