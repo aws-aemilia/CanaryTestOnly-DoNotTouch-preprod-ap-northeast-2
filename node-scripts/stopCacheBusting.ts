@@ -15,13 +15,13 @@ import {
   CloudWatchLogs,
   GetQueryResultsCommandOutput,
 } from "@aws-sdk/client-cloudwatch-logs";
-import { capitalize } from "./Isengard/createAccount/createAmplifyAccount";
 import sleep from "./utils/sleep";
+import {capitalize} from "./Isengard/createAccount/createAmplifyAccount";
 
 const { hideBin } = require("yargs/helpers");
 
-const DRYRUN_DOMAIN = "d36u6xuby93zq0";
 const ATTACK_THRESHOLD = 100000;
+const PROD: Stage = "prod"
 
 async function getArgs() {
   return (await yargs(hideBin(process.argv))
@@ -29,18 +29,7 @@ async function getArgs() {
     .option("region", {
       describe: `Region to perform the mitigation (e.g. "pdx", "PDX", "us-west-2").`,
       type: "string",
-    })
-    .option("stage", {
-      describe:
-        'Stage to perform the mitigation. Defaults to "prod", should only ever be "prod" unless testing the script.',
-      type: "string",
-      default: "prod",
-    })
-    .option("dryrun", {
-      describe: `A dry run will test both the detection phase with CloudWatch AND the mitigation phase by changing a
-dummy CloudFront distribution in beta-PDX, regardless of whether a cache-busting attack is taking place.`,
-      type: "boolean",
-      default: false,
+      demandOption: true
     })
     .option("contributors", {
       describe:
@@ -58,27 +47,23 @@ dummy CloudFront distribution in beta-PDX, regardless of whether a cache-busting
       describe: `Override the attack detection phase and immediately perform mitigation on a CloudFront distribution (e.g. "d165wb2oa9rktm" or "E3PJ2DYKW5YZVG").`,
       type: "string",
     })
-    .demandOption(["region"])
+    .alias("r", "region")
     .strict()
     .version(false)
     .help().argv) as {
     region: Region;
-    stage: Stage;
-    dryrun: boolean;
     contributors: number;
     minutes: number;
     distribution: string;
   };
 }
 
-async function getClients(stage: Stage, airportCode: AirportCode, regionName: RegionName, dryrun: boolean) {
+async function getClients(airportCode: AirportCode, regionName: RegionName) {
   console.log("Getting Isengard accounts and SDK clients...");
 
   // Trailing underscore prevents namespace collision between the const and the function
-  const kinesisConsumerAccount_ = await kinesisConsumerAccount(
-    stage,
-    airportCode
-  );
+  const kinesisConsumerAccount_ = await kinesisConsumerAccount(PROD, airportCode);
+  const controlPlaneAccount_ = await controlPlaneAccount(PROD, airportCode);
 
   // CloudWatch clients for querying Contributor Insights (i.e. Alpine rules) and Log Insights to detect attacks
   const cloudWatchConfig = {
@@ -89,15 +74,6 @@ async function getClients(stage: Stage, airportCode: AirportCode, regionName: Re
   };
   const cloudWatch = new CloudWatch(cloudWatchConfig);
   const cloudWatchLogs = new CloudWatchLogs(cloudWatchConfig);
-
-  // For dry runs, use a dummy CloudFront distribution in beta-PDX
-  let controlPlaneAccount_;
-  if (dryrun) {
-    controlPlaneAccount_ = await controlPlaneAccount("beta", "PDX");
-    regionName = "us-west-2";
-  } else {
-    controlPlaneAccount_ = await controlPlaneAccount(stage, airportCode);
-  }
 
   // DynamoDB client for mapping CloudFront domain ID's to distribution ID's
   const dynamoDb = new DynamoDB({
@@ -172,7 +148,6 @@ type LogsInterval = {
 
 async function isCacheBusting(
   cloudWatchLogs: CloudWatchLogs,
-  stage: Stage,
   domainId: string,
   logsInterval: LogsInterval
 ) {
@@ -203,9 +178,7 @@ async function isCacheBusting(
     startTime: startTime,
     endTime: endTime,
     queryString: queryString,
-    logGroupName: `/aws/fargate/AmplifyHostingKinesisConsumer-${capitalize(
-      stage
-    )}/application.log`,
+    logGroupName: `/aws/fargate/AmplifyHostingKinesisConsumer-${capitalize(PROD)}/application.log`,
   });
   if (!response.queryId) {
     throw new Error("QueryId missing, something went wrong.");
@@ -257,8 +230,7 @@ re-run the script with the option "--distribution ${domainId}".`);
 async function domainToApp(
   dynamoDb: DynamoDB,
   domainTable: string,
-  domainId: string,
-  stage: Stage
+  domainId: string
 ) {
   // Map a domain ID to an Amplify app ID
   let queryInput = {
@@ -289,7 +261,7 @@ async function domainToApp(
   }
   console.log(
     `Domain ${domainId} belongs to Amplify app ${appId}
-Genie: https://genie.console.amplify.aws.a2z.com/${stage}/app/${appId}
+Genie: https://genie.console.amplify.aws.a2z.com/${PROD}/app/${appId}
 
 This app is associated with the following CloudFront distributions:`
   );
@@ -350,14 +322,13 @@ async function appToDomainDistros(
 async function getDistributionIds(
   dynamoDb: DynamoDB,
   domainId: string,
-  stage: Stage,
   regionName: RegionName
 ) {
-  const domainTable = `${stage}-${regionName}-Domain`;
-  const appTable = `${stage}-${regionName}-App`;
+  const domainTable = `${PROD}-${regionName}-Domain`;
+  const appTable = `${PROD}-${regionName}-App`;
 
   // 1. Map the domain ID to an app ID
-  let appId = await domainToApp(dynamoDb, domainTable, domainId, stage);
+  let appId = await domainToApp(dynamoDb, domainTable, domainId);
 
   // 2. Map the app ID to the app distribution's ID
   let distributionIds = [await appToAppDistro(dynamoDb, appTable, appId)];
@@ -409,32 +380,17 @@ app will no longer work, and plan to re-enable query strings once the attack has
 }
 
 async function main() {
-  const { region, stage, dryrun, contributors, minutes, distribution } =
+  const { region, contributors, minutes, distribution } =
     await getArgs();
   const regionName = toRegionName(region);
   const airportCode = toAirportCode(region);
 
-  if (dryrun) {
-    console.warn(
-      `You have selected the "dry run" option, intended for testing whether this script works in your environment. It will
-make the usual CloudWatch queries to detect whether a cache busting attack is taking place in the selected stage and
-region (${stage}-${airportCode}), but it will always test the mitigation on a CloudFront distribution (${DRYRUN_DOMAIN})
-in beta-PDX.`
-    );
-    console.log("==========");
-  }
-
   console.log(
-    `Mitigating potential cache-busting attack in ${stage}-${airportCode}...`
+    `Mitigating potential cache-busting attack in ${PROD}-${airportCode}...`
   );
   console.log("==========");
 
-  const { cloudWatch, cloudWatchLogs, dynamoDb, cloudFront } = await getClients(
-    stage,
-    airportCode,
-    regionName,
-    dryrun
-  );
+  const { cloudWatch, cloudWatchLogs, dynamoDb, cloudFront } = await getClients(airportCode, regionName);
 
   if (distribution) {
     console.warn(
@@ -444,7 +400,6 @@ on the CloudFront distribution ${distribution}.`
     let distributionIds = await getDistributionIds(
       dynamoDb,
       distribution,
-      stage,
       regionName
     );
     for (const distributionId of distributionIds) {
@@ -458,12 +413,11 @@ on the CloudFront distribution ${distribution}.`
 
   for (const talker of topTalkers) {
     if (
-      await isCacheBusting(cloudWatchLogs, stage, talker.domainId, { minutes })
+      await isCacheBusting(cloudWatchLogs, talker.domainId, { minutes })
     ) {
       const distributionIds = await getDistributionIds(
         dynamoDb,
         talker.domainId,
-        stage,
         regionName
       );
       for (const distributionId of distributionIds) {
@@ -472,18 +426,6 @@ on the CloudFront distribution ${distribution}.`
     }
   }
 
-  if (dryrun) {
-    console.log("Performing dry run mitigation...");
-    const distributionIds = await getDistributionIds(
-      dynamoDb,
-      DRYRUN_DOMAIN,
-      "beta",
-      "us-west-2"
-    );
-    for (const distributionId of distributionIds) {
-      await changeCachePolicy(cloudFront, distributionId);
-    }
-  }
   // Used for testing on this past attack: https://t.corp.amazon.com/V684712782/communication
   // console.log(await isCacheBusting(cloudWatchLogs, stage, "d165wb2oa9rktm", {
   //   endTime: new Date("2022-08-19T16:30:00").getTime() / 1000,
