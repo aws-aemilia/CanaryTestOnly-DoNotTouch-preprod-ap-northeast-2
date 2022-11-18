@@ -2879,7 +2879,7 @@
         }
       }
     },
-    "AmplifyHostinGatewayService": {
+    "AmplifyHostingGatewayService": {
       "parameters": {
         "ARN": {
           "account": "794147494059"
