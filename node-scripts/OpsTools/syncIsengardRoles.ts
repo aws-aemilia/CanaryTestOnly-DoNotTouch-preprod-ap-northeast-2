@@ -1,0 +1,82 @@
+import { getRolesForStage } from "../Isengard/roles/standardRoles";
+import {
+  AccountsLookupFn,
+  AmplifyAccount,
+  computeServiceControlPlaneAccounts,
+  computeServiceDataPlaneAccounts,
+  controlPlaneAccounts,
+  dataPlaneAccounts,
+  Region,
+} from "../Isengard";
+import { upsertRole } from "../Isengard/roles/upsertRole";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+const accountTypeFns: Record<string, AccountsLookupFn> = {
+  controlPlane: controlPlaneAccounts,
+  dataPlane: dataPlaneAccounts,
+  computeControlPlane: computeServiceControlPlaneAccounts,
+  computeCells: computeServiceDataPlaneAccounts,
+};
+
+const main = async () => {
+  const args = await yargs(hideBin(process.argv))
+    .usage(
+      `
+    Sync all Isengard roles in prod accounts. This is useful when an Isengard Policy 
+    is updated or when the role properties are modified on node-scripts/Isengard/roles/standardRoles.ts
+    `
+    )
+    .option("region", {
+      describe: "i.e. us-west-2. If not present it syncs roles in ALL regions",
+      type: "string",
+    })
+    .option("accountType", {
+      describe: "If not present it syncs roles in ALL accountTypes",
+      type: "string",
+      choices: [
+        "controlPlane",
+        "dataPlane",
+        "computeControlPlane",
+        "computeCells",
+      ],
+    })
+    .strict()
+    .version(false)
+    .help().argv;
+
+  const { accountType } = args;
+  const region = args.region as Region;
+
+  const stage = "prod";
+  const roles = getRolesForStage(stage);
+
+  const rolesToUpdate = [
+    roles.FullReadOnly,
+    roles.ReadOnly,
+    roles.OncallOperator,
+  ];
+
+  const accounts: AmplifyAccount[] = accountType
+    ? await accountTypeFns[accountType]({ stage, region })
+    : (
+        await Promise.all(
+          Object.values(accountTypeFns).map((fn) =>
+            fn({
+              stage,
+              region,
+            })
+          )
+        )
+      ).flatMap((x) => x);
+
+  for (const account of accounts) {
+    console.log(`>> Updating roles for account ${account.email}`);
+    for (const role of rolesToUpdate) {
+      console.log(`>> Updating role ${role.IAMRoleName}`);
+      await upsertRole(account.accountId, role);
+    }
+  }
+};
+
+main().then(console.log).catch(console.error);
