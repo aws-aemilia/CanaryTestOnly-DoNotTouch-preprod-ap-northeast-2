@@ -11,7 +11,7 @@ import { revokeGroupPermission } from "../patchMissingIsengardMethods";
 import { getIAMRole } from "@amzn/isengard/dist/src/roles/queries";
 import {
   deletePolicyTemplateReferenceForIAMRole,
-  detachIAMPolicyFromIAMRole
+  detachIAMPolicyFromIAMRole,
 } from "@amzn/isengard/dist/src/roles/mutations";
 
 export const withCatchOnErrorMsg = <T extends Array<any>, U>(
@@ -99,6 +99,7 @@ const computeDiff = <T>(
   return {
     add: arrayDiff(update, current, comparisonFn),
     remove: arrayDiff(current, update, comparisonFn),
+    same: current.filter((c) => update.some((u) => comparisonFn(c, u))),
   };
 };
 
@@ -109,10 +110,12 @@ export type AmplifyRole = {
   Group?: string;
   PolicyARNs?: string[];
   PolicyTemplateReference?: { PolicyTemplateName: string; OwnerID: string }[];
+  FederationTimeOutMin: number;
 };
 export const upsertRole = async (accountId: string, role: AmplifyRole) => {
   console.log(`Upserting role ${role.IAMRoleName} to account ${accountId}...`);
-  const { IAMRoleName, Description, ContingentAuth } = role;
+  const { IAMRoleName, Description, ContingentAuth, FederationTimeOutMin } =
+    role;
 
   await createIAMRoleIfNotExists({
     AWSAccountID: accountId,
@@ -125,6 +128,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
       IAMRoleName,
       Description,
       ContingentAuth,
+      FederationTimeOutMin,
     },
   });
 
@@ -185,17 +189,27 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
         PolicyTemplateName,
       },
     });
+  }
 
+  for (const isenPolicyToSync of [
+    ...isenPolicyDiff.add,
+    ...isenPolicyDiff.same,
+  ]) {
+    console.log(`syncing policy ${isenPolicyToSync.PolicyTemplateName}`);
     await synchronizeIAMRolePolicyWithPolicyTemplate({
       AWSAccountID: accountId,
       IAMRoleName,
       IsGroupOwned: true,
-      OwnerID,
-      PolicyTemplateName,
+      OwnerID: isenPolicyToSync.OwnerID,
+      PolicyTemplateName: isenPolicyToSync.PolicyTemplateName,
     });
   }
 
-  const groupOwnersDiff = await computeGroupDiff(accountId, IAMRoleName, role.Group);
+  const groupOwnersDiff = await computeGroupDiff(
+    accountId,
+    IAMRoleName,
+    role.Group
+  );
 
   for (const groupToDelete of groupOwnersDiff.delete) {
     await revokeGroupPermissionIfExists({

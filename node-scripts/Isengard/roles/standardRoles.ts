@@ -16,6 +16,7 @@ const oncallOperatorRole: AmplifyRole = {
   ],
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
   Group: POSIX_GROUP,
+  FederationTimeOutMin: 15,
 };
 
 export const adminRoleFn = (stage: Stage): AmplifyRole => ({
@@ -25,6 +26,7 @@ export const adminRoleFn = (stage: Stage): AmplifyRole => ({
   ContingentAuth: 2,
   PolicyARNs: ["arn:aws:iam::aws:policy/AdministratorAccess"],
   Group: stage === "prod" ? undefined : POSIX_GROUP,
+  FederationTimeOutMin: 15,
 });
 
 const readOnlyRole: AmplifyRole = {
@@ -34,7 +36,7 @@ const readOnlyRole: AmplifyRole = {
   ContingentAuth: 0,
   PolicyTemplateReference: [
     {
-      OwnerID: 'harp-sec',
+      OwnerID: "harp-sec",
       PolicyTemplateName: "StandardAuthorizationRolePolicy",
     },
     {
@@ -43,6 +45,7 @@ const readOnlyRole: AmplifyRole = {
     },
   ],
   Group: POSIX_GROUP,
+  FederationTimeOutMin: 90,
 };
 
 const fullReadOnlyRole: AmplifyRole = {
@@ -52,6 +55,7 @@ const fullReadOnlyRole: AmplifyRole = {
   ContingentAuth: 1,
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
   Group: POSIX_GROUP,
+  FederationTimeOutMin: 60,
 };
 
 const lambdaInvokerRole: AmplifyRole = {
@@ -63,14 +67,23 @@ const lambdaInvokerRole: AmplifyRole = {
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
   ],
   Group: POSIX_GROUP,
+  FederationTimeOutMin: 60,
 };
 
-export const getRolesForStage = (stage: Stage): AmplifyRole[] => {
-  return [
-    oncallOperatorRole,
-    adminRoleFn(stage),
-    readOnlyRole,
-    fullReadOnlyRole,
-    lambdaInvokerRole,
-  ];
+export const getRolesForStage = (
+  stage: Stage
+): {
+  ReadOnly: AmplifyRole;
+  OncallOperator: AmplifyRole;
+  FullReadOnly: AmplifyRole;
+  Admin: AmplifyRole;
+  LambdaInvoker: AmplifyRole;
+} => {
+  return {
+    OncallOperator: oncallOperatorRole,
+    Admin: adminRoleFn(stage),
+    ReadOnly: readOnlyRole,
+    FullReadOnly: fullReadOnlyRole,
+    LambdaInvoker: lambdaInvokerRole,
+  };
 };

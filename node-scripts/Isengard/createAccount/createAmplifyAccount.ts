@@ -77,7 +77,7 @@ export const createAmplifyAccount = async (
   const accountId = await getOrCreateAccount(request);
 
   console.log("Creating default roles...");
-  const defaultRoles = getRolesForStage(stage);
+  const defaultRoles = Object.values(getRolesForStage(stage));
   for (const defaultRole of defaultRoles) {
     await upsertRole(accountId, defaultRole);
   }
