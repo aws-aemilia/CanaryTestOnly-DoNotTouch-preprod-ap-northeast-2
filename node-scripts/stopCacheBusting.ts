@@ -17,7 +17,6 @@ import {
 } from "@aws-sdk/client-cloudwatch-logs";
 import sleep from "./utils/sleep";
 import {capitalize} from "./Isengard/createAccount/createAmplifyAccount";
-const prompt = require('prompt-sync')();
 
 const { hideBin } = require("yargs/helpers");
 
@@ -375,9 +374,6 @@ async function changeCachePolicy(cloudFront: CloudFront, distributionId: string,
 }
 
 async function configureCloudFrontDistros(dynamoDb: DynamoDB, cloudFront: CloudFront, domainId: string, regionName: RegionName, queryString: boolean) {
-  // Prompt operator for Contingent Authorization justification
-  process.env["ISENGARD_SIM"] = prompt("Please provide the Short ID (e.g. D12345678) of a Sev1/2/3 SIM ticket to pass Contingent Authorization: ");
-
   const distributionIds = await getDistributionIds(dynamoDb, domainId, regionName);
   for (const distributionId of distributionIds) {
     await changeCachePolicy(cloudFront, distributionId, queryString);
