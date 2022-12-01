@@ -1,5 +1,9 @@
 import fs from "fs";
-import { computeServiceControlPlaneAccounts, computeServiceDataPlaneAccounts } from "../Isengard";
+import {
+  computeServiceControlPlaneAccounts,
+  computeServiceDataPlaneAccounts,
+  dataPlaneAccounts,
+} from "../Isengard";
 import godModeConfig from "./config.json";
 
 /**
@@ -27,49 +31,67 @@ import godModeConfig from "./config.json";
  */
 
 const main = async () => {
-    let updatedConfig = await generateComputeServiceConfig(godModeConfig);
-    writeConfig(updatedConfig)
+  let updatedConfig = await generateComputeServiceConfig(godModeConfig);
+  updatedConfig = await generateHostingGatewayConfig(godModeConfig);
+  writeConfig(updatedConfig);
 };
 
 const generateComputeServiceConfig = async (godModeConfig: any) => {
-    const accounts = await computeServiceControlPlaneAccounts({ stage: "prod" });
-    const cellAccounts = await computeServiceDataPlaneAccounts({ stage: "prod" });
-    const computeServiceConfig = {
-        parameters: {},
-    } as any;
+  const accounts = await computeServiceControlPlaneAccounts({ stage: "prod" });
+  const cellAccounts = await computeServiceDataPlaneAccounts({ stage: "prod" });
+  const computeServiceConfig = {
+    parameters: {},
+  } as any;
 
-    accounts.forEach((account) => {
-        const airportCode = account.airportCode.toUpperCase();
+  accounts.forEach((account) => {
+    const airportCode = account.airportCode.toUpperCase();
         const cells = cellAccounts.filter(cellAccount => cellAccount.airportCode === account.airportCode);
 
-        // Add main compute service account
-        computeServiceConfig.parameters[airportCode] = {
-            account: account.accountId,
-            // We can add more parameters here for each account to be used in Runbooks, for example,
-            // log group names or dynamodb table names.
-        };
+    // Add main compute service account
+    computeServiceConfig.parameters[airportCode] = {
+      account: account.accountId,
+      // We can add more parameters here for each account to be used in Runbooks, for example,
+      // log group names or dynamodb table names.
+    };
 
-        // Add cell accounts
-        cells.forEach((cell) => {
+    // Add cell accounts
+    cells.forEach((cell) => {
             computeServiceConfig.parameters[`${airportCode} - Cell${cell.cellNumber}`] = {
-                account: cell.accountId,
-                // Add more parameters here if needed for each cell account to be used in Runbooks
-            };
-        });
+        account: cell.accountId,
+        // Add more parameters here if needed for each cell account to be used in Runbooks
+      };
     });
+  });
 
-    // @ts-ignore
-    godModeConfig.services["AmplifyComputeService"] = computeServiceConfig;
-    return godModeConfig;
+  // @ts-ignore
+  godModeConfig.services["AmplifyComputeService"] = computeServiceConfig;
+  return godModeConfig;
+};
+const generateHostingGatewayConfig = async (godModeConfig: any) => {
+  const accounts = await dataPlaneAccounts({ stage: "prod" });
+  const config = {
+    parameters: {},
+  } as any;
+
+  accounts.forEach((account) => {
+    const airportCode = account.airportCode.toUpperCase();
+    config.parameters[airportCode] = {
+      account: account.accountId,
+    };
+  });
+
+  // @ts-ignore
+  godModeConfig.services["AmplifyHostingGatewayService"] = config;
+  return godModeConfig;
 };
 
 const writeConfig = (config: any) => {
-    fs.writeFileSync("./config.json", JSON.stringify(config, null, 2));
-}
+  fs.writeFileSync("./config.json", JSON.stringify(config, null, 2));
+};
 
 main()
-    .then()
-    .catch((e) => {
-        console.log("\nSomething went wrong");
-        console.log(e);
-    });
+  .then()
+  .catch((e) => {
+    console.log("\nSomething went wrong");
+    console.log(e);
+  });
