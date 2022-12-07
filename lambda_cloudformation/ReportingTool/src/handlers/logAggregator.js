@@ -10,15 +10,30 @@ exports.handler = async function(input, context) {
     input.Records.forEach(function(record) {
         var payload = Buffer.from(record.kinesis.data, "base64");
         var unZippedData = zlib.gunzipSync(payload)
-        var logs = JSON.parse(unZippedData.toString("ascii"));
+        
+        let logs;
+
+        try {
+            logs = JSON.parse(unZippedData.toString("ascii"));
+        } catch (error) {
+            console.error("Error parsing unZippedData: " + unZippedData.toString("ascii"), error);
+            return;
+        }
+
         var service = logs.logGroup
         console.log(logs)
         var account = logs.owner;
         logs.logEvents.forEach(log => logEvents.push({
-            message: JSON.stringify({log: log.message, region:getRegion(account), service: service}),
+            message: JSON.stringify({
+                log: transformMessage(log.message, service),
+                region:getRegion(account),
+                service: service
+            }),
             timestamp: Number(log.timestamp)
         }))
     })
+
+    logEvents.sort((a, b) => a.timestamp - b.timestamp);
 
     let logStreamName = uuidv4().replace(/-/g, '');
 
@@ -33,5 +48,50 @@ exports.handler = async function(input, context) {
         logGroupName: "ServiceLogs",
         logStreamName: logStreamName,
     };
-    await cloudwatchlogs.putLogEvents(putLogEventsParams).promise();
+    try {
+        await cloudwatchlogs.putLogEvents(putLogEventsParams).promise();
+    } catch (error) {
+        console.error("Error publishing logs", error);
+    }
+};
+
+const transformMessage = (message, service) => {
+    const buildServiceLogGroups = [
+        "AWSCodeBuild",
+        "PostJobHandler",
+        "GitHubValidationHandler",
+        "IncomingWebhookHandler",
+        "CodeCommitHandler",
+        "JobHealthCheck",
+        "WebHookHandler",
+        "WebPreviewHandler",
+        "TriggerBuild",
+        "RunNextJob",
+        "BuildSecretsHandler",
+        "AmplifyWebhookAPIAccessLogs",
+        "AmplifyWebhookPreviewAPIAccessLogs",
+        "AmplifyIncomingWebhookAPIAccessLogs",
+        "AmplifyCodeCommitWebhookAPIAccessLogs"
+    ];
+
+    const isBuildService = buildServiceLogGroups.findIndex(logGroup => service.includes(logGroup));
+
+    if (isBuildService === -1) {
+        return message;
+    }
+
+    const messageParts = message.split(" CloudWatchMetricsHelper: ");
+
+    if (messageParts.length === 2) {
+        message = messageParts[1];
+    }
+
+    try {
+        const jsonMessage = JSON.parse(message);
+        return jsonMessage;
+    } catch (e) {
+        console.error("Error parsing JSON", e);
+    }
+
+    return message;
 };
