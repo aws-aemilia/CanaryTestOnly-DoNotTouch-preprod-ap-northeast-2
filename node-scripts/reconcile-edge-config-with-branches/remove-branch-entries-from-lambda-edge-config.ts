@@ -63,7 +63,9 @@ function getUpdateExpressionAndExpressionAttributeNamesForBranchesToBeRemoved(
     );
 
     const branchToRemove = mutableBranchesToRemove.pop()!;
-    expressionAttributeNames[branchNameExpression] = branchToRemove.branchName;
+    expressionAttributeNames[branchNameExpression] = formatBranchName(
+      branchToRemove.branchName
+    );
     numberCreated += 1;
   } while (numberCreated < 10 && mutableBranchesToRemove.length > 0);
 
@@ -71,4 +73,15 @@ function getUpdateExpressionAndExpressionAttributeNamesForBranchesToBeRemoved(
     updateExpression: `REMOVE ${updateExpressions.join(",")}`,
     expressionAttributeNames,
   };
+}
+
+// https://code.amazon.com/packages/AWSAmplifyDeploymentProcessor/blobs/5f01b64684e574dbef6b8c6d57b27746bec9331c/--/src/runner/helpers/ddbHelper.ts#L276
+function formatBranchName(branchName: string): string {
+  // Entries in the branchConfig property are modified from the original branchName
+  // All none alphanumeric characters are replaced with "-", then all leading and trailing "-" are stripped
+  return branchName
+    .toLowerCase()
+    .replace(/[^-a-z0-9]/gi, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 }

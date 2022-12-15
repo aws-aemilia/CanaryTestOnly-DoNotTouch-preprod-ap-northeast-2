@@ -61,7 +61,6 @@ const prompt = promptFunc();
     );
 
     console.log("Existing branches for app:\n", existingBranches);
-    console.log("Branches in LambdaEdgeConfig:\n", edgeConfigBranches);
 
     if (edgeConfigBranchesThatShouldBeDeleted.length === 0) {
       console.log(
@@ -72,7 +71,7 @@ const prompt = promptFunc();
 
     console.log(
       `The following branches will be removed from the LambdaEdgeConfig table id: ${lambdaEdgeConfigId}\n`,
-      edgeConfigBranchesThatShouldBeDeleted
+      JSON.stringify(edgeConfigBranchesThatShouldBeDeleted, null, 2)
     );
 
     if (isDryRun) {
