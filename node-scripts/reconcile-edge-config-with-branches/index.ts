@@ -2,6 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { getReconcileParameters } from "./get-reconcile-parameters";
 import { getBranchesForEdgeConfigComparison } from "./get-branches-for-edge-config-comparison";
+import { getDomainIdsForApp } from "./get-domain-ids-for-app";
 import { getEdgeConfigBranches } from "./get-edge-config-branches";
 import { findOrphanedEdgeConfigEntries } from "./find-orphanes-edge-config-entries";
 import { removeBranchEntriesFromLambdaEdgeConfig } from "./remove-branch-entries-from-lambda-edge-config";
@@ -10,12 +11,6 @@ import promptFunc from "prompt-sync";
 const prompt = promptFunc();
 
 (async function () {
-
-  console.log(
-    "This script requires additional work to clean up all of the domain entries in the LambdaEdgeConfig table that duplicate the AppId entry. This will be done in a follow up CR."
-  );
-  process.exit(-99);
-
   const { appId, credentials, isDryRun, regionAccount } =
     await getReconcileParameters();
 
@@ -31,50 +26,76 @@ const prompt = promptFunc();
     regionAccount,
   });
 
-  const edgeConfigBranches = await getEdgeConfigBranches({
+  const domains = await getDomainIdsForApp({
     appId,
     documentClient,
+    regionAccount,
   });
 
-  const edgeConfigBranchesThatShouldBeDeleted = findOrphanedEdgeConfigEntries({
-    existingBranches,
-    edgeConfigBranches,
-  });
+  const lambdaEdgeConfigIdsFromDomains = domains.map(
+    (oneDomain) => oneDomain.domainId
+  );
 
-  console.log("Existing branches for app:\n", existingBranches);
-  console.log("Branches in LambdaEdgeConfig:\n", edgeConfigBranches);
+  const lambdaEdgeConfigIdsToUpdate: string[] = [
+    appId,
+    ...lambdaEdgeConfigIdsFromDomains,
+  ];
 
-  if (edgeConfigBranchesThatShouldBeDeleted.length === 0) {
+  console.log("lambdaEdgeConfigIdsToUpdate", lambdaEdgeConfigIdsToUpdate);
+
+  for (const lambdaEdgeConfigId of lambdaEdgeConfigIdsToUpdate) {
     console.log(
-      "LambdaEdgeConfig does not contain any orphaned branch entries. Exiting..."
+      `\n\nBeginning work on LambdaEdgeConfig id: ${lambdaEdgeConfigId}`
     );
-    return;
+
+    const edgeConfigBranches = await getEdgeConfigBranches({
+      appId: lambdaEdgeConfigId,
+      documentClient,
+    });
+
+    const edgeConfigBranchesThatShouldBeDeleted = findOrphanedEdgeConfigEntries(
+      {
+        existingBranches,
+        edgeConfigBranches,
+      }
+    );
+
+    console.log("Existing branches for app:\n", existingBranches);
+    console.log("Branches in LambdaEdgeConfig:\n", edgeConfigBranches);
+
+    if (edgeConfigBranchesThatShouldBeDeleted.length === 0) {
+      console.log(
+        "LambdaEdgeConfig does not contain any orphaned branch entries. Continuing to next id..."
+      );
+      continue;
+    }
+
+    console.log(
+      `The following branches will be removed from the LambdaEdgeConfig table id: ${lambdaEdgeConfigId}\n`,
+      edgeConfigBranchesThatShouldBeDeleted
+    );
+
+    if (isDryRun) {
+      console.log('Running in "Dry Run" mode. Skipping removal...');
+      continue;
+    }
+
+    const shouldContinueResponse =
+      prompt("Continue? (y/n)").toLocaleLowerCase();
+
+    if (shouldContinueResponse !== "y") {
+      console.log("Aborting...");
+      return;
+    }
+
+    await removeBranchEntriesFromLambdaEdgeConfig({
+      appId: lambdaEdgeConfigId,
+      branchesToRemove: edgeConfigBranchesThatShouldBeDeleted,
+      documentClient,
+    });
+
+    console.log(
+      `\n\n\nSuccessfully removed Orphaned branches from LambdaEdgeConfig for id: ${lambdaEdgeConfigId}`
+    );
   }
-
-  console.log(
-    `The following branches will be removed from the LambdaEdgeConfig table for App Id: ${appId}\n`,
-    edgeConfigBranchesThatShouldBeDeleted
-  );
-
-  if (isDryRun) {
-    console.log('Running in "Dry Run" mode. Exiting...');
-    return;
-  }
-
-  const shouldContinueResponse = prompt("Continue? (y/n)").toLocaleLowerCase();
-
-  if (shouldContinueResponse !== "y") {
-    console.log("Aborting...");
-    return;
-  }
-
-  await removeBranchEntriesFromLambdaEdgeConfig({
-    appId,
-    branchesToRemove: edgeConfigBranchesThatShouldBeDeleted,
-    documentClient,
-  });
-
-  console.log(
-    "\n\n\nSuccessfully removed Orphaned branches from LambdaEdgeConfig"
-  );
 })().catch(console.error);

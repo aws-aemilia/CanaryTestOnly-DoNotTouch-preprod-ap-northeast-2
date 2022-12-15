@@ -9,7 +9,7 @@ export async function getEdgeConfigBranches({
   documentClient: DynamoDBDocumentClient;
 }) {
   console.log(
-    `Getting branches for AppId: ${appId} from Table: ${LAMBDA_EDGE_CONFIG_TABLE_NAME}`
+    `Getting branches for id: ${appId} from Table: ${LAMBDA_EDGE_CONFIG_TABLE_NAME}`
   );
 
   const result = await documentClient.send(

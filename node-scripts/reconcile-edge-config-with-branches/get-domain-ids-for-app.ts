@@ -5,11 +5,11 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { AmplifyAccount } from "../Isengard";
 
-export interface BranchInfo {
-  branchName: string;
+export interface DomainInfo {
+  domainId: string;
 }
 
-export async function getBranchesForEdgeConfigComparison({
+export async function getDomainIdsForApp({
   appId,
   documentClient,
   regionAccount,
@@ -18,10 +18,12 @@ export async function getBranchesForEdgeConfigComparison({
   documentClient: DynamoDBDocumentClient;
   regionAccount: AmplifyAccount;
 }) {
-  const tableName = `${regionAccount.stage}-${regionAccount.region}-Branch`;
+  const tableName = `${regionAccount.stage}-${regionAccount.region}-Domain`;
 
-  console.log(`Getting branches for AppId: ${appId} from Table: ${tableName}`);
-  const allBranches: BranchInfo[] = [];
+  console.log(
+    `Getting domain ids for AppId: ${appId} from Table: ${tableName}`
+  );
+  const allDomains: DomainInfo[] = [];
   let lastEvaluatedKey;
 
   do {
@@ -38,8 +40,8 @@ export async function getBranchesForEdgeConfigComparison({
 
     if (result.Items) {
       result.Items.forEach((item) => {
-        allBranches.push({
-          branchName: item?.branchName,
+        allDomains.push({
+          domainId: item?.domainId,
         });
       });
     }
@@ -47,12 +49,12 @@ export async function getBranchesForEdgeConfigComparison({
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey);
 
-  if (allBranches.length === 0) {
-    console.warn(`⚠️⚠️⚠️⚠️ No Branched found for AppId: ${appId} ⚠️⚠️⚠️⚠️`);
+  if (allDomains.length === 0) {
+    console.warn(`⚠️⚠️⚠️⚠️ No Domains found for AppId: ${appId} ⚠️⚠️⚠️⚠️`);
     console.warn(
-      "⚠️⚠️⚠️⚠️ This could be valid if all branches have been deleted... ⚠️⚠️⚠️⚠️"
+      "⚠️⚠️⚠️⚠️ This could be valid if no custom domains have been associated... ⚠️⚠️⚠️⚠️"
     );
   }
 
-  return allBranches;
+  return allDomains;
 }
