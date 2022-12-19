@@ -10,23 +10,18 @@ import yargs from "yargs";
 import { getTicket } from "../SimT";
 import { whoAmI } from "../utils";
 
-type EventType = "IsolateResources" | "RestoreResources";
-const buildMessage = (accountId: string, eventType: EventType) => {
+type AbuseAccountAction = "BLOCK" | "UNBLOCK";
+
+const buildMessage = (accountId: string, abuseAccountAction: AbuseAccountAction) => {
   return {
-    eventType,
-    eventMessage: {
-      accountId,
-      topicName: "ManualAction",
-      publishTimestamp: Date.now(),
-      eventId: `${whoAmI()}-sent-by-disableAbuseAccount-tool`,
-      reasonCode: "ManualAction",
-    },
-    appDOS: [],
+    action: abuseAccountAction,
+    accountId,
+    metadata: `${whoAmI()} sent by disableAbuseAccount tool`,
   };
 };
 
 const accountClosureQueue = (amplifyAccount: AmplifyAccount): string => {
-  return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/AccountClosingDeletionQueue`;
+  return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/AbuseReportQueue`;
 };
 
 const extractAccountIds = (text: string): string[] => {
@@ -81,7 +76,7 @@ const validateAbuseTicket = async (
 const sendMessage = async (
   account: AmplifyAccount,
   accountId: string,
-  eventType: EventType,
+  abuseAccountAction: AbuseAccountAction,
   role: string
 ): Promise<void> => {
   const sqsClient = new SQSClient({
@@ -91,7 +86,7 @@ const sendMessage = async (
 
   const sendMessageCommand = new SendMessageCommand({
     QueueUrl: accountClosureQueue(account),
-    MessageBody: JSON.stringify(buildMessage(accountId, eventType)),
+    MessageBody: JSON.stringify(buildMessage(accountId, abuseAccountAction)),
   });
 
   console.log(`sending SQS message: `, sendMessageCommand.input);
@@ -105,7 +100,7 @@ const main = async () => {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `
-          Disable ALL Apps in ALL regions for an AWS account flagged for abuse. This tool sends an "IsolateResources" sqs message to the AccountClosure service queue.
+          Disable ALL Apps in ALL regions for an AWS account flagged for abuse. This tool sends a "BLOCK" message to the AbuseReportQueue
           ** Requires kcurl to be installed, try brew install env-improvement if it isn't. **
           `
     )
@@ -140,7 +135,7 @@ const main = async () => {
     })
     .option("unblock", {
       describe:
-        'Unblock the Account. Will send a "RestoreResources" message instead',
+        'Unblock the Account. Will send a "UNBLOCK" message instead',
       type: "boolean",
       default: false,
     })
@@ -181,7 +176,7 @@ const main = async () => {
     await sendMessage(
       controlPLaneAccount,
       accountId,
-      action == "Block" ? "IsolateResources" : "RestoreResources",
+      action == "Block" ? "BLOCK" : "UNBLOCK",
       role
     );
   }

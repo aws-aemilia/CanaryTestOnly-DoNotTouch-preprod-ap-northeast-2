@@ -60,7 +60,9 @@ const supportUsers = [
     'vishnaya',
     'ernestrd',
     'abhisuma',
-    'sushpatg'
+    'sushpatg',
+    'muvashi',
+    'msubhayu'
 ];
 
 
