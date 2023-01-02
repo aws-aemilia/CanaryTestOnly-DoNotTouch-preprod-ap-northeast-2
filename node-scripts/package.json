@@ -20,7 +20,7 @@
     "getHostingBillingImpact": "ts-node P67908265/getHostingBillingImpact.ts",
     "createIsengardAccount": "ts-node OpsTools/createIsengardAccount.ts",
     "syncIsengardRoles": "ts-node OpsTools/syncIsengardRoles.ts",
-    "stopCacheBusting": "ts-node stopCacheBusting.ts",
+    "stopCacheBusting": "ts-node DDoS/stopCacheBusting.ts",
     "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
     "createCustomDomains": "ts-node custom-domain-maker",
     "validateGatewayCertificate": "ts-node OpsTools/hostingDataplane/validateGatewayCertificate.ts",
@@ -28,7 +28,8 @@
     "unsafeResetSecret": "ts-node OpsTools/computeService/manageGatewaySecret/unsafeResetSecret.ts",
     "addGatewayDnsRecord": "ts-node OpsTools/hostingDataplane/addGatewayDnsRecord.ts",
     "reconcileEdgeConfigWithBranches": "ts-node reconcile-edge-config-with-branches/index.ts",
-    "V737790025": "ts-node V737790025/index.ts"
+    "V737790025": "ts-node V737790025/index.ts",
+    "simulateCacheBusting": "ts-node DDoS/simulateCacheBusting.ts"
   },
   "author": "",
   "license": "ISC",
@@ -48,6 +49,7 @@
     "@aws-sdk/client-codebuild": "^3.87.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.120.0",
+    "@aws-sdk/client-kinesis": "^3.218.0",
     "@aws-sdk/client-lambda": "^3.130.0",
     "@aws-sdk/client-route-53": "^3.118.1",
     "@aws-sdk/client-secrets-manager": "^3.118.1",

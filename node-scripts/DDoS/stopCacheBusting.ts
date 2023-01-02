@@ -6,17 +6,17 @@ import {
   kinesisConsumerAccount,
   Region,
   Stage,
-} from "./Isengard";
-import { toAirportCode, toRegionName } from "./utils/regions";
-import { AirportCode, RegionName } from "./Isengard/types";
+} from "../Isengard";
+import { toAirportCode, toRegionName } from "../utils/regions";
+import { AirportCode, RegionName } from "../Isengard/types";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { CloudFront } from "@aws-sdk/client-cloudfront";
 import {
   CloudWatchLogs,
   GetQueryResultsCommandOutput,
 } from "@aws-sdk/client-cloudwatch-logs";
-import sleep from "./utils/sleep";
-import {capitalize} from "./Isengard/createAccount/createAmplifyAccount";
+import sleep from "../utils/sleep";
+import {capitalize} from "../Isengard/createAccount/createAmplifyAccount";
 
 const { hideBin } = require("yargs/helpers");
 
