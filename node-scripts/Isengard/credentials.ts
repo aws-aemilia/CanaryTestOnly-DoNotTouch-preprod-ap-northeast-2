@@ -8,8 +8,6 @@ const getIsengardCredentials = async (
   accountId: string, iamRoleName="ReadOnly"
 ): Promise<Credentials> => {
 
-  console.log("Getting credentials for", accountId, "with role", iamRoleName);
-
   if (!allowedRoles.includes(iamRoleName)) {
     throw new Error(`Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`)
   }
