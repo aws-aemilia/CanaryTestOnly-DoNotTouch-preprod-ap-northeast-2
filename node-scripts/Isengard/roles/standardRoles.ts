@@ -46,6 +46,11 @@ const readOnlyRole: AmplifyRole = {
   ],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 90,
+  // Individual users to grant permissions
+  Users: [
+    "hloriana",
+    "jayrava",
+  ]
 };
 
 const fullReadOnlyRole: AmplifyRole = {
