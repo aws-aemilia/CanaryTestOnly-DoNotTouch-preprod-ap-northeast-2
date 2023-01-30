@@ -1,8 +1,12 @@
-import { getAWSAccountClassification } from "@amzn/isengard/dist/src/accounts/queries";
-import { getIAMRole } from "@amzn/isengard/dist/src/roles/queries";
-import { getContingentAuthorizationToken, RiskLevel } from "@amzn/isengard";
+import {
+  getAWSAccountClassification,
+  getIAMRole,
+  getContingentAuthorizationToken,
+  RiskLevel,
+  Justification
+} from "@amzn/isengard";
 import { memoizeWith } from "ramda";
-import { Justification } from "@amzn/isengard/dist/src/contingent-authorization/types";
+
 const prompt = require('prompt-sync')();
 
 const getCAZJustification = (): Justification => {

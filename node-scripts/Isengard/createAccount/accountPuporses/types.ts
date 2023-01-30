@@ -1,5 +1,5 @@
-import {CreateAwsAccountRequest} from "@amzn/isengard/dist/src/accounts/types";
-import {Region, Stage} from "../../types";
+import { CreateAwsAccountRequest } from "@amzn/isengard";
+import { Region, Stage } from "../../types";
 
 /**
  * Properties that are specific to the purpose of an Isengard account. Everything else is standard across all Amplify accounts
