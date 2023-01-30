@@ -1,4 +1,4 @@
-import { grantGroupPermission } from "@amzn/isengard/dist/src/permissions/queries";
+import { grantGroupPermission, grantUserPermission, revokeUserPermission } from "@amzn/isengard/dist/src/permissions/queries";
 import {
   addPolicyTemplateReferenceForIAMRole,
   attachIAMPolicyToIAMRole,
@@ -36,15 +36,23 @@ const createIAMRoleIfNotExists = withCatchOnErrorMsg(
   "Role already exists. Skipping creation...",
   createIAMRole
 );
+
 const addPolicyTemplateReferenceForIAMRoleIfNotExists = withCatchOnErrorMsg(
   "Policy template reference already exists for IAM role",
   "Policy template reference already exists for IAM role. skipping...",
   addPolicyTemplateReferenceForIAMRole
 );
+
 const grantGroupPermissionIfNotExists = withCatchOnErrorMsg(
   "already exists",
   "Group Permission already exists. skipping...",
   grantGroupPermission
+);
+
+const grantUserPermissionIfNotExists = withCatchOnErrorMsg(
+  "already exists",
+  "User Permission already exists. skipping...",
+  grantUserPermission
 );
 
 const revokeGroupPermissionIfExists = withCatchOnErrorMsg(
@@ -53,16 +61,36 @@ const revokeGroupPermissionIfExists = withCatchOnErrorMsg(
   revokeGroupPermission
 );
 
-export const computeGroupDiff = async (
+const revokeUserPermissionIfExists = withCatchOnErrorMsg(
+  "does not exist",
+  "User Permission does not exist. Nothing to revoke. Skipping...",
+  revokeUserPermission
+);
+
+type PermissionDiff = {
+  groupsToAdd: string[],
+  groupsToDelete: string[],
+  usersToAdd: string[],
+  usersToDelete: string[],
+}
+
+export const computePermissionDiff = async (
   accountId: string,
   IAMRoleName: string,
-  Group?: string
-): Promise<{ add: string[]; delete: string[] }> => {
+  Group?: string,
+  Users?: string[],
+): Promise<PermissionDiff> => {
   const permissionsForIAMRoles = await listPermissionsByAWSAccount(accountId);
-
   const foundRole = permissionsForIAMRoles.find(
     (p) => p.IAMRoleName === IAMRoleName
   );
+
+  const permissions: PermissionDiff = {
+    groupsToAdd: [],
+    groupsToDelete: [],
+    usersToAdd: [],
+    usersToDelete: []
+  };
 
   if (!foundRole) {
     throw new Error(
@@ -71,16 +99,28 @@ export const computeGroupDiff = async (
   }
 
   if (!Group) {
-    return {
-      delete: foundRole.GroupList,
-      add: [],
-    };
+    // Remove all groups if Group input is empty
+    permissions.groupsToDelete.push(...foundRole.GroupList);
+    permissions.groupsToAdd = [];
+  } else {
+    // Add the requested group
+    permissions.groupsToAdd.push(Group);
+    // Remove the rest
+    permissions.groupsToDelete.push(...foundRole.GroupList.filter(g => g !== Group));
   }
 
-  return {
-    add: foundRole.GroupList.includes(Group) ? [] : [Group],
-    delete: foundRole.GroupList.filter((g) => g !== Group),
-  };
+  if (!Users) {
+    // Remove all users if User input is empty
+    permissions.usersToDelete.push(...foundRole.UserList);
+    permissions.usersToAdd = [];
+  } else {
+    // Add the requested users
+    permissions.usersToAdd.push(...Users);
+    // Remove the rest
+    permissions.usersToDelete.push(...foundRole.UserList.filter(u => !Users.includes(u)));
+  }
+
+  return permissions;
 };
 
 const arrayDiff = <T>(
@@ -111,7 +151,9 @@ export type AmplifyRole = {
   PolicyARNs?: string[];
   PolicyTemplateReference?: { PolicyTemplateName: string; OwnerID: string }[];
   FederationTimeOutMin: number;
+  Users?: string[];
 };
+
 export const upsertRole = async (accountId: string, role: AmplifyRole) => {
   console.log(`Upserting role ${role.IAMRoleName} to account ${accountId}...`);
   const { IAMRoleName, Description, ContingentAuth, FederationTimeOutMin } =
@@ -205,13 +247,14 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     });
   }
 
-  const groupOwnersDiff = await computeGroupDiff(
+  const permissionDiff = await computePermissionDiff(
     accountId,
     IAMRoleName,
-    role.Group
+    role.Group,
+    role.Users,
   );
 
-  for (const groupToDelete of groupOwnersDiff.delete) {
+  for (const groupToDelete of permissionDiff.groupsToDelete) {
     await revokeGroupPermissionIfExists({
       AWSAccountID: accountId,
       Group: groupToDelete,
@@ -219,10 +262,26 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     });
   }
 
-  for (const groupToAdd of groupOwnersDiff.add) {
+  for (const groupToAdd of permissionDiff.groupsToAdd) {
     await grantGroupPermissionIfNotExists({
       AWSAccountID: accountId,
       Group: groupToAdd,
+      IAMRoleName: IAMRoleName,
+    });
+  }
+
+  for (const userToAdd of permissionDiff.usersToAdd) {
+    await grantUserPermissionIfNotExists({
+      AWSAccountID: accountId,
+      User: userToAdd,
+      IAMRoleName: IAMRoleName,
+    });
+  }
+
+  for (const userToDelete of permissionDiff.usersToDelete) {
+    await revokeUserPermissionIfExists({
+      AWSAccountID: accountId,
+      User: userToDelete,
       IAMRoleName: IAMRoleName,
     });
   }

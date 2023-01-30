@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pager Pain
 // @namespace    http://aws.amazon.com/
-// @version      2.04
+// @version      2.05
 // @description  Generate wiki notes for pages with emojis.  Assumes your oncall runs 9am-9am Monday-Monday.
 // @author       behroozi@
 // @include      https://paging.corp.a2z.com/
@@ -17,12 +17,20 @@
 
 (function() {
     'use strict';
+
     let bodyList = document.getElementById("root");
+    const HEADER_ID = 'app-header';
+    const BUTTON_GROUP_PARENT_CLASS = '.awsui_utilities_k5dlb_17bgp_225';
+    const BUTTON_TEXT_SELECTOR = 'span a span';
+    const ROW_SELECTOR = 'tbody tr';
+    const SUBJECT_SELECTOR = ':nth-child(2) a';
+    const SOURCE_SELECTOR = ':nth-child(3)';
+    const TIMESTAMP_SELECTOR = ':nth-child(4)';
     let observer = new MutationObserver(function(mutations, o) {
-        if(document.getElementById('navbar')){
+        if(document.getElementById(HEADER_ID)){
             //when the .send-buttons class shows up
             //clone a button, call it Pain and attach the click action to it
-            let buttons = $(".send-buttons");
+            let buttons = $(BUTTON_GROUP_PARENT_CLASS);
             if(buttons.length !== 0 && buttons.children().length > 2) {
                 let clone = buttons.children().first().clone();
                 clone.click(function(e){
@@ -39,15 +47,15 @@
                         //so new pages can be overlayed
                         let data = $(this).data('pages') || {};
                         //for each page
-                        $('.awsui-table-row').each(function(){
+                        $(ROW_SELECTOR).each(function(){
                             //screen scrape content to turn it into objects
-                            let page = $(this).find(':nth-child(2) a');
+                            let page = $(this).find(SUBJECT_SELECTOR);
                             let link = page.attr('href');
                             let subject = page.text();
-                            let source = $(this).find(':nth-child(3) span span').text();
+                            let source = $(this).find(SOURCE_SELECTOR).text();
 
                             //remove GMT from timestamp so it can be parsed with day.js
-                            let timestamp = $(this).find(':nth-child(4) span span').text().replace(' GMT','').trim();
+                            let timestamp = $(this).find(TIMESTAMP_SELECTOR).text().replace(' GMT','').trim();
 
                             //remove the Escalated/New Sev 2 from details
                             let details = {subject:subject.replace(/^.*Sev\d(.\d)? - /,""),source:source,timestamp:timestamp};
@@ -79,8 +87,7 @@
                     }
                     return false;
                 });
-                clone.find('span').text('😡 Pain');
-                clone.find('button').toggleClass("awsui-button-variant-normal awsui-button-variant-primary");
+                clone.find(BUTTON_TEXT_SELECTOR).text('😡 Pain');
                 buttons.prepend(clone);
                 o.disconnect();
             }
