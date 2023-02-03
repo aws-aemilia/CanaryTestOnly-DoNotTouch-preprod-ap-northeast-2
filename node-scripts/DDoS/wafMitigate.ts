@@ -21,6 +21,7 @@ import {
   GetDistributionConfigCommand,
   UpdateDistributionCommand,
   UpdateDistributionCommandOutput,
+  NoSuchDistribution,
 } from "@aws-sdk/client-cloudfront";
 import sleep from "../utils/sleep";
 import yargs from "yargs";
@@ -292,6 +293,22 @@ async function main() {
     targetDistributionId = ddosEvent.distributionId;
   }
 
+  console.log(`Checking if distribution ${distributionId} exists`);
+  try {
+    await cloudFrontClient.send(
+        new GetDistributionConfigCommand({ Id: targetDistributionId })
+    );
+  } catch (e) {
+    if (e instanceof NoSuchDistribution){
+      console.error(`ERROR: The distribution ${targetDistributionId} does not exist`);
+      if (distributionId){
+        console.error(`You provided the --distributionId param. Double check that you used the correct distributionId, region, and stage`);
+      }
+      console.error(`The most likely cause is that the customer already deleted the App or Custom Domain. You can query the logs to confirm: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/ControlPlane/#HCheckifaDistributionwasdeleted`);
+      return;
+    }
+    throw e;
+  }
 
   console.log(`Applying WAF with default Block to ${targetDistributionId}`);
   const createWAFOutput = await createWaf(acc, targetDistributionId);
