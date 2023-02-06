@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pager Pain
 // @namespace    http://aws.amazon.com/
-// @version      2.05
+// @version      2.06
 // @description  Generate wiki notes for pages with emojis.  Assumes your oncall runs 9am-9am Monday-Monday.
 // @author       behroozi@
 // @include      https://paging.corp.a2z.com/
@@ -20,7 +20,7 @@
 
     let bodyList = document.getElementById("root");
     const HEADER_ID = 'app-header';
-    const BUTTON_GROUP_PARENT_CLASS = '.awsui_utilities_k5dlb_17bgp_225';
+    const BUTTON_GROUP_CLASS_PREFIX = 'awsui_utilities_';
     const BUTTON_TEXT_SELECTOR = 'span a span';
     const ROW_SELECTOR = 'tbody tr';
     const SUBJECT_SELECTOR = ':nth-child(2) a';
@@ -30,7 +30,7 @@
         if(document.getElementById(HEADER_ID)){
             //when the .send-buttons class shows up
             //clone a button, call it Pain and attach the click action to it
-            let buttons = $(BUTTON_GROUP_PARENT_CLASS);
+            let buttons = $(`div[class^=${BUTTON_GROUP_CLASS_PREFIX}]`);
             if(buttons.length !== 0 && buttons.children().length > 2) {
                 let clone = buttons.children().first().clone();
                 clone.click(function(e){
