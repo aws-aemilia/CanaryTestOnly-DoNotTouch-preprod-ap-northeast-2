@@ -26,6 +26,7 @@
     const SUBJECT_SELECTOR = ':nth-child(2) a';
     const SOURCE_SELECTOR = ':nth-child(3)';
     const TIMESTAMP_SELECTOR = ':nth-child(4)';
+    const FETCH_PLACEHOLDER = 'Loading pages...';
     let observer = new MutationObserver(function(mutations, o) {
         if(document.getElementById(HEADER_ID)){
             //when the .send-buttons class shows up
@@ -74,6 +75,7 @@
 
                         //filter out pages that weren't in last week
                         let lastWeekPages = lastWeekFilter(pages);
+                        lastWeekPages = lastWeekPages.filter((x) => x.source !== FETCH_PLACEHOLDER);
                         let summary = pageSummary(lastWeekPages);
                         logJSONPretty(summary);
                         GM_setClipboard(toWiki(summary));
