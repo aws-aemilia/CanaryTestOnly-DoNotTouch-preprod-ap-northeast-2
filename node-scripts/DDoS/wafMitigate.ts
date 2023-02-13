@@ -17,15 +17,13 @@ import {
 } from "@aws-sdk/client-wafv2";
 import {
   CloudFrontClient,
-  DistributionConfig,
   GetDistributionConfigCommand,
-  UpdateDistributionCommand,
-  UpdateDistributionCommandOutput,
   NoSuchDistribution,
 } from "@aws-sdk/client-cloudfront";
 import sleep from "../utils/sleep";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { enableDistribution, updateDistribution } from "../utils/cloudfront";
 
 require("util").inspect.defaultOptions.depth = null;
 
@@ -123,32 +121,6 @@ async function createWaf(
   return await wafClient.send(createWebACLCommand);
 }
 
-export type UpdateDistributionConfigFn = (
-  distributionConfig: DistributionConfig
-) => DistributionConfig;
-
-async function updateDistribution(
-  cloudFrontClient: CloudFrontClient,
-  distributionId: string,
-  updateDistributionConfigFn: UpdateDistributionConfigFn
-): Promise<UpdateDistributionCommandOutput> {
-  const getDistributionConfigCommandOutput = await cloudFrontClient.send(
-    new GetDistributionConfigCommand({ Id: distributionId })
-  );
-
-  const distributionConfig =
-    getDistributionConfigCommandOutput.DistributionConfig!;
-  const updatedDistributionConfig =
-    updateDistributionConfigFn(distributionConfig);
-  return await cloudFrontClient.send(
-    new UpdateDistributionCommand({
-      DistributionConfig: updatedDistributionConfig,
-      Id: distributionId,
-      IfMatch: getDistributionConfigCommandOutput.ETag,
-    })
-  );
-}
-
 async function attachWaf(
   acc: AmplifyAccount,
   webACLId: string,
@@ -162,23 +134,13 @@ async function attachWaf(
     ),
   });
 
-  const updateDistributionCommandOutput = await updateDistribution(
-    client,
-    distributionId,
-    (distributionConfig) => {
+  const updateDistributionCommandOutput = await updateDistribution({
+    cloudFrontClient: client,
+    distributionId: distributionId,
+    updateDistributionConfigFn: (distributionConfig) => {
       distributionConfig.WebACLId = webACLId;
       return distributionConfig;
-    }
-  );
-}
-
-async function enableDistribution(
-  client: CloudFrontClient,
-  distributionId: string
-) {
-  await updateDistribution(client, distributionId, (distributionConfig) => {
-    distributionConfig.Enabled = true;
-    return distributionConfig;
+    },
   });
 }
 
@@ -317,7 +279,10 @@ async function main() {
   console.log(createWAFOutput.Summary);
 
   console.log(`Enabling distribution ${targetDistributionId}...`);
-  await enableDistribution(cloudFrontClient, targetDistributionId);
+  await enableDistribution({
+    cloudFrontClient,
+    distributionId:targetDistributionId
+  });
   console.log(`distribution ${targetDistributionId} enabled`);
 
   console.log(`${Date()} - Waiting for 5 minutes to let WAF analyze the traffic`);
