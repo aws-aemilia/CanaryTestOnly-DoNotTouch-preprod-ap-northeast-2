@@ -4,6 +4,7 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   QueryCommand,
+  paginateScan
 } from "@aws-sdk/lib-dynamodb";
 
 /**
@@ -79,14 +80,14 @@ export const lookupCustomerAccountId = async (
  * @param stage i.e. beta, gamma, prod
  * @param region i.e. us-west-2
  * @param appId The appId to lookup
- * 
+ *
  * @returns true or false
  */
- export const checkAppExists = async (
+export const checkAppExists = async (
   dynamodb: DynamoDBDocumentClient,
   stage: string,
   region: string,
-  appId: string,
+  appId: string
 ): Promise<boolean> => {
   try {
     console.log("Looking up appId in App table", appId);
@@ -95,8 +96,8 @@ export const lookupCustomerAccountId = async (
         TableName: `${stage}-${region}-App`,
         ProjectionExpression: "appId",
         Key: {
-          appId
-        }
+          appId,
+        },
       })
     );
 
@@ -116,4 +117,35 @@ export const lookupCustomerAccountId = async (
       throw err;
     }
   }
+};
+
+/**
+ * Returns an iterator to paginate the Apps table. You can use the iterator
+ * with `for await (const batch of paginateApps())`. Each batch will contain
+ * a list of apps. It uses lazy loading so it doesn't consume the next page
+ * until the iterator reaches the end.
+ * 
+ * @param documentClient DynamoDB document client
+ * @param stage i.e. beta, prod, gamma
+ * @param region i.e. us-west-2
+ * @param attributesToGet i.e. ["appId", "platform"]
+ * 
+ * @returns Iterator of pages
+ */
+export const paginateApps = (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  attributesToGet: string[] = ["appId"]
+) => {
+  return paginateScan(
+    {
+      pageSize: 1000,
+      client: documentClient,
+    },
+    {
+      TableName: `${stage}-${region}-App`,
+      ProjectionExpression: attributesToGet.join(","),
+    }
+  );
 };

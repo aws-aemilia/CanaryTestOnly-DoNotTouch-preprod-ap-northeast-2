@@ -1,6 +1,7 @@
 import {
   DynamoDBDocumentClient,
-  QueryCommand,
+  paginateScan,
+  GetCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { LambdaEdgeConfig } from "../types";
@@ -29,27 +30,32 @@ export const getLambdaEdgeConfigForAppOrDomain = async (
       domainOrAppId
     );
     const lambdaEdgeConfigItem = await dynamodb.send(
-      new QueryCommand({
+      new GetCommand({
         TableName: TABLE_NAME,
-        KeyConditionExpression: "appId = :appId",
-        ExpressionAttributeValues: {
-          ":appId": domainOrAppId,
+        ProjectionExpression: "appId,customRuleConfigs",
+        Key: {
+          appId: domainOrAppId,
         },
-        ProjectionExpression: "appId,customDomainIds",
       })
     );
 
-    if (!lambdaEdgeConfigItem.Items || lambdaEdgeConfigItem.Items.length < 1) {
+    if (!lambdaEdgeConfigItem.Item) {
       return;
     }
 
-    return lambdaEdgeConfigItem.Items[0] as Partial<LambdaEdgeConfig>;
+    return lambdaEdgeConfigItem.Item as Partial<LambdaEdgeConfig>;
   } catch (err) {
     console.error("LambdaEdgeConfig not found", err);
     return;
   }
 };
 
+/**
+ *
+ * @param appId The appId to remove the domainId from
+ * @param domainId The domainId to remove
+ * @param ddbClient DocumentClient
+ */
 export const removeDomainFromLambdaEdgeConfig = async (
   appId: string,
   domainId: string,
@@ -70,4 +76,31 @@ export const removeDomainFromLambdaEdgeConfig = async (
   });
 
   await ddbClient.send(update);
+};
+
+/**
+ * Returns an iterator to paginate the LambdaEdgeConfig table. You can use the iterator
+ * with `for await (const batch of paginateLambdaEdgeConfigs())`. Each batch will contain
+ * a list of items. It uses lazy loading so it doesn't consume the next page
+ * until the iterator reaches the end.
+ *
+ * @param documentClient DynamoDB document client
+ * @param attributesToGet i.e. ["appId", "platform"]
+ *
+ * @returns Iterator of pages
+ */
+export const paginateLambdaEdgeConfigs = (
+  documentClient: DynamoDBDocumentClient,
+  attributesToGet: string[] = ["appId"]
+) => {
+  return paginateScan(
+    {
+      pageSize: 1000,
+      client: documentClient,
+    },
+    {
+      TableName: TABLE_NAME,
+      ProjectionExpression: attributesToGet.join(","),
+    }
+  );
 };
