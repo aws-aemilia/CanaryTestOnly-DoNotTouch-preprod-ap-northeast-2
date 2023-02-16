@@ -1,7 +1,6 @@
-import sleep from "./utils/sleep"
 import fs from "fs"
 import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "./Isengard"
-import { toRegionName, toAirportCode } from "./utils/regions"
+import { toRegionName } from "./utils/regions"
 import { ReceiveMessageCommand, SendMessageCommand, SQS } from "@aws-sdk/client-sqs"
 
 let ACCOUNT_BEING_PROCESSED: string | null = null
@@ -11,9 +10,10 @@ const WORKING_DIRECTORY: string = "FTM"
 const LAST_PROCESSED_FILENAME: string = `start-process-accountid`
 const LAST_PROCESSED_FILE_PATH: string = `${WORKING_DIRECTORY}/${LAST_PROCESSED_FILENAME}.json`
 const STAGE: Stage = "prod"
-const REGION_NAME: Region = "us-east-1"
-const REGION_AIRPORT: Region = "IAD"
-const RATE_LIMIT_WAIT_TIME: number = 2000 // https://t.corp.amazon.com/P76377998 https://quip-amazon.com/3l3gAlTIjHc5/FTM-Script-Design-Doc
+const REGION_AIRPORT: Region = "YUL"
+const REGION_NAME: Region = toRegionName(REGION_AIRPORT);
+let sqs: SQS;
+let controlPlaneAccount_: AmplifyAccount;
 
 enum FreeTierMigrationAgent {
     CONTROL_PLANE = "CONTROL_PLANE",
@@ -27,6 +27,13 @@ const freeTierMigrationQueue = (amplifyAccount: AmplifyAccount): string => {
 
 const freeTierMigrationDLQQueue = (amplifyAccount: AmplifyAccount): string => {
     return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/FreeTierMigrationDLQ`
+}
+
+const dlqHasMessages = async (): Promise<boolean> => {
+    const checkDLQResponse = await sqs.send(new ReceiveMessageCommand({
+        QueueUrl: freeTierMigrationDLQQueue(controlPlaneAccount_)
+    }));
+    return (checkDLQResponse && checkDLQResponse.Messages && checkDLQResponse.Messages.length > 0) || false;
 }
 
 const buildAccountMigrationMessage = (accountId: string) => {
@@ -49,6 +56,10 @@ const getAccountIdIdxToStartProcessing = (): number => {
 }
 
 const main = async () => {
+    console.log(`Checking DLQ for messages...`)
+    if (await dlqHasMessages()) {
+        throw new Error("Found messages in the FreeTierMigrationDLQ. Either redrive or purge them before rerunning this script.")
+    }
     
     // load in list of AWS AccountIds to migrate for the region.
     const inputAccountIdsFilePath = `${WORKING_DIRECTORY}/accounts-to-migrate.csv`
@@ -61,9 +72,9 @@ const main = async () => {
     const startProcessIdx = getAccountIdIdxToStartProcessing()
 
     // init the sqs client for the region
-    const controlPlaneAccount_ = await controlPlaneAccount(STAGE, REGION_AIRPORT)
+    controlPlaneAccount_ = await controlPlaneAccount(STAGE, REGION_AIRPORT)
     const role = STAGE === "prod" ? "FullReadOnly" : "ReadOnly" // todo update to specific role for write only permissions to FreeTierMigration SQS queue
-    const sqs = new SQS({
+    sqs = new SQS({
       region: REGION_NAME,
       credentials: getIsengardCredentialsProvider(
         controlPlaneAccount_.accountId,
@@ -85,23 +96,17 @@ const main = async () => {
             await sqs.send(message)
             console.log(`sent message: ${JSON.stringify(message)}`)
             console.log(`progress: ${((i/accountIds.length)*100.0).toFixed(2)} %`)
-
-            console.log(`checking DLQ for messages`)
-            const checkDLQResponse = await sqs.send(new ReceiveMessageCommand({
-                QueueUrl: freeTierMigrationDLQQueue(controlPlaneAccount_)
-            }))
-            if (checkDLQResponse && checkDLQResponse.Messages && checkDLQResponse.Messages.length > 0) {
-                throw new Error("Found messages in the FreeTierMigrationDLQ. Stop processing for now.")
-            }
         } catch(err) {
             console.warn(`Failed to send message for accountId ${ACCOUNT_BEING_PROCESSED}`)            
             console.warn(err)
             throw err
-        } finally {
-            await sleep(RATE_LIMIT_WAIT_TIME)
         }
     }
     console.log(`Finished migration accounts in ${inputAccountIdsFilePath}`)
+    console.log(`Checking DLQ for messages...`)
+    if (await dlqHasMessages()) {
+        console.warn("Found messages in the FreeTierMigrationDLQ. Either redrive or purge them before rerunning this script.");
+    }
 }
 
 const runShutDownSequence = () => {
