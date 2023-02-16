@@ -61,6 +61,11 @@ const fullReadOnlyRole: AmplifyRole = {
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 60,
+  // Individual users to grant permissions
+  Users: [
+    "hloriana",
+    "jayrava",
+  ]
 };
 
 const lambdaInvokerRole: AmplifyRole = {
@@ -75,6 +80,20 @@ const lambdaInvokerRole: AmplifyRole = {
   FederationTimeOutMin: 60,
 };
 
+const mobileCoreSupportRole: AmplifyRole = {
+  IAMRoleName: "MobileCoreSupport",
+  Description: "For mobile core support team to access build logs",
+  ContingentAuth: 1,
+  Group: "support-ops-mobile-core", // https://permissions.amazon.com/a/team/aws-support-ops-mobile-core
+  FederationTimeOutMin: 60,
+  PolicyTemplateReference: [
+    {
+      OwnerID: "aws-mobile-amplify-oncall",
+      PolicyTemplateName: "MobileCoreSupport",
+    }
+  ],
+};
+
 export const getRolesForStage = (
   stage: Stage
 ): {
@@ -83,6 +102,7 @@ export const getRolesForStage = (
   FullReadOnly: AmplifyRole;
   Admin: AmplifyRole;
   LambdaInvoker: AmplifyRole;
+  MobileCoreSupport: AmplifyRole;
 } => {
   return {
     OncallOperator: oncallOperatorRole,
@@ -90,5 +110,6 @@ export const getRolesForStage = (
     ReadOnly: readOnlyRole,
     FullReadOnly: fullReadOnlyRole,
     LambdaInvoker: lambdaInvokerRole,
+    MobileCoreSupport: mobileCoreSupportRole,
   };
 };
