@@ -12,22 +12,37 @@ const getIsengardCredentials = async (
     throw new Error(`Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`)
   }
 
-  const cazToken: string | undefined = (await isContingentAuthNeeded(
-    accountId,
-    iamRoleName
-  ))
-    ? await getCAZToken(accountId)
-    : undefined;
+  try {
 
-  const creds = await getAssumeRoleCredentials({
-    awsAccountID: accountId,
-    iamRoleName,
-    cazToken,
-  });
-  return {
-    ...creds,
-    expiration: new Date(creds.expiration),
-  };
+    const cazToken: string | undefined = (await isContingentAuthNeeded(
+      accountId,
+      iamRoleName
+    ))
+      ? await getCAZToken(accountId)
+      : undefined;
+
+    const creds = await getAssumeRoleCredentials({
+      awsAccountID: accountId,
+      iamRoleName,
+      cazToken,
+    });
+    return {
+      ...creds,
+      expiration: new Date(creds.expiration),
+    };
+  } catch (e) {
+
+    const fancyErrorMessage = `
+ ┌─────────────────────────────────────────────────────────────────────┐
+ │ Failed to get Isengard credentials!                                 │
+ │ Make sure that you are connected to the VPN and that you ran mwinit │
+ └─────────────────────────────────────────────────────────────────────┘
+`;
+
+    console.error(fancyErrorMessage);
+    console.error('Exception on getIsengardCredentials was:', (e as Error).message);
+    throw e;
+  }
 };
 
 /**

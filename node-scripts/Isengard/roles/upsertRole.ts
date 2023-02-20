@@ -1,18 +1,18 @@
-import { grantGroupPermission, grantUserPermission, revokeUserPermission } from "@amzn/isengard/dist/src/permissions/queries";
 import {
   addPolicyTemplateReferenceForIAMRole,
   attachIAMPolicyToIAMRole,
   createIAMRole,
-  listPermissionsByAWSAccount,
+  deletePolicyTemplateReferenceForIAMRole,
+  detachIAMPolicyFromIAMRole,
+  getIAMRole,
+  grantGroupPermission,
+  grantUserPermission,
+  listPermissionsForAWSAccount,
+  revokeUserPermission,
   synchronizeIAMRolePolicyWithPolicyTemplate,
   updateIAMRole,
 } from "@amzn/isengard";
 import { revokeGroupPermission } from "../patchMissingIsengardMethods";
-import { getIAMRole } from "@amzn/isengard/dist/src/roles/queries";
-import {
-  deletePolicyTemplateReferenceForIAMRole,
-  detachIAMPolicyFromIAMRole,
-} from "@amzn/isengard/dist/src/roles/mutations";
 
 export const withCatchOnErrorMsg = <T extends Array<any>, U>(
   errorMsgFragment: string,
@@ -80,7 +80,7 @@ export const computePermissionDiff = async (
   Group?: string,
   Users?: string[],
 ): Promise<PermissionDiff> => {
-  const permissionsForIAMRoles = await listPermissionsByAWSAccount(accountId);
+  const permissionsForIAMRoles = await listPermissionsForAWSAccount(accountId);
   const foundRole = permissionsForIAMRoles.find(
     (p) => p.IAMRoleName === IAMRoleName
   );

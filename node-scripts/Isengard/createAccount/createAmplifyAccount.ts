@@ -1,11 +1,13 @@
-import { createAWSAccount } from "@amzn/isengard";
+import {
+  createAWSAccount,
+  CreateAwsAccountRequest,
+  getAwsAccount,
+} from "@amzn/isengard";
 import { Region, Stage } from "../types";
 import { isOptInRegion, toRegionName } from "../../utils/regions";
 import { getRolesForStage } from "../roles/standardRoles";
 import { upsertRole } from "../roles/upsertRole";
 import { AccountPurposeFn } from "./accountPuporses/types";
-import { CreateAwsAccountRequest } from "@amzn/isengard/dist/src/accounts/types";
-import { getAwsAccount } from "@amzn/isengard/dist/src/accounts/queries";
 
 const PRIMARY_OWNER = "dcalaver";
 const SECONDARY_OWNER = "snimakom";

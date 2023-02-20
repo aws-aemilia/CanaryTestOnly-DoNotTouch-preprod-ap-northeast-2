@@ -51,11 +51,15 @@ const main = async () => {
   const stage = "prod";
   const roles = getRolesForStage(stage);
 
-  const rolesToUpdate = [
+  // Roles that should exist in all of our service accounts.
+  const commonRoles = [
     roles.FullReadOnly,
     roles.ReadOnly,
     roles.OncallOperator,
   ];
+
+  // Roles that shoud only exist in Control Plane accounts.
+  const controlPlaneAccountRoles = [roles.MobileCoreSupport];
 
   const accounts: AmplifyAccount[] = accountType
     ? await accountTypeFns[accountType]({ stage, region })
@@ -72,9 +76,20 @@ const main = async () => {
 
   for (const account of accounts) {
     console.log(`>> Updating roles for account ${account.email}`);
-    for (const role of rolesToUpdate) {
+    for (const role of commonRoles) {
       console.log(`>> Updating role ${role.IAMRoleName}`);
       await upsertRole(account.accountId, role);
+    }
+  }
+
+  if (!accountType || accountType === "controlPlane") {
+    const cpAccounts = await controlPlaneAccounts({ stage, region });
+    for (const account of cpAccounts) {
+      console.log(`>> Updating roles for account ${account.email}`);
+      for (const role of controlPlaneAccountRoles) {
+        console.log(`>> Updating role ${role.IAMRoleName}`);
+        await upsertRole(account.accountId, role);
+      }
     }
   }
 };
