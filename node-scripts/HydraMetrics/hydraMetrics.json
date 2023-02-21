@@ -1,0 +1,1541 @@
+[
+  {
+    "accountId": "093006255971",
+    "region": "me-south-1",
+    "airportCode": "bah",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "093006255971-7a93a929d1919e1b404001bd1cee6908-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "093006255971-7a93a929d1919e1b404001bd1cee6908-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "093006255971-7a93a929d1919e1b404001bd1cee6908-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "855540725783",
+    "region": "ap-south-1",
+    "airportCode": "bom",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "855540725783-85a5f815f97da489b1fd57c9aaee85c7-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "855540725783-85a5f815f97da489b1fd57c9aaee85c7-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "855540725783-85a5f815f97da489b1fd57c9aaee85c7-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "082975104043",
+    "region": "us-east-2",
+    "airportCode": "cmh",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "082975104043-1f2a938b978a767bebb493480a3c3729-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "082975104043-1f2a938b978a767bebb493480a3c3729-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "082975104043-1f2a938b978a767bebb493480a3c3729-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "791916667033",
+    "region": "eu-west-1",
+    "airportCode": "dub",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "791916667033-580d61e2e867304ad1696888a5c6e772-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "791916667033-580d61e2e867304ad1696888a5c6e772-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "791916667033-580d61e2e867304ad1696888a5c6e772-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "539106299143",
+    "region": "eu-central-1",
+    "airportCode": "fra",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "539106299143-60a741a4bd34e5f51113d3f8b040346e-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "539106299143-60a741a4bd34e5f51113d3f8b040346e-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "539106299143-60a741a4bd34e5f51113d3f8b040346e-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "190546094896",
+    "region": "ap-east-1",
+    "airportCode": "hkg",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "190546094896-140911e2e14ec51ceff45c503943a506-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "190546094896-140911e2e14ec51ceff45c503943a506-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "190546094896-140911e2e14ec51ceff45c503943a506-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "967659334112",
+    "region": "us-east-1",
+    "airportCode": "iad",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "967659334112-90358f9293a82e9b365ac4c3c021f98c-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "967659334112-90358f9293a82e9b365ac4c3c021f98c-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "967659334112-90358f9293a82e9b365ac4c3c021f98c-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "320933843292",
+    "region": "ap-northeast-2",
+    "airportCode": "icn",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "320933843292-d217736475ed1d760cad33ee62d4b116-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "320933843292-d217736475ed1d760cad33ee62d4b116-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "320933843292-d217736475ed1d760cad33ee62d4b116-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "592963052495",
+    "region": "eu-west-2",
+    "airportCode": "lhr",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "592963052495-d2ee7357333aa2fcc0790c6dc94aeb21-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "592963052495-d2ee7357333aa2fcc0790c6dc94aeb21-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "592963052495-d2ee7357333aa2fcc0790c6dc94aeb21-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "535437404437",
+    "region": "eu-south-1",
+    "airportCode": "mxp",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "535437404437-32a7503c6c21f2be1b47f702219e0f98-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "535437404437-32a7503c6c21f2be1b47f702219e0f98-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "535437404437-32a7503c6c21f2be1b47f702219e0f98-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "572676795576",
+    "region": "ap-northeast-1",
+    "airportCode": "nrt",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "572676795576-7521e6e794ce387e2cd9ca9b428ff2ef-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "572676795576-7521e6e794ce387e2cd9ca9b428ff2ef-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "572676795576-7521e6e794ce387e2cd9ca9b428ff2ef-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "226137581026",
+    "region": "us-west-2",
+    "airportCode": "pdx",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "226137581026-7d50af67eef4ed20a9ea9aaf197f04dd-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "226137581026-7d50af67eef4ed20a9ea9aaf197f04dd-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "226137581026-7d50af67eef4ed20a9ea9aaf197f04dd-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "048809147308",
+    "region": "ap-southeast-1",
+    "airportCode": "sin",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "048809147308-23393ba5aa637f24feaf09702a2d464f-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "048809147308-23393ba5aa637f24feaf09702a2d464f-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "048809147308-23393ba5aa637f24feaf09702a2d464f-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "235407138452",
+    "region": "ap-southeast-2",
+    "airportCode": "syd",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "235407138452-482dd34622b09985721d08c87ba7f1af-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "235407138452-482dd34622b09985721d08c87ba7f1af-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "235407138452-482dd34622b09985721d08c87ba7f1af-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "424795888840",
+    "region": "eu-north-1",
+    "airportCode": "arn",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "424795888840-6879ae2d92de189e4a474669cf9966df-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "424795888840-6879ae2d92de189e4a474669cf9966df-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "424795888840-6879ae2d92de189e4a474669cf9966df-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "659547700018",
+    "region": "eu-west-3",
+    "airportCode": "cdg",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "659547700018-25ba66d222072e76e5994564a8d23ba2-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "659547700018-25ba66d222072e76e5994564a8d23ba2-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "659547700018-25ba66d222072e76e5994564a8d23ba2-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "137144400800",
+    "region": "sa-east-1",
+    "airportCode": "gru",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "137144400800-53970a10cb8932cca872a84884eef275-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "137144400800-53970a10cb8932cca872a84884eef275-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "137144400800-53970a10cb8932cca872a84884eef275-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "999225919880",
+    "region": "us-west-1",
+    "airportCode": "sfo",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "999225919880-b1533dab959a3338417b002f1d9b034d-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "999225919880-b1533dab959a3338417b002f1d9b034d-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "999225919880-b1533dab959a3338417b002f1d9b034d-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "accountId": "706311624498",
+    "region": "ca-central-1",
+    "airportCode": "yul",
+    "metrics": [
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "706311624498-96f0425edf0855642ea3b5d18fe46284-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "706311624498-96f0425edf0855642ea3b5d18fe46284-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "PackageName",
+            "Value": "com.amazon.awsamplifyhostingcanary.suites"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "ClassName",
+            "Value": "StaticAppTest"
+          },
+          {
+            "Name": "MethodName",
+            "Value": "testStaticContent_Html"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      },
+      {
+        "Namespace": "CodeTest",
+        "MetricName": "Failed",
+        "Dimensions": [
+          {
+            "Name": "Requester",
+            "Value": "706311624498-96f0425edf0855642ea3b5d18fe46284-AWSAmplifyHostingCanary"
+          },
+          {
+            "Name": "Test Vertical",
+            "Value": "CANARY"
+          },
+          {
+            "Name": "SuiteName",
+            "Value": "AWSAmplifyHostingCanaryTests"
+          }
+        ]
+      }
+    ]
+  }
+]
