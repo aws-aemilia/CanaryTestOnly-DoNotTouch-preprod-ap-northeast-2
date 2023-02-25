@@ -41,3 +41,4 @@ node-scripts/P61637409/output
 node-scripts/globalQueryOutput/
 
 node-scripts/V737790025/*.csv
+/node-scripts/dist/
