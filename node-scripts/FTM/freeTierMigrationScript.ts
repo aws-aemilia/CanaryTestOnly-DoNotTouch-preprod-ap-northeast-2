@@ -1,6 +1,6 @@
 import fs from "fs"
-import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "./Isengard"
-import { toRegionName } from "./utils/regions"
+import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../Isengard"
+import { toRegionName } from "../utils/regions"
 import { ReceiveMessageCommand, SendMessageCommand, SQS } from "@aws-sdk/client-sqs"
 
 let ACCOUNT_BEING_PROCESSED: string | null = null
@@ -22,11 +22,11 @@ enum FreeTierMigrationAgent {
 }
 
 const freeTierMigrationQueue = (amplifyAccount: AmplifyAccount): string => {
-    return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/FreeTierMigrationQueue`
+    return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/FreeTierMigrationQueue.fifo`
 }
 
 const freeTierMigrationDLQQueue = (amplifyAccount: AmplifyAccount): string => {
-    return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/FreeTierMigrationDLQ`
+    return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/FreeTierMigrationDLQ.fifo`
 }
 
 const dlqHasMessages = async (): Promise<boolean> => {
@@ -56,6 +56,17 @@ const getAccountIdIdxToStartProcessing = (): number => {
 }
 
 const main = async () => {
+    // init the sqs client for the region
+    controlPlaneAccount_ = await controlPlaneAccount(STAGE, REGION_AIRPORT)
+    const role = "OncallOperator"
+    sqs = new SQS({
+      region: REGION_NAME,
+      credentials: getIsengardCredentialsProvider(
+        controlPlaneAccount_.accountId,
+        role
+      ),
+    })
+
     console.log(`Checking DLQ for messages...`)
     if (await dlqHasMessages()) {
         throw new Error("Found messages in the FreeTierMigrationDLQ. Either redrive or purge them before rerunning this script.")
@@ -71,17 +82,6 @@ const main = async () => {
     // check if the script was previously ran and we should pick up processing from a certain account id
     const startProcessIdx = getAccountIdIdxToStartProcessing()
 
-    // init the sqs client for the region
-    controlPlaneAccount_ = await controlPlaneAccount(STAGE, REGION_AIRPORT)
-    const role = STAGE === "prod" ? "FullReadOnly" : "ReadOnly" // todo update to specific role for write only permissions to FreeTierMigration SQS queue
-    sqs = new SQS({
-      region: REGION_NAME,
-      credentials: getIsengardCredentialsProvider(
-        controlPlaneAccount_.accountId,
-        role
-      ),
-    })
-
     // send message to the SQS queue to migrate the accounts
     for (let i = startProcessIdx; i < accountIds.length; i++) {
         if (i === 0) continue // first row will be the csv column titles
@@ -92,6 +92,7 @@ const main = async () => {
             const message = new SendMessageCommand({
                 QueueUrl: freeTierMigrationQueue(controlPlaneAccount_),
                 MessageBody: JSON.stringify(buildAccountMigrationMessage(ACCOUNT_BEING_PROCESSED)),
+                MessageGroupId: "freeTierMigration"  // Since we're sending messages to a FIFO queue, each message needs a message group ID. We simply set each to the same ID so that they're all processed one at a time.
             })
             await sqs.send(message)
             console.log(`sent message: ${JSON.stringify(message)}`)

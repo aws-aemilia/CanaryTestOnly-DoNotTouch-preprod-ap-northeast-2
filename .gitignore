@@ -42,3 +42,4 @@ node-scripts/globalQueryOutput/
 
 node-scripts/V737790025/*.csv
 /node-scripts/dist/
+/node-scripts/FTM/start-process-accountid.json
