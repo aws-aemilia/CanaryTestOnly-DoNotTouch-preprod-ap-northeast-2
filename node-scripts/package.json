@@ -30,7 +30,9 @@
     "reconcileEdgeConfigWithBranches": "ts-node reconcile-edge-config-with-branches/index.ts",
     "V737790025": "ts-node V737790025/index.ts",
     "simulateCacheBusting": "ts-node DDoS/simulateCacheBusting.ts",
-    "ddosWafMitigate": "ts-node DDoS/wafMitigate.ts"
+    "ddosWafMitigate": "ts-node DDoS/wafMitigate.ts",
+    "AddDistributionTypeToPool.run" : "ts-node DataMigrations/AddDistributionTypeToPool/run.ts",
+    "AddDistributionTypeToPool.verify" : "ts-node DataMigrations/AddDistributionTypeToPool/verify.ts"
   },
   "author": "",
   "license": "ISC",
