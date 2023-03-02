@@ -124,7 +124,9 @@ export async function verifyMigration(
     const badItemsInPage = page!.Items!.filter(flipVerifyItemFn);
     badItems.push(...badItemsInPage);
 
-    log.warn(`Found ${badItemsInPage.length} bad items in this page`);
+    if (badItemsInPage.length > 0) {
+      log.warn(`Found ${badItemsInPage.length} bad items in this page`);
+    }
   }
 
   if (badItems.length > 0) {
