@@ -23,7 +23,7 @@ import {
 import sleep from "../utils/sleep";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { enableDistribution, updateDistribution } from "../utils/cloudfront";
+import { disableDistribution, enableDistribution, updateDistribution } from "../utils/cloudfront";
 
 require("util").inspect.defaultOptions.depth = null;
 
@@ -133,8 +133,7 @@ async function attachWaf(
       "OncallOperator"
     ),
   });
-
-  const updateDistributionCommandOutput = await updateDistribution({
+  await updateDistribution({
     cloudFrontClient: client,
     distributionId: distributionId,
     updateDistributionConfigFn: (distributionConfig) => {
@@ -256,8 +255,10 @@ async function main() {
   }
 
   console.log(`Checking if distribution ${distributionId} exists`);
+  let distributionConfig;
+
   try {
-    await cloudFrontClient.send(
+    distributionConfig = await cloudFrontClient.send(
         new GetDistributionConfigCommand({ Id: targetDistributionId })
     );
   } catch (e) {
@@ -270,6 +271,14 @@ async function main() {
       return;
     }
     throw e;
+  }
+
+  if (distributionConfig.DistributionConfig?.Enabled){
+    console.log(`Disabling distribution ${distributionId} in stage ${stage} and region ${region}`);
+    await disableDistribution({
+      cloudFrontClient,
+      distributionId: targetDistributionId
+    });
   }
 
   console.log(`Applying WAF with default Block to ${targetDistributionId}`);

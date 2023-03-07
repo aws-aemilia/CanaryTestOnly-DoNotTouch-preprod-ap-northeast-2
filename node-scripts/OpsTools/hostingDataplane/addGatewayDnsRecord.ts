@@ -2,7 +2,7 @@ import { dataPlaneAccount, Region, Stage } from "../../Isengard";
 import yargs from "yargs";
 import { getCloudFormationOutputs } from "../../utils/cloudFormation";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { changeResourceRecordSetsInGlobalAccount } from "./../../route53";
+import { getRoute53Client, updateRecordsInHostedZone } from "./../../route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 require("util").inspect.defaultOptions.depth = null;
@@ -43,7 +43,8 @@ const addRecord = async (stage: Stage, region: Region) => {
     Comment: "Add cell gateway A record",
   };
 
-  await changeResourceRecordSetsInGlobalAccount(HOSTED_ZONE_ID, changeBatch);
+  const route53Client = getRoute53Client(stage);
+  await updateRecordsInHostedZone(route53Client, HOSTED_ZONE_ID, changeBatch);
   console.log("SUCCESS");
 };
 

@@ -1,10 +1,15 @@
 {
-  "name": "@amzn/aws-amplify-tools",
+  "name": "awsamplifytools",
   "version": "1.0.0",
-  "dependencies": {
-    "claudia": "^5.13.0"
+  "description": "This package contains ops tools for Amplify Hosting",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"Success\""
   },
-  "devDependencies": {
-    "@types/yargs": "^17.0.10"
-  }
+  "repository": {
+    "type": "git",
+    "url": "ssh://git.amazon.com:2222/pkg/AWSAmplifyTools"
+  },
+  "author": "",
+  "license": "ISC"
 }

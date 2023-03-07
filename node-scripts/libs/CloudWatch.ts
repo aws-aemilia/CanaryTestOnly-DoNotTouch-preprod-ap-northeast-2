@@ -6,8 +6,12 @@ import {
   GetQueryResultsCommandOutput,
   StartQueryCommand,
 } from "@aws-sdk/client-cloudwatch-logs";
+import pino from "pino";
+import pinoPretty from "pino-pretty";
 import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
 import sleep from "../utils/sleep";
+
+const logger = pino(pinoPretty());
 
 export async function doQuery(
   account: AmplifyAccount,
@@ -34,7 +38,7 @@ export async function doQuery(
       logGroupNames: [logGroupName],
     });
 
-    console.log(`Starting query in region ${account.region} | ${account.airportCode}`);
+    logger.info(`Starting query in region ${account.region} | ${account.airportCode}`);
     const response = await client.send(command);
 
     if (!response.queryId) {
@@ -46,7 +50,7 @@ export async function doQuery(
 
     do {
       await sleep(5000);
-      console.log("Polling for query", response.queryId, account.region);
+      logger.info("Polling for query", response.queryId, account.region);
       queryResults = await client.send(
         new GetQueryResultsCommand({
           queryId: response.queryId,
@@ -57,7 +61,7 @@ export async function doQuery(
       queryResults.status === "Scheduled"
     );
 
-    console.log("Query completed", account.region);
+    logger.info("Query completed", account.region);
 
     if (queryResults.results) {
       for (const logLine of queryResults.results) {
@@ -71,12 +75,12 @@ export async function doQuery(
         logs.push(line.join(","));
       }
     } else {
-      console.log(`Results not found for ${account.region}`);
+      logger.info(`Results not found for ${account.region}`);
     }
 
     return logs;
   } catch (err) {
-    console.error("Failed to run query on region", account.region, err);
+    logger.error("Failed to run query on region", account.region, err);
   }
 }
 
@@ -117,6 +121,6 @@ async function getLogGroup(
     throw new Error(`Log group with prefix ${logPrefix} not found`);
   }
 
-  console.log(`Found log group ${logGroup.logGroupName}`);
+  logger.info(`Found log group ${logGroup.logGroupName}`);
   return logGroup.logGroupName;
 }

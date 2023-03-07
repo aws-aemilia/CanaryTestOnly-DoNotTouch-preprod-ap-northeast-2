@@ -16,12 +16,12 @@ import {
 import sleep from "../../utils/sleep";
 import yargs from "yargs";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { changeResourceRecordSetsInGlobalAccount } from "../../route53";
+import { updateRecordsInHostedZone, getRoute53Client } from "../../route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 const pollDelayMilliseconds = 30_000;
 
-const addValidationRecords = async (resourceRecord: ResourceRecord) => {
+const addValidationRecords = async (stage: Stage, resourceRecord: ResourceRecord) => {
   const changeBatch: ChangeBatch = {
     Changes: [
       {
@@ -37,7 +37,8 @@ const addValidationRecords = async (resourceRecord: ResourceRecord) => {
     Comment: "Add ACM validation records",
   };
 
-  await changeResourceRecordSetsInGlobalAccount(HOSTED_ZONE_ID, changeBatch);
+  const route53Client = getRoute53Client(stage);
+  await updateRecordsInHostedZone(route53Client, HOSTED_ZONE_ID, changeBatch);
 };
 
 const getGatewayCertificate: (
@@ -116,7 +117,7 @@ const waitForAndValidtaeACMCertificate = async (
       break;
     case CertificateStatus.PENDING_VALIDATION:
       console.log("certificate is pending validation");
-      await addValidationRecords(dnsValidationRecord);
+      await addValidationRecords(stage, dnsValidationRecord);
       console.log("Successfully added validation records to route53");
       break;
   }

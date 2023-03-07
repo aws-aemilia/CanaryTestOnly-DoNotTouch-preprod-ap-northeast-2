@@ -199,6 +199,31 @@ const getKinesisConsumerAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 }
 
+const getMeteringAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+    /^aws-amplify-metering-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      },
+    ];
+  });
+}
+
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): AccountsLookupFn => {
@@ -342,6 +367,7 @@ export const dataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
     getDataPlaneAccounts,
     "dataPlaneAccounts"
 );
+
 export const dataPlaneAccount: (
     stage: Stage,
     region: Region
@@ -354,10 +380,19 @@ export const kinesisConsumerAccounts: AccountsLookupFn = defaultGetAccounts(
   getKinesisConsumerAccounts,
   "kinesisConsumerAccounts"
 );
+
 export const kinesisConsumerAccount: (
   stage: Stage,
   region: Region
 ) => Promise<AmplifyAccount> = defaultGetAccount(
   getKinesisConsumerAccounts,
   "kinesisConsumerAccounts"
+);
+
+export const meteringAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getMeteringAccounts,
+  "meteringAccounts"
 );

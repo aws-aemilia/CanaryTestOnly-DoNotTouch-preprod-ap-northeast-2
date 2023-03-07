@@ -178,7 +178,7 @@
     }
 
     function toWiki(pageSummary){
-        var content = "(% border=\"1\" %)\n|=#|=Link|=Subject|=Timestamps";
+        var content = "(% border=\"1\" %)\n|=#|=Link|=Subject|=Timestamps|=Resolution/Root Cause";
         var number = 1;
         var pageCounts = {};
         for(let entry of Object.keys(pageSummary)){
@@ -197,12 +197,13 @@
                 }
                 incrementPageCount(page.emoji, pageCounts);
             }
+            content += `|`;
         }
         incrementPageCount('Unique', pageCounts, Object.keys(pageSummary).length);
 
         //Sort counts so it is total pages, after hours pages, emoji pages
         for(let type of Object.keys(pageCounts).sort().reverse()){
-            content += `\n|(% colspan="4" %)**${type}**: ${pageCounts[type]}`
+            content += `\n|(% colspan="5" %)**${type}**: ${pageCounts[type]}`
         }
         return content;
     }

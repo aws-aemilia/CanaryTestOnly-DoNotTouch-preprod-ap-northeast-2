@@ -76,7 +76,9 @@ export const isContingentAuthNeeded = async (
 
   return (
     getIAMRoleResponse.IAMRole.RiskLevel !== RiskLevel.LOW &&
-    (classification.HasCustomerData || classification.HasCustomerMetadata)
+    (classification.HasCustomerData ||
+      classification.HasCustomerMetadata ||
+      (classification as any).IsContingentAuthProtected) // IsContingentAuthProtected is missing from the type definition
   );
 };
 
