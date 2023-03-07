@@ -1,0 +1,51 @@
+[
+  {
+    "Name": "prod.ap-southeast-2.gateway.amplify.aws.dev.",
+    "Type": "A",
+    "AliasTarget": {
+      "HostedZoneId": "Z1GM3OXH4ZPM65",
+      "DNSName": "hosti-hosti-1m4j4ea7ge9bw-980953729.ap-southeast-2.elb.amazonaws.com.",
+      "EvaluateTargetHealth": true
+    }
+  },
+  {
+    "Name": "_c94df1ca9c47aad41deda97300573b7e.prod.ap-southeast-2.gateway.amplify.aws.dev.",
+    "Type": "CNAME",
+    "TTL": 300,
+    "ResourceRecords": [
+      {
+        "Value": "_e73487998b2590e7a7ce11b7a47c487f.gfjzbhpkrq.acm-validations.aws."
+      }
+    ]
+  },
+  {
+    "Name": "*.prod.ap-southeast-2.gateway.amplify.aws.dev",
+    "Type": "CNAME",
+    "TTL": 300,
+    "ResourceRecords": [
+      {
+        "Value": "prod.ap-southeast-2.gateway.amplify.aws.dev"
+      }
+    ]
+  },
+  {
+    "Name": "prod.ap-southeast-2.gateway.amplify.aws.dev",
+    "Type": "TXT",
+    "TTL": 1800,
+    "ResourceRecords": [
+      {
+        "Value": "\"v=spf1 -all\""
+      }
+    ]
+  },
+  {
+    "Name": "_dmarc.prod.ap-southeast-2.gateway.amplify.aws.dev",
+    "Type": "TXT",
+    "TTL": 1800,
+    "ResourceRecords": [
+      {
+        "Value": "\"v=DMARC1; p=reject; rua=mailto:report@dmarc.amazon.com; ruf=mailto:report@dmarc.amazon.com\""
+      }
+    ]
+  }
+]

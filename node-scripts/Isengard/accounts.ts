@@ -50,7 +50,7 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
 
 const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
   const integTestNameRegex =
-      /^aws-(aemilia|ameilia)-integration-test-(?<airportCode>[a-z]{3})-(?<stage>beta|gamma|preprod|prod)?@amazon.com$/;
+    /^aws-(aemilia|ameilia)-integration-test-(?<airportCode>[a-z]{3})-(?<stage>beta|gamma|preprod|prod)?@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -75,7 +75,7 @@ const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
 
 const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
   const integTestNameRegex =
-      /^aws-mobile-amplify-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-console?@amazon.com$/;
+    /^aws-mobile-amplify-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-console?@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -100,7 +100,7 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
 
 const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
-      /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+    /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -125,7 +125,7 @@ const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]
 
 const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
-      /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
+    /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -151,7 +151,7 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
 
 const getDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
-      /^aws-mobile-amplify\+dataplane-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+    /^aws-mobile-amplify\+dataplane-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -222,7 +222,52 @@ const getMeteringAccounts = async (): Promise<AmplifyAccount[]> => {
       },
     ];
   });
-}
+};
+
+const getDomainAccounts = async (): Promise<AmplifyAccount[]> => {
+  // Get prod accounts
+  const nameRegex =
+    /^aws-mobile-aemilia-prod-(?<airportCode>[a-z]{3})-domain@amazon.com$/;
+  const prodaAccounts: AccountListItem[] = await listIsengardAccounts();
+  const airportCodes: string[] = [];
+
+  const accounts = prodaAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode } = match.groups!;
+    airportCodes.push(airportCode);
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage: "prod",
+      },
+    ];
+  });
+
+  // Add non-prod accounts, we use the same one for all non-prod
+  // stages and regions
+  const stages = ["beta", "gamma", "preprod"];
+  stages.forEach((stage) => {
+    airportCodes.forEach((airportCode) => {
+      accounts.push({
+        accountId: "070306596019",
+        email: "amplify-team-domains@amazon.com",
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      });
+    });
+  });
+
+  return accounts;
+};
 
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
@@ -341,9 +386,9 @@ export const consoleAccount: (
 );
 
 export const computeServiceControlPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
-  getComputeServiceControlPlaneAccounts,
-  "computeServiceControlPlaneAccounts"
-);
+    getComputeServiceControlPlaneAccounts,
+    "computeServiceControlPlaneAccounts"
+  );
 export const computeServiceControlPlaneAccount: (
   stage: Stage,
   region: Region
@@ -353,27 +398,27 @@ export const computeServiceControlPlaneAccount: (
 );
 
 export const computeServiceDataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
-  getComputeServiceDataPlaneAccounts,
-  "computeServiceDataPlaneAccounts"
-);
+    getComputeServiceDataPlaneAccounts,
+    "computeServiceDataPlaneAccounts"
+  );
 
 export const computeServiceDataPlaneAccount: (stage: Stage, region: Region, cellNumber: number) => Promise<AmplifyAccount> = pipe(
-    () => getComputeServiceDataPlaneAccounts,
+  () => getComputeServiceDataPlaneAccounts,
     curry(withFileCache)('computeServiceDataPlaneAccounts'),
-    withFindByRegionAndStageAndCell
+  withFindByRegionAndStageAndCell
 )()
 
 export const dataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
-    getDataPlaneAccounts,
-    "dataPlaneAccounts"
+  getDataPlaneAccounts,
+  "dataPlaneAccounts"
 );
 
 export const dataPlaneAccount: (
-    stage: Stage,
-    region: Region
+  stage: Stage,
+  region: Region
 ) => Promise<AmplifyAccount> = defaultGetAccount(
-    getDataPlaneAccounts,
-    "dataPlaneAccounts"
+  getDataPlaneAccounts,
+  "dataPlaneAccounts"
 );
 
 export const kinesisConsumerAccounts: AccountsLookupFn = defaultGetAccounts(
@@ -396,3 +441,22 @@ export const meteringAccount: (
   getMeteringAccounts,
   "meteringAccounts"
 );
+
+export const domainAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getDomainAccounts,
+  "domainAccounts"
+);
+
+// The root account holds apex domains that delegate to regional Route53 hosted zones
+export const rootDomainAccount = (): AmplifyAccount => {
+  return {
+    accountId: "673144583891",
+    email: "aws-mobile-aemilia-domain@amazon.com",
+    airportCode: "iad", // irrelevant
+    region: "us-east-1", // irrelevant
+    stage: "prod", // irrelevant
+  };
+};

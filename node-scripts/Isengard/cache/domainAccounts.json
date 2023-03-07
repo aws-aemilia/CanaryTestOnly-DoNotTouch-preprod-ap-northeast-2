@@ -1,0 +1,562 @@
+[
+  {
+    "accountId": "936854625042",
+    "email": "aws-mobile-aemilia-prod-arn-domain@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "393472485394",
+    "email": "aws-mobile-aemilia-prod-bah-domain@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "129481657496",
+    "email": "aws-mobile-aemilia-prod-bom-domain@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "771359535112",
+    "email": "aws-mobile-aemilia-prod-cdg-domain@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "877473041246",
+    "email": "aws-mobile-aemilia-prod-cmh-domain@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "266321631886",
+    "email": "aws-mobile-aemilia-prod-dub-domain@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "114079260889",
+    "email": "aws-mobile-aemilia-prod-fra-domain@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "584622029965",
+    "email": "aws-mobile-aemilia-prod-gru-domain@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "690224987239",
+    "email": "aws-mobile-aemilia-prod-hkg-domain@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "974944629948",
+    "email": "aws-mobile-aemilia-prod-iad-domain@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "838642254235",
+    "email": "aws-mobile-aemilia-prod-icn-domain@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "297057519223",
+    "email": "aws-mobile-aemilia-prod-kix-domain@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "738437744573",
+    "email": "aws-mobile-aemilia-prod-lhr-domain@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "629701000556",
+    "email": "aws-mobile-aemilia-prod-mxp-domain@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "435795423647",
+    "email": "aws-mobile-aemilia-prod-nrt-domain@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "307091743791",
+    "email": "aws-mobile-aemilia-prod-pdx-domain@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "926994853468",
+    "email": "aws-mobile-aemilia-prod-sfo-domain@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "215398435713",
+    "email": "aws-mobile-aemilia-prod-sin-domain@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "579703052587",
+    "email": "aws-mobile-aemilia-prod-syd-domain@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "389660222773",
+    "email": "aws-mobile-aemilia-prod-yul-domain@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "beta"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "070306596019",
+    "email": "amplify-team-domains@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "preprod"
+  }
+]
