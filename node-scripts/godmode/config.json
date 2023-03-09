@@ -47,7 +47,11 @@
       "logGroup": "AmplifyControlPlaneAPIAccessLogs",
       "apigLogs": "AmplifyControlPlaneAPIAccessLogs-${stage}-${region}",
       "lambdaLogs": "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-LambdaFunction-',logGroups),\"~'\")}",
+      "integrationTestLogs": "${join(prefixSearch('CODETEST-Logs-CodeTestEntities-',logGroups),\"~'\")}",
       "executionLogs": "${join(prefixSearch('API-Gateway-Execution-Logs_' + apiLookup['Amplify'],logGroups),\"~'\")}",
+      "asyncResourceDeletionLogs": "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletionFun',logGroups),\"~'\")}",
+      "accountClosureProcessorLogs": "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor-',logGroups),\"~'\")}",
+      "accountClosureDeletionLogs": "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-AccountClosureDeletionPr-',logGroups),\"~'\")}",
       "logGroups": [],
       "apiLookup": {},
       "parameters": {
@@ -101,13 +105,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-SRJLPXJBKCVR",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-BBRBRFT4Z7HY",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-OYHJQNWMPPNC",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-7Zv8gDAIFrbc",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-TEFBVNSKOSBS",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-9YFII01LU8KW",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-AWMEF6RPKB5K",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-4IN1VJ43T90M",
             "/aws/lambda/BastionStack-DogfishLambda-GE5GU5FS8C9O",
             "API-Gateway-Execution-Logs_a3lsdnrs08/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1SVHY07R9J5"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1SVHY07R9J5",
+            "CODETEST-Logs-CodeTestEntities-550167628141-e491e9163f2bec9ab45b3cb55005d800"
           ]
         },
         "ICN": {
@@ -162,13 +168,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-B9HIXHIPMOES",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-19ZXWIT4IXVOJ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-QF3Y63HRI730",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-gssm0M9sruNd",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-14P5GFG2RQF4U",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-Z2PJPL1HQJEC",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1FBOSL5VMLOZO",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-1DF65I0D6VELI",
             "/aws/lambda/BastionStack-DogfishLambda-1JM3P9VF7PFMF",
             "API-Gateway-Execution-Logs_vcvh7pksz4/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-2SSBTYW9NJT1"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-2SSBTYW9NJT1",
+            "CODETEST-Logs-CodeTestEntities-024873182396-6aaa0e66de9b003b46124d38ac7339e0"
           ]
         },
         "BOM": {
@@ -226,13 +234,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-CJK9K27914W6",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1XMN6XVJKSTIO",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-36W97CX8MRVX",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-iISAxeWFj25z",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-16U1T2VO2RSMC",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-Y54H7GBREJEI",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-D8KFQFW3JTYT",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-16AD2Z1MZXW7B",
             "/aws/lambda/BastionStack-DogfishLambda-1WIFSVNP78W5U",
             "API-Gateway-Execution-Logs_a5ns16kw30/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1GKHQQ9258P4Q"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1GKHQQ9258P4Q",
+            "CODETEST-Logs-CodeTestEntities-801187164913-26d3719875e15f94a7069866e67fd8cc"
           ]
         },
         "SIN": {
@@ -286,13 +296,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1M1FYNMBBQLIH",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-12GBYFNDBQN8F",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-O23QO0A99YWS",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-DRTHHizZuJCH",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1RUDUG6K17I8A",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1PJU3AR0YO0N6",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1GCMXIFWX08PJ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-WM9KDOSCQ4KS",
             "/aws/lambda/BastionStack-DogfishLambda-1NGFVPP0WKW2A",
             "API-Gateway-Execution-Logs_ykifylndqg/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1CTICUN7UMPFN"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1CTICUN7UMPFN",
+            "CODETEST-Logs-CodeTestEntities-148414518837-400a968ee83af8afa6727f22f86a2c13"
           ]
         },
         "SYD": {
@@ -351,6 +363,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-AKHIIMSZX7Q7",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Add-79X206MF1I56",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-C4TI855GRTE2",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-oQb9LnHxD2nG",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Divide-7TN83GZ000K1",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-BNMBRB2HIBIA",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Multiply-OOU1WXNLNEEV",
@@ -363,7 +376,8 @@
             "API-Gateway-Execution-Logs_kvcnzvdsm1/Prod",
             "API-Gateway-Execution-Logs_w7tp35wqn6/Prod",
             "API-Gateway-Execution-Logs_wvk9mtect0/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1KTL5NQIJV6OV"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1KTL5NQIJV6OV",
+            "CODETEST-Logs-CodeTestEntities-711974673587-3d59072240a56d90696a22097da8dfaf"
           ]
         },
         "YUL": {
@@ -417,13 +431,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1JJEGKMUHYPGT",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-HUM5J6UD5NL1",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1KI5MO7XFH515",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-FidGZlVm9aEb",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1E3Y7HB2FA6KV",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-DUSVMHFGKMMC",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1O6TI0KGCC1JE",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-M5N4HBSNBGIO",
             "/aws/lambda/BastionStack-DogfishLambda-HO2DOZTUMD24",
             "API-Gateway-Execution-Logs_16iuwy6tik/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TFURIXKZD630"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TFURIXKZD630",
+            "CODETEST-Logs-CodeTestEntities-824930503114-4d3e45b2f9bff88ef42bfbfe587c042e"
           ]
         },
         "FRA": {
@@ -477,13 +493,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-FUOYZZ4YGPIG",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-6CQFKGBGREKJ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-RM6B55QCNEN3",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-hPF0mTQsa5g8",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-WOLYUVGL5LQD",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1QXCDJZR3RM5K",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-JN7ZI6XA4M9O",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-HP6KOK8EV3HA",
             "/aws/lambda/BastionStack-DogfishLambda-59RQ8JSOVWJN",
             "API-Gateway-Execution-Logs_bv6wvxhay9/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1MA0DX7RN2EAN"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1MA0DX7RN2EAN",
+            "CODETEST-Logs-CodeTestEntities-644397351177-5553c56f52f1bdf3a3b26bd40a1cb498"
           ]
         },
         "ARN": {
@@ -540,13 +558,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-XMDQ73KV4V2E",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1N4SYPQ3GLJEP",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1L1QYESRIYVKU",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-Kxbpfau1ZHee",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-MQ9I7WASMRBU",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1LDX825K5WRY1",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1RERT0EZD7NYM",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-4IMKJ2YZ00AU",
             "/aws/lambda/BastionStack-DogfishLambda-1PC6ISSJ892AZ",
             "API-Gateway-Execution-Logs_lm7kebzyr0/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1SBIC3KTY1QTD"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1SBIC3KTY1QTD",
+            "CODETEST-Logs-CodeTestEntities-315276288780-642315bde86f6496d521457355f7262d"
           ]
         },
         "DUB": {
@@ -602,6 +622,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-TBYVY5XKJ57T",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1BO94ZCG1ZJ6H",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1FTSZL0WF1GDO",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-6rCyXomcuXk9",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-DNBXPLJNU6TF",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-4TDM4PQD602T",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1MZIKUR426V0Y",
@@ -611,7 +632,8 @@
             "API-Gateway-Execution-Logs_1rovkzxk20/Prod",
             "API-Gateway-Execution-Logs_bd9k84izqe/prod",
             "API-Gateway-Execution-Logs_rx7yntjx68/Prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-112C07FWWRE54"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-112C07FWWRE54",
+            "CODETEST-Logs-CodeTestEntities-565036926641-0c5c44af53fc87990ca775d569413aad"
           ]
         },
         "LHR": {
@@ -665,6 +687,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-VUOJ0KPDQ3NX",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1P0SAVWRMUZ8M",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-XO8W2D1HHDNG",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-vFX9JFj6FgYQ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-OHAKODBZHACC",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-8UCTPONNLTSN",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-68PDQDH054AD",
@@ -672,7 +695,8 @@
             "/aws/lambda/BastionStack-DogfishLambda-A8QWJKRPAJCL",
             "/aws/lambda/BastionStack-DogfishLambda-NX22PSGSR9UN",
             "API-Gateway-Execution-Logs_ciak2lq4f8/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-A93RX6SU8AOP"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-A93RX6SU8AOP",
+            "CODETEST-Logs-CodeTestEntities-499901155257-77bc17720901916e261f3b47358b5430"
           ]
         },
         "CDG": {
@@ -727,13 +751,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-D4NA8AT8ZRI1",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1VZEVEMT7NE0X",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-2BIP5Z8SIUNF",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-jc0edasV9fNY",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-SRBXRL0QLZ9V",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-4GEDTTWW83N8",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1W4UBG6THH1ZT",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-OWO6Q2GNUEZF",
             "/aws/lambda/BastionStack-DogfishLambda-PV6BOVBAMGIL",
             "API-Gateway-Execution-Logs_k6wlf90lv2/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-186X0QAMH0E7C"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-186X0QAMH0E7C",
+            "CODETEST-Logs-CodeTestEntities-693207358157-c88a10921f2a61947fe3aeb911aac3b1"
           ]
         },
         "GRU": {
@@ -787,13 +813,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-G83QZEJ9VPWZ",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-LAVGJ9X42CW8",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-BUIILJQGGEXJ",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-Ggwqn95AfADr",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-7YAOP5HARSWM",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-LOA4K2MDBSLD",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-S88OA563GXAG",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-166K2KPVBZUUY",
             "/aws/lambda/BastionStack-DogfishLambda-PNA2V0P6DPJJ",
             "API-Gateway-Execution-Logs_d05svto9qc/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-JS0R585DAQWZ"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-JS0R585DAQWZ",
+            "CODETEST-Logs-CodeTestEntities-068675532419-0d1815b341a59d773671e461c4348212"
           ]
         },
         "IAD": {
@@ -851,6 +879,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-61991ET5O2Z3",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Add-1QIZXGBPKWXVJ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-EOCL4RSYWA6Y",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-r0SZnIJhHLTb",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Divide-499SLBK1VW6A",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-H4PY4PPOWR2B",
             "/aws/lambda/AemiliaWebhookProcessorLambda-Multiply-1LKWTTRK9CZNV",
@@ -863,7 +892,8 @@
             "API-Gateway-Execution-Logs_h0r5ans333/Prod",
             "API-Gateway-Execution-Logs_n79usow26a/prod",
             "API-Gateway-Execution-Logs_ypj49z6303/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1L7FPE26PHWH9"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1L7FPE26PHWH9",
+            "CODETEST-Logs-CodeTestEntities-073653171576-73b20281cf6756a2fd90549ae8b0a716"
           ]
         },
         "CMH": {
@@ -919,6 +949,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1IL8DTFWTAAR9",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-1EP36CUDGM786",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-483RYMUMX2FA",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-EUk97ZYuwLjC",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-K1EHHUW9S40C",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1N9PCXDV0VX2H",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-AOXTPPZNWQIY",
@@ -930,7 +961,8 @@
             "API-Gateway-Execution-Logs_75prm1ll6l/prod",
             "API-Gateway-Execution-Logs_fik71wod62/prod",
             "API-Gateway-Execution-Logs_j84z9f8m0d/Prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1S228LSNJFQ6Q"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1S228LSNJFQ6Q",
+            "CODETEST-Logs-CodeTestEntities-264748200621-1584ccd8b3fff3e1e2d6a4cf3ff00a61"
           ]
         },
         "SFO": {
@@ -987,13 +1019,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-1BRP69M69OL40",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-3TVMSNYHHNJ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-YWD3C32OSJBD",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-GyHBbahM0fUa",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1FTJII505TMCD",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1T7ONJYPX903P",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-3NWI5U8X24FF",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-I7CX9L11SHG1",
             "/aws/lambda/BastionStack-DogfishLambda-ECMIWF1P11C4",
             "API-Gateway-Execution-Logs_52nnfsgc4m/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-LEzkAZaftyyv"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-LEzkAZaftyyv",
+            "CODETEST-Logs-CodeTestEntities-214290359175-bb6acd37a4b6dcf1f602cc80e2e3c6d6"
           ]
         },
         "PDX": {
@@ -1051,6 +1085,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLa-LambdaWAFReputationLists-15UZD1JNOC6EI",
             "/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-NYGESBAMLPSM",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-MYDZN4YEFQIU",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-hgyIH7jyp5dt",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-OIZ2036Q9L4E",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1S6UEOP3VR2OU",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-136F64N51KFRQ",
@@ -1062,7 +1097,8 @@
             "API-Gateway-Execution-Logs_b9uarm8730/prod",
             "API-Gateway-Execution-Logs_fgzzlu32gb/Prod",
             "API-Gateway-Execution-Logs_l88nrvl6q8/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1LRZLYYO2ABMS"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1LRZLYYO2ABMS",
+            "CODETEST-Logs-CodeTestEntities-395333095307-8bcdc26743c7d2e11526b52eda6f7148"
           ]
         },
         "MXP": {
@@ -1118,13 +1154,15 @@
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFront-LogParser-MD5XSXNB0R69",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-1JP75LHZKUTWI",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-TA6CI1GPNKBA",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-qakBPSvczwON",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-PBTVSK4PY1PO",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-129VMZBQTABJN",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-1XW1RBA2808Y3",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-54KDUFRKVLLI",
             "/aws/lambda/BastionStack-DogfishLambda-SDZF44FOE8FX",
             "API-Gateway-Execution-Logs_gd2204hdrg/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-QeMlegbwSNWm"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-QeMlegbwSNWm",
+            "CODETEST-Logs-CodeTestEntities-804516649577-7c2e3ca42cb4a10ef234c2478ec806d3"
           ]
         },
         "HKG": {
@@ -1187,6 +1225,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-1901Q8MYFKBXN",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-ELXRE6W8LFIS",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-1V2ZLS299BKC1",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-7mollxMX7jJT",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-AOTP3VCPFRYF",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1OZ8BFZC4GKTM",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-MNP0VHZFDFHP",
@@ -1194,7 +1233,8 @@
             "/aws/lambda/BastionStack-DogfishLambda-1LXRH9BU24VYN",
             "/aws/lambda/BastionStack-DogfishLambda-BHTLKE3TTAC1",
             "API-Gateway-Execution-Logs_fak6aaboj3/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-8Zy9YEoTl68d"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-8Zy9YEoTl68d",
+            "CODETEST-Logs-CodeTestEntities-574285171994-38144f0b78ac1a2491c25e701b8bfd67"
           ]
         },
         "BAH": {
@@ -1254,6 +1294,7 @@
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFront-LogParser-9EGVNMR1GGTQ",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CloudFrontSta-Helper-3QQBGDS6KNP7",
             "/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-YN9NTEZSOHYS",
+            "/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-vRxLwYNlP6nU",
             "/aws/lambda/AemiliaWebhookProcessorLambda-JobHealthCheck-1VYU9PKYFALFR",
             "/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-1DEO9FLBJXJN",
             "/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-16BIWZGFX2BPF",
@@ -1261,7 +1302,8 @@
             "/aws/lambda/BastionStack-DogfishLambda-P1291N0VMFO5",
             "/aws/lambda/BastionStack-DogfishLambda-V8GXKOGIATC1",
             "API-Gateway-Execution-Logs_ykw0hmk700/prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TiN4HdbDOKNp"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TiN4HdbDOKNp",
+            "CODETEST-Logs-CodeTestEntities-183380703454-aebacf18ad9fd60de0b74feed0548381"
           ]
         },
         "PDX - Beta": {
@@ -1584,7 +1626,13 @@
     },
     "AemiliaWebhookProcessorLambda.AemiliaControlPlane": {
       "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
-      "accessLogs": "AmplifyWebhookAPIAccessLogs-${stage}-${region}~'AmplifyWebhookPreviewAPIAccessLogs-${stage}-${region}~'AmplifyIncomingWebhookAPIAccessLogs-${stage}-${region}",
+      "accessLogs": "AmplifyWebhookAPIAccessLogs-${stage}-${region}~'AmplifyWebhookPreviewAPIAccessLogs-${stage}-${region}~'AmplifyIncomingWebhookAPIAccessLogs-${stage}-${region}'AmplifyCodeCommitWebhookAPIAccessLogs-${stage}-${region}",
+      "accessLogsList": [
+        "AmplifyWebhookAPIAccessLogs-${stage}-${region}",
+        "AmplifyWebhookPreviewAPIAccessLogs-${stage}-${region}",
+        "AmplifyIncomingWebhookAPIAccessLogs-${stage}-${region}",
+        "AmplifyCodeCommitWebhookAPIAccessLogs-${stage}-${region}"
+      ],
       "serviceLogs": [
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-',logGroups),\"~'\")}",
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-',logGroups),\"~'\")}",
@@ -1592,8 +1640,27 @@
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-',logGroups),\"~'\")}",
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups),\"~'\")}",
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-',logGroups),\"~'\")}",
+        "/aws/lambda/TriggerBuild",
+        "/aws/lambda/RunNextJob",
+        "/aws/lambda/BuildSecretsHandler"
+      ],
+      "buildTriggerLogs": [
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-PostJobHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-',logGroups)}",
         "/aws/lambda/TriggerBuild",
         "/aws/lambda/RunNextJob"
+      ],
+      "lambdaHandlerLogs": [
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLamb-IncomingWebhookHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-CodeCommitHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups)}",
+        "${prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebPreviewHandler-',logGroups)}",
+        "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLam-GitHubValidationHandler-',logGroups),\"~'\")}",
+        "/aws/lambda/TriggerBuild"
       ]
     },
     "CustomDomainStepFunction.AemiliaControlPlane": {
@@ -2937,6 +3004,67 @@
         },
         "YUL": {
           "account": "628987390189"
+        }
+      }
+    },
+    "AmplifyIntegrationTests": {
+      "parameters": {
+        "BAH": {
+          "account": "093006255971"
+        },
+        "BOM": {
+          "account": "855540725783"
+        },
+        "CMH": {
+          "account": "082975104043"
+        },
+        "DUB": {
+          "account": "791916667033"
+        },
+        "FRA": {
+          "account": "539106299143"
+        },
+        "HKG": {
+          "account": "190546094896"
+        },
+        "IAD": {
+          "account": "967659334112"
+        },
+        "ICN": {
+          "account": "320933843292"
+        },
+        "LHR": {
+          "account": "592963052495"
+        },
+        "MXP": {
+          "account": "535437404437"
+        },
+        "NRT": {
+          "account": "572676795576"
+        },
+        "PDX": {
+          "account": "226137581026"
+        },
+        "SIN": {
+          "account": "048809147308"
+        },
+        "SYD": {
+          "account": "235407138452"
+        },
+        "ARN": {
+          "account": "424795888840"
+        },
+        "CDG": {
+          "account": "659547700018"
+        },
+        "GRU": {
+          "account": "137144400800"
+        },
+        "SFO": {
+          "account": "999225919880"
+        },
+        "YUL": {
+          "account": "706311624498"
         }
       }
     }

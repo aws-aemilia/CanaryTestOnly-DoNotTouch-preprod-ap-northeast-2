@@ -3,6 +3,7 @@ import {
   computeServiceControlPlaneAccounts,
   computeServiceDataPlaneAccounts,
   dataPlaneAccounts,
+  integTestAccounts,
 } from "../Isengard";
 import godModeConfig from "./config.json";
 
@@ -33,6 +34,7 @@ import godModeConfig from "./config.json";
 const main = async () => {
   let updatedConfig = await generateComputeServiceConfig(godModeConfig);
   updatedConfig = await generateHostingGatewayConfig(godModeConfig);
+  updatedConfig = await generateIntegrationTestsConfig(godModeConfig);
   writeConfig(updatedConfig);
 };
 
@@ -45,7 +47,9 @@ const generateComputeServiceConfig = async (godModeConfig: any) => {
 
   accounts.forEach((account) => {
     const airportCode = account.airportCode.toUpperCase();
-        const cells = cellAccounts.filter(cellAccount => cellAccount.airportCode === account.airportCode);
+    const cells = cellAccounts.filter(
+      (cellAccount) => cellAccount.airportCode === account.airportCode
+    );
 
     // Add main compute service account
     computeServiceConfig.parameters[airportCode] = {
@@ -56,7 +60,9 @@ const generateComputeServiceConfig = async (godModeConfig: any) => {
 
     // Add cell accounts
     cells.forEach((cell) => {
-            computeServiceConfig.parameters[`${airportCode} - Cell${cell.cellNumber}`] = {
+      computeServiceConfig.parameters[
+        `${airportCode} - Cell${cell.cellNumber}`
+      ] = {
         account: cell.accountId,
         // Add more parameters here if needed for each cell account to be used in Runbooks
       };
@@ -67,6 +73,7 @@ const generateComputeServiceConfig = async (godModeConfig: any) => {
   godModeConfig.services["AmplifyComputeService"] = computeServiceConfig;
   return godModeConfig;
 };
+
 const generateHostingGatewayConfig = async (godModeConfig: any) => {
   const accounts = await dataPlaneAccounts({ stage: "prod" });
   const config = {
@@ -82,6 +89,24 @@ const generateHostingGatewayConfig = async (godModeConfig: any) => {
 
   // @ts-ignore
   godModeConfig.services["AmplifyHostingGatewayService"] = config;
+  return godModeConfig;
+};
+
+const generateIntegrationTestsConfig = async (godModeConfig: any) => {
+  const accounts = await integTestAccounts({ stage: "prod" });
+  const config = {
+    parameters: {},
+  } as any;
+
+  accounts.forEach((account) => {
+    const airportCode = account.airportCode.toUpperCase();
+    config.parameters[airportCode] = {
+      account: account.accountId,
+    };
+  });
+
+  // @ts-ignore
+  godModeConfig.services["AmplifyIntegrationTests"] = config;
   return godModeConfig;
 };
 
