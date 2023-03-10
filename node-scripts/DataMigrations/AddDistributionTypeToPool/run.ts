@@ -1,4 +1,5 @@
 import {
+  AmplifyAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
   Region,
@@ -50,15 +51,31 @@ async function main() {
       type: "string",
       demandOption: false,
     })
+    .option("devAccountId", {
+      describe:
+          "The account Id for your dev account. This parameter overrides stage and region. Use this option if you want to run this script in your dev account.",
+      type: "string",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, rollback, mcm, startingToken } = args;
+  const { stage, region, rollback, mcm, startingToken, devAccountId } = args;
 
   process.env.ISENGARD_MCM = mcm;
 
-  const account = await controlPlaneAccount(stage as Stage, region as Region);
+  let account: AmplifyAccount;
+  if (devAccountId) {
+    console.log(`+++ Ignoring stage and region parameters and running in dev account: ${devAccountId} +++`)
+    account = {
+      accountId: devAccountId,
+      region: "us-west-2", // all dev stacks are on pdx
+      stage: "test",
+    } as AmplifyAccount;
+  } else {
+    account = await controlPlaneAccount(stage as Stage, region as Region)
+  }
   const tableName = `${account.stage}-${account.region}-WarmFrontEndResources`;
 
   const ddb = new DynamoDBClient({
