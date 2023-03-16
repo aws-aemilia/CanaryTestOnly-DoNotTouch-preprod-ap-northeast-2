@@ -18,14 +18,15 @@ export async function doQuery(
   logGroupPrefix: string,
   query: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  role?: string
 ) {
   try {
     const client = new CloudWatchLogsClient({
       region: account.region,
       credentials: getIsengardCredentialsProvider(
         account.accountId,
-        "ReadOnly"
+        role || "ReadOnly"
       ),
     });
 
@@ -38,7 +39,9 @@ export async function doQuery(
       logGroupNames: [logGroupName],
     });
 
-    logger.info(`Starting query in region ${account.region} | ${account.airportCode}`);
+    logger.info(
+      `Starting query in region ${account.region} | ${account.airportCode}`
+    );
     const response = await client.send(command);
 
     if (!response.queryId) {

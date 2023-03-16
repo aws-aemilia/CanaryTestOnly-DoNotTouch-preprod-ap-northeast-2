@@ -3,9 +3,44 @@ import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   GetCommand,
+  paginateScan,
   QueryCommand,
-  paginateScan
 } from "@aws-sdk/lib-dynamodb";
+
+export interface AppDO {
+  defaultDomain: { S: string };
+  cloudFrontDistributionId: { S: string };
+  autoBranchCreationPatterns: { SS: string[] };
+  enableAutoBranchDeletion: { N: string };
+  name: { S: string };
+  environmentVariables: { M: [Object] };
+  enableCustomHeadersV2: { N: string };
+  repository: {
+    S: string;
+  };
+  version: { N: string };
+  iamServiceRoleArn: { S: string };
+  accountId: { S: string };
+  enableBranchAutoBuild: { N: string };
+  autoBranchCreationConfig: { M: [Object] };
+  certificateArn: {
+    S: string;
+  };
+  createTime: { S: string };
+  hostingBucketName: { S: string };
+  buildSpec: {
+    S: string;
+  };
+  cloneUrl: {
+    S: string;
+  };
+  enableRewriteAndRedirect: { N: "0" };
+  platform: { S: "WEB" };
+  updateTime: { S: string };
+  appId: { S: string };
+  enableAutoBranchCreation: { N: string };
+  enableBasicAuth: { N: string };
+}
 
 /**
  * Looks up the customer account ID based on a given appId/domainId. It uses the
@@ -124,12 +159,12 @@ export const checkAppExists = async (
  * with `for await (const batch of paginateApps())`. Each batch will contain
  * a list of apps. It uses lazy loading so it doesn't consume the next page
  * until the iterator reaches the end.
- * 
+ *
  * @param documentClient DynamoDB document client
  * @param stage i.e. beta, prod, gamma
  * @param region i.e. us-west-2
  * @param attributesToGet i.e. ["appId", "platform"]
- * 
+ *
  * @returns Iterator of pages
  */
 export const paginateApps = (
