@@ -29,6 +29,11 @@ async function main() {
       type: "string",
       demandOption: true,
     })
+    .option("mcm", {
+      describe: "i.e. MCM-73116970. Used for Contingent Auth",
+      type: "string",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
