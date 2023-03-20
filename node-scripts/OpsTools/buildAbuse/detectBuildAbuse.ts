@@ -163,15 +163,9 @@ async function getMaliciousApps(
 ) {
   const account = await controlPlaneAccount(stage as Stage, region as Region);
 
-//   const query = `
-// fields @message, @logStream
-// | filter strcontains(@message, "https://github.com/meuryalos")
-// | limit 10000
-// `;
-
-const query = `
+  const query = `
 fields @message, @logStream
-| filter strcontains(@message, "nohup: failed to run command \‘./asfafad\’")
+| filter strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’")
 | limit 10000
 `;
   const queryResult = await doQuery(
