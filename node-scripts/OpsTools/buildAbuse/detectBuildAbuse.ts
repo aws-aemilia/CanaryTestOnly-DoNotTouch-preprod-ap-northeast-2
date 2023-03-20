@@ -12,9 +12,11 @@ import {
 } from "../../Isengard";
 import { getAppsByAppIds } from "../../libs/Amplify";
 import { doQuery } from "../../libs/CloudWatch";
-import { createTicket } from "../../SimT/createTicket";
+import { createTicket, CreateTicketParams } from "../../SimT/createTicket";
 import { BatchIterator } from "../../utils/BatchIterator";
 const SimClient = require("@amzn/sim-client");
+import fs from "fs";
+import confirm from "../../utils/confirm";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -45,7 +47,7 @@ const main = async () => {
   const maliciousAppIds = await getMaliciousApps(
     stage,
     region,
-    minutesAgo(180),
+    minutesAgo(360),
     new Date()
   );
 
@@ -84,14 +86,22 @@ const main = async () => {
 
   const accountIdsSorted = Array.from(accountIds).sort();
 
-  console.log("Final list of Accounts");
-  console.log(accountIdsSorted);
-
-  await reportAccounts(accountIdsSorted);
+  if (accountIdsSorted.length) {
+    await reportAccounts(accountIdsSorted);
+  }
 };
 
 async function reportAccounts(accountIds: string[]) {
-  const accountsList = accountIds.join("\n");
+  const reportedAccounts = Object.keys(readReportedAccountIds());
+  const unreportedAccounts = accountIds.filter((a) => {
+    if (reportedAccounts.includes(a)) {
+      console.info("Account already reported", a);
+      return false;
+    }
+    return true;
+  });
+
+  const accountsList = unreportedAccounts.join("\n");
   const description = `
 Please give this Ticket ID to the Abuse agent who is assisting you.
 
@@ -106,16 +116,34 @@ ${accountsList}
 We need help blocking these accounts from an AWS level.
 
 This is the same type of accounts associated with prior abuse ticket: https://t.corp.amazon.com/P83259214`;
-  await createTicket(
-    "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
+
+  const ticketParams: CreateTicketParams = {
+    title:
+      "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
     description,
-    "59885462-b9aa-49dc-9627-0468b1a76fad",
-    "AWS Fraud Investigations",
-    2,
-    "AWS",
-    "Fraud",
-    "Investigate Account"
-  );
+    assignedFolder: "59885462-b9aa-49dc-9627-0468b1a76fad",
+    extensions: {
+      tt: {
+        category: "AWS",
+        type: "Fraud",
+        item: "Investigate Account",
+        assignedGroup: "AWS Fraud Investigations",
+        caseType: "Trouble Ticket",
+        impact: 2,
+      },
+    },
+  };
+
+  console.log(ticketParams);
+  const proceed = await confirm(`Do you want to cut the above ticket?`);
+  if (!proceed) {
+    console.log("Skipping cutting ticket");
+    return "";
+  }
+
+  writeReportedAccountIds(accountIds, new Date());
+  await createTicket(ticketParams);
+  process.exit(0);
 }
 
 function getDdbClient(region: string, credentials?: Provider<Credentials>) {
@@ -135,11 +163,17 @@ async function getMaliciousApps(
 ) {
   const account = await controlPlaneAccount(stage as Stage, region as Region);
 
-  const query = `
+//   const query = `
+// fields @message, @logStream
+// | filter strcontains(@message, "https://github.com/meuryalos")
+// | limit 10000
+// `;
+
+const query = `
 fields @message, @logStream
-| filter @message like "https://github.com/meuryalos"
+| filter strcontains(@message, "nohup: failed to run command \‘./asfafad\’")
 | limit 10000
-    `;
+`;
   const queryResult = await doQuery(
     account,
     "AWSCodeBuild",
@@ -163,6 +197,38 @@ fields @message, @logStream
 
 const minutesAgo = (n: number) =>
   new Date(new Date().getTime() - 60 * 1000 * n);
+
+const reportedAccountsFile = "./account_reported.json";
+type ReportedAccounts = {
+  [accountId: string]: {
+    reportedOn: string;
+    ticket?: string;
+    disabled?: boolean;
+  };
+};
+
+function readReportedAccountIds(): ReportedAccounts {
+  const accounts: ReportedAccounts = JSON.parse(
+    fs.readFileSync(reportedAccountsFile, "utf8")
+  );
+  return accounts;
+}
+
+function writeReportedAccountIds(accountIds: string[], reportedOn: Date) {
+  const alreadyReported = readReportedAccountIds();
+  for (let acct of accountIds) {
+    if (alreadyReported[acct]) {
+      continue;
+    }
+
+    alreadyReported[acct] = { reportedOn: reportedOn.toISOString() };
+  }
+
+  fs.writeFileSync(
+    reportedAccountsFile,
+    JSON.stringify(alreadyReported, null, 2)
+  );
+}
 
 main()
   .then()

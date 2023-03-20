@@ -2,40 +2,26 @@ import { exec as execNonPromise } from "child_process";
 import util from "util";
 import confirm from "../utils/confirm";
 
-export const createTicket = async (
-  title: string,
-  description: string,
-  assignedFolder: string,
-  assignedGroup: string,
-  impact: number,
-  c: string,
-  t: string,
-  i: string
-): Promise<string> => {
-  const createTicketParams = {
-    title,
-    description,
-    assignedFolder,
-    extensions: {
-      tt: {
-        category: c,
-        type: t,
-        item: i,
-        assignedGroup: assignedGroup,
-        caseType: "Trouble Ticket",
-        impact,
-      },
-    },
+export interface CreateTicketParams {
+  title: string;
+  description: string;
+  assignedFolder: string;
+  extensions: {
+    tt: {
+      category: string;
+      type: string;
+      item: string;
+      assignedGroup: string;
+      caseType: string;
+      impact: number;
+    };
   };
+}
 
-  console.log(createTicketParams);
-
-  const proceed = await confirm(`Do you want to cut the above ticket?`);
-  if (!proceed) {
-    console.log("Skipping cutting ticket");
-    return "";
-  }
-
+export const createTicket = async (
+  createTicketParams: CreateTicketParams
+): Promise<string> => {
+  console.log("Creating ticket:", createTicketParams);
   const command = `kcurl -X POST -d '${JSON.stringify(
     createTicketParams
   )}' -H 'Content-Type: application/json' https://maxis-service-prod-pdx.amazon.com/issues`;
