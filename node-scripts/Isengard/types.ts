@@ -1,4 +1,4 @@
-export type Stage = "beta" | "gamma" | "preprod" | "prod";
+export type Stage = "test" | "beta" | "gamma" | "preprod" | "prod";
 export type AirportCode =
   | "ALE"
   | "APA"

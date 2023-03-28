@@ -8,7 +8,6 @@ export async function fetchDistribution(
     eTag: string;
     distributionConfig: DistributionConfig;
 }> {
-    console.log("================");
     console.log("Fetching distribution", distributionId);
     const response = await cloudfront.getDistribution({
         Id: distributionId,
