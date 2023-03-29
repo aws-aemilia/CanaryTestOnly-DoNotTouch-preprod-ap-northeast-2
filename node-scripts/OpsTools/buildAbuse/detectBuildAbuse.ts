@@ -1,4 +1,3 @@
-import { CloudWatchLogs } from "@aws-sdk/client-cloudwatch-logs";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
@@ -17,6 +16,7 @@ import { BatchIterator } from "../../utils/BatchIterator";
 const SimClient = require("@amzn/sim-client");
 import fs from "fs";
 import confirm from "../../utils/confirm";
+import { AbuseAccountAction, updateBlockStatusForAccountId } from "../../Fraud";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -87,20 +87,42 @@ const main = async () => {
   const accountIdsSorted = Array.from(accountIds).sort();
 
   if (accountIdsSorted.length) {
-    await reportAccounts(accountIdsSorted);
+    const reportedAccounts = Object.keys(readReportedAccountIds());
+    const unreportedAccounts = accountIdsSorted.filter((a) => {
+      if (reportedAccounts.includes(a)) {
+        console.info("Account already reported", a);
+        return false;
+      }
+      return true;
+    });
+    await reportAccounts(unreportedAccounts);
+    await blockAccounts(unreportedAccounts, stage);
   }
+  process.exit(0);
 };
 
-async function reportAccounts(accountIds: string[]) {
-  const reportedAccounts = Object.keys(readReportedAccountIds());
-  const unreportedAccounts = accountIds.filter((a) => {
-    if (reportedAccounts.includes(a)) {
-      console.info("Account already reported", a);
-      return false;
-    }
-    return true;
-  });
+const blockAccounts = async (accountIds: string[], stage: string) => {
+  const proceedAccounts = await confirm(
+    `Do you want to disable the above accounts?`
+  );
+  if (!proceedAccounts) {
+    console.log("Skipping disabling the accounts");
+    return "";
+  }
+  const blockAbuseAccountAction: AbuseAccountAction = "BLOCK";
+  for (const accountId of accountIds) {
+    await updateBlockStatusForAccountId(
+      accountId,
+      stage,
+      blockAbuseAccountAction,
+      "OncallOperator"
+    );
+  }
 
+  console.log("Done disabling the accounts");
+};
+
+async function reportAccounts(unreportedAccounts: string[]) {
   const accountsList = unreportedAccounts.join("\n");
   const description = `
 Please give this Ticket ID to the Abuse agent who is assisting you.
@@ -141,9 +163,8 @@ This is the same type of accounts associated with prior abuse ticket: https://t.
     return "";
   }
 
-  writeReportedAccountIds(accountIds, new Date());
+  writeReportedAccountIds(unreportedAccounts, new Date());
   await createTicket(ticketParams);
-  process.exit(0);
 }
 
 function getDdbClient(region: string, credentials?: Provider<Credentials>) {

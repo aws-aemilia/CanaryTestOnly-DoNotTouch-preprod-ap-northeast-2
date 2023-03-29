@@ -26,7 +26,7 @@ export async function doQuery(
       region: account.region,
       credentials: getIsengardCredentialsProvider(
         account.accountId,
-        role || "ReadOnly"
+        role || "FullReadOnly"
       ),
     });
 

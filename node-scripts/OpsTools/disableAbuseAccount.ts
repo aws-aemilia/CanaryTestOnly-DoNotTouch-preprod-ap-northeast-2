@@ -1,28 +1,6 @@
-import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
-
-import {
-  AmplifyAccount,
-  controlPlaneAccounts,
-  getIsengardCredentialsProvider,
-} from "../Isengard";
-
 import yargs from "yargs";
+import { AbuseAccountAction, updateBlockStatusForAccountId } from "../Fraud";
 import { getTicket } from "../SimT";
-import { whoAmI } from "../utils";
-
-type AbuseAccountAction = "BLOCK" | "UNBLOCK";
-
-const buildMessage = (accountId: string, abuseAccountAction: AbuseAccountAction) => {
-  return {
-    action: abuseAccountAction,
-    accountId,
-    metadata: `${whoAmI()} sent by disableAbuseAccount tool`,
-  };
-};
-
-const accountClosureQueue = (amplifyAccount: AmplifyAccount): string => {
-  return `https://sqs.${amplifyAccount.region}.amazonaws.com/${amplifyAccount.accountId}/AbuseReportQueue`;
-};
 
 const extractAccountIds = (text: string): string[] => {
   const accountIdRegex = /(?<!\d)[\d]{12}(?!\d)/g;
@@ -73,29 +51,6 @@ const validateAbuseTicket = async (
   process.env["ISENGARD_SIM"] = ticket;
 };
 
-const sendMessage = async (
-  account: AmplifyAccount,
-  accountId: string,
-  abuseAccountAction: AbuseAccountAction,
-  role: string
-): Promise<void> => {
-  const sqsClient = new SQSClient({
-    region: account.region,
-    credentials: getIsengardCredentialsProvider(account.accountId, role),
-  });
-
-  const sendMessageCommand = new SendMessageCommand({
-    QueueUrl: accountClosureQueue(account),
-    MessageBody: JSON.stringify(buildMessage(accountId, abuseAccountAction)),
-  });
-
-  console.log(`sending SQS message: `, sendMessageCommand.input);
-
-  const sendMessageCommandOutput = await sqsClient.send(sendMessageCommand);
-
-  console.log(JSON.stringify(sendMessageCommandOutput, null, 2));
-};
-
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
     .usage(
@@ -134,15 +89,14 @@ const main = async () => {
       choices: ["OncallOperator", "SupportOps"],
     })
     .option("unblock", {
-      describe:
-        'Unblock the Account. Will send a "UNBLOCK" message instead',
+      describe: 'Unblock the Account. Will send a "UNBLOCK" message instead',
       type: "boolean",
       default: false,
     })
     .strict()
     .version(false)
     .help()
-    .check(({ ignoreTicket, unblock}) => {
+    .check(({ ignoreTicket, unblock }) => {
       if (ignoreTicket && !unblock) {
         throw new Error(
           '"ignoreTicket" not allowed here. "ignoreTicket" can only be used to "unblock" accounts'
@@ -150,7 +104,6 @@ const main = async () => {
       }
       return true;
     }).argv;
-
 
   const { accountId, ticket, ignoreTicket, stage, unblock, role } = args;
 
@@ -167,23 +120,18 @@ const main = async () => {
     );
   }
 
-  const controlPLaneAccounts = (await controlPlaneAccounts()).filter(
-    (acc) => acc.stage === stage
+  const abuseAccountAction: AbuseAccountAction =
+    action === "Block" ? "BLOCK" : "UNBLOCK";
+  await updateBlockStatusForAccountId(
+    accountId,
+    stage,
+    abuseAccountAction,
+    role
   );
-
-  for (const controlPLaneAccount of controlPLaneAccounts) {
-    console.log(`Disabling account in ${controlPLaneAccount.region}...`);
-    await sendMessage(
-      controlPLaneAccount,
-      accountId,
-      action == "Block" ? "BLOCK" : "UNBLOCK",
-      role
-    );
-  }
 
   console.log("SUCCESS");
   console.log("Resolve and paste the following into the ticket:");
-  console.log("================================================")
+  console.log("================================================");
   console.log(
     `You can go to https://genie.console.amplify.aws.a2z.com/${stage}/customer/${accountId} to verify the status of this account's apps. It may take a few minutes for changes to take effect.`
   );
