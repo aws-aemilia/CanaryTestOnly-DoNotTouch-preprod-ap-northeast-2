@@ -186,7 +186,7 @@ async function getMaliciousApps(
 
   const query = `
 fields @message, @logStream
-| filter strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: timeout 400m ./time")
+| filter strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: timeout 400m ./time") or strcontains(@message, "miner	System will mine to")
 | limit 10000
 `;
   const queryResult = await doQuery(
