@@ -106,3 +106,16 @@ npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_nam
 # deletes all Amplify webhooks created from region `us-west-2` for repo `my_repo_name`
 npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_name --region us-west-2
 ```
+
+### Hosting Gateway vCPU Limit Increase
+
+If this fails on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
+
+```
+npx ts-node vCPULimitIncrease.ts \
+--stage prod \
+--region us-west-2 \
+--accountId 123456789012 \
+--limit 16000 \
+--ticket D1234567 \
+```
