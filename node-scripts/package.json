@@ -50,6 +50,7 @@
     "@aws-sdk/client-cloudformation": "^3.85.0",
     "@aws-sdk/client-cloudfront": "^3.1.0",
     "@aws-sdk/client-cloudwatch": "^3.146.0",
+    "@aws-sdk/client-cloudwatch-events": "^3.303.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.85.0",
     "@aws-sdk/client-codebuild": "^3.87.0",
     "@aws-sdk/client-dynamodb": "^3.9.0",
