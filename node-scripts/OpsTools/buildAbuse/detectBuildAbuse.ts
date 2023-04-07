@@ -17,10 +17,11 @@ const SimClient = require("@amzn/sim-client");
 import fs from "fs";
 import confirm from "../../utils/confirm";
 import { AbuseAccountAction, updateBlockStatusForAccountId } from "../../Fraud";
+import { stopBuilds } from "./stopBuilds";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
-    .usage(`Detect malicious build requests`)
+    .usage(`Detect malicious build requests, block their accounts and cancel their builds.`)
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
@@ -97,6 +98,15 @@ const main = async () => {
     });
     await reportAccounts(unreportedAccounts);
     await blockAccounts(unreportedAccounts, stage);
+    await stopBuilds(
+      stage as Stage,
+      region as Region,
+      controlplaneCredentials,
+      unreportedAccounts,
+      1, // We'll stop builds 1 account at a time.
+      console,
+      false,
+    )
   }
   process.exit(0);
 };
