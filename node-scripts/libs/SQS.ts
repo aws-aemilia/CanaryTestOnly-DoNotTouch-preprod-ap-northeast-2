@@ -1,4 +1,5 @@
 import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+import { Credentials, Provider } from "@aws-sdk/types";
 import pino from "pino";
 import pinoPretty from "pino-pretty";
 import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
@@ -9,10 +10,11 @@ export const sendMessage = async (
   account: AmplifyAccount,
   queueUrl: string,
   messageBody: string,
-  role: string
+  role: string,
+  client?: SQSClient,
 ): Promise<void> => {
   try {
-    const sqsClient = new SQSClient({
+    const sqsClient = client ? client : new SQSClient({
       region: account.region,
       credentials: getIsengardCredentialsProvider(account.accountId, role),
     });

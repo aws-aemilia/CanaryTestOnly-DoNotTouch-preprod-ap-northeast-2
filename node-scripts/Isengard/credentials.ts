@@ -13,7 +13,6 @@ const getIsengardCredentials = async (
   }
 
   try {
-
     const cazToken: string | undefined = (await isContingentAuthNeeded(
       accountId,
       iamRoleName

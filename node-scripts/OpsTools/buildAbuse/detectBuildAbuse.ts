@@ -5,6 +5,7 @@ import yargs from "yargs";
 import { AppDO } from "../../dynamodb";
 import {
   controlPlaneAccount,
+  controlPlaneAccounts,
   getIsengardCredentialsProvider,
   Region,
   Stage,
@@ -16,7 +17,7 @@ import { BatchIterator } from "../../utils/BatchIterator";
 const SimClient = require("@amzn/sim-client");
 import fs from "fs";
 import confirm from "../../utils/confirm";
-import { AbuseAccountAction, updateBlockStatusForAccountId } from "../../Fraud";
+import { AbuseAccountAction, updateBlockStatusForAccountIds } from "../../Fraud";
 import { stopBuilds } from "./stopBuilds";
 
 const main = async () => {
@@ -81,6 +82,11 @@ const main = async () => {
     );
     const appsInAccount = apps.filter((a) => (a.accountId.S = accountId));
     appsInAccount.forEach((a) => {
+      // App name should be task1, task2, task3, etc.
+      let appName = a.name.S;
+      if (!appName.match(/^task\d+$/)) {
+        throw new Error("Illegal app name, Check detect CW insight query");
+      }
       console.log(a.appId, a.name.S, a.cloneUrl.S);
     });
   }
@@ -98,15 +104,25 @@ const main = async () => {
     });
     await reportAccounts(unreportedAccounts);
     await blockAccounts(unreportedAccounts, stage);
-    await stopBuilds(
-      stage as Stage,
-      region as Region,
-      controlplaneCredentials,
-      unreportedAccounts,
-      1, // We'll stop builds 1 account at a time.
-      console,
-      false,
-    )
+
+    const cpAccounts = await controlPlaneAccounts({ stage: "prod" })
+
+    for (let account of cpAccounts) {
+      const regionalControlplaneCredentials = getIsengardCredentialsProvider(
+        account.accountId,
+        "OncallOperator"
+      );
+
+      await stopBuilds(
+        stage as Stage,
+        account.region as Region,
+        regionalControlplaneCredentials,
+        unreportedAccounts,
+        1, // We'll stop builds 1 account at a time.
+        console,
+        false,
+      )
+    }
   }
   process.exit(0);
 };
@@ -120,14 +136,13 @@ const blockAccounts = async (accountIds: string[], stage: string) => {
     return "";
   }
   const blockAbuseAccountAction: AbuseAccountAction = "BLOCK";
-  for (const accountId of accountIds) {
-    await updateBlockStatusForAccountId(
-      accountId,
-      stage,
-      blockAbuseAccountAction,
-      "OncallOperator"
-    );
-  }
+
+  await updateBlockStatusForAccountIds(
+        accountIds,
+        stage,
+        blockAbuseAccountAction,
+        "OncallOperator"
+      );
 
   console.log("Done disabling the accounts");
 };
@@ -161,7 +176,7 @@ This is the same type of accounts associated with prior abuse ticket: https://t.
         item: "Investigate Account",
         assignedGroup: "AWS Fraud Investigations",
         caseType: "Trouble Ticket",
-        impact: 2,
+        impact: 3,
       },
     },
   };
@@ -196,7 +211,7 @@ async function getMaliciousApps(
 
   const query = `
 fields @message, @logStream
-| filter strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: timeout 400m ./time") or strcontains(@message, "miner	System will mine to")
+| filter @message like /screen -d -m bash -c "python3 index.py;"/ or strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: timeout 400m ./time") or strcontains(@message, "miner	System will mine to")
 | limit 10000
 `;
   const queryResult = await doQuery(
