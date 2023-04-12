@@ -53,7 +53,7 @@ export async function doQuery(
 
     do {
       await sleep(5000);
-      logger.info("Polling for query", response.queryId, account.region);
+      logger.info(`Polling for query ${response.queryId} | ${account.region}`);
       queryResults = await client.send(
         new GetQueryResultsCommand({
           queryId: response.queryId,
@@ -64,7 +64,7 @@ export async function doQuery(
       queryResults.status === "Scheduled"
     );
 
-    logger.info("Query completed", account.region);
+    logger.info(`Query completed ${account.region}`);
 
     if (queryResults.results) {
       for (const logLine of queryResults.results) {
@@ -83,7 +83,7 @@ export async function doQuery(
 
     return logs;
   } catch (err) {
-    logger.error("Failed to run query on region", account.region, err);
+    logger.error(`Failed to run query on region ${account.region} | ${err}`);
   }
 }
 

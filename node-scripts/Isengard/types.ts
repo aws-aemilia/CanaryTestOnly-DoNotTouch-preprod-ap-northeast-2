@@ -114,3 +114,10 @@ export type RegionName =
   | "eu-central-2";
 
 export type Region = RegionName | AirportCode;
+
+export enum StandardRoles {
+  Admin = "Admin",
+  FullReadOnly = "FullReadOnly",
+  OncallOperator = "OncallOperator",
+  ReadOnly = "ReadOnly",
+}

@@ -1,32 +1,25 @@
-import {
-  CloudWatchLogsClient,
-  DescribeLogGroupsCommand,
-  DescribeLogGroupsCommandOutput
-} from "@aws-sdk/client-cloudwatch-logs";
-import fs from "fs";
+import { existsSync } from "fs";
+import { appendFile, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import yargs from "yargs";
-import {
-  controlPlaneAccounts
-} from "./Isengard";
+import { controlPlaneAccounts, StandardRoles } from "./Isengard";
 import { doQuery } from "./libs/CloudWatch";
-import sleep from "./utils/sleep";
 
-function writeLogsToFile(
+async function writeLogsToFile(
   outputFolder: string,
   fileName: string,
   logs: string[]
 ) {
-  if (!fs.existsSync(outputFolder)) {
-    fs.mkdirSync(outputFolder);
+  if (!existsSync(outputFolder)) {
+    await mkdir(outputFolder);
   }
 
   const outputFile = path.join(outputFolder, fileName);
-  fs.writeFileSync(outputFile, "");
+  await writeFile(outputFile, "");
 
   try {
     for (const logLine of logs) {
-      fs.appendFileSync(outputFile, logLine + "\n");
+      await appendFile(outputFile, logLine + "\n");
     }
   } catch (err) {
     console.error("Unable to write logs to file", fileName);
@@ -34,50 +27,21 @@ function writeLogsToFile(
   }
 }
 
-function toEpochInSeconds(date: Date): number {
-  return date.getTime() / 1000;
-}
-
-async function getLogGroup(
-  cwLogsClient: CloudWatchLogsClient,
-  logPrefix: string
-): Promise<string> {
-  let nextToken: string | undefined;
-  let response: DescribeLogGroupsCommandOutput;
-
-  do {
-    response = await cwLogsClient.send(
-      new DescribeLogGroupsCommand({
-        logGroupNamePrefix: logPrefix,
-        nextToken,
-      })
-    );
-
-    if (response.nextToken) {
-      nextToken = response.nextToken;
-    }
-  } while (nextToken);
-
-  if (!response.logGroups) {
-    throw new Error("Log group does not exist");
-  }
-
-  const logGroups = response.logGroups;
-  const logGroup = logGroups.find((logGroup) =>
-    logGroup.logGroupName?.startsWith(logPrefix)
-  );
-
-  if (!logGroup || !logGroup.logGroupName) {
-    throw new Error(`Log group with prefix ${logPrefix} not found`);
-  }
-
-  console.log(`Found log group ${logGroup.logGroupName}`);
-  return logGroup.logGroupName;
-}
-
 async function main() {
   const args = await yargs(process.argv.slice(2))
-    .usage("Run a CloudWatch logs query in all Control Plane accounts")
+    .usage(
+      `Run a CloudWatch logs query in all Control Plane accounts
+
+      Usage:
+      npx ts-node globalQuery \
+        --stage prod \
+        --logGroupPrefix AWSCodeBuild \
+        --startDate '2023-04-02T00:00:00-00:00' \
+        --endDate '2023-04-08T00:00:00-00:00' \
+        --ticket V123456789 \
+        --query 'fields @timestamp, @message, @logStream | filter strcontains(@message, "Node version not available")'
+      `
+    )
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
@@ -110,34 +74,57 @@ async function main() {
       describe:
         "Folder where to write the CSV files that contain query results",
       type: "string",
-      demandOption: true,
+      default: "globalQueryOutput",
+      demandOption: false,
+    })
+    .option("ticket", {
+      describe:
+        "SIM ticket for FullReadOnly role usage. Providing a ticket will switch to FullReadOnly role instead of ReadOnly.",
+      type: "string",
+      demandOption: false,
     })
     .strict()
     .version(false)
     .help().argv;
 
-  const controlPLaneAccounts = (await controlPlaneAccounts()).filter(
-    (acc) => acc.stage === args.stage
+  const {
+    stage,
+    logGroupPrefix,
+    query,
+    startDate,
+    endDate,
+    outputDir,
+    ticket,
+  } = args;
+
+  let role = StandardRoles.ReadOnly;
+  if (ticket) {
+    process.env.ISENGARD_SIM = ticket;
+    role = StandardRoles.FullReadOnly;
+  }
+
+  const controlPlaneAccountsForStage = (await controlPlaneAccounts()).filter(
+    (acc) => acc.stage === stage
   );
 
-  let queryPromises = [];
-  for (const controlPLaneAccount of controlPLaneAccounts) {
-    await sleep(2000);
-    queryPromises.push(
-      doQuery(
-        controlPLaneAccount,
-        args.logGroupPrefix,
-        args.query,
-        new Date(args.startDate),
-        new Date(args.endDate)
-      ).then((logs) => {
-        const fileName = controlPLaneAccount.region.concat(".csv");
-        writeLogsToFile(args.outputDir, fileName, logs || []);
-      })
-    );
-  }
+  const queryPromises = controlPlaneAccountsForStage.map(
+    async (controlPlaneAccount) => {
+      console.log(`Beginning query for region: ${controlPlaneAccount.region}`);
+      const logs = await doQuery(
+        controlPlaneAccount,
+        logGroupPrefix,
+        query,
+        new Date(startDate),
+        new Date(endDate),
+        role
+      );
+
+      const fileName = controlPlaneAccount.region.concat(".csv");
+      await writeLogsToFile(outputDir, fileName, logs || []);
+    }
+  );
 
   await Promise.all(queryPromises);
 }
 
-main();
+main().then(console.log).catch(console.error);
