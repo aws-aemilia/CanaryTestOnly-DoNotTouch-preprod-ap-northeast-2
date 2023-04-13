@@ -24,6 +24,7 @@ import sleep from "../utils/sleep";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { disableDistribution, enableDistribution, updateDistribution } from "../utils/cloudfront";
+import { defaultWafRules } from "./defaultWafRules";
 
 require("util").inspect.defaultOptions.depth = null;
 
@@ -98,24 +99,7 @@ async function createWaf(
       CloudWatchMetricsEnabled: true,
       MetricName: "WebAclMetrics",
     },
-    Rules: [
-      {
-        Name: "RateBasedRule",
-        Priority: 0,
-        Statement: {
-          RateBasedStatement: {
-            Limit: 100,
-            AggregateKeyType: "IP",
-          },
-        },
-        Action: { Block: { CustomResponse: { ResponseCode: 429 } } },
-        VisibilityConfig: {
-          SampledRequestsEnabled: true,
-          CloudWatchMetricsEnabled: true,
-          MetricName: "RateBasedRule",
-        },
-      },
-    ],
+    Rules: defaultWafRules,
   });
 
   return await wafClient.send(createWebACLCommand);
@@ -254,7 +238,7 @@ async function main() {
     targetDistributionId = ddosEvent.distributionId;
   }
 
-  console.log(`Checking if distribution ${distributionId} exists`);
+  console.log(`Checking if distribution ${targetDistributionId} exists`);
   let distributionConfig;
 
   try {
