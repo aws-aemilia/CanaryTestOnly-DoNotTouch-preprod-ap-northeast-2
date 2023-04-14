@@ -108,12 +108,20 @@ export const stopBuildsForAccount = async (
     (await confirm("Are you sure you want to cancel these builds?"))
   ) {
     for (const job of jobs) {
-      const taskArn = await getJobTaskArn(
-        stage,
-        region,
-        job,
-        ddbDocumentClient
-      );
+      let taskArn;
+
+      try {
+        taskArn = await getJobTaskArn(
+          stage,
+          region,
+          job,
+          ddbDocumentClient
+        );
+      } catch (ex) {
+        logger.error(ex, `Could not get job task arn ${stage}-${region}-${job.jobId}`)
+        continue
+      }
+      
 
       logger.log(
         `Canceling build ${taskArn} for accountID ${accountId}; Branch ARN: ${job.branchArn} Job ID: ${job.jobId};`
