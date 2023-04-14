@@ -1,9 +1,11 @@
+import logger from "./logger";
 import {
   CloudFrontClient,
   DistributionConfig,
   GetDistributionConfigCommand,
   UpdateDistributionCommand,
   UpdateDistributionCommandOutput,
+  waitUntilDistributionDeployed,
 } from "@aws-sdk/client-cloudfront";
 
 /**
@@ -82,4 +84,23 @@ export async function disableDistribution({
       return distributionConfig;
     },
   });
+}
+
+export async function waitForDistributionUpdate(
+  cloudFrontClient: CloudFrontClient,
+  distributionId: string
+): Promise<void> {
+  logger.info(`Waiting for distribution ${distributionId} to be deployed...`);
+  await waitUntilDistributionDeployed(
+    {
+      client: cloudFrontClient,
+      maxWaitTime: 300,
+      minDelay: 10,
+      maxDelay: 20,
+    },
+    {
+      Id: distributionId,
+    }
+  );
+  logger.info(`Distribution ${distributionId} finished deploying`);
 }

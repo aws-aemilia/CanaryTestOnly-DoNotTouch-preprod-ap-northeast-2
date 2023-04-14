@@ -1,4 +1,4 @@
-import pino, { Level } from "pino";
+import pino from "pino";
 import pinoPretty from "pino-pretty";
 
 export function createLogger(loggingLevel: string = "info") {
@@ -10,3 +10,5 @@ export function createLogger(loggingLevel: string = "info") {
     pinoPretty({ sync: true })
   );
 }
+
+export default createLogger();

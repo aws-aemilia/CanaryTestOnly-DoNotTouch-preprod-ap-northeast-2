@@ -10,6 +10,7 @@ async function confirm(prompt: string) {
     rl.question(`${prompt} [y/N]: `, (answer: string) => {
       if (answer === "y") resolve(true);
       else resolve(false);
+      rl.close();
     });
   });
 }
