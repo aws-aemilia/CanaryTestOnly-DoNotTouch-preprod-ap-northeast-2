@@ -2,11 +2,13 @@ import {
   LambdaClient,
   GetFunctionCommand,
   GetFunctionCommandOutput,
-  PublishVersionCommandOutput,
   PublishVersionCommand,
   CreateFunctionCommand,
   waitUntilFunctionExists,
   waitUntilFunctionActive,
+  UpdateFunctionConfigurationCommand,
+  waitUntilFunctionUpdatedV2,
+  paginateListVersionsByFunction,
 } from "@aws-sdk/client-lambda";
 import axios from "axios";
 
@@ -72,37 +74,61 @@ export const getCodeZip = async (functionCodeLocation: string) => {
  * Publishes the given version of a Lambda function if it doesn't exist already. Returns `PublishVersionCommandOutput` if
  * a new version was published and `undefined` if the version exists already
  *
- * @param {string} functionNameOrArn The Function ARN or name
+ * @param {string} functionName The Function Name
  * @param {string} version The version to be published
  * @param {LambdaClient} lambdaClient The AWS Lambda client
- * @return {*}  {(Promise<PublishVersionCommandOutput | undefined>)}
+ * @return {*}  {(Promise<string>)}
  */
 export const publishLambdaVersion = async (
-  functionNameOrArn: string,
-  version: string,
+  functionName: string,
   lambdaClient: LambdaClient
-): Promise<PublishVersionCommandOutput | undefined> => {
-  const rollbackCloneVersion = await getFunction(
-    functionNameOrArn,
+): Promise<string> => {
+  console.log(`Publishing new version for Lambda function: ${functionName}`);
+
+  const currentVersion = await getLatestLambdaFunctionVersion(
     lambdaClient,
-    version
+    functionName
+  );
+  const newVersion = currentVersion + 1;
+
+  const updateFunctionConfigurationRequest =
+    new UpdateFunctionConfigurationCommand({
+      FunctionName: functionName,
+      Description: `Version ${newVersion} of the Lambda function ${functionName}`,
+    });
+
+  await lambdaClient.send(updateFunctionConfigurationRequest);
+
+  console.log(
+    `Updating function configuration before publishing new version for ${functionName}`
   );
 
-  if (
-    rollbackCloneVersion?.Configuration?.FunctionArn &&
-    rollbackCloneVersion.Configuration.Version === version
-  ) {
-    console.log(
-      `Lambda function version ${functionNameOrArn}:${version} exists already. Skipping publishing the version.`
-    );
-    return;
-  }
+  await waitUntilFunctionUpdatedV2(
+    {
+      client: lambdaClient,
+      maxWaitTime: LAMBDA_WAIT_TIME,
+    },
+    {
+      FunctionName: functionName,
+    }
+  );
 
   const publishVersionCommand = new PublishVersionCommand({
-    FunctionName: functionNameOrArn,
+    FunctionName: functionName,
+    Description: `Version ${newVersion} of the Lambda function ${functionName}`,
   });
 
-  return lambdaClient.send(publishVersionCommand);
+  const publishVersionCommandOutput = await lambdaClient.send(
+    publishVersionCommand
+  );
+
+  if (!publishVersionCommandOutput.FunctionArn) {
+    throw new Error("Published version does not contain FunctionArn");
+  }
+
+  console.log(`New version successfully published: ${newVersion}`);
+
+  return publishVersionCommandOutput.FunctionArn;
 };
 
 /**
@@ -111,7 +137,7 @@ export const publishLambdaVersion = async (
  * @param {string} functionArn The original function to clone from
  * @param {string} functionCloneName The intended name of the cloned function
  * @param {LambdaClient} lambdaClient
- * @return {*}  {Promise<string>} The function ARN of the cloned function
+ * @return {*}  {Promise<string>} The function ARN of the cloned function along with the version
  */
 export const getOrCloneLambdaFunction = async (
   functionArn: string,
@@ -124,7 +150,12 @@ export const getOrCloneLambdaFunction = async (
     console.info(
       `Function clone ${functionCloneName} exists already. Skipping creation`
     );
-    return clonedFunction.Configuration.FunctionArn;
+    const clonedFunctionArn = clonedFunction.Configuration.FunctionArn;
+    const clonedFunctionVersion = await getLatestLambdaFunctionVersion(
+      lambdaClient,
+      clonedFunctionArn
+    );
+    return `${clonedFunctionArn}:${clonedFunctionVersion}`;
   }
 
   const originalFunction = await getFunction(functionArn, lambdaClient);
@@ -218,7 +249,37 @@ export const getOrCloneLambdaFunction = async (
     }
   );
 
+  const clonedFunctionVersion = await getLatestLambdaFunctionVersion(
+    lambdaClient,
+    clonedFunctionArn
+  );
+
+  console.info(`Cloned function version: ${clonedFunctionVersion}`);
   console.info(`Function clone is now active.`);
 
-  return clonedFunctionArn;
+  return `${clonedFunctionArn}:${clonedFunctionVersion}`;
+};
+
+const getLatestLambdaFunctionVersion = async (
+  lambdaClient: LambdaClient,
+  functionArn: string
+) => {
+  const functionVersions: number[] = [];
+  for await (const page of paginateListVersionsByFunction(
+    { client: lambdaClient },
+    {
+      FunctionName: functionArn,
+    }
+  )) {
+    page.Versions?.filter((version) => version.Version !== "$LATEST").forEach(
+      (version) => {
+        if (!version.Version) {
+          return;
+        }
+        functionVersions.push(parseInt(version.Version));
+      }
+    );
+  }
+  console.log(`Found versions: ${functionVersions}`);
+  return functionVersions.sort()[functionVersions.length - 1];
 };

@@ -1,6 +1,15 @@
-import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { Stage, Region } from "../Isengard";
-import { DistributionConfig, EventType, Origin, Origins } from "@aws-sdk/client-cloudfront";
+import {
+  DistributionConfig,
+  EventType,
+  Origin,
+  Origins,
+} from "@aws-sdk/client-cloudfront";
 import { isOptInRegion } from "../utils/regions";
 import { originShieldMap } from "./originShieldUtils";
 
@@ -9,7 +18,7 @@ export interface DeployerConfiguration {
   responseReplicationLambdaArn?: string;
 }
 
-interface DistributionConfigUpdateContext {
+export interface DistributionConfigUpdateContext {
   appId: string;
   originRequestFunctionArn: string;
   originResponseFunctionArn: string;
@@ -54,7 +63,9 @@ export const getDeployerConfiguration = async (
  * @param {DistributionConfig} distributionConfig
  * @return {*}
  */
-export const updateDistributionConfig = (distributionConfig: DistributionConfig) => {
+export const getUpdateDistributionConfig = (
+  distributionConfig: DistributionConfig
+) => {
   return {
     with: ({
       appId,
@@ -93,7 +104,7 @@ export const updateDistributionConfig = (distributionConfig: DistributionConfig)
         originAccessIdentity,
         stage,
         region,
-        devUser,
+        devUser
       );
 
       return distributionConfig;
@@ -115,7 +126,7 @@ export const getLambdaEdgeDistributionOrigin = (
   originAccessIdentity: string,
   stage: Stage,
   region: Region,
-  devUser?: string,
+  devUser?: string
 ): Origins => {
   const hostingBucket = `aws-amplify-${stage}-${region}${
     stage === "test" ? devUser : ""
@@ -145,4 +156,35 @@ export const getLambdaEdgeDistributionOrigin = (
   };
 
   return origins;
+};
+
+/**
+ * Updates the DistributionType field for the resourceId in the warming pool table
+ *
+ * @param {Stage} stage stage
+ * @param {Region} region region
+ * @param {string} resourceId the appid (i.e. d123456789)
+ * @param {"LAMBDA_AT_EDGE" | "GATEWAY"} distributionType gateway or lambda@edge
+ * @param {DynamoDBDocumentClient} dynamoDBClient 
+ * @return {Promise<void>} 
+ */
+export const updateWarmingPoolDistributionType = async (
+  stage: Stage,
+  region: Region,
+  resourceId: string,
+  distributionType: "LAMBDA_AT_EDGE" | "GATEWAY",
+  dynamoDBClient: DynamoDBDocumentClient
+) => {
+  await dynamoDBClient.send(
+    new UpdateCommand({
+      TableName: `${stage}-${region}-WarmFrontEndResources`,
+      Key: {
+        resourceId,
+      },
+      UpdateExpression: "SET distributionType = :dt",
+      ExpressionAttributeValues: {
+        ":dt": distributionType,
+      },
+    })
+  );
 };

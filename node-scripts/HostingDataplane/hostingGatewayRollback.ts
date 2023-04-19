@@ -10,11 +10,11 @@ import {
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { CloudFront, DistributionConfig } from "@aws-sdk/client-cloudfront";
 import {
-  CloudFront,
-  DistributionConfig,
-} from "@aws-sdk/client-cloudfront";
-import { fetchDistribution } from "./distributionsUtils";
+  fetchDistribution,
+  getDistributionsForApp,
+} from "./distributionsUtils";
 import confirm from "../utils/confirm";
 import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
 import { getCloudFormationOutput } from "./cfnUtils";
@@ -23,11 +23,13 @@ import {
   getOrCloneLambdaFunction,
 } from "./lambdaFunctionUtils";
 import {
+  DistributionConfigUpdateContext,
   getDeployerConfiguration,
-  updateDistributionConfig,
+  getUpdateDistributionConfig,
+  updateWarmingPoolDistributionType,
 } from "./warmingPoolUtils";
 
-interface ScriptInput {
+export interface GatewayRollbackScriptInput {
   stage: Stage;
   region: Region;
   appId: string;
@@ -36,42 +38,26 @@ interface ScriptInput {
   ticket?: string;
 }
 
+export interface GatewayRollbackScriptClients {
+  lambdaClient: LambdaClient;
+  dynamoDBClient: DynamoDBDocumentClient;
+  cloudFrontClient: CloudFront;
+  cloudFormationClient: CloudFormationClient;
+}
+
+export interface GatewayRollbackScriptOutput {
+  eTag: string;
+  distributionConfig: DistributionConfig;
+  originRequestCloneFunctionArn: string;
+  originResponseCloneFunctionArn: string;
+  originAccessIdentity: string;
+}
+
 enum LambdaEdgeFunctionType {
   OriginRequest = "OriginRequest",
   OriginResponse = "OriginResponse",
 }
 
-/**
- * Region-specific rollback clone versions.
- *
- * We can increase the version number manually in this script when we hit the limit for the number of distributions
- * associated with the cloned Lambda@Edge function in a given region.
- *
- * The limit is 500 distributions per Lambda@Edge function. This script should throw an error if we hit the limit at which
- * point this version can be bumped up
- */
-const ROLLBACK_CLONE_FUNCTION_VERSIONS: Partial<Record<Region, string>> = {
-  "us-east-1": "1",
-  "us-east-2": "1",
-  "us-west-2": "1",
-  "ap-south-1": "1",
-  "ap-northeast-2": "1",
-  "ap-southeast-1": "1",
-  "ap-southeast-2": "1",
-  "ap-northeast-1": "1",
-  "eu-central-1": "1",
-  "eu-west-1": "1",
-  "eu-west-2": "1",
-  "sa-east-1": "1",
-  "us-west-1": "1",
-  "af-south-1": "1",
-  "ap-east-1": "1",
-  "ca-central-1": "1",
-  "eu-south-1": "1",
-  "eu-west-3": "1",
-  "eu-north-1": "1",
-  "me-south-1": "1",
-};
 const ROLLBACK_CLONE_FUNCTION_PREFIX = "RollbackClone";
 const GATEWAY_ORIGIN_ID = "HostingGatewayALB";
 const WARMING_POOL_CFN_STACK_NAME = "AemiliaWarmingPool";
@@ -130,7 +116,7 @@ const main = async () => {
     })
     .strict()
     .version(false)
-    .help().argv) as ScriptInput;
+    .help().argv) as GatewayRollbackScriptInput;
 
   const { region, stage, appId, distributionId, devAccountId, ticket } = args;
 
@@ -160,6 +146,7 @@ const main = async () => {
     credentials,
     // Lambda@Edge should always be in IAD
     region: "us-east-1",
+    maxAttempts: 5,
   });
 
   const dynamoDBClient = DynamoDBDocumentClient.from(
@@ -180,6 +167,187 @@ const main = async () => {
   });
 
   console.info("Initialized credentials and clients.");
+
+  const scriptClients = {
+    lambdaClient,
+    dynamoDBClient,
+    cloudFrontClient,
+    cloudFormationClient,
+  };
+
+  const rollbackdata = await generateDistributionConfigForMigration(
+    args,
+    scriptClients
+  );
+  const {
+    eTag,
+    distributionConfig,
+    originRequestCloneFunctionArn,
+    originResponseCloneFunctionArn,
+    originAccessIdentity,
+  } = rollbackdata;
+
+  console.info(
+    "Updating Distribution with the following DistributionConfig",
+    JSON.stringify(distributionConfig, undefined, 2)
+  );
+
+  if (
+    await confirm(
+      "Do you want to update the distribution with the above config and switch the WarmingPool DistributionType back to 'LAMBDA_AT_EDGE'?"
+    )
+  ) {
+    await updateDistribution(
+      cloudFrontClient,
+      lambdaClient,
+      distributionId,
+      eTag,
+      distributionConfig,
+      {
+        appId,
+        stage,
+        region,
+        originAccessIdentity,
+        originRequestFunctionArn: originRequestCloneFunctionArn,
+        originResponseFunctionArn: originResponseCloneFunctionArn,
+        devUser: DEV_USER,
+      }
+    );
+
+    await updateWarmingPoolDistributionType(
+      stage,
+      region,
+      appId,
+      "LAMBDA_AT_EDGE",
+      dynamoDBClient
+    );
+    console.info(
+      `Updated WarmingPool DistribtuionType for ${appId} to 'LAMBDA_AT_EDGE'...`
+    );
+
+    console.info("Successfully rolled back the distribution", distributionId);
+  }
+};
+
+/**
+ * A recursive function that will attempt to update a distributino with the rollback config, but if it encounters the TooManyDistributionsWithSingleFunctionARN error,
+ * it will publish a new version of the lambda and call itself again using the new version.
+ *
+ * @param {CloudFront} cloudFrontClient cloudfront client
+ * @param {LambdaClient} lambdaClient lambda client
+ * @param {string} distributionId the distributionId to update
+ * @param {string} eTag etag of the distribution
+ * @param {DistributionConfig} distributionConfig the distribution config to update the distribution with
+ * @param {DistributionConfigUpdateContext} distributionConfigUpdateContext context for the distribution config update
+ * @return {Promise<void>}
+ */
+export const updateDistribution = async (
+  cloudFrontClient: CloudFront,
+  lambdaClient: LambdaClient,
+  distributionId: string,
+  eTag: string,
+  distributionConfig: DistributionConfig,
+  distributionConfigUpdateContext: DistributionConfigUpdateContext
+) => {
+  const {
+    appId,
+    stage,
+    region,
+    originAccessIdentity,
+    originRequestFunctionArn,
+    originResponseFunctionArn,
+    devUser,
+  } = distributionConfigUpdateContext;
+
+  try {
+    await cloudFrontClient.updateDistribution({
+      Id: distributionId,
+      IfMatch: eTag,
+      DistributionConfig: distributionConfig,
+    });
+    console.info("Updated distribution config.");
+  } catch (e) {
+    if ((e as Error).name === "TooManyDistributionsWithSingleFunctionARN") {
+      console.info(
+        "Detected TooManyDistributionsWithSingleFunctionARN. Publishing a new versions of the lambda functions and trying again..."
+      );
+      const newOriginRequestFunctionVersionArn = await publishLambdaVersion(
+        `${ROLLBACK_CLONE_FUNCTION_PREFIX}${LambdaEdgeFunctionType.OriginRequest}`,
+        lambdaClient
+      );
+      const newOriginResponseFunctionVersionArn = await publishLambdaVersion(
+        `${ROLLBACK_CLONE_FUNCTION_PREFIX}${LambdaEdgeFunctionType.OriginResponse}`,
+        lambdaClient
+      );
+
+      const updatedDistributionConfig = getUpdateDistributionConfig(
+        distributionConfig
+      ).with({
+        appId,
+        originRequestFunctionArn: `${newOriginRequestFunctionVersionArn}`,
+        originResponseFunctionArn: `${newOriginResponseFunctionVersionArn}`,
+        originAccessIdentity,
+        stage,
+        region,
+        devUser,
+      });
+
+      await updateDistribution(
+        cloudFrontClient,
+        lambdaClient,
+        distributionId,
+        eTag,
+        updatedDistributionConfig,
+        {
+          appId,
+          originRequestFunctionArn: `${newOriginRequestFunctionVersionArn}`,
+          originResponseFunctionArn: `${newOriginResponseFunctionVersionArn}`,
+          originAccessIdentity,
+          stage,
+          region,
+          devUser,
+        }
+      );
+      return;
+    }
+    throw e;
+  }
+};
+
+/**
+ * This function performs all the steps necessary to prepare the RollbackData.
+ *
+ * @param {GatewayRollbackScriptInput} scriptInput The input data necessary to create the DistributionConfig
+ * @param {GatewayRollbackScriptClients} scriptClients The AWS clients needed to fetch the data to prepare the DistributionConfig
+ * @return {Promise<GatewayRollbackScriptOutput>} The data necessary to rollback the distribution
+ */
+export const generateDistributionConfigForMigration = async (
+  scriptInput: GatewayRollbackScriptInput,
+  scriptClients: GatewayRollbackScriptClients
+) => {
+  const { region, stage, appId, distributionId } = scriptInput;
+  const {
+    lambdaClient,
+    dynamoDBClient,
+    cloudFrontClient,
+    cloudFormationClient,
+  } = scriptClients;
+  console.info(
+    "Verifying ownership of the distributionId for the given appId..."
+  );
+  const distributionsForApp = await getDistributionsForApp(
+    dynamoDBClient,
+    stage,
+    region,
+    appId
+  );
+  if (!distributionsForApp.includes(distributionId)) {
+    throw new Error(
+      `Ownership Verification Faild: The given distributionId ${distributionId} does not belong to the appId ${appId}.`
+    );
+  }
+  console.info("Verification successful.");
+
   console.info("Retrieving existing DistributionConfig...");
 
   const { eTag, distributionConfig } = await validateAndGetGatewayDistribution(
@@ -218,16 +386,9 @@ const main = async () => {
     `OriginResponse function ARN to clone from: ${originResponseFunctionArn}`
   );
 
-  const rollbackCloneVersion = ROLLBACK_CLONE_FUNCTION_VERSIONS[region];
-
-  if (!rollbackCloneVersion) {
-    throw new Error(`Rollback clone version not defined for region: ${region}`);
-  }
-
   const { originRequestCloneFunctionArn, originResponseCloneFunctionArn } =
     await getOrCloneOriginFunctions(
       ROLLBACK_CLONE_FUNCTION_PREFIX,
-      rollbackCloneVersion,
       originRequestFunctionArn,
       originResponseFunctionArn,
       lambdaClient
@@ -251,35 +412,25 @@ const main = async () => {
 
   console.info("Retrieved OAI from the Warming Pool CFN.");
 
-  const updatedDistributionConfig = updateDistributionConfig(
+  const updatedDistributionConfig = getUpdateDistributionConfig(
     distributionConfig
   ).with({
     appId,
-    originRequestFunctionArn: `${originRequestCloneFunctionArn}:${rollbackCloneVersion}`,
-    originResponseFunctionArn: `${originResponseCloneFunctionArn}:${rollbackCloneVersion}`,
+    originRequestFunctionArn: `${originRequestCloneFunctionArn}`,
+    originResponseFunctionArn: `${originResponseCloneFunctionArn}`,
     originAccessIdentity,
     stage,
     region,
     devUser: DEV_USER,
   });
 
-  console.info(
-    "Updating Distribution with the following DistributionConfig",
-    JSON.stringify(updatedDistributionConfig, undefined, 2)
-  );
-
-  if (
-    await confirm(
-      "Do you want to update the distribution with the above config?"
-    )
-  ) {
-    await cloudFrontClient.updateDistribution({
-      Id: distributionId,
-      IfMatch: eTag,
-      DistributionConfig: updatedDistributionConfig,
-    });
-    console.info("Successfully rolled back the distribution", distributionId);
-  }
+  return {
+    eTag: eTag,
+    distributionConfig: updatedDistributionConfig,
+    originRequestCloneFunctionArn: originRequestCloneFunctionArn,
+    originResponseCloneFunctionArn: originResponseCloneFunctionArn,
+    originAccessIdentity: originAccessIdentity,
+  };
 };
 
 /**
@@ -337,7 +488,6 @@ const validateAndGetGatewayDistribution = async (
  */
 const getOrCloneOriginFunctions = async (
   clonePrefix: string,
-  cloneVersion: string,
   originRequestFunctionArn: string,
   originResponseFunctionArn: string,
   lambdaClient: LambdaClient
@@ -359,21 +509,6 @@ const getOrCloneOriginFunctions = async (
   );
 
   console.info("Initial clones are now available.");
-  console.info(`Publishing version ${cloneVersion} for the clones...`);
-
-  await publishLambdaVersion(
-    originRequestCloneFunctionArn,
-    cloneVersion,
-    lambdaClient
-  );
-
-  await publishLambdaVersion(
-    originResponseCloneFunctionArn,
-    cloneVersion,
-    lambdaClient
-  );
-
-  console.info("Clone versions are now available.");
 
   return { originRequestCloneFunctionArn, originResponseCloneFunctionArn };
 };
