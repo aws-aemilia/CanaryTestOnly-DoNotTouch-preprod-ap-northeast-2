@@ -29,6 +29,25 @@ export const adminRoleFn = (stage: Stage): AmplifyRole => ({
   FederationTimeOutMin: 15,
 });
 
+export const releaseDomainRole: AmplifyRole = {
+  IAMRoleName: "ReleaseCustomDomain",
+  Description: "To run ops tool to release a custom domain from a suspended AWS account",
+  ContingentAuth: 1,
+  PolicyTemplateReference: [
+    {
+      OwnerID: "aws-mobile-amplify-oncall",
+      PolicyTemplateName: "ReleaseCustomDomain",
+    }
+  ],
+  Group: POSIX_GROUP,
+  FederationTimeOutMin: 15,
+  // Individual users to grant permissions
+  Users: [
+    "hloriana",
+    "jayrava",
+  ]
+};
+
 const readOnlyRole: AmplifyRole = {
   IAMRoleName: "ReadOnly",
   Description:
@@ -103,6 +122,7 @@ export const getRolesForStage = (
   Admin: AmplifyRole;
   LambdaInvoker: AmplifyRole;
   MobileCoreSupport: AmplifyRole;
+  ReleaseCustomDomain: AmplifyRole;
 } => {
   return {
     OncallOperator: oncallOperatorRole,
@@ -111,5 +131,6 @@ export const getRolesForStage = (
     FullReadOnly: fullReadOnlyRole,
     LambdaInvoker: lambdaInvokerRole,
     MobileCoreSupport: mobileCoreSupportRole,
+    ReleaseCustomDomain: releaseDomainRole,
   };
 };

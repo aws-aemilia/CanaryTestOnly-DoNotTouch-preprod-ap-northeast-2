@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import yargs from "yargs";
-import { AppDO } from "../../dynamodb";
+import { AppDOItem } from "../../dynamodb";
 import {
   controlPlaneAccount,
   controlPlaneAccounts,
@@ -61,7 +61,7 @@ const main = async () => {
 
   const dynamodb = getDdbClient(region, controlplaneCredentials);
 
-  let apps: AppDO[] = [];
+  let apps: AppDOItem[] = [];
   for (let appIds of new BatchIterator(Array.from(maliciousAppIds), 10)) {
     const maliciousApps = await getAppsByAppIds(
       dynamodb,

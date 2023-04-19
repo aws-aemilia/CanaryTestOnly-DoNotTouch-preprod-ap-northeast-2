@@ -2,7 +2,7 @@ import { Credentials, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 import { getCAZToken, isContingentAuthNeeded } from "./contingentAuthZ";
 
-const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin', 'Route53Manager', 'FullReadOnly'];
+const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin', 'Route53Manager', 'FullReadOnly', 'ReleaseCustomDomain'];
 
 const getIsengardCredentials = async (
   accountId: string, iamRoleName="ReadOnly"

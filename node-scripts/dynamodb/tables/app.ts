@@ -1,5 +1,5 @@
 import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
-
+import { AppDO } from "../types";
 import {
   DynamoDBDocumentClient,
   GetCommand,
@@ -7,7 +7,11 @@ import {
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
-export interface AppDO {
+/**
+ * @deprecated Use AppDO interface instead. This uses the DynamoDB syntax
+ * for representing objects which is not necessary using DocumentClient.
+ */
+export interface AppDOItem {
   defaultDomain: { S: string };
   cloudFrontDistributionId: { S: string };
   autoBranchCreationPatterns: { SS: string[] };
@@ -183,4 +187,43 @@ export const paginateApps = (
       ProjectionExpression: attributesToGet.join(","),
     }
   );
+};
+
+/**
+ * Queries the App table with the given appId. Returns null if not found
+ *
+ * @param documentClient DocumentClient with credentials for the Control Plane account
+ * @param stage The stage to find the App in
+ * @param region The region to find the App in
+ * @param appId The appId to find
+ */
+export const findApp = async (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  appId: string,
+  attributesToGet: string[] = ["appId"]
+): Promise<AppDO | null> => {
+  try {
+    const response = await documentClient.send(
+      new GetCommand({
+        TableName: `${stage}-${region}-App`,
+        ProjectionExpression: attributesToGet.join(","),
+        Key: {
+          appId,
+        },
+      })
+    );
+
+    if (!response.Item) {
+      return null;
+    }
+
+    return response.Item as AppDO;
+  } catch (err) {
+    if (err instanceof ResourceNotFoundException) {
+      return null;
+    }
+    throw err;
+  }
 };

@@ -59,7 +59,10 @@ const main = async () => {
   ];
 
   // Roles that shoud only exist in Control Plane accounts.
-  const controlPlaneAccountRoles = [roles.MobileCoreSupport];
+  const controlPlaneAccountRoles = [
+    roles.MobileCoreSupport,
+    roles.ReleaseCustomDomain,
+  ];
 
   const accounts: AmplifyAccount[] = accountType
     ? await accountTypeFns[accountType]({ stage, region })
