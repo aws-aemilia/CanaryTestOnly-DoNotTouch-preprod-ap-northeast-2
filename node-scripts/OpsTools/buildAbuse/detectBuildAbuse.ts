@@ -14,11 +14,19 @@ import { getAppsByAppIds } from "../../libs/Amplify";
 import { doQuery } from "../../libs/CloudWatch";
 import { createTicket, CreateTicketParams } from "../../SimT/createTicket";
 import { BatchIterator } from "../../utils/BatchIterator";
-const SimClient = require("@amzn/sim-client");
 import fs from "fs";
 import confirm from "../../utils/confirm";
-import { AbuseAccountAction, updateBlockStatusForAccountIds } from "../../Fraud";
+import {
+  AbuseAccountAction,
+  updateBlockStatusForAccountIds,
+} from "../../Fraud";
 import { stopBuilds } from "./stopBuilds";
+import {
+  readReportedAccountIds,
+  reportedAccountsFile,
+} from "./reportedAccounts";
+
+const SimClient = require("@amzn/sim-client");
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -237,22 +245,6 @@ fields @message, @logStream
 
 const minutesAgo = (n: number) =>
   new Date(new Date().getTime() - 60 * 1000 * n);
-
-const reportedAccountsFile = "./account_reported.json";
-type ReportedAccounts = {
-  [accountId: string]: {
-    reportedOn: string;
-    ticket?: string;
-    disabled?: boolean;
-  };
-};
-
-function readReportedAccountIds(): ReportedAccounts {
-  const accounts: ReportedAccounts = JSON.parse(
-    fs.readFileSync(reportedAccountsFile, "utf8")
-  );
-  return accounts;
-}
 
 function writeReportedAccountIds(accountIds: string[], reportedOn: Date) {
   const alreadyReported = readReportedAccountIds();
