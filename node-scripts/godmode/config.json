@@ -2948,62 +2948,161 @@
     },
     "AmplifyHostingGatewayService": {
       "parameters": {
+        "PDX - beta": {
+          "account": "427869111625",
+          "stage": "beta"
+        },
+        "ARN - gamma": {
+          "account": "946016792278",
+          "stage": "gamma"
+        },
+        "BAH - gamma": {
+          "account": "635412611884",
+          "stage": "gamma"
+        },
+        "BOM - gamma": {
+          "account": "040933235005",
+          "stage": "gamma"
+        },
+        "CDG - gamma": {
+          "account": "039877210332",
+          "stage": "gamma"
+        },
+        "CMH - gamma": {
+          "account": "759275474228",
+          "stage": "gamma"
+        },
+        "DUB - gamma": {
+          "account": "160967439273",
+          "stage": "gamma"
+        },
+        "FRA - gamma": {
+          "account": "443247888967",
+          "stage": "gamma"
+        },
+        "GRU - gamma": {
+          "account": "783699867841",
+          "stage": "gamma"
+        },
+        "HKG - gamma": {
+          "account": "634403797906",
+          "stage": "gamma"
+        },
+        "IAD - gamma": {
+          "account": "902114056747",
+          "stage": "gamma"
+        },
+        "ICN - gamma": {
+          "account": "928596084888",
+          "stage": "gamma"
+        },
+        "LHR - gamma": {
+          "account": "131603409748",
+          "stage": "gamma"
+        },
+        "MXP - gamma": {
+          "account": "196009915289",
+          "stage": "gamma"
+        },
+        "NRT - gamma": {
+          "account": "535976839937",
+          "stage": "gamma"
+        },
+        "PDX - gamma": {
+          "account": "485590535125",
+          "stage": "gamma"
+        },
+        "SFO - gamma": {
+          "account": "868851132514",
+          "stage": "gamma"
+        },
+        "SIN - gamma": {
+          "account": "072605050584",
+          "stage": "gamma"
+        },
+        "SYD - gamma": {
+          "account": "719545645810",
+          "stage": "gamma"
+        },
+        "YUL - gamma": {
+          "account": "083927626610",
+          "stage": "gamma"
+        },
         "ARN": {
-          "account": "794147494059"
+          "account": "794147494059",
+          "stage": "prod"
         },
         "BAH": {
-          "account": "130899817859"
+          "account": "130899817859",
+          "stage": "prod"
         },
         "BOM": {
-          "account": "841799175434"
+          "account": "841799175434",
+          "stage": "prod"
         },
         "CDG": {
-          "account": "722841408231"
+          "account": "722841408231",
+          "stage": "prod"
         },
         "CMH": {
-          "account": "338551066553"
+          "account": "338551066553",
+          "stage": "prod"
         },
         "DUB": {
-          "account": "990995102444"
+          "account": "990995102444",
+          "stage": "prod"
         },
         "FRA": {
-          "account": "144138853311"
+          "account": "144138853311",
+          "stage": "prod"
         },
         "GRU": {
-          "account": "434245994036"
+          "account": "434245994036",
+          "stage": "prod"
         },
         "HKG": {
-          "account": "696960890324"
+          "account": "696960890324",
+          "stage": "prod"
         },
         "IAD": {
-          "account": "503759908898"
+          "account": "503759908898",
+          "stage": "prod"
         },
         "ICN": {
-          "account": "069647238838"
+          "account": "069647238838",
+          "stage": "prod"
         },
         "LHR": {
-          "account": "937636477127"
+          "account": "937636477127",
+          "stage": "prod"
         },
         "MXP": {
-          "account": "544556176999"
+          "account": "544556176999",
+          "stage": "prod"
         },
         "NRT": {
-          "account": "695310324323"
+          "account": "695310324323",
+          "stage": "prod"
         },
         "PDX": {
-          "account": "407930483572"
+          "account": "407930483572",
+          "stage": "prod"
         },
         "SFO": {
-          "account": "403653681395"
+          "account": "403653681395",
+          "stage": "prod"
         },
         "SIN": {
-          "account": "801967453323"
+          "account": "801967453323",
+          "stage": "prod"
         },
         "SYD": {
-          "account": "717466583624"
+          "account": "717466583624",
+          "stage": "prod"
         },
         "YUL": {
-          "account": "628987390189"
+          "account": "628987390189",
+          "stage": "prod"
         }
       }
     },

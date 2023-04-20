@@ -75,15 +75,20 @@ const generateComputeServiceConfig = async (godModeConfig: any) => {
 };
 
 const generateHostingGatewayConfig = async (godModeConfig: any) => {
-  const accounts = await dataPlaneAccounts({ stage: "prod" });
+  const accounts = await dataPlaneAccounts();
   const config = {
     parameters: {},
   } as any;
 
   accounts.forEach((account) => {
     const airportCode = account.airportCode.toUpperCase();
-    config.parameters[airportCode] = {
+    const key =
+      account.stage === "prod"
+        ? airportCode
+        : `${airportCode} - ${account.stage}`;
+    config.parameters[key] = {
       account: account.accountId,
+      stage: account.stage,
     };
   });
 
