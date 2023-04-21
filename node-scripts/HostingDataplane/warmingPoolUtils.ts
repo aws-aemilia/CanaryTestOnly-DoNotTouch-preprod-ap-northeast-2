@@ -1,6 +1,7 @@
 import {
   DynamoDBDocumentClient,
   GetCommand,
+  QueryCommandOutput,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { Stage, Region } from "../Isengard";
@@ -13,6 +14,12 @@ import {
 import { isOptInRegion } from "../utils/regions";
 import { originShieldMap } from "./originShieldUtils";
 
+export interface WarmingPoolDistribution {
+  distributionId: string;
+  resourceId: string;
+  claimStatus: string;
+  distributionType: string;
+}
 export interface DeployerConfiguration {
   requestReplicationLambdaArn?: string;
   responseReplicationLambdaArn?: string;
@@ -165,8 +172,8 @@ export const getLambdaEdgeDistributionOrigin = (
  * @param {Region} region region
  * @param {string} resourceId the appid (i.e. d123456789)
  * @param {"LAMBDA_AT_EDGE" | "GATEWAY"} distributionType gateway or lambda@edge
- * @param {DynamoDBDocumentClient} dynamoDBClient 
- * @return {Promise<void>} 
+ * @param {DynamoDBDocumentClient} dynamoDBClient
+ * @return {Promise<void>}
  */
 export const updateWarmingPoolDistributionType = async (
   stage: Stage,
@@ -187,4 +194,41 @@ export const updateWarmingPoolDistributionType = async (
       },
     })
   );
+};
+
+/**
+ * Formats the QueryCommandOutput into a WarmingPoolDistribution array
+ *
+ * @param {QueryCommandOutput} page a page of query results from WarmingPool Table.
+ * @return {WarmingPoolDistribution[]}
+ */
+export const convertToWarmingPoolDistributionFormat = (page: QueryCommandOutput) => {
+  if (!page.Items) {
+    return [];
+  }
+
+  if (page.Items.length === 0) {
+    return [];
+  }
+
+  const wpDistributions: WarmingPoolDistribution[] = [];
+  for (const item of page.Items) {
+    if (
+      item &&
+      item.distributionId.S &&
+      item.resourceId.S &&
+      item.claimStatus.S &&
+      item.distributionType.S
+    ) {
+      const wpDistro: WarmingPoolDistribution = {
+        distributionId: item.distributionId.S,
+        resourceId: item.resourceId.S,
+        claimStatus: item.claimStatus.S,
+        distributionType: item.distributionType.S,
+      };
+      wpDistributions.push(wpDistro);
+    }
+  }
+
+  return wpDistributions;
 };

@@ -12,6 +12,11 @@ import {
 } from "@aws-sdk/client-lambda";
 import axios from "axios";
 
+enum LambdaEdgeFunctionType {
+  OriginRequest = "OriginRequest",
+  OriginResponse = "OriginResponse",
+}
+
 export const LAMBDA_WAIT_TIME = 300;
 
 export const getFunction = async (
@@ -282,4 +287,41 @@ const getLatestLambdaFunctionVersion = async (
   }
   console.log(`Found versions: ${functionVersions}`);
   return functionVersions.sort()[functionVersions.length - 1];
+};
+
+/**
+ * Clones the given Lambda@Edge origin functions and publishes the intended version of the clones.
+ *
+ * @param {string} clonePrefix - A prefix for the function name of the cloned function
+ * @param {string} cloneVersion - The intended version of the cloned function
+ * @param {string} originRequestFunctionArn - Function ARN for the OriginRequest function to clone from
+ * @param {string} originResponseFunctionArn - Function ARN for the OriginResponse function to clone from
+ * @param {LambdaClient} lambdaClient - The AWS Lambda client
+ * @return {*}  {Promise<[string, string] - A tuple containing the ARNs of the cloned functions
+ */
+export const getOrCloneOriginFunctions = async (
+  clonePrefix: string,
+  originRequestFunctionArn: string,
+  originResponseFunctionArn: string,
+  lambdaClient: LambdaClient
+): Promise<{
+  originRequestCloneFunctionArn: string;
+  originResponseCloneFunctionArn: string;
+}> => {
+  console.info("Creating initial clones if needed...");
+
+  const originRequestCloneFunctionArn = await getOrCloneLambdaFunction(
+    originRequestFunctionArn,
+    `${clonePrefix}${LambdaEdgeFunctionType.OriginRequest}`,
+    lambdaClient
+  );
+  const originResponseCloneFunctionArn = await getOrCloneLambdaFunction(
+    originResponseFunctionArn,
+    `${clonePrefix}${LambdaEdgeFunctionType.OriginResponse}`,
+    lambdaClient
+  );
+
+  console.info("Initial clones are now available.");
+
+  return { originRequestCloneFunctionArn, originResponseCloneFunctionArn };
 };
