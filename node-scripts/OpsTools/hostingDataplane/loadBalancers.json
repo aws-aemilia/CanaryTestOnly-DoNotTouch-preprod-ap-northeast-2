@@ -1,0 +1,166 @@
+{
+  "794147494059": {
+    "accountId": "794147494059",
+    "region": "eu-north-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-11BBHYZOE0OQZ/ff929e6f1ce586a8"
+    ]
+  },
+  "130899817859": {
+    "accountId": "130899817859",
+    "region": "me-south-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-1SPTGV6ZT1NT1/3e35b3880bc14e71"
+    ]
+  },
+  "841799175434": {
+    "accountId": "841799175434",
+    "region": "ap-south-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-5CIYTKQA3QV4/51c69ae286620532"
+    ]
+  },
+  "722841408231": {
+    "accountId": "722841408231",
+    "region": "eu-west-3",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-QNK29TZXAW5B/0e9f0c09a53e0e6f"
+    ]
+  },
+  "338551066553": {
+    "accountId": "338551066553",
+    "region": "us-east-2",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-MB6JGO54DYOL/5469c176f972b648",
+      "app/HostingGatewayALBShard1/4d411ed7f4b2694f",
+      "app/HostingGatewayALBShard2/14d59f7fe59f4dd9"
+    ]
+  },
+  "990995102444": {
+    "accountId": "990995102444",
+    "region": "eu-west-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-O9NAS71FCTR4/8fd72fb7bb587fc5",
+      "app/HostingGatewayALBShard1/03c54cdfd672931f",
+      "app/HostingGatewayALBShard2/72a6d55fc0624f09"
+    ]
+  },
+  "144138853311": {
+    "accountId": "144138853311",
+    "region": "eu-central-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-2F7F521BZCQO/d713ef2462bbb91f"
+    ]
+  },
+  "434245994036": {
+    "accountId": "434245994036",
+    "region": "sa-east-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-MYT7JE37RDVP/07499b513543e25e"
+    ]
+  },
+  "696960890324": {
+    "accountId": "696960890324",
+    "region": "ap-east-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-17Z8JUEFQCTFJ/1ec412d86d3ad0cf"
+    ]
+  },
+  "503759908898": {
+    "accountId": "503759908898",
+    "region": "us-east-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-1LOH32JEEDIFE/4d7a4f778a387cd4",
+      "app/HostingGatewayALBShard2/49d5472fe7756e86",
+      "app/HostingGatewayALBShard1/b3343a3a5deef173"
+    ]
+  },
+  "069647238838": {
+    "accountId": "069647238838",
+    "region": "ap-northeast-2",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-SMJYJRZP2CSP/d7811a91d86ee2ad"
+    ]
+  },
+  "937636477127": {
+    "accountId": "937636477127",
+    "region": "eu-west-2",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-NOJ8EKTATGB1/b6d0d0523bca7e69"
+    ]
+  },
+  "544556176999": {
+    "accountId": "544556176999",
+    "region": "eu-south-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-71P9B4404QSE/5339683be1a9a172"
+    ]
+  },
+  "695310324323": {
+    "accountId": "695310324323",
+    "region": "ap-northeast-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-AANI2CXDZJUD/d41c171a425ae004"
+    ]
+  },
+  "407930483572": {
+    "accountId": "407930483572",
+    "region": "us-west-2",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-BR1VF9N66YXV/9d40835d02f9a624",
+      "app/HostingGatewayALBShard2/f65278ab6430b996",
+      "app/HostingGatewayALBShard1/bc73491b81d1160c"
+    ]
+  },
+  "403653681395": {
+    "accountId": "403653681395",
+    "region": "us-west-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-WHWOHWMYG7KI/c798f9a5573b3cb1"
+    ]
+  },
+  "801967453323": {
+    "accountId": "801967453323",
+    "region": "ap-southeast-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-OW228PQFMBMG/0be7d53782282095",
+      "app/HostingGatewayALBShard2/06097cc0fd766208",
+      "app/HostingGatewayALBShard1/c66008d4a1227638"
+    ]
+  },
+  "717466583624": {
+    "accountId": "717466583624",
+    "region": "ap-southeast-2",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-1M4J4EA7GE9BW/cb69e3c4142f92ba"
+    ]
+  },
+  "628987390189": {
+    "accountId": "628987390189",
+    "region": "ca-central-1",
+    "stage": "prod",
+    "loadBalancerNames": [
+      "app/Hosti-Hosti-KW9SRV4ZG6WW/163507e8e345ae7b",
+      "app/HostingGatewayALBShard2/be8742e4381d6162",
+      "app/HostingGatewayALBShard1/c9f8fd58373dcbad"
+    ]
+  }
+}
