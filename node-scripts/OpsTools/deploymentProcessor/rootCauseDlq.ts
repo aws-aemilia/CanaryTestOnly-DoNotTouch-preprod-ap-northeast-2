@@ -7,18 +7,16 @@ import {
   DescribeExecutionCommandOutput,
 } from "@aws-sdk/client-sfn";
 import { pollMessages } from "../../utils/sqs";
+import { doQuery } from "../../libs/CloudWatch";
 import {
+  AmplifyAccount,
   Region,
   Stage,
   computeServiceControlPlaneAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
 } from "../../Isengard";
-import {
-  DeleteMessageCommand,
-  SQSClient,
-  Message,
-} from "@aws-sdk/client-sqs";
+import { DeleteMessageCommand, SQSClient, Message } from "@aws-sdk/client-sqs";
 import { toRegionName } from "../../utils/regions";
 import { findJob } from "../../dynamodb/tables/job";
 import { findDeployment } from "../../dynamodb/tables/computeDeployments";
@@ -44,9 +42,11 @@ interface DLQMessagePayload {
   meteringJobId: string;
   framework: string;
   platform: "WEB" | "WEB_DYNAMIC" | "WEB_COMPUTE";
+  s3ManualDeployZipKey: string;
+  s3ZipBucket: string;
 }
 
-// RootCause is of type `any` to give us flexibility to put whatever we want. 
+// RootCause is of type `any` to give us flexibility to put whatever we want.
 // A string, a stack trace (list of strings), an object, etc. The root cause
 // gets JSON stringified at the end so it doesn't matter what type it is.
 type RootCause = any;
@@ -85,12 +85,14 @@ async function main() {
       demandOption: true,
     })
     .option("outputPath", {
-      describe: "Path of a file where to write the results and DLQ messages (i.e. ~/Desktop/yul.txt)",
+      describe:
+        "Path of a file where to write the results and DLQ messages (i.e. ~/Desktop/yul.txt)",
       type: "string",
       demandOption: true,
     })
     .option("deleteMessages", {
-      describe: "If provided, messages with a root cause will be deleted from the DLQ",
+      describe:
+        "If provided, messages with a root cause will be deleted from the DLQ",
       type: "boolean",
       demandOption: false,
     })
@@ -157,7 +159,11 @@ async function main() {
       continue;
     }
 
-    logger.info(`This was a ${message.payload.platform} deployment`);
+    logger.info(
+      `This was a ${
+        message.payload.platform ? message.payload.platform : "Manual"
+      } deployment`
+    );
 
     if (message.payload.platform === "WEB_COMPUTE") {
       message.rootCause = await rootCauseComputeDeployment(
@@ -170,7 +176,8 @@ async function main() {
         documentClient,
         stage,
         regionName,
-        message
+        message,
+        cpAccount
       );
     }
 
@@ -217,6 +224,7 @@ function parseMessage(sqsMessage: Message): DLQMessage | null {
       payload,
       "Message doesn't have a SentTimestamp attribute, unable to root cause"
     );
+
     return null;
   }
 
@@ -231,7 +239,8 @@ async function rootCauseDeployment(
   documentClient: DynamoDBDocumentClient,
   stage: string,
   region: string,
-  message: DLQMessage
+  message: DLQMessage,
+  controlPlaneAccount: AmplifyAccount
 ): Promise<RootCause | null> {
   // Lookup Job in DynamoDB
   const job = await findJob(
@@ -257,10 +266,27 @@ async function rootCauseDeployment(
     return null;
   }
 
-  // TODO: Query cloudwatch logs to find root cause
-  // TODO: Needs implementation
+  logger.info(deploymentStep, "Found deployment step in JobDO");
+  logger.info("Querying for errors in Deployment Processor logs");
 
-  return null;
+  const logs = await doQuery(
+    controlPlaneAccount,
+    "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDef",
+    `filter @message like /Fatal error/ and @message like /${message.payload.applicationId}/ | fields @timestamp, @message`,
+    new Date(deploymentStep.startTime),
+    new Date(deploymentStep.endTime),
+  );
+
+  if (!logs) {
+    logger.error(
+      message,
+      "Unable to find errors in Deployment Processor logs. Cannot root cause"
+    );
+    return null;
+  }
+
+  logger.info(`Found ${logs.length} logs with errors`);
+  return logs;
 }
 
 async function rootCauseComputeDeployment(
