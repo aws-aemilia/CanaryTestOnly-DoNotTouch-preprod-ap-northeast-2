@@ -7,6 +7,7 @@ import {
 } from "../Isengard";
 import { doQuery } from "../libs/CloudWatch";
 import { getCloudFormationResources } from "../utils/cloudFormation";
+import logger from "../utils/logger";
 import {
   CreateWebACLCommand,
   CreateWebACLCommandOutput,
@@ -169,7 +170,7 @@ async function getDDoSAppFromLogs(
   }
 
   if (recentDDoSEvents.length > 1) {
-    console.log(recentDDoSEvents);
+    logger.info(recentDDoSEvents);
     throw new Error("There are multiple recent DDoS events. This tool only operates on a single distribution. Run the tool using --distributionId");
   }
   return recentDDoSEvents[0];
@@ -227,18 +228,18 @@ async function main() {
   let targetDistributionId: string
 
   if (distributionId) {
-    console.log("Using provided distributionId", distributionId);
+    logger.info(distributionId, "Using provided distributionId");
     targetDistributionId = distributionId;
   } else {
-    console.log(
+    logger.info(
         "querying the logs to find the distributionId from recent DDoS mitigation events"
     );
     const ddosEvent = await getDDoSAppFromLogs(acc);
-    console.log("Found DDoS event in the logs:", ddosEvent);
+    logger.info(ddosEvent, "Found DDoS event in the logs");
     targetDistributionId = ddosEvent.distributionId;
   }
 
-  console.log(`Checking if distribution ${targetDistributionId} exists`);
+  logger.info(`Checking if distribution ${targetDistributionId} exists`);
   let distributionConfig;
 
   try {
@@ -247,48 +248,48 @@ async function main() {
     );
   } catch (e) {
     if (e instanceof NoSuchDistribution){
-      console.error(`ERROR: The distribution ${targetDistributionId} does not exist`);
+      logger.error(`ERROR: The distribution ${targetDistributionId} does not exist`);
       if (distributionId){
-        console.error(`You provided the --distributionId param. Double check that you used the correct distributionId, region, and stage`);
+        logger.error(`You provided the --distributionId param. Double check that you used the correct distributionId, region, and stage`);
       }
-      console.error(`The most likely cause is that the customer already deleted the App or Custom Domain. You can query the logs to confirm: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/ControlPlane/#HCheckifaDistributionwasdeleted`);
+      logger.error(`The most likely cause is that the customer already deleted the App or Custom Domain. You can query the logs to confirm: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/ControlPlane/#HCheckifaDistributionwasdeleted`);
       return;
     }
     throw e;
   }
 
   if (distributionConfig.DistributionConfig?.Enabled){
-    console.log(`Disabling distribution ${distributionId} in stage ${stage} and region ${region}`);
+    logger.info(`Disabling distribution ${distributionId} in stage ${stage} and region ${region}`);
     await disableDistribution({
       cloudFrontClient,
       distributionId: targetDistributionId
     });
   }
 
-  console.log(`Applying WAF with default Block to ${targetDistributionId}`);
+  logger.info(`Applying WAF with default Block to ${targetDistributionId}`);
   const createWAFOutput = await createWaf(acc, targetDistributionId);
   await attachWaf(acc, createWAFOutput.Summary!.ARN!, targetDistributionId);
-  console.log("WAF created and attached to distribution");
-  console.log(createWAFOutput.Summary);
+  logger.info("WAF created and attached to distribution");
+  logger.info(createWAFOutput.Summary);
 
-  console.log(`Enabling distribution ${targetDistributionId}...`);
+  logger.info(`Enabling distribution ${targetDistributionId}...`);
   await enableDistribution({
     cloudFrontClient,
     distributionId:targetDistributionId
   });
-  console.log(`distribution ${targetDistributionId} enabled`);
+  logger.info(`distribution ${targetDistributionId} enabled`);
 
-  console.log(`${Date()} - Waiting for 5 minutes to let WAF analyze the traffic`);
+  logger.info(`${Date()} - Waiting for 5 minutes to let WAF analyze the traffic`);
   await sleep(1000 * 60 * 5);
 
-  console.log("Setting WAF default to Allow");
+  logger.info("Setting WAF default to Allow");
   await updateWafDefaultAllow(
     acc,
     createWAFOutput.Summary!.Id!,
     createWAFOutput.Summary!.Name!
   );
 
-  console.log("Success!!! All mitigation steps are complete")
+  logger.info("Success!!! All mitigation steps are complete")
 }
 
 main().then(console.log).catch(console.error);

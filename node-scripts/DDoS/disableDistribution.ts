@@ -1,7 +1,7 @@
 import yargs from "yargs";
-import pino from "pino";
 import { disableDistribution, enableDistribution } from "../utils/cloudfront";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import logger from "../utils/logger";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
@@ -10,7 +10,6 @@ import {
 } from "../Isengard";
 
 const { hideBin } = require("yargs/helpers");
-const logger = pino();
 
 /**
 Use this script when the automated mitigation did not trigger and there are Lambda throttles caused
