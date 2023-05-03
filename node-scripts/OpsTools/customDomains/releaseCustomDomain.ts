@@ -1,7 +1,7 @@
 import yargs from "yargs";
 import logger from "../../utils/logger";
 import { findApp } from "../../dynamodb/tables/app";
-import { findDomain } from "../../dynamodb/tables/domain";
+import { getDomain } from "../../dynamodb/tables/domain";
 import { toRegionName } from "../../utils/regions";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
@@ -107,10 +107,11 @@ async function main() {
   }
 
   logger.info(`Looking up ${domainName} in DynamoDB`);
-  const domain = await findDomain(
+  const domain = await getDomain(
     documentClient,
     stage,
     regionName,
+    appId,
     domainName
   );
 
