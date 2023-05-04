@@ -13,6 +13,95 @@ import sleep from "../utils/sleep";
 
 const logger = pino(pinoPretty());
 
+export interface Log {
+  [key: string]: string;
+}
+
+/**
+ * Run a CloudWatch Logs Insights query, wait for it to complete,
+ * and returns the results as a list of key-value pairs.
+ *
+ * @param client CloudWatchLogsClient instance
+ * @param logGroupPrefix A prefix of the log group name to search for
+ * @param query Query to run
+ * @param startDate Start time of the query
+ * @param endDate End time of the query
+ * @returns An array of logs
+ */
+export async function insightsQuery(
+  client: CloudWatchLogsClient,
+  logGroupPrefix: string,
+  query: string,
+  startDate: Date,
+  endDate: Date
+): Promise<Log[]> {
+  try {
+    const logGroupName = await getLogGroup(client, logGroupPrefix);
+
+    const command = new StartQueryCommand({
+      endTime: toEpochInSeconds(endDate),
+      startTime: toEpochInSeconds(startDate),
+      queryString: query,
+      logGroupNames: [logGroupName],
+    });
+
+    logger.info("Starting log insights query");
+    const response = await client.send(command);
+
+    if (!response.queryId) {
+      throw new Error("QueryId missing, something wrong happened");
+    }
+
+    let queryResults: GetQueryResultsCommandOutput;
+
+    do {
+      await sleep(500);
+      logger.info("Polling for query results");
+      queryResults = await client.send(
+        new GetQueryResultsCommand({
+          queryId: response.queryId,
+        })
+      );
+    } while (
+      queryResults.status === "Running" ||
+      queryResults.status === "Scheduled"
+    );
+
+    logger.info("Query completed. Fetching final results");
+    queryResults = await client.send(
+      new GetQueryResultsCommand({
+        queryId: response.queryId,
+      })
+    );
+
+    if (!queryResults.results || queryResults.results.length === 0) {
+      logger.info("No results found");
+      return [];
+    }
+
+    const logs: Log[] = [];
+
+    for (const columns of queryResults.results) {
+      const log: Log = {};
+      for (const column of columns) {
+        if (column.field && column.field !== "@ptr") {
+          // @ptr is a pointer to this log line (unnecessary)
+          log[column.field] = column.value ?? "";
+        }
+      }
+      logs.push(log);
+    }
+
+    return logs;
+  } catch (err) {
+    logger.error("Failed to run query", err);
+    throw err;
+  }
+}
+
+/**
+ * @deprecated Use insightsQuery instead
+ */
 export async function doQuery(
   account: AmplifyAccount,
   logGroupPrefix: string,

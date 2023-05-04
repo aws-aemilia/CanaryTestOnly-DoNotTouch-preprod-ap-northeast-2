@@ -34,7 +34,8 @@
     "AddDistributionTypeToPool.run": "ts-node DataMigrations/AddDistributionTypeToPool/run.ts",
     "AddDistributionTypeToPool.verify": "ts-node DataMigrations/AddDistributionTypeToPool/verify.ts",
     "hostingGatewayRollback": "ts-node HostingDataplane/hostingGatewayRollback.ts",
-    "cancelRunningBuilds": "ts-node OpsTools/buildAbuse/cancelRunningBuilds.ts"
+    "cancelRunningBuilds": "ts-node OpsTools/buildAbuse/cancelRunningBuilds.ts",
+    "asyncDeletionDLQ": "ts-node ssrv1DeletionDLQ.ts"
   },
   "author": "",
   "license": "ISC",
