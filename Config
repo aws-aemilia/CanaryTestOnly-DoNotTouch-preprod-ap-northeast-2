@@ -30,6 +30,9 @@ package.AWSAmplifyTools = {
     dependencies = {
         1.0 = {
             AWSIdentityManagementAdminServiceInternalJavaScriptClient = 1.0;
+            AWSFraudNodeJsTypes = 2.14;
+            AWSFraudNodeJsApiClient = 2.14;
+            AWSFraudGlobalDataNodeSdk = 2.14;
         };
     };
 
