@@ -12,12 +12,22 @@ import {
 import yargs from "yargs";
 import { deleteCache } from "../Isengard/cache";
 import { increaseIAMRoles } from "../service-quotas";
-import { requestMaxLambdaConcurrency, requestMaxLambdaStorage } from "../SimT";
+import {
+  requestComputeCellLambdaConcurrency,
+  requestMaxLambdaConcurrency,
+  requestMaxLambdaStorage,
+} from "../SimT";
 import sleep from "../utils/sleep";
 
-const cutTicketsLambdaLimitIncrease = async (createdAccount: AmplifyAccount): Promise<void> => {
+// TODO: add this type to the AmplifyAccount type and update Isengard cache
+type AmplifyAccountType = "computeServiceControlPlane" |  "computeServiceCell" | "dataPlane"; 
+
+const cutTicketsLambdaLimitIncrease = async (createdAccount: AmplifyAccount, type: AmplifyAccountType): Promise<void> => {
     console.log("Cutting tickets to request Lambda limit increases");
-    const concurrencyTicket = await requestMaxLambdaConcurrency(createdAccount)
+    const concurrencyTicket =
+      type === "computeServiceCell"
+        ? await requestComputeCellLambdaConcurrency(createdAccount)
+        : await requestMaxLambdaConcurrency(createdAccount);
     console.log(`concurrency increase: https://t.corp.amazon.com/${concurrencyTicket}`);
 
     await sleep(3_000); // avoid throttles
@@ -72,7 +82,7 @@ Create an Isengard AWS account
             console.log('Refreshing the local account cache...')
             await deleteCache('computeServiceControlPlaneAccounts');
             const computeAccount = await computeServiceControlPlaneAccount(stage, region)
-            await cutTicketsLambdaLimitIncrease(computeAccount)
+            await cutTicketsLambdaLimitIncrease(computeAccount, type)
             break;
         case 'computeServiceCell':
             await createComputeServiceCellAccount(stage, region, cellNumber);
@@ -80,7 +90,7 @@ Create an Isengard AWS account
             console.log('Refreshing the local account cache...')
             await deleteCache('computeServiceDataPlaneAccounts');
             const cellAccount = await computeServiceDataPlaneAccount(stage, region, cellNumber!)
-            await cutTicketsLambdaLimitIncrease(cellAccount)
+            await cutTicketsLambdaLimitIncrease(cellAccount, type)
             await increaseIAMRoles(cellAccount);
             break;
         case 'dataPlane':

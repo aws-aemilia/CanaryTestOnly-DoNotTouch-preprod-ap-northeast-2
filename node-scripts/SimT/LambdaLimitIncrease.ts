@@ -38,6 +38,13 @@ export const getMaxAllowedLambdaConcurrency = (account: AmplifyAccount) => {
 };
 
 /**
+ * The 20k limit needs Lambda PM approval. See: https://t.corp.amazon.com/P88254262/communication
+ */
+export const getComputeCellLambdaConcurrency = () => {
+  return 20000;
+};
+
+/**
  * If you ever need to update this, the easiest way to find the ticket specific values is to manually cut a ticket per
  * the instructions on https://w.amazon.com/index.php/Lambda/Limits and then inspect the resulting ticket json:
  * kcurl -k https://maxis-service-prod-iad.amazon.com/issues/${ticketId}
@@ -49,6 +56,14 @@ export const maxLambdaConcurrencyLambdaLimit: LambdaLimit = {
   ctiItem: 'Limit Increase - Concurrent Executions',
   assignedGroup: 'AWS Lambda Concurrency Manager',
   limitValueFn: getMaxAllowedLambdaConcurrency
+}
+
+export const computeCellLambdaConcurrencyLambdaLimit: LambdaLimit = {
+  lambdaLimitName: 'Concurrent Limit',
+  assignedFolder: '3db8bd55-220f-4189-a666-b67025eb1150',
+  ctiItem: 'Limit Increase - Concurrent Executions',
+  assignedGroup: 'AWS Lambda Concurrency Manager',
+  limitValueFn: getComputeCellLambdaConcurrency
 }
 
 export const maxCodeStorageLambdaLimit: LambdaLimit = {

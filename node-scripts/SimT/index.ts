@@ -2,7 +2,10 @@ import util from "util";
 import { exec as execNonPromise } from "child_process";
 import { AmplifyAccount } from "../Isengard";
 import {
-  LambdaLimit, maxCodeStorageLambdaLimit, maxLambdaConcurrencyLambdaLimit,
+  computeCellLambdaConcurrencyLambdaLimit,
+  LambdaLimit,
+  maxCodeStorageLambdaLimit,
+  maxLambdaConcurrencyLambdaLimit,
 } from "./LambdaLimitIncrease";
 
 const exec = util.promisify(execNonPromise);
@@ -111,4 +114,5 @@ const createLambdaLimitIncreaseTicket = async (
 };
 
 export const requestMaxLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(null, maxLambdaConcurrencyLambdaLimit)
+export const requestComputeCellLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(null, computeCellLambdaConcurrencyLambdaLimit)
 export const requestMaxLambdaStorage = createLambdaLimitIncreaseTicket.bind(null, maxCodeStorageLambdaLimit)
