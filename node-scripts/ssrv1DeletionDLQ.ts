@@ -144,7 +144,7 @@ async function main() {
   logger.info("Searching for Async Deletion queue");
   const sourceQueueUrl = await getQueueUrl(
     sqsClient,
-    "AemiliaControlPlaneLambda-AsyncResourceDeletion"
+    "AemiliaControlPlaneLambda-AsyncResourceDeletionQueue",
   );
 
   logger.info(`Polling messages from ${queueUrl}`);
