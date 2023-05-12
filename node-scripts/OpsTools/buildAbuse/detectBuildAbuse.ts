@@ -30,7 +30,7 @@ const SimClient = require("@amzn/sim-client");
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
-    .usage(`Detect malicious build requests, block their accounts and cancel their builds.`)
+    .usage(`Detect malicious build requests, report them to Fraud team, and cancel their builds.`)
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
@@ -111,7 +111,6 @@ const main = async () => {
       return true;
     });
     await reportAccounts(unreportedAccounts);
-    await blockAccounts(unreportedAccounts, stage);
 
     const cpAccounts = await controlPlaneAccounts({ stage: "prod" })
 
@@ -133,26 +132,6 @@ const main = async () => {
     }
   }
   process.exit(0);
-};
-
-const blockAccounts = async (accountIds: string[], stage: string) => {
-  const proceedAccounts = await confirm(
-    `Do you want to disable the above accounts?`
-  );
-  if (!proceedAccounts) {
-    console.log("Skipping disabling the accounts");
-    return "";
-  }
-  const blockAbuseAccountAction: AbuseAccountAction = "BLOCK";
-
-  await updateBlockStatusForAccountIds(
-        accountIds,
-        stage,
-        blockAbuseAccountAction,
-        "OncallOperator"
-      );
-
-  console.log("Done disabling the accounts");
 };
 
 async function reportAccounts(unreportedAccounts: string[]) {
