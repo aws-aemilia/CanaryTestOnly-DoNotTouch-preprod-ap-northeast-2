@@ -17,7 +17,7 @@ export const computeServiceCellPurposeFn: AccountPurposeFn = (
     throw new Error("cell number must be greater or equal to 1");
   }
 
-  if (cellNumber > 3) {
+  if (cellNumber > 4) {
     throw new Error(
       "WARNING, the provided cell number seems too big. You may remove this check from this tool if you truly want to create that many cells"
     );

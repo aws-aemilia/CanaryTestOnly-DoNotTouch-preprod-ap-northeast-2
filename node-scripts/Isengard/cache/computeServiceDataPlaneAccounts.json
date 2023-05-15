@@ -328,6 +328,14 @@
     "cellNumber": "3"
   },
   {
+    "accountId": "293568156222",
+    "email": "aws-mobile-amplify+compute-service-prod-iad-cell4@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "prod",
+    "cellNumber": "4"
+  },
+  {
     "accountId": "272880359961",
     "email": "aws-mobile-amplify+compute-service-prod-icn-cell1@amazon.com",
     "airportCode": "icn",
