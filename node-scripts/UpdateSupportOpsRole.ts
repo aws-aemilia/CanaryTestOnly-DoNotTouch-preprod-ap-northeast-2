@@ -26,7 +26,7 @@ const main = async () => {
       const grantUserPermissionResponse = await grantUserPermission({
         AWSAccountID: account.accountId,
         IAMRoleName: supportRoleName,
-        User: "jayrava",
+        User: "dkkiuna",
       });
 
       console.log(grantUserPermissionResponse);

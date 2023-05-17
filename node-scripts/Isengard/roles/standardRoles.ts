@@ -45,6 +45,7 @@ export const releaseDomainRole: AmplifyRole = {
   Users: [
     "hloriana",
     "jayrava",
+    "dkkiuna",
   ]
 };
 
@@ -69,6 +70,7 @@ const readOnlyRole: AmplifyRole = {
   Users: [
     "hloriana",
     "jayrava",
+    "dkkiuna",
   ]
 };
 
@@ -84,6 +86,7 @@ const fullReadOnlyRole: AmplifyRole = {
   Users: [
     "hloriana",
     "jayrava",
+    "dkkiuna",
   ]
 };
 
