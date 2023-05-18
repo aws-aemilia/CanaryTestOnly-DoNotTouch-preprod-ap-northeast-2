@@ -197,13 +197,13 @@ async function main() {
       logger.info(`Orphan Lambda@Edge function ARN: ${anyLog.functionArn}`);
       writeToOutputFile(message, outputFile);
 
+      if (!skipTicket) {
+        await cutTicketToCloudFront(anyLog.functionArn);
+      }
+
       if (deleteMessages) {
         await redriveMessage(sqsClient, sourceQueueUrl, message);
         await deleteMessage(sqsClient, queueUrl, message);
-      }
-
-      if (!skipTicket) {
-        await cutTicketToCloudFront(anyLog.functionArn);
       }
     }
   }
