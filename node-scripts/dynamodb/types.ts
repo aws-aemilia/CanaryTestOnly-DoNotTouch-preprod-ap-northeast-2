@@ -1,6 +1,27 @@
 export interface LambdaEdgeConfig {
   appId: string;
   customDomainIds: Set<string>;
+  customRuleConfigs?: CustomRuleConfig[];
+  updateTime: string;
+  createTime: string;
+  branchConfig?: {
+    [branchName: string]: BranchConfig;
+  };
+}
+
+export interface BranchConfig {
+  activeJobId: string;
+  branchName: string;
+  customHeaders: string;
+  enableBasicAuth: string;
+  performanceMode: string;
+}
+
+export interface CustomRuleConfig {
+  target: string;
+  source: string;
+  status: string;
+  condition?: string;
 }
 
 export interface DynamoDBAttributeName {

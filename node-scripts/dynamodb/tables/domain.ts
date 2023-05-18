@@ -119,7 +119,7 @@ export const getDomain = async (
         Key: {
           appId,
           domainName,
-        }
+        },
       })
     );
 
@@ -128,6 +128,53 @@ export const getDomain = async (
     }
 
     return response.Item as DomainDO;
+  } catch (err) {
+    if (err instanceof ResourceNotFoundException) {
+      return null;
+    }
+    throw err;
+  }
+};
+
+// The GSI domainId-index does not project all attributes of the DomainDO,
+// it only projects the following 3:
+interface GetDomainByIdOutput {
+  domainId: string;
+  domainName: string;
+  appId: string;
+}
+
+/**
+ * Queries the Domain table with the given domainId. Returns null if not found
+ *
+ * @param documentClient DocumentClient with credentials for the Control Plane account
+ * @param stage The stage to find the App in
+ * @param region The region to find the App in
+ * @param domainId The domainId to find. i.e. d1234567890abcdef
+ */
+export const findDomainById = async (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  domainId: string
+): Promise<GetDomainByIdOutput | null> => {
+  try {
+    const response = await documentClient.send(
+      new QueryCommand({
+        TableName: `${stage}-${region}-Domain`,
+        KeyConditionExpression: "domainId = :domainId",
+        IndexName: "domainId-index",
+        ExpressionAttributeValues: {
+          ":domainId": domainId,
+        },
+      })
+    );
+
+    if (!response.Items || response.Items.length === 0) {
+      return null;
+    }
+
+    return response.Items[0] as GetDomainByIdOutput;
   } catch (err) {
     if (err instanceof ResourceNotFoundException) {
       return null;
