@@ -176,9 +176,8 @@ async function main() {
     const logs = await insightsQuery(
       cwClient,
       "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletion",
-      `filter ispresent(exceptionDetails) and exceptionDetails like '${message.payload.AppDO.accountId}'` +
-        `| parse @message 'Lambda was unable to delete * because it is a replicated function' as functionArn ` +
-        `| fields exception`,
+        `parse @message 'Lambda was unable to delete * because it is a replicated function' as functionArn ` +
+        `| filter ispresent(functionArn) and functionArn like '${message.payload.AppDO.accountId}'`,
       startDate,
       endDate
     );
