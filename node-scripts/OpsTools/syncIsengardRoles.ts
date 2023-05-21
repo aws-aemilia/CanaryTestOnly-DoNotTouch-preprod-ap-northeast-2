@@ -1,23 +1,8 @@
 import { getRolesForStage } from "../Isengard/roles/standardRoles";
-import {
-  AccountsLookupFn,
-  AmplifyAccount,
-  computeServiceControlPlaneAccounts,
-  computeServiceDataPlaneAccounts,
-  controlPlaneAccounts,
-  dataPlaneAccounts,
-  Region,
-} from "../Isengard";
+import { AmplifyAccount, AmplifyAccountType, controlPlaneAccounts, getAccountsLookupFn, Region, } from "../Isengard";
 import { upsertRole } from "../Isengard/roles/upsertRole";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-
-const accountTypeFns: Record<string, AccountsLookupFn> = {
-  controlPlane: controlPlaneAccounts,
-  dataPlane: dataPlaneAccounts,
-  computeControlPlane: computeServiceControlPlaneAccounts,
-  computeCells: computeServiceDataPlaneAccounts,
-};
 
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
@@ -34,12 +19,7 @@ const main = async () => {
     .option("accountType", {
       describe: "If not present it syncs roles in ALL accountTypes",
       type: "string",
-      choices: [
-        "controlPlane",
-        "dataPlane",
-        "computeControlPlane",
-        "computeCells",
-      ],
+      choices: Object.values(AmplifyAccountType),
     })
     .strict()
     .version(false)
@@ -65,10 +45,10 @@ const main = async () => {
   ];
 
   const accounts: AmplifyAccount[] = accountType
-    ? await accountTypeFns[accountType]({ stage, region })
+    ? await getAccountsLookupFn[accountType]({ stage, region })
     : (
         await Promise.all(
-          Object.values(accountTypeFns).map((fn) =>
+          Object.values(getAccountsLookupFn).map((fn) =>
             fn({
               stage,
               region,

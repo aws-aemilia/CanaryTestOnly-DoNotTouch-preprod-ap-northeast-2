@@ -434,6 +434,11 @@ export const kinesisConsumerAccount: (
   "kinesisConsumerAccounts"
 );
 
+export const meteringAccounts: AccountsLookupFn = defaultGetAccounts(
+    getMeteringAccounts,
+    "meteringAccounts"
+);
+
 export const meteringAccount: (
   stage: Stage,
   region: Region
@@ -441,6 +446,11 @@ export const meteringAccount: (
   getMeteringAccounts,
   "meteringAccounts"
 );
+
+export const domainAccounts: AccountsLookupFn = defaultGetAccounts(
+    getDomainAccounts,
+    "domainAccounts"
+)
 
 export const domainAccount: (
   stage: Stage,
@@ -459,4 +469,28 @@ export const rootDomainAccount = (): AmplifyAccount => {
     region: "us-east-1", // irrelevant
     stage: "prod", // irrelevant
   };
+};
+
+export enum AmplifyAccountType {
+  controlPlane = "controlPlane",
+  integTest = "integTest",
+  console = "console",
+  computeServiceControlPlane = "computeServiceControlPlane",
+  computeServiceDataPlane = "computeServiceDataPlane",
+  dataPlane = "dataPlane",
+  kinesisConsumer = "kinesisConsumer",
+  metering = "metering",
+  domain = "domain",
+}
+
+export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> = {
+  controlPlane: controlPlaneAccounts,
+  integTest: integTestAccounts,
+  console: consoleAccounts,
+  computeServiceControlPlane: computeServiceControlPlaneAccounts,
+  computeServiceDataPlane: computeServiceDataPlaneAccounts,
+  dataPlane: dataPlaneAccounts,
+  kinesisConsumer: kinesisConsumerAccounts,
+  metering: meteringAccounts,
+  domain: domainAccounts
 };
