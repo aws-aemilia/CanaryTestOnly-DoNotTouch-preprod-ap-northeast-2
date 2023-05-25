@@ -40,7 +40,7 @@ For Isengard contingent authorization you will need to set one of the following 
 
 ```
 cd node-scripts/
-npm run globalQuery -- \
+brazil-build globalQuery -- \
 --logGroupPrefix /aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor- \
 --stage prod \
 --outputDir queryResults \

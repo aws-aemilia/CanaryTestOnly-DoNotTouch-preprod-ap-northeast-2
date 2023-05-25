@@ -1,14 +1,31 @@
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-import logger from "./utils/logger";
+import { existsSync } from "fs";
+import { appendFile, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import yargs from "yargs";
-import {
-  controlPlaneAccounts,
-  getIsengardCredentialsProvider,
-  StandardRoles,
-} from "./Isengard";
-import { insightsQuery } from "./libs/CloudWatch";
-import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
+import { controlPlaneAccounts, StandardRoles } from "../Isengard";
+import { insightsQuery } from "../libs/CloudWatch";
+
+async function writeLogsToFile(
+  outputFolder: string,
+  fileName: string,
+  logs: string[]
+) {
+  if (!existsSync(outputFolder)) {
+    await mkdir(outputFolder);
+  }
+
+  const outputFile = path.join(outputFolder, fileName);
+  await writeFile(outputFile, "");
+
+  try {
+    for (const logLine of logs) {
+      await appendFile(outputFile, logLine + "\n");
+    }
+  } catch (err) {
+    console.error("Unable to write logs to file", fileName);
+    console.log(logs);
+  }
+}
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
@@ -86,40 +103,24 @@ async function main() {
     role = StandardRoles.FullReadOnly;
   }
 
-  if (!existsSync(outputDir)) {
-    logger.info("Output directory does not exist, creating it");
-    mkdirSync(outputDir, { recursive: true });
-    logger.info(outputDir, "Output directory created successfully");
-  }
-
   const controlPlaneAccountsForStage = (await controlPlaneAccounts()).filter(
     (acc) => acc.stage === stage
   );
 
   const queryPromises = controlPlaneAccountsForStage.map(
     async (controlPlaneAccount) => {
-      logger.info(controlPlaneAccount, "Beginning query for region");
-      const cloudwatchClient = new CloudWatchLogsClient({
-        region: controlPlaneAccount.region,
-        credentials: getIsengardCredentialsProvider(
-          controlPlaneAccount.accountId,
-          "FullReadOnly"
-        ),
-      });
-
-      const logs = await insightsQuery(
-        cloudwatchClient,
+      console.log(`Beginning query for region: ${controlPlaneAccount.region}`);
+      const logs = await doQuery(
+        controlPlaneAccount,
         logGroupPrefix,
         query,
         new Date(startDate),
-        new Date(endDate)
+        new Date(endDate),
+        role
       );
 
-      const fileName = controlPlaneAccount.region.concat(".json");
-      const outputFile = path.join(outputDir, fileName);
-
-      logger.info(outputFile, "Writing results to file");
-      await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
+      const fileName = controlPlaneAccount.region.concat(".csv");
+      await writeLogsToFile(outputDir, fileName, logs || []);
     }
   );
 
