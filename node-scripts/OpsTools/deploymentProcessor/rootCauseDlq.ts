@@ -22,6 +22,7 @@ import { findJob } from "../../dynamodb/tables/job";
 import { findDeployment } from "../../dynamodb/tables/computeDeployments";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import dayjs from "dayjs";
 
 interface DLQMessage {
   receiptHandle: string;
@@ -274,7 +275,7 @@ async function rootCauseDeployment(
     "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDef",
     `filter @message like /Fatal error/ and @message like /${message.payload.applicationId}/ | fields @timestamp, @message`,
     new Date(deploymentStep.startTime),
-    new Date(deploymentStep.endTime),
+    dayjs(deploymentStep.endTime).add(1, "minute").toDate(), // logs are sometimes after deployment end time. Not sure why
   );
 
   if (!logs) {
@@ -339,6 +340,8 @@ function extractErrorsFromStateMachineExecution(
   let failureCause: StateMachineFailureCause;
   if (execution.status !== "FAILED") {
     logger.info(execution, "State machine execution is not in failed state");
+    logger.warn(`This most likely means that the Job was retried and it succeeded, thus overwriting the failed Step Functions execution ARN with the most recent successful run.
+You need to manually find the failed step function execution in the logs (or fix this tool to do it for you  😉)`);
     return [];
   }
 
