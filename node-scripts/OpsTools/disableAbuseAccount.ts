@@ -57,6 +57,9 @@ const main = async () => {
       `
           Disable ALL Apps in ALL regions for an AWS account flagged for abuse. This tool sends a "BLOCK" message to the AbuseReportQueue
           ** Requires kcurl to be installed, try brew install env-improvement if it isn't. **
+
+          Usage:
+          npx ts-node OpsTools/disableAbuseAccount.ts --ticket P123456789 --accountId 123456789
           `
     )
     .option("accountId", {
