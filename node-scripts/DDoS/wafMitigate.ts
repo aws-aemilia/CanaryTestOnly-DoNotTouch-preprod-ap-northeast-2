@@ -1,30 +1,12 @@
-import {
-  AmplifyAccount,
-  controlPlaneAccount,
-  getIsengardCredentialsProvider,
-  Region,
-  Stage,
-} from "../Isengard";
+import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage, } from "../Isengard";
 import { doQuery } from "../libs/CloudWatch";
 import { getCloudFormationResources } from "../utils/cloudFormation";
 import logger from "../utils/logger";
-import {
-  CreateWebACLCommand,
-  CreateWebACLCommandOutput,
-  GetWebACLCommand,
-  Scope,
-  UpdateWebACLCommand,
-  WAFV2Client,
-} from "@aws-sdk/client-wafv2";
-import {
-  CloudFrontClient,
-  GetDistributionConfigCommand,
-  NoSuchDistribution,
-} from "@aws-sdk/client-cloudfront";
-import sleep from "../utils/sleep";
+import { CreateWebACLCommand, CreateWebACLCommandOutput, Scope, WAFV2Client, } from "@aws-sdk/client-wafv2";
+import { CloudFrontClient, GetDistributionConfigCommand, NoSuchDistribution, } from "@aws-sdk/client-cloudfront";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { disableDistribution, enableDistribution, updateDistribution } from "../utils/cloudfront";
+import { updateDistribution } from "../utils/cloudfront";
 import { defaultWafRules } from "./defaultWafRules";
 
 require("util").inspect.defaultOptions.depth = null;
@@ -92,7 +74,7 @@ async function createWaf(
   });
 
   const createWebACLCommand = new CreateWebACLCommand({
-    DefaultAction: { Block: { CustomResponse: { ResponseCode: 429 } } },
+    DefaultAction: { Allow: {} },
     Name: `DDOS_ACL_${distributionId}`,
     Scope: Scope.CLOUDFRONT,
     VisibilityConfig: {
@@ -128,39 +110,6 @@ async function attachWaf(
   });
 }
 
-async function updateWafDefaultAllow(
-  acc: AmplifyAccount,
-  webACLId: string,
-  webACLName: string
-) {
-  const wafClient = new WAFV2Client({
-    region: "us-east-1",
-    credentials: getIsengardCredentialsProvider(
-      acc.accountId,
-      "OncallOperator"
-    ),
-  });
-
-  const getWebACLCommandOutput = await wafClient.send(
-    new GetWebACLCommand({
-      Id: webACLId,
-      Name: webACLName,
-      Scope: Scope.CLOUDFRONT,
-    })
-  );
-
-  const webACL = getWebACLCommandOutput.WebACL!;
-  const updateWebACLCommand = new UpdateWebACLCommand({
-    ...webACL,
-    DefaultAction: { Allow: {} },
-    Description: undefined, //  need to set this to undefined to avoid validation error.
-    Scope: Scope.CLOUDFRONT,
-    LockToken: getWebACLCommandOutput.LockToken,
-  });
-
-  await wafClient.send(updateWebACLCommand);
-}
-
 async function getDDoSAppFromLogs(
   acc: AmplifyAccount
 ): Promise<{ distributionId: string; appId: string }> {
@@ -181,9 +130,9 @@ async function main() {
   const args = await yargs(hideBin(process.argv))
       .usage(
           `
-        Creates a WAF Web ACL and attaches it to the distribution that was hit by a DDoS attack.
-        WAF is  with a per IP limit rule, but initially it defaults to Block all requests with 429 response code.
-        After 5 minutes WAF default is updated to Allow.  
+        Creates a WAF web ACL and attaches it to the distribution that was hit by a DDoS attack. The web ACL initially
+        uses an IP reputation list to block botnet traffic, and a rate-based rule to allow up to 2,000 requests per
+        5 minutes.
         `
       )
       .option("stage", {
@@ -240,10 +189,9 @@ async function main() {
   }
 
   logger.info(`Checking if distribution ${targetDistributionId} exists`);
-  let distributionConfig;
 
   try {
-    distributionConfig = await cloudFrontClient.send(
+    await cloudFrontClient.send(
         new GetDistributionConfigCommand({ Id: targetDistributionId })
     );
   } catch (e) {
@@ -258,36 +206,11 @@ async function main() {
     throw e;
   }
 
-  if (distributionConfig.DistributionConfig?.Enabled){
-    logger.info(`Disabling distribution ${distributionId} in stage ${stage} and region ${region}`);
-    await disableDistribution({
-      cloudFrontClient,
-      distributionId: targetDistributionId
-    });
-  }
-
-  logger.info(`Applying WAF with default Block to ${targetDistributionId}`);
+  logger.info(`Applying WAF to ${targetDistributionId}`);
   const createWAFOutput = await createWaf(acc, targetDistributionId);
   await attachWaf(acc, createWAFOutput.Summary!.ARN!, targetDistributionId);
   logger.info("WAF created and attached to distribution");
   logger.info(createWAFOutput.Summary);
-
-  logger.info(`Enabling distribution ${targetDistributionId}...`);
-  await enableDistribution({
-    cloudFrontClient,
-    distributionId:targetDistributionId
-  });
-  logger.info(`distribution ${targetDistributionId} enabled`);
-
-  logger.info(`${Date()} - Waiting for 5 minutes to let WAF analyze the traffic`);
-  await sleep(1000 * 60 * 5);
-
-  logger.info("Setting WAF default to Allow");
-  await updateWafDefaultAllow(
-    acc,
-    createWAFOutput.Summary!.Id!,
-    createWAFOutput.Summary!.Name!
-  );
 
   logger.info("Success!!! All mitigation steps are complete")
 }

@@ -84,7 +84,7 @@ export const defaultWafRules: Rule[] = [
     Priority: 2,
     Statement: {
       RateBasedStatement: {
-        Limit: 100,
+        Limit: 2000,
         AggregateKeyType: "IP",
       },
     },
