@@ -1,13 +1,13 @@
 import { BatchGetItemCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { AppDOItem } from "../dynamodb";
+import { AppDO } from "../dynamodb";
 
 export async function getAppsByAppIds(
   dynamodb: DynamoDBDocumentClient,
   stage: string,
   region: string,
   appIds: string[]
-): Promise<AppDOItem[]> {
+): Promise<AppDO[]> {
   const appTableName = `${stage}-${region}-App`;
 
   const result = await dynamodb.send(
@@ -37,5 +37,5 @@ export async function getAppsByAppIds(
     throw new Error("Db returned unprocessed keys");
   }
 
-  return result.Responses[appTableName] as unknown as AppDOItem[];
+  return result.Responses[appTableName] as unknown as AppDO[];
 }

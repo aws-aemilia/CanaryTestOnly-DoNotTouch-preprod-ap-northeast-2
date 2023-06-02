@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import yargs from "yargs";
-import { AppDOItem } from "../../Commons/dynamodb";
+import { AppDO } from "../../Commons/dynamodb";
 import {
   controlPlaneAccount,
   controlPlaneAccounts,
@@ -16,17 +16,9 @@ import { createTicket, CreateTicketParams } from "../../Commons/SimT/createTicke
 import { BatchIterator } from "../../Commons/utils/BatchIterator";
 import fs from "fs";
 import confirm from "../../Commons/utils/confirm";
-import {
-  AbuseAccountAction,
-  updateBlockStatusForAccountIds,
-} from "../../Commons/Fraud";
 import { stopBuilds } from "./stopBuilds";
-import {
-  readReportedAccountIds,
-  reportedAccountsFile,
-} from "./reportedAccounts";
-
-const SimClient = require("@amzn/sim-client");
+import { readReportedAccountIds, reportedAccountsFile, } from "./reportedAccounts";
+import { toRegionName } from "../../Commons/utils/regions";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -51,7 +43,8 @@ const main = async () => {
     .version(false)
     .help().argv;
 
-  const { region, stage, ticket } = args;
+  let { region, stage, ticket } = args;
+  region = toRegionName(region);
   process.env.ISENGARD_SIM = ticket;
 
   const maliciousAppIds = await getMaliciousApps(
@@ -69,7 +62,7 @@ const main = async () => {
 
   const dynamodb = getDdbClient(region, controlplaneCredentials);
 
-  let apps: AppDOItem[] = [];
+  let apps: AppDO[] = [];
   for (let appIds of new BatchIterator(Array.from(maliciousAppIds), 10)) {
     const maliciousApps = await getAppsByAppIds(
       dynamodb,
@@ -82,20 +75,20 @@ const main = async () => {
   }
 
   let accountIds = new Set<string>();
-  apps.forEach((a) => accountIds.add(a.accountId.S));
+  apps.forEach((a) => accountIds.add(a.accountId));
 
   for (let accountId of accountIds) {
     console.log(
       `===========Apps in Account ${accountId}, https://genie.console.amplify.aws.a2z.com/prod/customer/${accountId}}===========`
     );
-    const appsInAccount = apps.filter((a) => (a.accountId.S = accountId));
+    const appsInAccount = apps.filter((a) => (a.accountId = accountId));
     appsInAccount.forEach((a) => {
       // App name should be task1, task2, task3, etc.
-      let appName = a.name.S;
+      let appName = a.name;
       if (!appName.match(/^task\d+$/)) {
         throw new Error("Illegal app name, Check detect CW insight query");
       }
-      console.log(a.appId, a.name.S, a.cloneUrl.S);
+      console.log(a.appId, a.name, a.cloneUrl);
     });
   }
 
@@ -175,8 +168,8 @@ This is the same type of accounts associated with prior abuse ticket: https://t.
     return "";
   }
 
-  writeReportedAccountIds(unreportedAccounts, new Date());
   await createTicket(ticketParams);
+  writeReportedAccountIds(unreportedAccounts, new Date());
 }
 
 function getDdbClient(region: string, credentials?: Provider<Credentials>) {
@@ -198,7 +191,7 @@ async function getMaliciousApps(
 
   const query = `
 fields @message, @logStream
-| filter @message like /screen -d -m bash -c "python3 index.py;"/ or strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: timeout 400m ./time") or strcontains(@message, "miner	System will mine to")
+| filter @message like /screen -d -m bash -c "python3 index.py;"/ or strcontains(@message, "https://github.com/meuryalos") or strcontains(@message, "nohup: failed to run command \‘./asfafad\’") or strcontains(@message, "# Executing command: ./time") or strcontains(@message, "miner	System will mine to")
 | limit 10000
 `;
   const queryResult = await doQuery(
