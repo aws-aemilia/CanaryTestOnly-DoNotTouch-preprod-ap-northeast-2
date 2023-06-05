@@ -85,6 +85,7 @@
     "dayjs": "^1.11.7",
     "fs-extra": "^9.0.1",
     "js-yaml": "^4.0.0",
+    "nanospinner": "^1.1.0",
     "p-limit": "^3.1.0",
     "pino": "^8.8.0",
     "pino-pretty": "^9.1.1",

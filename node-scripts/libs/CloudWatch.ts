@@ -6,12 +6,12 @@ import {
   GetQueryResultsCommandOutput,
   StartQueryCommand,
 } from "@aws-sdk/client-cloudwatch-logs";
-import pino from "pino";
+import { BaseLogger, pino } from "pino";
 import pinoPretty from "pino-pretty";
 import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
 import sleep from "../utils/sleep";
 
-const logger = pino(pinoPretty());
+const defaultLogger = pino(pinoPretty());
 
 export interface Log {
   [key: string]: string;
@@ -33,10 +33,11 @@ export async function insightsQuery(
   logGroupPrefix: string,
   query: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  logger: BaseLogger = defaultLogger
 ): Promise<Log[]> {
   try {
-    const logGroupName = await getLogGroup(client, logGroupPrefix);
+    const logGroupName = await getLogGroup(client, logGroupPrefix, logger);
 
     const command = new StartQueryCommand({
       endTime: toEpochInSeconds(endDate),
@@ -56,7 +57,6 @@ export async function insightsQuery(
 
     do {
       await sleep(500);
-      logger.info("Polling for query results");
       queryResults = await client.send(
         new GetQueryResultsCommand({
           queryId: response.queryId,
@@ -108,7 +108,8 @@ export async function doQuery(
   query: string,
   startDate: Date,
   endDate: Date,
-  role?: string
+  role?: string,
+  logger: BaseLogger = defaultLogger
 ) {
   try {
     const client = new CloudWatchLogsClient({
@@ -119,7 +120,7 @@ export async function doQuery(
       ),
     });
 
-    const logGroupName = await getLogGroup(client, logGroupPrefix);
+    const logGroupName = await getLogGroup(client, logGroupPrefix, logger);
 
     const command = new StartQueryCommand({
       endTime: toEpochInSeconds(endDate),
@@ -182,7 +183,8 @@ function toEpochInSeconds(date: Date): number {
 
 async function getLogGroup(
   cwLogsClient: CloudWatchLogsClient,
-  logPrefix: string
+  logPrefix: string,
+  logger: BaseLogger = defaultLogger
 ): Promise<string> {
   let nextToken: string | undefined;
   let response: DescribeLogGroupsCommandOutput;

@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
-import logger from "./utils/logger";
+import { readFile } from 'fs/promises';
+import { createSpinningLogger } from "./utils/logger";
 import path from "path";
 import yargs from "yargs";
 import {
@@ -9,6 +10,8 @@ import {
 } from "./Isengard";
 import { insightsQuery } from "./libs/CloudWatch";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
+
+const logger = createSpinningLogger();
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
@@ -23,7 +26,16 @@ async function main() {
         --endDate '2023-04-08T00:00:00-00:00' \
         --ticket V123456789 \
         --query 'fields @timestamp, @message, @logStream | filter strcontains(@message, "Node version not available")'
-      `
+
+      Usage with query file:
+      brazil-build globalQuery \
+        --stage prod \
+        --logGroupPrefix AWSCodeBuild \
+        --startDate '2023-04-02T00:00:00-00:00' \
+        --endDate '2023-04-08T00:00:00-00:00' \
+        --ticket V123456789 \
+        --queryFile ./query.txt
+      `,
     )
     .option("stage", {
       describe: "stage to run the command",
@@ -40,7 +52,12 @@ async function main() {
     .option("query", {
       describe: "The cloudwatch log query",
       type: "string",
-      demandOption: true,
+      demandOption: false,
+    })
+    .option("queryFile", {
+      describe: "file containing the cloudwatch log query",
+      type: "string",
+      demandOption: false,
     })
     .option("startDate", {
       describe:
@@ -66,6 +83,12 @@ async function main() {
       type: "string",
       demandOption: false,
     })
+    .option("noEmptyFiles", {
+      describe: "Only output a file if the region has matches",
+      default: false,
+      type: "boolean",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
@@ -74,11 +97,22 @@ async function main() {
     stage,
     logGroupPrefix,
     query,
+    queryFile,
     startDate,
     endDate,
     outputDir,
     ticket,
+    noEmptyFiles,
   } = args;
+
+  if (!query && !queryFile) {
+    throw new Error("Either query or queryFile must be provided");
+  }
+
+  let queryToExecute = query || "";
+  if (queryFile && !query) {
+    queryToExecute = await readFile(path.join(__dirname, queryFile), "utf-8");
+  }
 
   let role = StandardRoles.ReadOnly;
   if (ticket) {
@@ -96,6 +130,9 @@ async function main() {
     (acc) => acc.stage === stage
   );
 
+  let regionsLeftToGetLogsFrom = controlPlaneAccountsForStage.length;
+  logger.update(`Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`);
+  logger.spinnerStart();
   const queryPromises = controlPlaneAccountsForStage.map(
     async (controlPlaneAccount) => {
       logger.info(controlPlaneAccount, "Beginning query for region");
@@ -110,20 +147,37 @@ async function main() {
       const logs = await insightsQuery(
         cloudwatchClient,
         logGroupPrefix,
-        query,
+        queryToExecute,
         new Date(startDate),
-        new Date(endDate)
+        new Date(endDate),
+        logger
       );
 
       const fileName = controlPlaneAccount.region.concat(".json");
       const outputFile = path.join(outputDir, fileName);
 
-      logger.info(outputFile, "Writing results to file");
+      regionsLeftToGetLogsFrom--;
+      logger.update(`Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`);
+
+      if (logs.length === 0) {
+        logger.info(`No results found for ${controlPlaneAccount.region}`);
+        if (noEmptyFiles) {
+          return;
+        }
+      }
+
+      logger.info({ outputFile }, "Writing results to file");
       await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
     }
   );
 
-  await Promise.all(queryPromises);
+  try {
+    await Promise.all(queryPromises);
+    logger.spinnerStop("Completed global query");
+  } catch(error) {
+    logger.error(error, "Failed to execute global query");
+    logger.spinnerStop("Failed global query", false);
+  }
 }
 
 main().then(console.log).catch(console.error);
