@@ -5,7 +5,7 @@ import {
   Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../commons/Isengard";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import {
@@ -19,7 +19,7 @@ import {
   updateDistribution,
 } from "./distributionsUtils";
 import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
-import sleep from "../utils/sleep";
+import sleep from "../commons/utils/sleep";
 import pino from "pino";
 import pinoPretty from "pino-pretty";
 import { StandardRetryStrategy } from "@aws-sdk/middleware-retry";

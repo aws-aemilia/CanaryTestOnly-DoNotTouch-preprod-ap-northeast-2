@@ -1,4 +1,4 @@
-import { AmplifyAccount, Region, Stage } from "../../../Isengard";
+import { AmplifyAccount, Region, Stage } from "../../../commons/Isengard";
 import { SecretStore } from "./secretStores/types";
 import yargs from "yargs";
 import {

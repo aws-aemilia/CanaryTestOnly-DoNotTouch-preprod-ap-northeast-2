@@ -11,7 +11,7 @@ import {
   Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../commons/Isengard";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))

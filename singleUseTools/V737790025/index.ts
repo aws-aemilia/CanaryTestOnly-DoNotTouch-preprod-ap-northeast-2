@@ -3,14 +3,14 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../Isengard";
+} from "../../commons/Isengard";
 import csv from "csvtojson";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import {
   getDynamoDBDocumentClient,
   getLambdaEdgeConfigForAppOrDomain,
   removeDomainFromLambdaEdgeConfig,
-} from "../dynamodb";
+} from "../../commons/dynamodb";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import path from "path";

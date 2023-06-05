@@ -10,9 +10,9 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { AWSError } from "aws-sdk";
 
-import serviceAccounts from "../utils/static/accounts.json";
-import sleep from "../utils/sleep";
-import { getIsengardCredentialsProvider } from "../Isengard";
+import serviceAccounts from "../../commons/utils/static/accounts.json";
+import sleep from "../../commons/utils/sleep";
+import { getIsengardCredentialsProvider } from "../../commons/Isengard";
 
 function getAccountIdFromRoleArn(roleArn: string): string | null {
   const regex = new RegExp(/[0-9]+:role/g);

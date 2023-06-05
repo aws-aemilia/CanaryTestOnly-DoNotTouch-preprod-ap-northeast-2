@@ -6,9 +6,9 @@ import {
   Region,
   Stage,
   StandardRoles
-} from "../Isengard";
+} from "../commons/Isengard";
 import { RequestServiceQuotaIncreaseCommandInput, ServiceQuotas } from "@aws-sdk/client-service-quotas";
-import { createLogger } from "../utils/logger";
+import { createLogger } from "../commons/utils/logger";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 

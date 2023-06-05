@@ -1,6 +1,6 @@
 import { Credentials } from "@aws-sdk/types";
 import { ChangeResourceRecordSetsCommand, HostedZone, Route53Client } from "@aws-sdk/client-route-53";
-import { AmplifyAccount } from "../Isengard";
+import { AmplifyAccount } from "../commons/Isengard";
 import { HostedZoneWithNameServers } from "./create-new-hosted-zone-for-name";
 
 export async function updateExistingHostedZoneWithNewSubdomain({

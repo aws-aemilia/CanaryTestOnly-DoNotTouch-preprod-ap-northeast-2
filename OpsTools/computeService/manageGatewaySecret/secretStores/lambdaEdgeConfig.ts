@@ -1,7 +1,7 @@
 import {
   AmplifyAccount,
   getIsengardCredentialsProvider,
-} from "../../../../Isengard";
+} from "../../../../commons/Isengard";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,

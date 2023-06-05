@@ -1,4 +1,4 @@
-import { AmplifyAccount } from "../Isengard";
+import { AmplifyAccount } from "../commons/Isengard";
 import { buildDnsNameFromAccountWithAirportCode } from "./build-dns-name-from-account-with-airport-code";
 import { exitIfNotContinuing } from './exit-if-not-continuing';
 import { validateResponseWithMessage } from './validate-response-with-message';

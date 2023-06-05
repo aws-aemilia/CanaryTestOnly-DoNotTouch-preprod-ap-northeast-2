@@ -5,8 +5,8 @@ import { hideBin } from "yargs/helpers";
 import {
   getRecordsFromHostedZone,
   getHostedZone,
-} from "../route53";
-import { toRegionName } from "../utils/regions";
+} from "../../commons/route53";
+import { toRegionName } from "../../commons/utils/regions";
 import { ResourceRecordSet, Route53Client } from "@aws-sdk/client-route-53";
 import {
   Stage,
@@ -14,7 +14,7 @@ import {
   rootDomainAccount,
   domainAccount,
   Region,
-} from "../Isengard";
+} from "../../commons/Isengard";
 
 const logger = pino(pinoPretty());
 

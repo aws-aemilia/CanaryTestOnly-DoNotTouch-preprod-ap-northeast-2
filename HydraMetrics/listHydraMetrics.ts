@@ -3,7 +3,7 @@ import {
   ListMetricsCommand,
   Metric,
 } from "@aws-sdk/client-cloudwatch";
-import { getIsengardCredentialsProvider, integTestAccounts } from "../Isengard";
+import { getIsengardCredentialsProvider, integTestAccounts } from "../commons/Isengard";
 import fs from "fs";
 
 /**

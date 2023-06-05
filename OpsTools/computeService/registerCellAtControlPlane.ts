@@ -6,9 +6,9 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import yargs from "yargs";
-import confirm from "../../utils/confirm";
+import confirm from "../../commons/utils/confirm";
 
 const TABLE_NAME = "CellAccounts";
 

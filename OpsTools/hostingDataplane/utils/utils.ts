@@ -1,4 +1,4 @@
-import { toRegionName } from "../../../utils/regions";
+import { toRegionName } from "../../../commons/utils/regions";
 
 export const getDomainName = (
   stage: string,

@@ -1,8 +1,8 @@
-import { dataPlaneAccount, Region, Stage } from "../../Isengard";
+import { dataPlaneAccount, Region, Stage } from "../../commons/Isengard";
 import yargs from "yargs";
-import { getCloudFormationOutputs } from "../../utils/cloudFormation";
+import { getCloudFormationOutputs } from "../../commons/utils/cloudFormation";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { getRoute53Client, updateRecordsInHostedZone } from "../../route53";
+import { getRoute53Client, updateRecordsInHostedZone } from "../../commons/route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 require("util").inspect.defaultOptions.depth = null;

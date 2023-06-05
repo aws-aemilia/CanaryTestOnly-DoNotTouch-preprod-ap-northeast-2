@@ -1,6 +1,6 @@
-import {AmplifyAccount, controlPlaneAccounts, integTestAccounts} from "./Isengard";
-import { getCloudFormationOutputs } from "./utils/cloudFormation";
-import sleep from "./utils/sleep";
+import {AmplifyAccount, controlPlaneAccounts, integTestAccounts} from "./commons/Isengard";
+import { getCloudFormationOutputs } from "./commons/utils/cloudFormation";
+import sleep from "./commons/utils/sleep";
 
 /**
  * Get the config values needed by Integ tests for all regions and stages

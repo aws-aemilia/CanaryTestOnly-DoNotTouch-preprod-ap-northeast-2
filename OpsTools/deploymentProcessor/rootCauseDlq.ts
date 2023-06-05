@@ -1,13 +1,13 @@
 import yargs from "yargs";
 import fs from "fs";
-import logger from "../../utils/logger";
+import logger from "../../commons/utils/logger";
 import {
   SFNClient,
   DescribeExecutionCommand,
   DescribeExecutionCommandOutput,
 } from "@aws-sdk/client-sfn";
-import { pollMessages } from "../../utils/sqs";
-import { doQuery } from "../../libs/CloudWatch";
+import { pollMessages } from "../../commons/utils/sqs";
+import { doQuery } from "../../commons/libs/CloudWatch";
 import {
   AmplifyAccount,
   Region,
@@ -15,11 +15,11 @@ import {
   computeServiceControlPlaneAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import { DeleteMessageCommand, SQSClient, Message } from "@aws-sdk/client-sqs";
-import { toRegionName } from "../../utils/regions";
-import { findJob } from "../../dynamodb/tables/job";
-import { findDeployment } from "../../dynamodb/tables/computeDeployments";
+import { toRegionName } from "../../commons/utils/regions";
+import { findJob } from "../../commons/dynamodb/tables/job";
+import { findDeployment } from "../../commons/dynamodb/tables/computeDeployments";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import dayjs from "dayjs";

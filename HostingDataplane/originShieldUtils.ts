@@ -1,4 +1,4 @@
-import { Region } from "../Isengard";
+import { Region } from "../commons/Isengard";
 
 export type OriginShieldMap = Partial<Record<Region, Region>>;
 

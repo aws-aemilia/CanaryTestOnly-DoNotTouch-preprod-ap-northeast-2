@@ -1,12 +1,12 @@
-import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage, } from "../Isengard";
-import { doQuery } from "../libs/CloudWatch";
-import { getCloudFormationResources } from "../utils/cloudFormation";
-import logger from "../utils/logger";
+import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage, } from "../commons/Isengard";
+import { doQuery } from "../commons/libs/CloudWatch";
+import { getCloudFormationResources } from "../commons/utils/cloudFormation";
+import logger from "../commons/utils/logger";
 import { CreateWebACLCommand, CreateWebACLCommandOutput, Scope, WAFV2Client, } from "@aws-sdk/client-wafv2";
 import { CloudFrontClient, GetDistributionConfigCommand, NoSuchDistribution, } from "@aws-sdk/client-cloudfront";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { updateDistribution } from "../utils/cloudfront";
+import { updateDistribution } from "../commons/utils/cloudfront";
 import { defaultWafRules } from "./defaultWafRules";
 
 require("util").inspect.defaultOptions.depth = null;

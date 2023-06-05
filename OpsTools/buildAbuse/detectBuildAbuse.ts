@@ -2,24 +2,24 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import yargs from "yargs";
-import { AppDOItem } from "../../dynamodb";
+import { AppDOItem } from "../../commons/dynamodb";
 import {
   controlPlaneAccount,
   controlPlaneAccounts,
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../Isengard";
-import { getAppsByAppIds } from "../../libs/Amplify";
-import { doQuery } from "../../libs/CloudWatch";
-import { createTicket, CreateTicketParams } from "../../SimT/createTicket";
-import { BatchIterator } from "../../utils/BatchIterator";
+} from "../../commons/Isengard";
+import { getAppsByAppIds } from "../../commons/libs/Amplify";
+import { doQuery } from "../../commons/libs/CloudWatch";
+import { createTicket, CreateTicketParams } from "../../commons/SimT/createTicket";
+import { BatchIterator } from "../../commons/utils/BatchIterator";
 import fs from "fs";
-import confirm from "../../utils/confirm";
+import confirm from "../../commons/utils/confirm";
 import {
   AbuseAccountAction,
   updateBlockStatusForAccountIds,
-} from "../../Fraud";
+} from "../../commons/Fraud";
 import { stopBuilds } from "./stopBuilds";
 import {
   readReportedAccountIds,

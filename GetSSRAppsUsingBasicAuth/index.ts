@@ -2,7 +2,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, paginateScan, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
 import { mkdirSync, writeFileSync } from "fs";
-import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../Isengard";
+import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../commons/Isengard";
 import yargs from "yargs";
 
 export interface Credentials {

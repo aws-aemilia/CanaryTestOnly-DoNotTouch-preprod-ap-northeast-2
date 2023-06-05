@@ -10,7 +10,7 @@ import {
   integTestAccounts,
   Region,
   Stage,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import yargs from "yargs";
 
 require("util").inspect.defaultOptions.depth = null;

@@ -1,6 +1,6 @@
-import { controlPlaneAccounts, getIsengardCredentialsProvider } from "./Isengard";
+import { controlPlaneAccounts, getIsengardCredentialsProvider } from "./commons/Isengard";
 import { DynamoDB, DynamoDBServiceException } from "@aws-sdk/client-dynamodb";
-import { toAirportCode } from "./utils/regions";
+import { toAirportCode } from "./commons/utils/regions";
 
 const STAGE = "prod";
 const ROLE = "OncallOperator";

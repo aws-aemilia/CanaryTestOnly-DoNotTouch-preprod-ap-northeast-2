@@ -3,7 +3,7 @@ import {
   controlPlaneAccounts,
   Region,
   Stage,
-} from "./Isengard";
+} from "./commons/Isengard";
 
 /**
  * Builds a CFN mapping of Compute Service cell accounts for all stages and regions. This mapping is meant to be copied on the WebHookProcessor CFN at:

@@ -5,7 +5,7 @@ import {
   integTestAccount,
   Region,
   Stage,
-} from "../../../../Isengard";
+} from "../../../../commons/Isengard";
 import { ddbLambdaEdgeConfigSecretStore } from "./lambdaEdgeConfig";
 import { secretsManagerSecretStoreWithName } from "./secretsManager";
 import { elbSecretStoreWithPriority } from "./elb";

@@ -1,8 +1,8 @@
 import {
   AmplifyAccount,
   getIsengardCredentialsProvider,
-} from "../../../../Isengard";
-import { getCloudFormationOutputs } from "../../../../utils/cloudFormation";
+} from "../../../../commons/Isengard";
+import { getCloudFormationOutputs } from "../../../../commons/utils/cloudFormation";
 import {
   DescribeListenersCommand,
   DescribeRulesCommand,

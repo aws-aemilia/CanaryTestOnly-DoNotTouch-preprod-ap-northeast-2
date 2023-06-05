@@ -5,8 +5,8 @@ import pino from "pino";
 import pinoPretty from "pino-pretty";
 
 import { AmplifyClient, ListAppsCommand } from "@aws-sdk/client-amplify";
-import { integTestAccount } from "./Isengard/accounts";
-import { getIsengardCredentialsProvider, Region, Stage } from "./Isengard";
+import { integTestAccount } from "./commons/Isengard/accounts";
+import { getIsengardCredentialsProvider, Region, Stage } from "./commons/Isengard";
 
 const log = pino(pinoPretty());
 

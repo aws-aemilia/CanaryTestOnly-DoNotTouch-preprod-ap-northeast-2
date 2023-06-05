@@ -1,6 +1,6 @@
 import fs from "fs";
-import { getRecordsFromHostedZone, getRoute53Client } from "../route53";
-import { dataPlaneAccounts, Stage } from "../Isengard";
+import { getRecordsFromHostedZone, getRoute53Client } from "../../commons/route53";
+import { dataPlaneAccounts, Stage } from "../../commons/Isengard";
 
 async function main() {
   // Root hosted zone (gateway.amplify.aws.dev) is the one that currently holds all of

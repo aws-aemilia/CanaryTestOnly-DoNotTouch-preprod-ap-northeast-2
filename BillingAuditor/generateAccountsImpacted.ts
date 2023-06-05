@@ -2,7 +2,7 @@ import fs from "fs";
 import readline from "readline";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { parseBranchArn } from "../utils/arns";
+import { parseBranchArn } from "../commons/utils/arns";
 
 async function main() {
   const args = await yargs(hideBin(process.argv))

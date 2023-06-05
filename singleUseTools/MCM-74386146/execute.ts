@@ -7,8 +7,8 @@ import {
   updateRecordsInHostedZone,
   getOrCreateHostedZone,
   getRecordsFromHostedZone,
-} from "../route53";
-import { toRegionName } from "../utils/regions";
+} from "../../commons/route53";
+import { toRegionName } from "../../commons/utils/regions";
 import { rollbackDelegation } from "./rollback";
 import {
   Stage,
@@ -16,7 +16,7 @@ import {
   rootDomainAccount,
   domainAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../../commons/Isengard";
 import {
   ResourceRecordSet,
   Change,

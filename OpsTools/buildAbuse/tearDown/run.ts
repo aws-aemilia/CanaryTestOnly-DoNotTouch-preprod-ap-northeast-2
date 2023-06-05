@@ -1,4 +1,4 @@
-import { updateBlockStatusForAccountIds } from "../../../Fraud";
+import { updateBlockStatusForAccountIds } from "../../../commons/Fraud";
 import yargs from "yargs";
 import { getReportedAccountIds } from "./common";
 

@@ -1,5 +1,5 @@
 import { EC2 } from "aws-sdk";
-import { AmplifyAccount, controlPlaneAccounts, dataPlaneAccounts, getIsengardCredentialsProvider } from "./Isengard";
+import { AmplifyAccount, controlPlaneAccounts, dataPlaneAccounts, getIsengardCredentialsProvider } from "./commons/Isengard";
 
 /**
  * Prints the AWS Managed prefixes for CloudFront origin facing IPs for all regions in the format expected by AWSAmplifyDataplaneCDK,

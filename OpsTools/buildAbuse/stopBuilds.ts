@@ -2,8 +2,8 @@ import { CodeBuildClient } from "@aws-sdk/client-codebuild";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { getRunningJobs, getJobTaskArn, cancelBuild } from "./buildUtils";
-import { Region, Stage } from "../../Isengard";
-import confirm from "../../utils/confirm";
+import { Region, Stage } from "../../commons/Isengard";
+import confirm from "../../commons/utils/confirm";
 const { chunkPromise, PromiseFlavor } = require("chunk-promise");
 import { Credentials, Provider } from "@aws-sdk/types";
 

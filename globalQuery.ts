@@ -1,13 +1,13 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
-import logger from "./utils/logger";
+import logger from "./commons/utils/logger";
 import path from "path";
 import yargs from "yargs";
 import {
   controlPlaneAccounts,
   getIsengardCredentialsProvider,
   StandardRoles,
-} from "./Isengard";
-import { insightsQuery } from "./libs/CloudWatch";
+} from "./commons/Isengard";
+import { insightsQuery } from "./commons/libs/CloudWatch";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
 
 async function main() {

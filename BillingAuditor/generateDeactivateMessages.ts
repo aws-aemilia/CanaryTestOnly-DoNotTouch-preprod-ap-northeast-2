@@ -2,7 +2,7 @@ import fs from "fs";
 import readline from "readline";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { MeteringServiceClient } from "../libs/Metering";
+import { MeteringServiceClient } from "../commons/libs/Metering";
 import { RemoRecordsReader } from "./RemoRecordsReader";
 
 async function main() {

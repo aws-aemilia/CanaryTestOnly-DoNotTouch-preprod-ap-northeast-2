@@ -2,8 +2,8 @@ import yargs from "yargs";
 import {
   computeServiceControlPlaneAccounts,
   computeServiceDataPlaneAccounts,
-} from "../../Isengard";
-import { addAccountsToServicePrincipal } from "../../NAPS";
+} from "../../commons/Isengard";
+import { addAccountsToServicePrincipal } from "../../commons/NAPS";
 
 const servicePrincipals: Record<string, string> = {
   beta: "gamma.compute.amplify.aws.internal",

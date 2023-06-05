@@ -8,16 +8,16 @@ import {
   dataPlaneAccount,
   Region,
   Stage,
-} from "../Isengard";
+} from "../commons/Isengard";
 import yargs from "yargs";
-import { deleteCache } from "../Isengard/cache";
+import { deleteCache } from "../commons/Isengard/cache";
 import { increaseIAMRoles } from "../service-quotas";
 import {
   requestComputeCellLambdaConcurrency,
   requestMaxLambdaConcurrency,
   requestMaxLambdaStorage,
-} from "../SimT";
-import sleep from "../utils/sleep";
+} from "../commons/SimT";
+import sleep from "../commons/utils/sleep";
 
 // TODO: add this type to the AmplifyAccount type and update Isengard cache
 type AmplifyAccountType = "computeServiceControlPlane" |  "computeServiceCell" | "dataPlane"; 

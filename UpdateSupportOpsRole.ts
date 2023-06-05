@@ -3,7 +3,7 @@ import {
   grantUserPermission,
   synchronizeIAMRolePolicyWithPolicyTemplate,
 } from "@amzn/isengard";
-import { controlPlaneAccounts } from "./Isengard";
+import { controlPlaneAccounts } from "./commons/Isengard";
 
 const supportRoleName = "SupportOps";
 const ownerID = "aws-mobile-amplify-oncall";

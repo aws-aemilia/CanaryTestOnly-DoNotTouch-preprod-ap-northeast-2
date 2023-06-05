@@ -4,7 +4,7 @@ import {
   AmplifyAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../commons/Isengard";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -14,7 +14,7 @@ import {
   generateDistributionConfigForMigration,
   updateDistribution,
 } from "./distributionsUtils";
-import confirm from "../utils/confirm";
+import confirm from "../commons/utils/confirm";
 import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
 import { updateWarmingPoolDistributionType } from "./warmingPoolUtils";
 

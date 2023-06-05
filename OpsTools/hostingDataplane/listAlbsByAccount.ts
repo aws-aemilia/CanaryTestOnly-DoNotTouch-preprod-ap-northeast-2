@@ -5,7 +5,7 @@ import pinoPretty from "pino-pretty";
 
 import * as elb from "@aws-sdk/client-elastic-load-balancing-v2";
 
-import { dataPlaneAccounts, getIsengardCredentialsProvider } from "../../Isengard";
+import { dataPlaneAccounts, getIsengardCredentialsProvider } from "../../commons/Isengard";
 
 const logger = pino(pinoPretty());
 

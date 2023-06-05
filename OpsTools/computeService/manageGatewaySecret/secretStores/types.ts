@@ -1,4 +1,4 @@
-import { AmplifyAccount } from "../../../../Isengard";
+import { AmplifyAccount } from "../../../../commons/Isengard";
 
 export type Secret = {
   value?: string;

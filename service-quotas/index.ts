@@ -8,9 +8,9 @@ import {
 import {
   AmplifyAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../commons/Isengard";
 
-import sleep from "../utils/sleep";
+import sleep from "../commons/utils/sleep";
 
 const DESIRED_IAM_ROLE_COUNT = 5000; // This is the maximum hard limit
 const IAM_QUOTA_CODE = "L-FE177D64";

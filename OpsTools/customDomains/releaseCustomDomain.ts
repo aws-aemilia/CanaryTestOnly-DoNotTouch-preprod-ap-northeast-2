@@ -1,27 +1,27 @@
 import yargs from "yargs";
-import logger from "../../utils/logger";
-import { findApp } from "../../dynamodb/tables/app";
-import { getDomain } from "../../dynamodb/tables/domain";
-import { toRegionName } from "../../utils/regions";
+import logger from "../../commons/utils/logger";
+import { findApp } from "../../commons/dynamodb/tables/app";
+import { getDomain } from "../../commons/dynamodb/tables/domain";
+import { toRegionName } from "../../commons/utils/regions";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   TransactWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { updateDistribution } from "../../utils/cloudfront";
-import confirm from "../../utils/confirm";
+import { updateDistribution } from "../../commons/utils/cloudfront";
+import confirm from "../../commons/utils/confirm";
 import {
   Region,
   Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import {
   CloudFrontClient,
   DistributionConfig,
   GetDistributionCommand,
 } from "@aws-sdk/client-cloudfront";
-import { DomainDO } from "../../dynamodb";
+import { DomainDO } from "../../commons/dynamodb";
 
 async function main() {
   const args = await yargs(process.argv.slice(2))

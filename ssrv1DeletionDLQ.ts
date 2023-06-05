@@ -1,23 +1,23 @@
 import yargs from "yargs";
 import fs from "fs";
-import logger from "./utils/logger";
-import { pollMessages, getQueueUrl } from "./utils/sqs";
-import { insightsQuery } from "./libs/CloudWatch";
+import logger from "./commons/utils/logger";
+import { pollMessages, getQueueUrl } from "./commons/utils/sqs";
+import { insightsQuery } from "./commons/libs/CloudWatch";
 import {
   Region,
   Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "./Isengard";
+} from "./commons/Isengard";
 import {
   SQSClient,
   Message,
   DeleteMessageCommand,
   SendMessageCommand,
 } from "@aws-sdk/client-sqs";
-import { toRegionName } from "./utils/regions";
+import { toRegionName } from "./commons/utils/regions";
 import dayjs from "dayjs";
-import { createTicket } from "./SimT/createTicket";
+import { createTicket } from "./commons/SimT/createTicket";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
 
 /**

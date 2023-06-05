@@ -14,8 +14,8 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../Isengard";
-import confirm from "../utils/confirm";
+} from "../commons/Isengard";
+import confirm from "../commons/utils/confirm";
 import {
   fetchDistribution,
   getDistributionsForApp,

@@ -13,12 +13,12 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../Isengard";
-import { doQuery } from "../libs/CloudWatch";
-import { parseBranchArn } from "../utils/arns";
+} from "../commons/Isengard";
+import { doQuery } from "../commons/libs/CloudWatch";
+import { parseBranchArn } from "../commons/utils/arns";
 import { KonaFileReader } from "./KonaFileReader";
 import * as path from "path";
-import { BatchIterator } from "../utils/BatchIterator";
+import { BatchIterator } from "../commons/utils/BatchIterator";
 
 
 /**

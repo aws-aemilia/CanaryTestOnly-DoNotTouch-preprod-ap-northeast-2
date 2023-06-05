@@ -1,8 +1,8 @@
 
 import yargs from "yargs";
 import { Lambda } from "@aws-sdk/client-lambda";
-import { controlPlaneAccounts, getIsengardCredentialsProvider } from "./Isengard";
-import { getFunctionNameWithPrefix } from "./utils/lambda";
+import { controlPlaneAccounts, getIsengardCredentialsProvider } from "./commons/Isengard";
+import { getFunctionNameWithPrefix } from "./commons/utils/lambda";
 
 /**
  * Usage

@@ -1,4 +1,4 @@
-import { AmplifyAccount } from "../../../../Isengard";
+import { AmplifyAccount } from "../../../../commons/Isengard";
 import { Secret, SecretStore } from "../secretStores/types";
 import pLimit from "p-limit";
 import { randomBytes } from "crypto";

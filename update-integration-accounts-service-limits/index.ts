@@ -3,11 +3,11 @@ import {
   controlPlaneAccount,
   Region,
   Stage,
-} from "../Isengard";
-import { exec } from "../utils/exec";
-import confirm from "../utils/confirm";
-import sleep from "../utils/sleep";
-import { createLogger } from "../utils/logger";
+} from "../commons/Isengard";
+import { exec } from "../commons/utils/exec";
+import confirm from "../commons/utils/confirm";
+import sleep from "../commons/utils/sleep";
+import { createLogger } from "../commons/utils/logger";
 import { buildMinervaCommand } from "./build-minerva-commands";
 import { getArgs } from "./get-args";
 

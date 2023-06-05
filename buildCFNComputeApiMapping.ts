@@ -3,7 +3,7 @@ import {
   controlPlaneAccounts,
   Region,
   Stage,
-} from "./Isengard";
+} from "./commons/Isengard";
 
 const toExecuteApiResource = (region: string, accountId: string): string =>
   `arn:aws:execute-api:${region}:${accountId}:*`;

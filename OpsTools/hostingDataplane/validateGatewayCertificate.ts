@@ -12,11 +12,11 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../Isengard";
-import sleep from "../../utils/sleep";
+} from "../../commons/Isengard";
+import sleep from "../../commons/utils/sleep";
 import yargs from "yargs";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { updateRecordsInHostedZone, getRoute53Client } from "../../route53";
+import { updateRecordsInHostedZone, getRoute53Client } from "../../commons/route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 const pollDelayMilliseconds = 30_000;

@@ -10,7 +10,7 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "./Isengard";
+} from "./commons/Isengard";
 
 async function main() {
   const args = await yargs(hideBin(process.argv))

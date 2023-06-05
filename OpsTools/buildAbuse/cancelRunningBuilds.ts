@@ -5,7 +5,7 @@ import {
   Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import fs from "fs";
 import { stopBuilds } from "./stopBuilds";
 

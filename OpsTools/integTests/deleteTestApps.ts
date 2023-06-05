@@ -1,12 +1,12 @@
-import logger from "../../utils/logger";
+import logger from "../../commons/utils/logger";
 import yargs from "yargs";
-import { buildControlPlaneEndpoint } from "../../utils/controlPlaneEndpoint";
+import { buildControlPlaneEndpoint } from "../../commons/utils/controlPlaneEndpoint";
 import {
   getIsengardCredentialsProvider,
   integTestAccounts,
   Stage,
   Region,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import {
   ListAppsCommand,
   DeleteAppCommand,

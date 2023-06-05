@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { controlPlaneAccounts, getIsengardCredentialsProvider } from "../Isengard";
+import { controlPlaneAccounts, getIsengardCredentialsProvider } from "../../commons/Isengard";
 import { Field, RedshiftDataClient } from "@aws-sdk/client-redshift-data";
 import { AthenaClient } from "@aws-sdk/client-athena";
-import { getAthenaQueryResults, startAthenaQuery, waitForAthenaQuery } from "../utils/athena";
-import { getRedshiftQueryResults, startRedshiftQuery, waitForRedshiftQuery } from "../utils/redshift";
+import { getAthenaQueryResults, startAthenaQuery, waitForAthenaQuery } from "../../commons/utils/athena";
+import { getRedshiftQueryResults, startRedshiftQuery, waitForRedshiftQuery } from "../../commons/utils/redshift";
 
 const BUSINESS_METRICS_ACCOUNT = '718161700038'
 const ATHENA_BUCKET_MAP: any = {

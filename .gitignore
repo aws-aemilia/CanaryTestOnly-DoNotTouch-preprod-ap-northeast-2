@@ -42,6 +42,6 @@ globalQueryOutput/
 
 V737790025/*.csv
 dist/
-FTM/start-process-accountid.json
+singleUseTools/FTM/start-process-accountid.json
 
 /globalQueryOutput

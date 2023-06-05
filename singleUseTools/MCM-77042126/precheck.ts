@@ -1,15 +1,15 @@
 import axios from "axios";
-import logger from "../utils/logger";
+import logger from "../../commons/utils/logger";
 import testApps from "./testApps";
 import {
   updateDistribution,
   waitForDistributionUpdate,
-} from "../utils/cloudfront";
+} from "../../commons/utils/cloudfront";
 import { CloudFormationOutputs, TestDistribution } from "./types";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../Isengard";
+} from "../../commons/Isengard";
 import {
   CloudFrontClient,
   DefaultCacheBehavior,

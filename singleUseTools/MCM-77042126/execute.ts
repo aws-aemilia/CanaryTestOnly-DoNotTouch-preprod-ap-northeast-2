@@ -1,13 +1,13 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { toRegionName } from "../utils/regions";
-import { getCloudFormationOutputs } from "../utils/cloudFormation";
+import { toRegionName } from "../../commons/utils/regions";
+import { getCloudFormationOutputs } from "../../commons/utils/cloudFormation";
 import { rollbackRecords } from "./rollback";
 import { verifyRecords } from "./verify";
 import { precheckALBs } from "./precheck";
 import { CloudFormationOutputs } from "./types";
-import logger from "../utils/logger";
-import confirm from "../utils/confirm";
+import logger from "../../commons/utils/logger";
+import confirm from "../../commons/utils/confirm";
 import {
   Stage,
   Region,
@@ -15,7 +15,7 @@ import {
   getIsengardCredentialsProvider,
   dataPlaneAccount,
   AmplifyAccount,
-} from "../Isengard";
+} from "../../commons/Isengard";
 import {
   ResourceRecordSet,
   ChangeAction,
@@ -25,7 +25,7 @@ import {
   updateRecordsInHostedZone,
   getRecordsFromHostedZone,
   getHostedZone,
-} from "../route53";
+} from "../../commons/route53";
 
 async function main() {
   const args = await yargs(hideBin(process.argv))

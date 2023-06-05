@@ -1,5 +1,5 @@
 import yargs from "yargs";
-import sleep from "../../utils/sleep";
+import sleep from "../../commons/utils/sleep";
 
 import {
   SFNClient,
@@ -17,8 +17,8 @@ import {
   computeServiceControlPlaneAccounts,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../../Isengard";
-import { checkAppExists } from "../../dynamodb";
+} from "../../commons/Isengard";
+import { checkAppExists } from "../../commons/dynamodb";
 
 /**
  * Finds compute stacks created by canary accounts that do not have a corresponding

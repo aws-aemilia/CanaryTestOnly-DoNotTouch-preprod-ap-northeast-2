@@ -2,8 +2,8 @@ import fs from "fs";
 import readline from "readline";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { MeteringServiceClient } from "../libs/Metering";
-import sleep from "../utils/sleep";
+import { MeteringServiceClient } from "../commons/libs/Metering";
+import sleep from "../commons/utils/sleep";
 
 async function main() {
   const args = await yargs(hideBin(process.argv))

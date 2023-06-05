@@ -5,15 +5,15 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../../Isengard";
+} from "../../../commons/Isengard";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import { getPayerToken } from "../../../dynamodb/tables/payerToken";
+import { getPayerToken } from "../../../commons/dynamodb/tables/payerToken";
 import {
   BatchGetProjectsCommand,
   CodeBuildClient,
 } from "@aws-sdk/client-codebuild";
-import { getAppIdsForAccount } from "../../../dynamodb";
+import { getAppIdsForAccount } from "../../../commons/dynamodb";
 import yargs from "yargs";
 import { getReportedAccountIds } from "./common";
 

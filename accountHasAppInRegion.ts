@@ -6,8 +6,8 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "./Isengard";
-import { toRegionName, toAirportCode } from "./utils/regions";
+import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "./commons/Isengard";
+import { toRegionName, toAirportCode } from "./commons/utils/regions";
 const fs = require('fs');
 
 const LOWERCASE_STAGE: Stage = "prod";

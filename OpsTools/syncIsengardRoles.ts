@@ -1,6 +1,6 @@
-import { getRolesForStage } from "../Isengard/roles/standardRoles";
-import { AmplifyAccount, AmplifyAccountType, controlPlaneAccounts, getAccountsLookupFn, Region, } from "../Isengard";
-import { upsertRole } from "../Isengard/roles/upsertRole";
+import { getRolesForStage } from "../commons/Isengard/roles/standardRoles";
+import { AmplifyAccount, AmplifyAccountType, controlPlaneAccounts, getAccountsLookupFn, Region, } from "../commons/Isengard";
+import { upsertRole } from "../commons/Isengard/roles/upsertRole";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 

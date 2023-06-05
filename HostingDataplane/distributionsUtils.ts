@@ -22,7 +22,7 @@ import {
   publishLambdaVersion,
 } from "./lambdaFunctionUtils";
 import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
-import { Region, Stage } from "../Isengard";
+import { Region, Stage } from "../commons/Isengard";
 
 export class NotGatewayDistribution extends Error {
   constructor(message: string) {

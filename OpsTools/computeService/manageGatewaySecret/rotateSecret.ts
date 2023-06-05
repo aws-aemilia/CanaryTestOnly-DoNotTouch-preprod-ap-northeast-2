@@ -1,6 +1,6 @@
-import { Region, Stage } from "../../../Isengard";
+import { Region, Stage } from "../../../commons/Isengard";
 import { Secret } from "./secretStores/types";
-import sleep from "../../../utils/sleep";
+import sleep from "../../../commons/utils/sleep";
 import {
   newSecret,
   readSecretFromAllLocations,

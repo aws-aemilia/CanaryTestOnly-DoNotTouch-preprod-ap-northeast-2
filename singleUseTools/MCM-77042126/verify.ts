@@ -1,5 +1,5 @@
-import logger from "../utils/logger";
-import { getRecordsFromHostedZone } from "../route53";
+import logger from "../../commons/utils/logger";
+import { getRecordsFromHostedZone } from "../../commons/route53";
 import { CloudFormationOutputs } from "./types";
 import { ResourceRecordSet, Route53Client } from "@aws-sdk/client-route-53";
 

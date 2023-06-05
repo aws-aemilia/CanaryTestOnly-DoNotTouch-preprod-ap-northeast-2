@@ -1,10 +1,10 @@
 import pino from "pino";
 import pinoPretty from "pino-pretty";
-import confirm from "../utils/confirm";
+import confirm from "../../commons/utils/confirm";
 import {
   updateRecordsInHostedZone,
   getRecordsFromHostedZone,
-} from "../route53";
+} from "../../commons/route53";
 import { ChangeAction, Route53Client } from "@aws-sdk/client-route-53";
 
 const logger = pino(pinoPretty());

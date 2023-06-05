@@ -4,7 +4,7 @@ import {
   computeServiceDataPlaneAccounts,
   dataPlaneAccounts,
   integTestAccounts,
-} from "../Isengard";
+} from "../commons/Isengard";
 import godModeConfig from "./config.json";
 
 /**

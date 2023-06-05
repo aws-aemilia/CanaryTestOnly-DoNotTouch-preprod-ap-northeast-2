@@ -1,6 +1,6 @@
 import fs from "fs"
-import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../Isengard"
-import { toRegionName } from "../utils/regions"
+import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../../commons/Isengard"
+import { toRegionName } from "../../commons/utils/regions"
 import { ReceiveMessageCommand, SendMessageCommand, SQS } from "@aws-sdk/client-sqs"
 
 let ACCOUNT_BEING_PROCESSED: string | null = null

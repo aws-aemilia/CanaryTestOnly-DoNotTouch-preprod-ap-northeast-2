@@ -1,11 +1,11 @@
-import confirm from "../utils/confirm";
-import logger from "../utils/logger";
+import confirm from "../../commons/utils/confirm";
+import logger from "../../commons/utils/logger";
 import { ChangeAction, Route53Client, Change } from "@aws-sdk/client-route-53";
 import { CloudFormationOutputs } from "./types";
 import {
   getRecordsFromHostedZone,
   updateRecordsInHostedZone,
-} from "../route53";
+} from "../../commons/route53";
 
 export async function rollbackRecords(
   route53Client: Route53Client,

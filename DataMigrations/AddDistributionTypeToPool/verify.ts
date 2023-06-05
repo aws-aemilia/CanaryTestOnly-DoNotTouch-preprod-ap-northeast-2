@@ -6,7 +6,7 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../Isengard";
+} from "../../commons/Isengard";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 

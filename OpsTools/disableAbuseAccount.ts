@@ -1,6 +1,6 @@
 import yargs from "yargs";
-import { AbuseAccountAction, updateBlockStatusForAccountId } from "../Fraud";
-import { getTicket } from "../SimT";
+import { AbuseAccountAction, updateBlockStatusForAccountId } from "../commons/Fraud";
+import { getTicket } from "../commons/SimT";
 
 const extractAccountIds = (text: string): string[] => {
   const accountIdRegex = /(?<!\d)[\d]{12}(?!\d)/g;

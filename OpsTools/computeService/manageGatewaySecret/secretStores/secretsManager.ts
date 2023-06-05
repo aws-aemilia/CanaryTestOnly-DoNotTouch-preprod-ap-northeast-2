@@ -6,7 +6,7 @@ import {
 import {
   AmplifyAccount,
   getIsengardCredentialsProvider,
-} from "../../../../Isengard";
+} from "../../../../commons/Isengard";
 import { SecretStore } from "./types";
 import { partial } from "ramda";
 

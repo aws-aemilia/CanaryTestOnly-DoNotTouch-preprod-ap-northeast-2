@@ -2,16 +2,16 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import fs from "fs";
 import readline from "readline";
-import sleep from "../utils/sleep";
+import sleep from "../commons/utils/sleep";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { lookupCustomerAccountId } from "../dynamodb";
+import { lookupCustomerAccountId } from "../commons/dynamodb";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../Isengard";
+} from "../commons/Isengard";
 
 /*
 This ops tool receives a file with AppIds & DomainIds (one per line) and outputs another

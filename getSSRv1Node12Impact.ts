@@ -4,12 +4,12 @@ import {
   controlPlaneAccounts,
   getIsengardCredentialsProvider,
   Stage,
-} from "./Isengard";
-import { toRegionName, toAirportCode } from "./utils/regions";
-import sleep from "./utils/sleep";
+} from "./commons/Isengard";
+import { toRegionName, toAirportCode } from "./commons/utils/regions";
+import sleep from "./commons/utils/sleep";
 import fs from "fs";
 import path from "path";
-import { paginateApps } from "./dynamodb/tables/app";
+import { paginateApps } from "./commons/dynamodb/tables/app";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import pino from "pino";
 import pinoPretty from "pino-pretty";

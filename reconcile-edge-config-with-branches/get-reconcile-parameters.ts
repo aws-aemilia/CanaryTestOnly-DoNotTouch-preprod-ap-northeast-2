@@ -4,7 +4,7 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../Isengard";
+} from "../commons/Isengard";
 import { Credentials } from "@aws-sdk/types";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";

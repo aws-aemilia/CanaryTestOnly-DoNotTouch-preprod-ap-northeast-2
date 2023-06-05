@@ -6,7 +6,7 @@ import {
   paginateQuery,
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
-import { Region, Stage } from "../../Isengard";
+import { Region, Stage } from "../../commons/Isengard";
 
 export interface Job {
   branchArn: string;
