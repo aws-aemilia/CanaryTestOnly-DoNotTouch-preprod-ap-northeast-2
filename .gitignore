@@ -24,7 +24,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-node-scripts/creds.json
+creds.json
 client/.env
 *.iml
 
@@ -37,11 +37,11 @@ AMPLIFY
 # scripts output
 scripts/output
 
-node-scripts/P61637409/output
-node-scripts/globalQueryOutput/
+P61637409/output
+globalQueryOutput/
 
-node-scripts/V737790025/*.csv
-/node-scripts/dist/
-/node-scripts/FTM/start-process-accountid.json
+V737790025/*.csv
+dist/
+singleUseTools/FTM/start-process-accountid.json
 
 /globalQueryOutput
