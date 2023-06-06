@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepublishOnly": "tsc",
     "test": "echo \"Error: no test specified\" && exit 0",
     "noisy-reverse-proxy": "ts-node Gists/noisyReverseProxy.ts",
     "P60053501": "ts-node singleUseTools/P60053501/findAbusers.ts",
