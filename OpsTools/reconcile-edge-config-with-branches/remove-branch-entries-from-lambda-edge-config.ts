@@ -1,7 +1,7 @@
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { BranchInfo } from "./get-branches-for-edge-config-comparison";
 import { LAMBDA_EDGE_CONFIG_TABLE_NAME } from "./constants";
-import sleep from "../../commons/utils/sleep";
+import sleep from "../../Commons/utils/sleep";
 
 const DELAY_TO_AVOID_THROTTLING = 2000; // two seconds
 const BRANCH_CONFIG_EXPRESSION = "#branchConfig";

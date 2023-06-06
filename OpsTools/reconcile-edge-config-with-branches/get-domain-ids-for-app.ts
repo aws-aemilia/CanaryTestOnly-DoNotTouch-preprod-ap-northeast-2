@@ -3,7 +3,7 @@ import {
   QueryCommand,
   QueryCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
-import { AmplifyAccount } from "../../commons/Isengard";
+import { AmplifyAccount } from "../../Commons/Isengard";
 
 export interface DomainInfo {
   domainId: string;

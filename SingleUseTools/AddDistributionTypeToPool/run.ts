@@ -4,13 +4,13 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../commons/Isengard";
+} from "../../Commons/Isengard";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import {
   applyUpdateToAllItemsInTable,
   UpdateCommandFn,
-} from "../dataMigrationUtils";
+} from "../../Commons/dataMigrationUtils";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 

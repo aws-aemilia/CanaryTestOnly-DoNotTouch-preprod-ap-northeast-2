@@ -61,7 +61,14 @@ const main = async () => {
     const args = await yargs(process.argv.slice(2))
         .usage(
             `
-      Deletes GitHub webhooks
+This tool allows you to cleanup your GitHub Webhooks for a repo. Useful for when you hit the 20 webhook limit.
+**Pre-Req** You need to create a GitHub personal access token with Read/Delete permission on Webhooks.
+
+# deletes all Amplify webhooks for repo "my_repo_name"
+npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_name
+
+# deletes all Amplify webhooks created from region "us-west-2" for repo "my_repo_name"
+npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_name --region us-west-2
       `
         )
         .option("githubToken", {

@@ -1,4 +1,4 @@
-import { DDBItem, verifyMigration } from "../dataMigrationUtils";
+import { DDBItem, verifyMigration } from "../../Commons/dataMigrationUtils";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
@@ -6,7 +6,7 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../commons/Isengard";
+} from "../../Commons/Isengard";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
