@@ -8,9 +8,9 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../../commons/Isengard";
+} from "../../../commons/Isengard";
 import { Credentials } from "aws-sdk";
-import confirm from "../../commons/utils/confirm";
+import confirm from "../../../commons/utils/confirm";
 
 /* 
     LCU Limit increase process as described in wiki:

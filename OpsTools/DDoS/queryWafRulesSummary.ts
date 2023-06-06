@@ -8,7 +8,7 @@ import {
   AmplifyAccount,
   controlPlaneAccounts,
   getIsengardCredentialsProvider,
-} from "../commons/Isengard";
+} from "../../commons/Isengard";
 
 require("util").inspect.defaultOptions.depth = null;
 

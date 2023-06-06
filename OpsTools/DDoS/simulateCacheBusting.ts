@@ -1,8 +1,8 @@
 import yargs from "yargs";
 import {hideBin} from "yargs/helpers";
-import {controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage} from "../commons/Isengard";
+import {controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage} from "../../commons/Isengard";
 import {Kinesis, PutRecordsCommandInput} from "@aws-sdk/client-kinesis";
-import {toRegionName} from "../commons/utils/regions";
+import {toRegionName} from "../../commons/utils/regions";
 
 let kinesis: Kinesis;
 const DATA_STREAM_NAME = "CloudFrontDistributionLogs";

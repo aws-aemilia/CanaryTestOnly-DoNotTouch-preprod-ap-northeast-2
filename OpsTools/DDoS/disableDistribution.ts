@@ -1,13 +1,13 @@
 import yargs from "yargs";
-import { disableDistribution, enableDistribution } from "../commons/utils/cloudfront";
+import { disableDistribution, enableDistribution } from "../../commons/utils/cloudfront";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import logger from "../commons/utils/logger";
+import logger from "../../commons/utils/logger";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
   Region,
   Stage,
-} from "../commons/Isengard";
+} from "../../commons/Isengard";
 
 const { hideBin } = require("yargs/helpers");
 

@@ -2,8 +2,8 @@ import { createNewHostedZoneForName } from './create-new-hosted-zone-for-name';
 import { getNewSubdomainFromUserInput } from './get-new-subdomain-from-user-input';
 import { lookupIamAliveByAccountWithAirportCode } from './lookup-iamalive-by-account-with-region';
 import { updateExistingHostedZoneWithNewSubdomain } from './update-existing-hosted-zone-with-new-subdomain';
-import { AmplifyAccount, controlPlaneAccounts } from '../commons/Isengard/accounts';
-import { getIsengardCredentialsProvider } from '../commons/Isengard';
+import { AmplifyAccount, controlPlaneAccounts } from '../../commons/Isengard/accounts';
+import { getIsengardCredentialsProvider } from '../../commons/Isengard';
 import { Credentials } from "@aws-sdk/types";
 import { exitIfNotContinuing } from './exit-if-not-continuing';
 

@@ -1,4 +1,4 @@
-import { AmplifyAccount } from "../commons/Isengard";
+import { AmplifyAccount } from "../../commons/Isengard";
 
 export function buildDnsNameFromAccountWithAirportCode(accountWithAirportCode: AmplifyAccount) {
     if(accountWithAirportCode.stage === 'beta') {

@@ -1,7 +1,7 @@
 import { Credentials } from "@aws-sdk/types";
 import { CreateHostedZoneCommand, HostedZone, Route53Client } from "@aws-sdk/client-route-53";
 import { buildDnsNameFromAccountWithAirportCode} from './build-dns-name-from-account-with-airport-code';
-import { AmplifyAccount } from '../commons/Isengard';
+import { AmplifyAccount } from '../../commons/Isengard';
 
 export interface HostedZoneWithNameServers {
     hostedZone: HostedZone,

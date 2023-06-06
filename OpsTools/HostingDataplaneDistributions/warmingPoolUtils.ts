@@ -4,14 +4,14 @@ import {
   QueryCommandOutput,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { Stage, Region } from "../commons/Isengard";
+import { Stage, Region } from "../../commons/Isengard";
 import {
   DistributionConfig,
   EventType,
   Origin,
   Origins,
 } from "@aws-sdk/client-cloudfront";
-import { isOptInRegion } from "../commons/utils/regions";
+import { isOptInRegion } from "../../commons/utils/regions";
 import { originShieldMap } from "./originShieldUtils";
 
 export interface WarmingPoolDistribution {
