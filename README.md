@@ -1,12 +1,48 @@
 # AWS Amplify Tools
 
-This package contains ops tools for Amplify Console. The Node scripts are located inside the `node-scripts` folder and
-the bash scripts under `scripts`.
+## Code Organization
+Here is the description of the top-level folders. Please Follow these conventions to keep the code organized and easy to find. 
 
-## Installing dependencies
+*Note: This package was recently reorganized so some files in here may be misclassified. Feel free to move them where they belong.*
+
+[OpsTools](./OpsTools)
+- Tools that are safe to run in prod
+- Accept CLI params using `yargs`
+- Have documentation at `ts-node <tool> --help`
+- They take a `--stage` and `--region` parameter and operate in exactly one region. Read-only tools are exempt and may read from several regions
+
+[SingleUseTools](./SingleUseTools)
+- Tools that meet all the criteria of an OpsTool
+- Are meant to run only once. Often they are related to a sev2 or an MCM. This distinction is important because these tool won't be updated after they accomplish their purpose and may be deleted at any time. 
+Other tools should not import code from here. Consider refactoring the useful parts into Commons
+
+[ConfigBuilders](./ConfigBuilders)
+- Read-only scripts that build config files for other packages.
+
+[Dev](./Dev)
+- Tools that interact only with dev resources (dev stacks, GitHub accounts, etc.) They do not operate on Amplify AWS accounts, not even beta.
+
+[Commons](./Commons)
+- Useful classes and functions that are used across multiple tools.
+- Be mindful of having clean interfaces and of breaking changes. This code is used by many tools.
+
+[bash_scripts](./bash_scripts)
+- A few, old, useful bash scripts. 
+- It is not recommended adding new bash scripts. In most cases it is better to write tools using typescript.
+
+[Other_ExcludedFromBuild](./Other_ExcludedFromBuild)
+- Other code that was added in the past to this package. It is excluded from `brazil-build`
+- We may move it to a separate package.
+
+[Etc](./Etc)
+- Anything that does not fit in any of the above categories. Mostly small scripts that do some kind of reporting
+- Code here should NOT write to prod. Write a proper ops tool instead.
+
+## Working with this package
+
+### Installing dependencies
 
 ```bash
-cd node-scripts
 brazil ws --sync --md
 brazil-build install
 ```
@@ -15,19 +51,20 @@ If the above fails due to a package being supposedly not found, on the `AWSAmpli
 set, [merge from live](https://build.amazon.com/merge#{%22destination%22:%22AWSAmplifyTools/development%22,%22options%22:{%22source%22:%22live%22,%22add%22:[]}})
 , then retry the last two commands above.
 
-## Use Prettier for code formatting
+Tools that cut tickets rely on `kcurl`. If tools fail on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
+
+### Use Prettier for code formatting
 
 After running `brazil-build install` above, install your IDE's Prettier extension, and point it to this
 project's `node_modules`. Or, run `npx prettier --write .` to reformat your script.
 
-## Running a Node script
+### Running a Node script
 
 ```bash
-node {script_name}.js
 npx ts-node {script_name}.ts
 ```
 
-## Contingent Authorization
+### Contingent Authorization
 
 For Isengard contingent authorization you will need to set one of the following environment variables to access accounts marked as production:
 
@@ -36,86 +73,4 @@ For Isengard contingent authorization you will need to set one of the following 
 - `ISENGARD_SIM` - SIM Ticket ID
 
 
-### Global Query Script
 
-```
-cd node-scripts/
-brazil-build globalQuery -- \
---logGroupPrefix /aws/lambda/AemiliaControlPlaneLambda-AccountClosureProcessor- \
---stage prod \
---outputDir queryResults \
---startDate 2022-04-01T00:00:00 \
---endDate 2022-04-02T00:00:00 \
---query "fields @timestamp | filter @message like /assuming account event service facing fatal error, stop processing/ | stats count(*) by bin(1d)"
-```
-
-### Noisy reverse proxy script
-
-```bash
-brazil-build noisy-reverse-proxy -- \
---command=migrate \
---appId=d2x3jzd0euexdg \
---region=us-west-2 \
---stage=test \              # test, beta, gamma or prod
---dryrun                    # Remove to actually make changes
-```
-
-To rollback the changes to their original state
-
-```bash
-brazil-build noisy-reverse-proxy -- \
---command=rollback \
---appId=d2x3jzd0euexdg \
---region=us-west-2 \
---stage=test
-```
-
-To specify specific distributionIds instead of applying it on all distros
-
-```bash
-brazil-build noisy-reverse-proxy -- \
---command=migrate \
---appId=d2x3jzd0euexdg \
---region=us-west-2 \
---distributionId=E123456 \
---distributionId=E789123 \
---stage=test
-```
-
-### Abuse Reports - Disabling Accounts
-
-If this fails on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
-
-```
-ts-node disableAbuseAccount.ts \
---accountId 123456789012 \        # Required
---ticket D1234567 \               # Required
---stage prod \ 
---role OncallOperator \
---unblock false
-```
-
-
-### Instructions to run cleanupGitHubWebhooks tool
-This tool allows you to cleanup your GitHub Webhooks for a repo. Useful for when you hit the 20 webhook limit.
-**Pre-Req** You need to create a GitHub personal access token with Read/Delete permission on Webhooks.
-```
-# deletes all Amplify webhooks for repo `my_repo_name`
-npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_name
-
-# deletes all Amplify webhooks created from region `us-west-2` for repo `my_repo_name`
-npx ts-node cleanupGitHubWebhooks.ts --githubToken ghp_****** --repo my_repo_name --region us-west-2
-```
-
-### Hosting Gateway vCPU Limit Increase
-
-If this fails on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
-
-```
-npx ts-node vCPULimitIncrease.ts \
---stage prod \
---region us-west-2 \
---accountId 123456789012 \
---limit 16000 \
---ticket D1234567 \
-```
