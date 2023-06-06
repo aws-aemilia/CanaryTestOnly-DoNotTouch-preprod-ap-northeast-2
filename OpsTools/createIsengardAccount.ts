@@ -11,7 +11,7 @@ import {
 } from "../commons/Isengard";
 import yargs from "yargs";
 import { deleteCache } from "../commons/Isengard/cache";
-import { increaseIAMRoles } from "../service-quotas";
+import { increaseIAMRoles } from "../commons/service-quotas";
 import {
   requestComputeCellLambdaConcurrency,
   requestMaxLambdaConcurrency,
