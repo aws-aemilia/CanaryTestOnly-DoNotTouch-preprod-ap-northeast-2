@@ -3,7 +3,7 @@ import { appendFile, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import yargs from "yargs";
 import { controlPlaneAccounts, StandardRoles } from "../commons/Isengard";
-import { insightsQuery } from "../commons/libs/CloudWatch";
+import {doQuery, insightsQuery} from "../commons/libs/CloudWatch";
 
 async function writeLogsToFile(
   outputFolder: string,

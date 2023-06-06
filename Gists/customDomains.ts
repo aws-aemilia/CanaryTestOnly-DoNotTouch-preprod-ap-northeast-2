@@ -2,7 +2,6 @@ import { BatchGetItemCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
     DynamoDBDocumentClient, QueryCommand
 } from "@aws-sdk/lib-dynamodb";
-import { LambdaEdgeConfig } from './P61637409/types';
 
 interface DomainItem {
     "appId": string,
@@ -47,7 +46,7 @@ async function getDomains(dynamodb: DynamoDBDocumentClient, stage: string, regio
     return domains.Items as DomainItem[];
 }
 
-async function getEdgeConfig(dynamodb: DynamoDBDocumentClient, appIds: string[]): Promise<LambdaEdgeConfig[] | undefined> {
+async function getEdgeConfig(dynamodb: DynamoDBDocumentClient, appIds: string[]): Promise<any[] | undefined> {
     console.log("Looking for EdgeConfigs for domains: " + appIds);
     const edgeConfigs = await dynamodb.send(
         new BatchGetItemCommand({
@@ -63,7 +62,7 @@ async function getEdgeConfig(dynamodb: DynamoDBDocumentClient, appIds: string[])
         })
     );
 
-    return edgeConfigs.Responses?.LambdaEdgeConfig as unknown as LambdaEdgeConfig[];
+    return edgeConfigs.Responses?.LambdaEdgeConfig as unknown as any[];
 }
 
 findAllCustomDomainEdgeConfigIds('prod', 'eu-central-1', 'ddgrnop6ksu96');

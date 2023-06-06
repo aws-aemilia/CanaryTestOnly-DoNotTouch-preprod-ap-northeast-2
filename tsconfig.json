@@ -16,7 +16,9 @@
     ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "Other_ExcludedFromBuild",
+    "dist"
   ],
   "include": [
     "**/*"
