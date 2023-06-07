@@ -16,8 +16,8 @@ package.AWSAmplifyTools = {
     build-system = npm-pretty-much;
     build-tools = {
         1.0 = {
-            NodeJS = 14.x;
-            NpmPrettyMuch = 1.0;
+            NodeJS = 18.x;
+            NpmPrettyMuch = 1.1;
             NoOpBuild = 1.0;
             BrazilTools = 2.2;
         };

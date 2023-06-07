@@ -78,7 +78,7 @@
     "@octokit/rest": "^19.0.4",
     "@types/aws-lambda": "^8.10.115",
     "aws-sdk": "2.1203.0",
-    "axios": "^0.27.2",
+    "axios": "^0.21.1",
     "chunk-promise": "^1.2.1",
     "command-line-args": "^5.1.1",
     "console-stamp": "^3.1.1",
