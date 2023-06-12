@@ -1,4 +1,4 @@
-import {AmplifyAccount, controlPlaneAccounts, integTestAccounts} from "../Commons/Isengard";
+import {AmplifyAccount, controlPlaneAccounts, integTestAccounts, meteringAccounts} from "../Commons/Isengard";
 import { getCloudFormationOutputs } from "../Commons/utils/cloudFormation";
 import sleep from "../Commons/utils/sleep";
 
@@ -65,6 +65,13 @@ const getIntegTestsConfig = async () => {
 
   console.log("//======== controlPlaneAccounts =========");
   console.log(toJavaMapBuilderPut(controlPlaneAccountIds));
+
+  console.log("//======== meteringAccounts =========");
+  const meteringAccountIds: Record<string, string> = {};
+  (await meteringAccounts()).forEach((account) => {
+    meteringAccountIds[`${account.stage}.${account.region}.meteringAccountId`] = account.accountId
+  });
+  console.log(toJavaMapBuilderPut(meteringAccountIds));
 
 };
 
