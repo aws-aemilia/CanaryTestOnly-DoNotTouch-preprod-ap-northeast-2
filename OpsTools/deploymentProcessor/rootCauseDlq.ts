@@ -167,11 +167,41 @@ async function main() {
     );
 
     if (message.payload.platform === "WEB_COMPUTE") {
-      message.rootCause = await rootCauseComputeDeployment(
+      // Attempt to find root cause in compute service
+      let computeServiceRootCause = await rootCauseComputeDeployment(
         computeDocumentClient,
         computeSfnClient,
         message
       );
+
+      // But also check deployment processor to have full picture of what happened
+      logger.info("Looking for error in deployment processor");
+      let deploymentProcessorRootCause = await rootCauseDeployment(
+        documentClient,
+        stage,
+        regionName,
+        message,
+        cpAccount
+      );
+
+      if (!computeServiceRootCause && !deploymentProcessorRootCause) {
+        // No root cause found anywhere. 
+        message.rootCause = null;
+        return;
+      }
+
+      message.rootCause = [];
+
+      if (deploymentProcessorRootCause) {
+        // Add the root cause from deployment processor
+        message.rootCause.push(...deploymentProcessorRootCause);
+      }
+
+      if (computeServiceRootCause) {
+        // Add the root cause from compute service
+        message.rootCause.push(...computeServiceRootCause);
+      }
+
     } else {
       message.rootCause = await rootCauseDeployment(
         documentClient,
@@ -212,6 +242,7 @@ function writeRootCauseToOutputFile(message: DLQMessage, outputPath: string) {
   output.push("====================");
   output.push(JSON.stringify(message, null, 2));
   output.push("====================");
+  logger.info(`Writing root cause to output file ${outputPath}`);
   fs.appendFileSync(outputPath, output.join("\n"));
 }
 
@@ -274,8 +305,8 @@ async function rootCauseDeployment(
     controlPlaneAccount,
     "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDef",
     `filter @message like /Fatal error/ and @message like /${message.payload.applicationId}/ | fields @timestamp, @message`,
-    new Date(deploymentStep.startTime),
-    dayjs(deploymentStep.endTime).add(1, "minute").toDate(), // logs are sometimes after deployment end time. Not sure why
+    new Date(deploymentStep.startTime || message.sentTimestamp),
+    dayjs(deploymentStep.endTime).add(1, "minute").toDate() // logs are sometimes after deployment end time. Not sure why
   );
 
   if (!logs) {
@@ -324,6 +355,12 @@ async function rootCauseComputeDeployment(
     })
   );
 
+  if (response.status !== "FAILED") {
+    logger.info(response, "State machine execution is not in failed state");
+    logger.info("Deployment did not fail in compute service");
+    return null;
+  }
+
   const errorMessages = extractErrorsFromStateMachineExecution(response);
   if (errorMessages.length === 0) {
     logger.error("No root cause found in deployer state machine");
@@ -338,12 +375,6 @@ function extractErrorsFromStateMachineExecution(
   execution: DescribeExecutionCommandOutput
 ): string[] {
   let failureCause: StateMachineFailureCause;
-  if (execution.status !== "FAILED") {
-    logger.info(execution, "State machine execution is not in failed state");
-    logger.warn(`This most likely means that the Job was retried and it succeeded, thus overwriting the failed Step Functions execution ARN with the most recent successful run.
-You need to manually find the failed step function execution in the logs (or fix this tool to do it for you  😉)`);
-    return [];
-  }
 
   if (!execution.cause) {
     logger.info(

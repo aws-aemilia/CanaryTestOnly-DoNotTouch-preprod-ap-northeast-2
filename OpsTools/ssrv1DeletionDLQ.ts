@@ -203,6 +203,8 @@ async function main() {
       if (deleteMessages) {
         await redriveMessage(sqsClient, sourceQueueUrl, message);
         await deleteMessage(sqsClient, queueUrl, message);
+      } else {
+        logger.info("Now run the same command with --deleteMessages and --skipTicket to delete the messages from the DLQ");
       }
     }
   }
