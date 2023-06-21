@@ -47,8 +47,6 @@ const validateAbuseTicket = async (
     );
   }
 
-  // Export ticket ID to environment, as it's needed for Contingent Authorization.
-  process.env["ISENGARD_SIM"] = ticket;
 };
 
 const main = async () => {
@@ -109,6 +107,8 @@ const main = async () => {
     }).argv;
 
   const { accountId, ticket, ignoreTicket, stage, unblock, role } = args;
+  // Export ticket ID to environment, as it's needed for Contingent Authorization.
+  process.env["ISENGARD_SIM"] = ticket;
 
   const action = unblock ? "Unblock" : "Block";
 
