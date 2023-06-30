@@ -56,9 +56,9 @@ fi
 # Step 1: Semi-Automated Deploy this first
 deploy_local_package "Deploy webhook processor: BEGIN" "AemiliaWebhookProcessorLambda" "AemiliaWebhookProcessorLambda"
 deploy_local_package "Deploy dynamodb stream: BEGIN" "AemiliaDynamoDBStreamLambda" "AemiliaDynamoDBStreamLambda"
-deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda"
 deploy_local_package "Deploy workers lambda: BEGIN" "AemiliaWorkersLambda" "AemiliaWorkersLambda"
 deploy_local_package "Deploy warming pool: BEGIN" "AemiliaWarmingPoolInfrastructure" "AemiliaWarmingPool"
+deploy_local_package "Deploy control plane: BEGIN" "AemiliaControlPlaneLambda" "AemiliaControlPlaneLambda"
 
 deploy_local_package "Deploy edge lambda: BEGIN" "AemiliaEdgeLambda" "AemiliaEdgeLambda"
 deploy_local_package "Deploy edge lambda association: BEGIN" "AemiliaEdgeLambdaAssociationDeployerLambda" "AemiliaEdgeLambdaAssociationDeployerLambda"
