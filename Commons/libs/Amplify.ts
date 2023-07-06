@@ -1,5 +1,4 @@
-import { BatchGetItemCommand } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, BatchGetCommand } from "@aws-sdk/lib-dynamodb";
 import { AppDO } from "../dynamodb";
 
 export async function getAppsByAppIds(
@@ -11,12 +10,12 @@ export async function getAppsByAppIds(
   const appTableName = `${stage}-${region}-App`;
 
   const result = await dynamodb.send(
-    new BatchGetItemCommand({
+    new BatchGetCommand({
       RequestItems: {
         [appTableName]: {
           Keys: [
             ...appIds.map((appId) => ({
-              appId: { S: appId },
+              appId: appId
             })),
           ],
         },
