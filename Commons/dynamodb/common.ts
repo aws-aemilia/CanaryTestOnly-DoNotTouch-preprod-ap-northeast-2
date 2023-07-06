@@ -6,7 +6,7 @@ import { Region } from "../Isengard";
 
 export const getDynamoDBDocumentClient = (
   region: Region,
-  credentials: Provider<Credentials>
+  credentials?: Provider<Credentials>
 ) => {
   const ddb = new DynamoDBClient({
     region,

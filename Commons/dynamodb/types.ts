@@ -7,6 +7,9 @@ export interface LambdaEdgeConfig {
   branchConfig?: {
     [branchName: string]: BranchConfig;
   };
+  config: {
+    customHeaders: string;
+  };
 }
 
 export interface BranchConfig {
@@ -31,30 +34,58 @@ export interface DynamoDBAttributeName {
   };
 }
 
-export interface AppDO {
+export interface AppDO extends AppDOBase {
+  enableAutoBranchDeletion: number;
+  enableCustomHeadersV2: number;
+  enableBranchAutoBuild: number;
+  autoBranchCreationConfig?: {
+    stage?: string;
+    branchConfig: {
+      enableAutoBuild: number;
+      enableBasicAuth: number;
+      enablePullRequestPreview: number;
+    };
+  };
+  enableRewriteAndRedirect: number;
+  enableAutoBranchCreation: number;
+  enableBasicAuth: number;
+}
+
+export interface AppDOJava extends AppDOBase {
+  enableBranchAutoBuild: boolean;
+  enableAutoBranchDeletion: boolean;
+  autoBranchCreationConfig?: {
+    stage?: string;
+    branchConfig: {
+      enableAutoBuild: boolean;
+      enableBasicAuth: boolean;
+      enablePullRequestPreview: boolean;
+    };
+  };
+  enableBasicAuth: boolean;
+  enableRewriteAndRedirect: boolean;
+  enableCustomHeadersV2: boolean;
+  enableAutoBranchCreation: boolean;
+}
+
+interface AppDOBase {
   defaultDomain: string;
   cloudFrontDistributionId: string;
   autoBranchCreationPatterns: string[];
-  enableAutoBranchDeletion: number;
   name: string;
-  enableCustomHeadersV2: number;
   repository: string;
   version: number;
   iamServiceRoleArn: string;
   accountId: string;
   accountClosureStatus?: string;
-  enableBranchAutoBuild: number;
   certificateArn: string;
   createTime: string;
   hostingBucketName: string;
   buildSpec: string;
   cloneUrl: string;
-  enableRewriteAndRedirect: number;
   platform: "WEB" | "WEB_DYNAMIC" | "WEB_COMPUTE";
   updateTime: string;
   appId: string;
-  enableAutoBranchCreation: number;
-  enableBasicAuth: number;
   environmentVariables: {
     [key: string]: string;
   };
@@ -79,4 +110,61 @@ export interface SubdomainDO {
   domainRecord: string;
   verified: number;
   branch: string;
+}
+
+export interface BranchDO extends BranchDOBase {
+  deleting: number;
+  pullRequest: number;
+  config: BranchDOBranchConfig;
+}
+
+export interface BranchDOJava extends BranchDOBase {
+  deleting: boolean;
+  pullRequest: boolean;
+  config: BranchDOBranchConfigJava;
+}
+
+interface BranchDOBase {
+  appId: string;
+  branchName: string;
+  activeJobId: string;
+  branchArn: string;
+  createTime: string;
+  description: string;
+  displayName: string;
+  stage: string;
+  totalNumberOfJobs: string;
+  ttl: string;
+  updateTime: string;
+  version: number;
+}
+
+export interface BranchDOBranchConfig {
+  hostBucket: string;
+  ejected: number;
+  enableNotification: number;
+  snsTopicArn: string;
+  environmentVariables: Map<string, string>;
+  enableAutoBuild: number;
+  enableBasicAuth: number;
+  basicAuthCredsV2: string;
+  enablePullRequestPreview: number;
+  pullRequestEnvironmentName: string;
+  enablePerformanceMode: number;
+  version: number;
+}
+
+export interface BranchDOBranchConfigJava {
+  hostBucket: string;
+  ejected: boolean;
+  enableNotification: boolean;
+  snsTopicArn: string;
+  environmentVariables: Map<string, string>;
+  enableAutoBuild: boolean;
+  enableBasicAuth: boolean;
+  basicAuthCredsV2: string;
+  enablePullRequestPreview: boolean;
+  pullRequestEnvironmentName: string;
+  enablePerformanceMode: boolean;
+  version: number;
 }
