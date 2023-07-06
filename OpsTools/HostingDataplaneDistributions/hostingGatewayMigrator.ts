@@ -59,12 +59,18 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(
       type: "string",
       demandOption: false,
     })
+    .option("ticket", {
+      describe: "i.e. D69568945. Used for Contingent Auth",
+      type: "string",
+      demandOption: true,
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  let { stage, region, appId, alias } = args;
-
+  let { stage, region, appId, alias, ticket } = args;
+  process.env.ISENGARD_SIM = ticket;
+  
   if (stage === "test" && !alias) {
     throw new Error("--alias argument must be provided with stage=test");
   }
