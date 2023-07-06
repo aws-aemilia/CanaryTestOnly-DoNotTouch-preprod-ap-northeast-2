@@ -22,7 +22,7 @@ export const createTicket = async (
   createTicketParams: CreateTicketParams
 ): Promise<string> => {
   console.log("Creating ticket:", createTicketParams);
-  const command = `kcurl -X POST -d '${JSON.stringify(
+  const command = `mcurl -X POST -d '${JSON.stringify(
     createTicketParams
   )}' -H 'Content-Type: application/json' https://maxis-service-prod-pdx.amazon.com/issues`;
 
@@ -35,7 +35,7 @@ export const createTicket = async (
     response = JSON.parse(rawOutput);
   } catch (e) {
     console.log(
-      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run kinit?"
+      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run mwinit?"
     );
     console.log(rawOutput);
     throw e;

@@ -24,13 +24,13 @@ export type Ticket = { description: string; title: string };
 
 /**
  * Retrieves a ticket.
- * Calls the Maxis API using kerberos auth. Requires kcurl to be installed.
+ * Calls the Maxis API using kerberos auth. Requires mcurl to be installed.
  * @param ticketId
  */
 export const getTicket = async (ticketId: string): Promise<Ticket> => {
-  // kcurl was chosen because it's the easiest way to fetch private tickets.
+  // mcurl was chosen because it's the easiest way to fetch private tickets.
   // Most libraries (e.g NodeJS-SIMClient) use AWS SigV4 but it's hard to make that identity have permissions on all our private tickets
-  const getTicketCommand = `kcurl -k https://maxis-service-prod-iad.amazon.com/issues/${ticketId}`;
+  const getTicketCommand = `mcurl -k https://maxis-service-prod-iad.amazon.com/issues/${ticketId}`;
 
   const rawOutput = await executeCommand(getTicketCommand);
 
@@ -39,7 +39,7 @@ export const getTicket = async (ticketId: string): Promise<Ticket> => {
     response = JSON.parse(rawOutput);
   } catch (e) {
     console.log(
-      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run kinit?"
+      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run mwinit?"
     );
     console.log(rawOutput);
     throw e;
@@ -82,7 +82,7 @@ const createLambdaLimitIncreaseTicket = async (
     },
   };
 
-  const command = `kcurl -X POST -d '${JSON.stringify(
+  const command = `mcurl -X POST -d '${JSON.stringify(
     createTicketParams
   )}' -H 'Content-Type: application/json' https://maxis-service-prod-pdx.amazon.com/issues`;
 
@@ -95,7 +95,7 @@ const createLambdaLimitIncreaseTicket = async (
     response = JSON.parse(rawOutput);
   } catch (e) {
     console.log(
-      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run kinit?"
+      "Failed to parse response as JSON. This most likely means that your credentials are missing. Did you run mwinit?"
     );
     console.log(rawOutput);
     throw e;

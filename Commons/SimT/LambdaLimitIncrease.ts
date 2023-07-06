@@ -47,7 +47,7 @@ export const getComputeCellLambdaConcurrency = () => {
 /**
  * If you ever need to update this, the easiest way to find the ticket specific values is to manually cut a ticket per
  * the instructions on https://w.amazon.com/index.php/Lambda/Limits and then inspect the resulting ticket json:
- * kcurl -k https://maxis-service-prod-iad.amazon.com/issues/${ticketId}
+ * mcurl https://maxis-service-prod-iad.amazon.com/issues/${ticketId}
  */
 
 export const maxLambdaConcurrencyLambdaLimit: LambdaLimit = {

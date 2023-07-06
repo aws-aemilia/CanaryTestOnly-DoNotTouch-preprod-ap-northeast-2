@@ -43,7 +43,7 @@ const main = async ()=> {
             `
 Create an Isengard AWS account
 
-** Requires kcurl to be installed. install it with "brew install env-improvement"**
+** Requires mcurl to be installed. install it with https://w.amazon.com/bin/view/NextGenMidway/UserGuide#Client_Environment_Setup_.28for_CLI_or_SSH.29 **
 `
         )
         .option("type", {
