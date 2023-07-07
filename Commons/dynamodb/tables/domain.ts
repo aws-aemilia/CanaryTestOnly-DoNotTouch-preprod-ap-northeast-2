@@ -4,6 +4,8 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   QueryCommand,
+  paginateQuery,
+  paginateScan,
 } from "@aws-sdk/lib-dynamodb";
 
 /**
@@ -181,4 +183,67 @@ export const findDomainById = async (
     }
     throw err;
   }
+};
+
+/**
+ * Returns an iterator to paginate the Domains table. You can use the iterator
+ * with `for await (const batch of paginateDomains())`. Each batch will contain
+ * a list of domainDOs. It uses lazy loading so it doesn't consume the next page
+ * until the iterator reaches the end.
+ *
+ * @param documentClient DynamoDB document client
+ * @param stage i.e. beta, prod, gamma
+ * @param region i.e. us-west-2
+ * @param attributesToGet i.e. ["appId", "domainId"]
+ *
+ * @returns Iterator of pages
+ */
+export const paginateDomains = (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  attributesToGet: string[] = ["appId"]
+) => {
+  return paginateScan(
+    {
+      pageSize: 1000,
+      client: documentClient,
+    },
+    {
+      TableName: `${stage}-${region}-Domain`,
+      ProjectionExpression: attributesToGet.join(","),
+    }
+  );
+};
+
+/**
+ * List Domains for a given appId.
+ * 
+ * @param documentClient DynamoDB document client
+ * @param stage i.e. beta, prod, gamma
+ * @param region i.e. us-west-2
+ * @param appId The appId to list domains for
+ * @param attributesToGet i.e. ["appId", "domainId"]
+ */
+export const paginateDomainsForApp = async (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  appId: string,
+  attributesToGet: string[] = ["appId"]
+) => {
+  return paginateQuery(
+    {
+      client: documentClient,
+      pageSize: 100,
+    },
+    {
+      TableName: `${stage}-${region}-Domain`,
+      KeyConditionExpression: "appId = :appId",
+      ProjectionExpression: attributesToGet.join(","),
+      ExpressionAttributeValues: {
+        ":appId": appId,
+      },
+    }
+  );
 };

@@ -172,3 +172,29 @@ export interface BranchDOBranchConfigJava {
   enablePerformanceMode: boolean;
   version: number;
 }
+
+export interface JobDO {
+  branchArn: string;
+  jobId: string;
+  accountId: string;
+  createTime: string;
+  endTime: string;
+  updateTime: string;
+  jobType: string;
+  status: string;
+  jobSteps: JobStepDO[];
+  version: number;
+}
+
+export interface JobStepDO {
+  jobStatus: string;
+  taskArn: string;
+  name: "BUILD" | "DEPLOY" | "VERIFY";
+  context: string;
+  startTime: string;
+  endTime: string;
+  meteredStartTime: string;
+  meteredEndTime: string;
+  config: any;
+  statusCode: string;
+}

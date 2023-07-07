@@ -2,6 +2,7 @@ import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   GetCommand,
+  paginateScan,
 } from "@aws-sdk/lib-dynamodb";
 
 /**
@@ -48,4 +49,30 @@ export const getWarmResource = async (
       throw err;
     }
   }
+};
+
+/**
+ * List all resources in the WarmingPool.
+ * 
+ * @param documentClient DocumentClient with control plane credentials
+ * @param stage i.e. beta, gamma, prod
+ * @param region i.e. us-west-2
+ * @param attributesToGet i.e. ["resourceId", "claimstatus"]
+ */
+export const paginateWarmResources = (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  attributesToGet: string[] = ["resourceId"]
+) => {
+  return paginateScan(
+    {
+      pageSize: 100,
+      client: documentClient,
+    },
+    {
+      TableName: `${stage}-${region}-WarmFrontEndResources`,
+      ProjectionExpression: attributesToGet.join(","),
+    }
+  );
 };
