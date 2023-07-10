@@ -54,24 +54,22 @@ async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `
-      Reads messages from the AsyncResourceDeletionDLQ and if it finds one related 
-      to the Lambda@Edge replication issue, it cuts a ticket to CloudFront so they 
+      Reads messages from the AsyncResourceDeletionDLQ and if it finds one related
+      to the Lambda@Edge replication issue, it cuts a ticket to CloudFront so they
       can cleanup the resources.
 
-      Usage: 
+      Usage:
 
       npx ts-node ssrv1DeletionDLQ.ts --stage prod \
         --region BOM \
         --ticket V0123456789
 
-      If you're happy with the results, run it again with --deleteMessages
-      and with --skipTicket so it doesn't duplicate the ticket to CloudFront.
+      If you're happy with the results, run it again with --deleteMessages.
 
       npx ts-node ssrv1DeletionDLQ.ts --stage prod \
         --region BOM \
         --ticket V0123456789 \
-        --deleteMessages \
-        --skipTicket
+        --deleteMessages
       `
     )
     .option("stage", {
@@ -97,11 +95,6 @@ async function main() {
       type: "string",
       demandOption: false,
     })
-    .option("skipTicket", {
-      describe: "If provided, ticket will not be cut to CloudFront",
-      type: "boolean",
-      demandOption: false,
-    })
     .option("deleteMessages", {
       describe:
         "If provided, messages with a root cause will be deleted from the DLQ",
@@ -112,7 +105,7 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { region, stage, ticket, skipTicket, deleteMessages, output } = args;
+  const { region, stage, ticket, deleteMessages, output } = args;
   process.env.ISENGARD_SIM = ticket;
   const outputFile = output ? output : `./${ticket}.txt`;
 
@@ -196,15 +189,11 @@ async function main() {
       logger.info(`Orphan Lambda@Edge function ARN: ${anyLog.functionArn}`);
       writeToOutputFile(message, outputFile);
 
-      if (!skipTicket) {
-        await cutTicketToCloudFront(anyLog.functionArn);
-      }
-
       if (deleteMessages) {
         await redriveMessage(sqsClient, sourceQueueUrl, message);
         await deleteMessage(sqsClient, queueUrl, message);
       } else {
-        logger.info("Now run the same command with --deleteMessages and --skipTicket to delete the messages from the DLQ");
+        logger.info("Now run the same command with --deleteMessages to delete the messages from the DLQ");
       }
     }
   }
@@ -230,29 +219,6 @@ async function deleteMessage(
       QueueUrl: queueUrl,
       ReceiptHandle: message.receiptHandle,
     })
-  );
-}
-
-async function cutTicketToCloudFront(functionArn: string) {
-  logger.info("Cutting ticket to CloudFront");
-  const ticket = await createTicket({
-    title: "Cannot delete L@E function due to replication delay",
-    description: `Hi, please assist with the cleanup of Lambda function ARN: ${functionArn} \n\nThank you. \nAmplify Hosting team`,
-    assignedFolder: "8cac4c86-6a73-4026-93be-6b904bcce3de",
-    extensions: {
-      tt: {
-        category: "AWS",
-        type: "CloudFront Customer Issue/Limits",
-        item: "Lambda@Edge",
-        assignedGroup: "CloudFront-Compute",
-        caseType: "",
-        impact: 3,
-      },
-    },
-  });
-
-  logger.info(
-    `Ticket created successfully https://t.corp.amazon.com/${ticket}`
   );
 }
 
