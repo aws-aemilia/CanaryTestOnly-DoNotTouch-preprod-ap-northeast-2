@@ -1,12 +1,21 @@
-import { Credentials, Provider } from "@aws-sdk/types";
+import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 import { getCAZToken, isContingentAuthNeeded } from "./contingentAuthZ";
 
-const allowedRoles = ['ReadOnly', 'OncallOperator', 'SupportOps', 'NAPS-Admin', 'Route53Manager', 'FullReadOnly', 'ReleaseCustomDomain'];
+const allowedRoles = [
+  'ReadOnly',
+  'OncallOperator',
+  'SupportOps',
+  'NAPS-Admin',
+  'Route53Manager',
+  'FullReadOnly',
+  'ReleaseCustomDomain',
+  'TicketyFullAccess',
+];
 
 const getIsengardCredentials = async (
   accountId: string, iamRoleName="ReadOnly"
-): Promise<Credentials> => {
+): Promise<AwsCredentialIdentity> => {
 
   if (!allowedRoles.includes(iamRoleName)) {
     throw new Error(`Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`)
@@ -51,4 +60,4 @@ const getIsengardCredentials = async (
  */
 export const getIsengardCredentialsProvider = (
   accountId: string, iamRoleName="ReadOnly"
-): Provider<Credentials> => getIsengardCredentials.bind(null, accountId, iamRoleName);
+): Provider<AwsCredentialIdentity> => getIsengardCredentials.bind(null, accountId, iamRoleName);

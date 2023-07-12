@@ -33,6 +33,7 @@ package.AWSAmplifyTools = {
             AWSFraudNodeJsTypes = 2.14;
             AWSFraudNodeJsApiClient = 2.14;
             AWSFraudGlobalDataNodeSdk = 2.14;
+            TicketyTypeScriptSdk = 1.0;
         };
     };
 

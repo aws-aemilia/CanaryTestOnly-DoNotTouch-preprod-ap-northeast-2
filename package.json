@@ -52,6 +52,8 @@
     "@amzn/isengard": "5.0.8",
     "@amzn/rip-helper": "^1.1.822",
     "@amzn/sim-client": "*",
+    "@amzn/tickety-typescript-sdk": "*",
+    "@aws-sdk/credential-providers": "^3.351.0",
     "@aws-sdk/client-acm": "^3.118.1",
     "@aws-sdk/client-amplify": "^3.262.0",
     "@aws-sdk/client-api-gateway": "^3.262.0",
