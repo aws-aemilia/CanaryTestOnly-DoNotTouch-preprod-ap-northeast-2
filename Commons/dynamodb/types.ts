@@ -18,6 +18,7 @@ export interface BranchConfig {
   customHeaders: string;
   enableBasicAuth: string;
   performanceMode: string;
+  version: string;
 }
 
 export interface CustomRuleConfig {
