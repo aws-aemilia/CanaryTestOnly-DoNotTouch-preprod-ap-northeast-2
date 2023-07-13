@@ -83,9 +83,9 @@ export class AppDAO {
 
     return {
       ...app,
-      autoBranchCreationPatterns: Array.from<string>(
-        app.autoBranchCreationPatterns
-      ),
+      autoBranchCreationPatterns:
+        app.autoBranchCreationPatterns &&
+        Array.from<string>(app.autoBranchCreationPatterns),
       enableBranchAutoBuild: Boolean(app.enableBranchAutoBuild),
       enableAutoBranchDeletion: Boolean(app.enableAutoBranchDeletion),
       autoBranchCreationConfig: {
