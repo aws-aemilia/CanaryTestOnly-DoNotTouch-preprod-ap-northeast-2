@@ -66,9 +66,6 @@ export class AppDAO {
    * This is useful for creating messages for SQS queues
    */
   public mapToJavaType(app: AppDO): AppDOJava {
-    // todo: convert actual obj to array
-    app.autoBranchCreationPatterns = [];
-
     const autoBranchCreationBranchConfig = {
       ...app.autoBranchCreationConfig?.branchConfig,
       ...{
@@ -86,6 +83,9 @@ export class AppDAO {
 
     return {
       ...app,
+      autoBranchCreationPatterns: Array.from<string>(
+        app.autoBranchCreationPatterns
+      ),
       enableBranchAutoBuild: Boolean(app.enableBranchAutoBuild),
       enableAutoBranchDeletion: Boolean(app.enableAutoBranchDeletion),
       autoBranchCreationConfig: {

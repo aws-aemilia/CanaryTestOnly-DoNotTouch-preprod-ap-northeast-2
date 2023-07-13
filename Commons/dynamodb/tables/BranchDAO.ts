@@ -69,6 +69,7 @@ export class BranchDAO {
       deleting: Boolean(branch.deleting),
       pullRequest: Boolean(branch.pullRequest),
       config: branchConfigJava,
+      associatedResources: Array.from<string>(branch.associatedResources),
     };
   }
 }

@@ -49,6 +49,7 @@ export interface AppDO extends AppDOBase {
   enableRewriteAndRedirect: number;
   enableAutoBranchCreation: number;
   enableBasicAuth: number;
+  autoBranchCreationPatterns: Set<string>;
 }
 
 export interface AppDOJava extends AppDOBase {
@@ -66,12 +67,12 @@ export interface AppDOJava extends AppDOBase {
   enableRewriteAndRedirect: boolean;
   enableCustomHeadersV2: boolean;
   enableAutoBranchCreation: boolean;
+  autoBranchCreationPatterns: string[];
 }
 
 interface AppDOBase {
   defaultDomain: string;
   cloudFrontDistributionId: string;
-  autoBranchCreationPatterns: string[];
   name: string;
   repository: string;
   version: number;
@@ -116,12 +117,14 @@ export interface BranchDO extends BranchDOBase {
   deleting: number;
   pullRequest: number;
   config: BranchDOBranchConfig;
+  associatedResources: Set<string>;
 }
 
 export interface BranchDOJava extends BranchDOBase {
   deleting: boolean;
   pullRequest: boolean;
   config: BranchDOBranchConfigJava;
+  associatedResources: string[];
 }
 
 interface BranchDOBase {
