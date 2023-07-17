@@ -41,12 +41,6 @@ export const releaseDomainRole: AmplifyRole = {
   ],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 15,
-  // Individual users to grant permissions
-  Users: [
-    "hloriana",
-    "jayrava",
-    "dkkiuna",
-  ]
 };
 
 const readOnlyRole: AmplifyRole = {
@@ -66,12 +60,6 @@ const readOnlyRole: AmplifyRole = {
   ],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 90,
-  // Individual users to grant permissions
-  Users: [
-    "hloriana",
-    "jayrava",
-    "dkkiuna",
-  ]
 };
 
 const fullReadOnlyRole: AmplifyRole = {
@@ -82,12 +70,6 @@ const fullReadOnlyRole: AmplifyRole = {
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 60,
-  // Individual users to grant permissions
-  Users: [
-    "hloriana",
-    "jayrava",
-    "dkkiuna",
-  ]
 };
 
 const lambdaInvokerRole: AmplifyRole = {
