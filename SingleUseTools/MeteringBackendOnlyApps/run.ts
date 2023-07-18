@@ -6,7 +6,7 @@ import {
   Region,
   Stage,
 } from "../../Commons/Isengard";
-import { getBranchlessApps, toDistroARN } from "./libs/commons";
+import { getApps, toDistroARN } from "./libs/commons";
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 import { HostingDTOMeteringMessageBuilder } from "./libs/HostingDTOMeteringMessageBuilder";
 import { AppDO } from "../../Commons/dynamodb";
@@ -28,7 +28,7 @@ async function run({
 }) {
   const cpAcc = await controlPlaneAccount(stage as Stage, region as Region);
   const meteringAcc = await meteringAccount(stage as Stage, region as Region);
-  const branchlessApps: AppDO[] = await getBranchlessApps(cpAcc);
+  const branchlessApps: AppDO[] = (await getApps(cpAcc)).withoutBranches;
 
   logger.info(`Found ${branchlessApps.length} branchless apps`);
 
