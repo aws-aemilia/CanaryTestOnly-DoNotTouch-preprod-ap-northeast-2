@@ -195,6 +195,7 @@ export const findDomainById = async (
  * @param stage i.e. beta, prod, gamma
  * @param region i.e. us-west-2
  * @param attributesToGet i.e. ["appId", "domainId"]
+ * @param expressionAttributeNames e.g. { "#s": "status" }
  *
  * @returns Iterator of pages
  */
@@ -202,7 +203,8 @@ export const paginateDomains = (
   documentClient: DynamoDBDocumentClient,
   stage: string,
   region: string,
-  attributesToGet: string[] = ["appId"]
+  attributesToGet: string[] = ["appId"],
+  expressionAttributeNames?: Record<string, string>,
 ) => {
   return paginateScan(
     {
@@ -212,6 +214,7 @@ export const paginateDomains = (
     {
       TableName: `${stage}-${region}-Domain`,
       ProjectionExpression: attributesToGet.join(","),
+      ExpressionAttributeNames: expressionAttributeNames
     }
   );
 };
