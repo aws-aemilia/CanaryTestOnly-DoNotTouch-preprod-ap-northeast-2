@@ -269,6 +269,36 @@ const getDomainAccounts = async (): Promise<AmplifyAccount[]> => {
   return accounts;
 };
 
+const getUluruAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex = /^aws-amplify\+cfn\+(?<stage>beta|gamma|prod)-(?<airportCodeMessedUp>[a-z0-9]+)@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    // Airport code is messed up because it doesn't have the hyphens. For example the IAD
+    // account uses this email: aws-amplify+cfn+prod+useast1@amazon.com, so the airport code
+    // is `useast1` instead of `us-east-1` as it should be.
+    const { airportCodeMessedUp, stage } = match.groups!;
+
+    // Fix the airport code by inserting the hyphens and turn `useast1` into `us-east-1`.
+    const airportCode = airportCodeMessedUp.replace(/([a-z]{2})([a-z]+)(\d{1})/, "$1-$2-$3");
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      },
+    ];
+  });
+};
+
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): AccountsLookupFn => {
@@ -432,6 +462,19 @@ export const kinesisConsumerAccount: (
 ) => Promise<AmplifyAccount> = defaultGetAccount(
   getKinesisConsumerAccounts,
   "kinesisConsumerAccounts"
+);
+
+export const uluruAccounts: AccountsLookupFn = defaultGetAccounts(
+  getUluruAccounts,
+  "uluruAccounts"
+);
+
+export const uluruAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getUluruAccounts,
+  "uluruAccounts"
 );
 
 export const meteringAccounts: AccountsLookupFn = defaultGetAccounts(
