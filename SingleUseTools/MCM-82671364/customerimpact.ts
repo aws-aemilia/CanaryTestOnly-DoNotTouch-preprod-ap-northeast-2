@@ -41,11 +41,18 @@ async function main () {
       type: 'string',
       default: 'eu-central-1'
     })
+    .option('output-type', {
+      alias: 'outputType',
+      describe: 'Whether the output should generate a list of App IDs or Account IDs',
+      type: 'string',
+      default: 'accounts',
+      choices: ['apps', 'accounts'],
+    })
     .strict()
     .version(false)
     .help().argv
 
-  const { stage, region } = args
+  const { stage, region, outputType } = args
 
   logger.info(`Running with stage: ${stage} and region: ${region}`)
 
@@ -61,6 +68,7 @@ async function main () {
 
   logger.info(accounts, 'Control plane accounts')
   const uniqueCustomers = new Set<{ accountId: string; region: string }>()
+  const uniqueApps = new Set<{ appId: string; region: string, stage: string }>()
 
   for (const account of accounts) {
     logger.info(
@@ -75,7 +83,8 @@ async function main () {
     const ddbClient = getDynamoDBDocumentClient(region as Region, credentials)
     const pages = paginateLambdaEdgeConfigs(ddbClient, [
       'appId',
-      'branchConfig'
+      'branchConfig',
+      'customDomainIds',
     ])
 
     logger.info(`Paginating through lambda edge config table...`)
@@ -84,6 +93,16 @@ async function main () {
         const lecItem = item as Partial<LambdaEdgeConfig>
 
         if (isStaticAssetSeparated(lecItem)) {
+          if (outputType === 'apps') {
+            if (lecItem.customDomainIds?.size) {
+              uniqueApps.add({
+                appId: lecItem.appId!,
+                region: account.region,
+                stage: account.stage,
+              });
+            }
+            continue;
+          }
           const customerAccountId = await lookupCustomerAccountId(
             ddbClient,
             stage,
@@ -103,6 +122,20 @@ async function main () {
       logger.info('Sleeping between pages...')
       await sleep(1000)
     }
+  }
+
+  if (outputType === 'apps') {
+    logger.info(`Found ${uniqueApps.size} unique apps`);
+
+    let csvOutput = 'appId,region,stage\n'
+    for (const { appId, region, stage } of uniqueApps) {
+      csvOutput += `${appId},${region},${stage}\n`;
+    }
+  
+    logger.info(`Writing customer impact to customer-impact-apps.csv`)
+    await writeFile('customer-impact-apps.csv', csvOutput);
+    logger.info(`Done!`);
+    return;
   }
 
   logger.info(`Found ${uniqueCustomers.size} unique customers`)

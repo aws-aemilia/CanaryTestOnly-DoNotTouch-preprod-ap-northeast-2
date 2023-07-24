@@ -13,11 +13,13 @@ const TABLE_NAME = `LambdaEdgeConfig`;
  *
  * @param dynamodb Document Client from @aws-sdk/lib-dynamodb
  * @param domainOrAppId The domainId/appId
+ * @param attributesToGet e.g. ["appId", "branchConfig"]
  * @returns
  */
 export const getLambdaEdgeConfigForAppOrDomain = async (
   dynamodb: DynamoDBDocumentClient,
-  domainOrAppId: string
+  domainOrAppId: string,
+  attributesToGet: string[],
 ) => {
   if (!domainOrAppId) {
     console.log("Invalid app or domain");
@@ -32,7 +34,7 @@ export const getLambdaEdgeConfigForAppOrDomain = async (
     const lambdaEdgeConfigItem = await dynamodb.send(
       new GetCommand({
         TableName: TABLE_NAME,
-        ProjectionExpression: "appId,customRuleConfigs",
+        ProjectionExpression: attributesToGet.join(","),
         Key: {
           appId: domainOrAppId,
         },

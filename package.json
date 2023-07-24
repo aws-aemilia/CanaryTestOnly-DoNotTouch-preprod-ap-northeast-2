@@ -45,6 +45,7 @@
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@amzn/awsamplifycomputeservice-client": "*",
     "@amzn/aws-fraud-api-client": "^2.14.0",
     "@amzn/aws-fraud-global-data-node-sdk": "^2.14.0",
     "@amzn/aws-fraud-types": "^2.14.0",

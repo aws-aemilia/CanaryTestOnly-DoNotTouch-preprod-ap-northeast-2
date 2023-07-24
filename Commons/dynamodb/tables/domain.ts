@@ -247,3 +247,43 @@ export const paginateDomainsForApp = async (
     }
   );
 };
+
+/**
+ * 
+ * Finds the domains associated with the given appId
+ * 
+ * @param documentClient DocumentClient with credentials for the Control Plane account
+ * @param stage The stage to find the App in
+ * @param region The region to find the App in
+ * @param appId The appId that the domain belongs to
+ * @returns 
+ */
+export const findDomainsByAppId = async (
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  appId: string,
+): Promise<DomainDO[] | null> => {
+  try {
+    const response = await documentClient.send(
+      new QueryCommand({
+        TableName: `${stage}-${region}-Domain`,
+        KeyConditionExpression: "appId = :appId",
+        ExpressionAttributeValues: {
+          ":appId": appId,
+        },
+      })
+    );
+
+    if (!response.Items || response.Items.length === 0) {
+      return null;
+    }
+
+    return response.Items as DomainDO[];
+  } catch (err) {
+    if (err instanceof ResourceNotFoundException) {
+      return null;
+    }
+    throw err;
+  }
+};
