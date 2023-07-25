@@ -173,6 +173,22 @@ export interface BranchDOBranchConfigJava {
   version: number;
 }
 
+export interface WarmingPoolResourceDO {
+  defaultDomain: string;
+  distributionSettingsVersion: string;
+  recordChangeId: string;
+  resourceId: string;
+  distributionDomain: string;
+  certificateArn: string;
+  distributionId: string;
+  createTime: string;
+  claimStatus: string;
+  bucketName: string;
+  updateTime: string;
+  distributionType: string;
+  distributionIdentity: string;
+}
+
 export interface JobDO {
   branchArn: string;
   jobId: string;

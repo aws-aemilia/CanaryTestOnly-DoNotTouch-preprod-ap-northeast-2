@@ -1,3 +1,8 @@
+import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
+import { CloudFront } from "@aws-sdk/client-cloudfront";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { LambdaClient } from "@aws-sdk/client-lambda";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
@@ -5,18 +10,13 @@ import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
 } from "../../Commons/Isengard";
-import { LambdaClient } from "@aws-sdk/client-lambda";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { CloudFront } from "@aws-sdk/client-cloudfront";
+import { WarmResourcesDAO } from "../../Commons/dynamodb/tables/WarmResourcesDAO";
+import confirm from "../../Commons/utils/confirm";
 import {
   GatewayRollbackScriptInput,
   generateDistributionConfigForMigration,
   updateDistribution,
 } from "./distributionsUtils";
-import confirm from "../../Commons/utils/confirm";
-import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
-import { updateWarmingPoolDistributionType } from "./warmingPoolUtils";
 
 const DEV_USER = process.env.USER;
 
@@ -120,6 +120,8 @@ const main = async () => {
     credentials,
   });
 
+  const warmResourcesDAO = new WarmResourcesDAO(stage, region, credentials);
+
   console.info("Initialized credentials and clients.");
 
   const scriptClients = {
@@ -168,13 +170,7 @@ const main = async () => {
       }
     );
 
-    await updateWarmingPoolDistributionType(
-      stage,
-      region,
-      appId,
-      "LAMBDA_AT_EDGE",
-      dynamoDBClient
-    );
+    await warmResourcesDAO.updateResourceDistType(appId, "LAMBDA_AT_EDGE");
     console.info(
       `Updated WarmingPool DistribtuionType for ${appId} to 'LAMBDA_AT_EDGE'...`
     );

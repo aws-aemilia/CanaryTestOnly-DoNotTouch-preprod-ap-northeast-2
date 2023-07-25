@@ -1,26 +1,24 @@
-import {
-  CloudFormationClient,
-  DescribeStacksCommand,
-} from "@aws-sdk/client-cloudformation";
+import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
 import { CloudFront } from "@aws-sdk/client-cloudfront";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { Credentials, Provider } from "@aws-sdk/types";
+import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
+  Region,
+  Stage,
   controlPlaneAccount,
   dataPlaneAccount,
   getIsengardCredentialsProvider,
-  Region,
-  Stage,
 } from "../../Commons/Isengard";
-import confirm from "../../Commons/utils/confirm";
+import { WarmResourcesDAO } from "../../Commons/dynamodb/tables/WarmResourcesDAO";
+import { getCloudFormationOutput } from "./cfnUtils";
 import {
   fetchDistribution,
   getDistributionsForApp,
 } from "./distributionsUtils";
-import { getCloudFormationOutput } from "./cfnUtils";
+import { getDomainName } from "../hostingDataplane/utils/utils";
 
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
@@ -64,19 +62,23 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(
       type: "string",
       demandOption: true,
     })
+    .option("dryRun", {
+      describe: "run the commmand as readOnly",
+      type: "boolean",
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  let { stage, region, appId, alias, ticket } = args;
+  let { stage, region, appId, alias, ticket, dryRun } = args;
   process.env.ISENGARD_SIM = ticket;
-  
+
   if (stage === "test" && !alias) {
     throw new Error("--alias argument must be provided with stage=test");
   }
 
-  let controlplaneCredentials: Provider<Credentials> | undefined;
-  let dataplaneCredentials: Provider<Credentials> | undefined;
+  let controlplaneCredentials: Provider<AwsCredentialIdentity> | undefined;
+  let dataplaneCredentials: Provider<AwsCredentialIdentity> | undefined;
 
   // Test accounts should use ada credentials update --account --role
   if (stage !== "test") {
@@ -106,11 +108,22 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(
     credentials: dataplaneCredentials,
   });
 
-  const hostingGatewayURL = await getCloudFormationOutput(
-    cfnClient,
-    stage === "test" ? `HostingGateway-${alias}` : `HostingGateway-${stage}`,
-    "HostingGatewayURL"
+  const warmResourcesDAO = new WarmResourcesDAO(
+    stage,
+    region,
+    controlplaneCredentials
   );
+
+  const hostingGatewayURL =
+    stage === "test"
+      ? await getCloudFormationOutput(
+          cfnClient,
+          stage === "test"
+            ? `HostingGateway-${alias}`
+            : `HostingGateway-${stage}`,
+          "HostingGatewayURL"
+        )
+      : `${appId}.${getDomainName(stage, region)}`;
 
   if (!hostingGatewayURL) {
     throw new Error("hostingGatewayURL not found");
@@ -170,22 +183,30 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(
       JSON.stringify(distributionConfig, undefined, 2)
     );
 
-    if (
-      await confirm(
-        "Do you want to update the distribution with the above config?"
-      )
-    ) {
-      await cfClient.updateDistribution({
+    if (dryRun) {
+      console.log("[DryRun=true] Skipped Update Distribution");
+    } else {
+      const res = await cfClient.updateDistribution({
         Id: distId,
         IfMatch: eTag,
         DistributionConfig: distributionConfig,
       });
-      console.info("Successfully updated the distribution", distId);
+      console.info("Updated the distribution", res);
     }
+  }
+
+  if (dryRun) {
+    console.log("[DryRun=true] Skipped updateResourceDistType");
+  } else {
+    const res = await warmResourcesDAO.updateResourceDistType(appId, "GATEWAY");
+    console.log("Updated resourceDistType", res);
   }
 };
 
-function getDdbClient(region: string, credentials?: Provider<Credentials>) {
+function getDdbClient(
+  region: string,
+  credentials?: Provider<AwsCredentialIdentity>
+) {
   const dynamodbClient = new DynamoDBClient({ region, credentials });
   return DynamoDBDocumentClient.from(dynamodbClient);
 }

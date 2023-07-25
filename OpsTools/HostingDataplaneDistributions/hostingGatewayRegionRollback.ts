@@ -8,9 +8,7 @@ import {
 } from "../../Commons/Isengard";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import {
-  DynamoDBClient,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { CloudFront } from "@aws-sdk/client-cloudfront";
 import {
   NotGatewayDistribution,
@@ -24,7 +22,7 @@ import pino from "pino";
 import pinoPretty from "pino-pretty";
 import { StandardRetryStrategy } from "@aws-sdk/middleware-retry";
 import fs from "fs";
-import { updateWarmingPoolDistributionType } from "./warmingPoolUtils";
+import { WarmResourcesDAO } from "../../Commons/dynamodb/tables/WarmResourcesDAO";
 
 const logger = pino(pinoPretty());
 const distributionsRolledBack: Map<string, string[]> = new Map();
@@ -53,6 +51,7 @@ const main = async () => {
     .option("region", {
       describe: "region to run the command",
       type: "string",
+      demandOption: true,
     })
     .option("devAccountId", {
       describe:
@@ -129,6 +128,8 @@ const main = async () => {
     credentials,
   });
 
+  const warmResourcesDAO = new WarmResourcesDAO(stage, region, credentials);
+
   logger.info("Initialized credentials and clients.");
 
   logger.info("Gathering distributions to be rolled back...");
@@ -141,7 +142,10 @@ const main = async () => {
     account.region
   );
   console.log(distributionsToRollback);
-  writeDistributionDataToDisk(distributionsToRollback, "distributionsToRollback");
+  writeDistributionDataToDisk(
+    distributionsToRollback,
+    "distributionsToRollback"
+  );
 
   for (const appId of distributionsToRollback.keys()) {
     logger.info(
@@ -217,13 +221,7 @@ const main = async () => {
       await sleep(CLOUD_FRONT_API_RATE_MS);
     }
 
-    await updateWarmingPoolDistributionType(
-      stage as Stage,
-      region as Region,
-      appId,
-      "LAMBDA_AT_EDGE",
-      dynamoDBClient
-    );
+    await warmResourcesDAO.updateResourceDistType(appId, "LAMBDA_AT_EDGE");
 
     logger.info(
       `Updated WarmingPool DistribtuionType for ${appId} to 'LAMBDA_AT_EDGE'...`
@@ -258,6 +256,10 @@ main()
   .then()
   .catch((e) => {
     logger.error(e);
-  }).finally(() => {
-    writeDistributionDataToDisk(distributionsRolledBack, "distributionsRolledBack");
+  })
+  .finally(() => {
+    writeDistributionDataToDisk(
+      distributionsRolledBack,
+      "distributionsRolledBack"
+    );
   });
