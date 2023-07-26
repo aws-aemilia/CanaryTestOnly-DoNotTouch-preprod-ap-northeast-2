@@ -1,8 +1,9 @@
 import {
+  ListDeadLetterSourceQueuesCommand,
+  ListQueuesCommand,
+  Message,
   ReceiveMessageCommand,
   SQSClient,
-  Message,
-  ListQueuesCommand,
 } from "@aws-sdk/client-sqs";
 
 /**
@@ -69,4 +70,48 @@ export async function getQueueUrl(
   }
 
   return queues.QueueUrls[0];
+}
+
+/**
+ * Returns the source queue URL for a given DLQ queue URL.
+ */
+export async function getSourceQueueUrl(
+  sqsClient: SQSClient,
+  dlqQueue: string
+): Promise<string> {
+  console.log(`Getting source queue URL for ${dlqQueue}`);
+
+  const queueUrls = (
+    await sqsClient.send(
+      new ListDeadLetterSourceQueuesCommand({ QueueUrl: dlqQueue })
+    )
+  ).queueUrls?.filter(
+    // AccountClosingDeletionDLQ has 2 sources and we don't want to ever redrive into AccountDeferredTerminationQueue
+    (queueUrl) => !queueUrl.includes("AccountDeferredTerminationQueue")
+  );
+
+  if (!queueUrls || queueUrls.length === 0) {
+    throw new Error(`No source queue found for ${dlqQueue}`);
+  }
+
+  if (queueUrls.length > 1) {
+    throw new Error(
+      `Multiple source queues found for ${dlqQueue}. This is not expected.\n${queueUrls}`
+    );
+  }
+
+  console.log(`Found source queue URL ${queueUrls[0]}`);
+
+  return queueUrls[0];
+}
+
+/**
+ * Pretty prints a message body assuming it is JSON
+ */
+export function prettyPrint(msg: Message): string {
+  try {
+    return JSON.stringify(JSON.parse(msg.Body!), null, 2) ;
+  } catch (e) {
+    return msg.Body ?? "";
+  }
 }
