@@ -29,10 +29,8 @@ This is meant to be used one-off migration of developer apps/integration test ap
 
 Usage:
 ada credentials update --account=$AWS_ACCOUNT_ID --role=admin --once
-ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=test --alias=$(whoami) --region=us-west-2
-
-
-ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(whoami) --region="ca-central-1"
+ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=test --alias=$(whoami) --region=us-west-2 --dryRun
+ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="ca-central-1" --dryRun
 `
     )
     .option("stage", {
@@ -118,12 +116,10 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --alias=$(
     stage === "test"
       ? await getCloudFormationOutput(
           cfnClient,
-          stage === "test"
-            ? `HostingGateway-${alias}`
-            : `HostingGateway-${stage}`,
+          `HostingGateway-${alias}`,
           "HostingGatewayURL"
         )
-      : `${appId}.${getDomainName(stage, region)}`;
+      : `https://${appId}.${getDomainName(stage, region)}`;
 
   if (!hostingGatewayURL) {
     throw new Error("hostingGatewayURL not found");
