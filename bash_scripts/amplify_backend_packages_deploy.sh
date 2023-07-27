@@ -36,7 +36,7 @@ function deploy_local_package() {
     else
         brazil-build-tool-exec sam deploy
     fi
-    echo -e "${GREEN}Deploy SUCCESS${NC}"l
+    echo -e "${GREEN}Deploy SUCCESS${NC}"
     cd ../../..
 }
 

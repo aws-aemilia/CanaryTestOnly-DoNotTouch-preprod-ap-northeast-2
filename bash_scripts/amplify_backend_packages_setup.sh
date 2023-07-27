@@ -123,7 +123,7 @@ function download_and_build_package() {
     sed_dash_i "s/YOUR_ACCOUNT_ID_HERE/$(echo ${ACCOUNT_ID})/g" SAMToolkit.devenv
     sed_dash_i "s/YOUR_ALIAS_HERE/$(echo ${USER_ALIAS})/g" SAMToolkit.devenv
 
-    echo -e "${GREEN}Deploy $3: SUCCESS${NC}"l
+    echo -e "${GREEN}Deploy $3: SUCCESS${NC}"
     cd ../../..
 }
 
