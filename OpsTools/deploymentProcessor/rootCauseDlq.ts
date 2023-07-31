@@ -283,30 +283,39 @@ async function rootCauseDeployment(
     message.payload.buildId
   );
 
-  if (!job) {
-    logger.error(message, "Unable to find job in DynamoDB. Cannot root cause");
-    return null;
+  let deploymentStartTime: Date;
+  let deploymentEndTime: Date;
+
+  if (job) {
+    // Find the deployment step in the JobDO
+    const deploymentStep = job.jobSteps.find((step) => step.name === "DEPLOY");
+    if (!deploymentStep) {
+      logger.error(
+          message,
+          "Unable to find deployment step in job. Cannot root cause"
+      );
+      return null;
+    }
+
+    logger.info(deploymentStep, "Found deployment step in JobDO");
+    deploymentStartTime = new Date(deploymentStep.startTime);
+    deploymentEndTime = dayjs(deploymentStep.endTime).add(1, "minute").toDate(); // logs are sometimes after deployment end time. Not sure why
+
+  } else {
+    logger.warn(message, "Unable to find job in DynamoDB. Branch was likely deleted");
+    // Since job was deleted, we will assume deployment start time and end time based on the SQS message
+    deploymentStartTime = new Date(message.sentTimestamp);
+    deploymentEndTime = dayjs(message.sentTimestamp).add(10, "minute").toDate();
   }
 
-  // Find the deployment step in the JobDO
-  const deploymentStep = job.jobSteps.find((step) => step.name === "DEPLOY");
-  if (!deploymentStep) {
-    logger.error(
-      message,
-      "Unable to find deployment step in job. Cannot root cause"
-    );
-    return null;
-  }
-
-  logger.info(deploymentStep, "Found deployment step in JobDO");
   logger.info("Querying for errors in Deployment Processor logs");
 
   const logs = await doQuery(
     controlPlaneAccount,
     "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDef",
     `filter @message like /Fatal error/ and @message like /${message.payload.applicationId}/ | fields @timestamp, @message`,
-    new Date(deploymentStep.startTime || message.sentTimestamp),
-    dayjs(deploymentStep.endTime).add(1, "minute").toDate() // logs are sometimes after deployment end time. Not sure why
+    deploymentStartTime,
+    deploymentEndTime,
   );
 
   if (!logs) {
@@ -348,12 +357,14 @@ async function rootCauseComputeDeployment(
     return null;
   }
 
-  logger.info("Checking deployer state machine execution details");
+  logger.info("Checking deployer state machine execution details = %s", computeDeployment.stateMachineExecutionArn);
   const response = await stepFunctionsClient.send(
     new DescribeExecutionCommand({
       executionArn: computeDeployment.stateMachineExecutionArn,
     })
   );
+
+  logger.info(response, "State machine execution");
 
   if (response.status !== "FAILED") {
     logger.info(response, "State machine execution is not in failed state");
