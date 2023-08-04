@@ -107,22 +107,24 @@ const main = async () => {
 
     const cpAccounts = await controlPlaneAccounts({ stage: "prod" })
 
-    for (let account of cpAccounts) {
+    console.log("Stopping builds in ALL regions")
+    const stopBuildsInRegionPromises: Promise<void>[] = cpAccounts.map(async (account) => {
       const regionalControlplaneCredentials = getIsengardCredentialsProvider(
-        account.accountId,
-        "OncallOperator"
+          account.accountId,
+          "OncallOperator"
       );
 
       await stopBuilds(
-        stage as Stage,
-        account.region as Region,
-        regionalControlplaneCredentials,
-        unreportedAccounts,
-        1, // We'll stop builds 1 account at a time.
-        console,
-        false,
+          stage as Stage,
+          account.region as Region,
+          regionalControlplaneCredentials,
+          unreportedAccounts,
+          3,
+          console,
+          false,
       )
-    }
+    });
+    await Promise.all(stopBuildsInRegionPromises);
   }
   process.exit(0);
 };
