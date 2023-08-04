@@ -1,5 +1,12 @@
 import { getRolesForStage } from "../Commons/Isengard/roles/standardRoles";
-import { AmplifyAccount, AmplifyAccountType, controlPlaneAccounts, getAccountsLookupFn, Region, } from "../Commons/Isengard";
+import {
+  AmplifyAccount,
+  AmplifyAccountType,
+  controlPlaneAccounts,
+  getAccountsLookupFn,
+  preflightCAZForAdministrativeIsengardCalls,
+  Region,
+} from "../Commons/Isengard";
 import { upsertRole } from "../Commons/Isengard/roles/upsertRole";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -56,6 +63,8 @@ const main = async () => {
           )
         )
       ).flatMap((x) => x);
+
+  await preflightCAZForAdministrativeIsengardCalls(accounts);
 
   for (const account of accounts) {
     console.log(`>> Updating roles for account ${account.email}`);

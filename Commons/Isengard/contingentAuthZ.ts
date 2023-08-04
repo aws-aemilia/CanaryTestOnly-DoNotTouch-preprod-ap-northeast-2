@@ -38,10 +38,12 @@ export const isContingentAuthNeeded = async (
 
 const toPreflightRequest = (
   account: AmplifyAccount,
-  role: string
+  role?: string
 ): EvaluateContingentAuthorizationEntry => {
   return {
-    Resource: `arn:aws:iam::${account.accountId}:role/${role}`,
+    Resource: `arn:aws:iam::${account.accountId}:${
+      role ? `role/${role}` : "root"
+    }`,
     Action: "*",
   };
 };
@@ -51,7 +53,13 @@ interface PreflightCAZParams {
   role: string | string[];
 }
 
-export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) => {
+const preflightCAZFlow = async ({
+  accounts,
+  role,
+}: {
+  accounts: AmplifyAccount | AmplifyAccount[];
+  role?: string | string[];
+}) => {
   const accountsArray = Array.isArray(accounts) ? accounts : [accounts];
   const roleArray = Array.isArray(role) ? role : [role];
 
@@ -70,17 +78,22 @@ export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) => {
     return;
   }
 
-  console.log(
-    `Requesting Contingent Authorization for Roles: ${EvaluateContingentAuthorizationEntries.map(
-      (a) => a.Resource
-    ).join(", ")}\n`
-  );
-
   const batchEvaluateContingentAuthorizationResponse =
     await batchEvaluateContingentAuthorization({
       ContingentAuthorizationVersion: "1.0",
       EvaluateContingentAuthorizationEntries,
     });
+
+  if (batchEvaluateContingentAuthorizationResponse.WorkflowUrl === undefined) {
+    // no url is returned when none of the accounts need CAZ
+    return;
+  }
+
+  console.log(
+    `Requested Contingent Authorization for Roles: ${EvaluateContingentAuthorizationEntries.map(
+      (a) => a.Resource
+    ).join(", ")}\n`
+  );
 
   console.log(batchEvaluateContingentAuthorizationResponse.WorkflowUrl);
   console.log(
@@ -93,3 +106,20 @@ export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) => {
     );
   }
 };
+
+/**
+ * Makes a preflight request to Isengard for Contingent Authorization (CAZ)
+ * <br>
+ * This will print the URL that you need to visit to provide justification for CAZ.
+ */
+export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) =>
+  preflightCAZFlow({ accounts, role });
+
+/**
+ * Makes a preflight request to Isengard for Contingent Authorization (CAZ). This authorizes administrative Isengard APIs (e.g. createIAMRole)
+ * <br>
+ * This will print the URL that you need to visit to provide justification for CAZ.
+ */
+export const preflightCAZForAdministrativeIsengardCalls = async (
+  accounts: AmplifyAccount[]
+) => preflightCAZFlow({ accounts });
