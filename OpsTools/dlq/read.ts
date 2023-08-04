@@ -2,6 +2,7 @@ import {
   AmplifyAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
+  preflightCAZ,
   Region,
   Stage,
 } from "../../Commons/Isengard";
@@ -56,11 +57,6 @@ async function main() {
       choices: SAFE_TO_READ_QUEUES,
       demandOption: true,
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
@@ -73,9 +69,9 @@ async function main() {
     );
   }
 
-  process.env.ISENGARD_SIM = ticket;
-
-  await read(await controlPlaneAccount(stage as Stage, region as Region), dlq);
+  const account = await controlPlaneAccount(stage as Stage, region as Region);
+  await preflightCAZ({accounts : account, role : "OncallOperator"});
+  await read(account, dlq);
 }
 
 main().then(console.log).catch(console.error);

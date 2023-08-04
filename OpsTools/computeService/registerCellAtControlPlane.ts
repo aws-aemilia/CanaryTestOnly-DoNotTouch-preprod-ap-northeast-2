@@ -1,11 +1,11 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import {
-  computeServiceControlPlaneAccount,
-  computeServiceDataPlaneAccount,
-  getIsengardCredentialsProvider,
-  Region,
-  Stage,
+    computeServiceControlPlaneAccount,
+    computeServiceDataPlaneAccount,
+    getIsengardCredentialsProvider, preflightCAZ,
+    Region,
+    Stage,
 } from "../../Commons/Isengard";
 import yargs from "yargs";
 import confirm from "../../Commons/utils/confirm";
@@ -113,6 +113,11 @@ ts-node registerCellAtControlPlane.ts --command activate --cellNumber 1 --stage 
         .help().argv;
 
     const {stage, region, cellNumber, action} = args
+
+    await preflightCAZ({
+        accounts: await computeServiceControlPlaneAccount(stage as Stage, region as Region),
+        role: "OncallOperator"
+    });
 
     await registerAccount(stage as Stage, region as Region, cellNumber, action as CellAction);
 }

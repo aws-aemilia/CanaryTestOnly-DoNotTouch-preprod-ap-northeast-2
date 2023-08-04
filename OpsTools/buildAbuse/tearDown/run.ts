@@ -1,6 +1,7 @@
 import { updateBlockStatusForAccountIds } from "../../../Commons/Fraud";
 import yargs from "yargs";
 import { getReportedAccountIds } from "./common";
+import {controlPlaneAccount, controlPlaneAccounts, preflightCAZ, Region, Stage} from "../../../Commons/Isengard";
 
 async function blockAccounts(
   stage: string,
@@ -48,17 +49,16 @@ async function main() {
         "Only operate on accounts reported after the provided date 2023-04-13T04:21:00.590Z",
       type: "string",
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, accountId, reportedAfter, ticket } = args;
+  const { stage, region, accountId, reportedAfter } = args;
 
-  process.env.ISENGARD_SIM = ticket;
+  await preflightCAZ({
+    accounts: await controlPlaneAccount(stage as Stage, region as Region),
+    role: "OncallOperator",
+  })
 
   const targetAccountIds = getReportedAccountIds({
     reportedAfter,

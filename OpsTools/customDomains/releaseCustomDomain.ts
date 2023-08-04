@@ -14,7 +14,7 @@ import {
   Region,
   Stage,
   controlPlaneAccount,
-  getIsengardCredentialsProvider,
+  getIsengardCredentialsProvider, preflightCAZ,
 } from "../../Commons/Isengard";
 import {
   CloudFrontClient,
@@ -45,11 +45,6 @@ async function main() {
       type: "string",
       demandOption: true,
     })
-    .option("ticket", {
-      describe: "i.e. V69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .option("appId", {
       describe: "Original appId that has the domain associated to it",
       type: "string",
@@ -64,11 +59,12 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { region, stage, ticket, appId, domainName } = args;
-  process.env.ISENGARD_SIM = ticket;
+  const { region, stage, appId, domainName } = args;
 
   const regionName = toRegionName(region);
   const cpAccount = await controlPlaneAccount(stage as Stage, region as Region);
+
+  await preflightCAZ({accounts: cpAccount, role: "ReleaseCustomDomain"});
 
   const controlPlaneCreds = getIsengardCredentialsProvider(
     cpAccount.accountId,

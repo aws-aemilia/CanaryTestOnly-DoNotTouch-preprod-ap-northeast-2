@@ -6,7 +6,7 @@ import { AppDO } from "../../Commons/dynamodb";
 import {
   controlPlaneAccount,
   controlPlaneAccounts,
-  getIsengardCredentialsProvider,
+  getIsengardCredentialsProvider, preflightCAZ,
   Region,
   Stage,
 } from "../../Commons/Isengard";
@@ -34,18 +34,18 @@ const main = async () => {
       type: "string",
       default: "us-east-1",
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
 
   let { region, stage, ticket } = args;
   region = toRegionName(region);
-  process.env.ISENGARD_SIM = ticket;
+
+  // Need FullReadOnly for queries and OncallOperator to StopBuilds
+  await preflightCAZ({
+    accounts: await controlPlaneAccounts({ stage: stage as Stage }),
+    role: ["FullReadOnly", "OncallOperator"],
+  });
 
   const maliciousAppIds = await getMaliciousApps(
     stage,

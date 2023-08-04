@@ -1,6 +1,5 @@
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
-import { getCAZToken, isContingentAuthNeeded } from "./contingentAuthZ";
 
 const allowedRoles = [
   'ReadOnly',
@@ -22,17 +21,9 @@ const getIsengardCredentials = async (
   }
 
   try {
-    const cazToken: string | undefined = (await isContingentAuthNeeded(
-      accountId,
-      iamRoleName
-    ))
-      ? await getCAZToken(accountId)
-      : undefined;
-
     const creds = await getAssumeRoleCredentials({
       awsAccountID: accountId,
       iamRoleName,
-      cazToken,
     });
     return {
       ...creds,

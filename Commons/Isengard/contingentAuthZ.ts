@@ -1,58 +1,12 @@
 import {
+  batchEvaluateContingentAuthorization,
   getAWSAccountClassification,
   getIAMRole,
-  getContingentAuthorizationToken,
   RiskLevel,
-  Justification
 } from "@amzn/isengard";
-import { memoizeWith } from "ramda";
-
-const prompt = require('prompt-sync')();
-
-const getCAZJustification = (): Justification => {
-  let { ISENGARD_MCM, ISENGARD_REVIEW_ID, ISENGARD_SIM } = process.env;
-
-  if (!(ISENGARD_MCM || ISENGARD_REVIEW_ID || ISENGARD_SIM)) {
-    console.log("No Contingent Authorization justification found among environment variables (ISENGARD_MCM, ISENGARD_REVIEW_ID, ISENGARD_SIM).")
-    const cazType: string = prompt("Enter the justification type that you'll provide [sim, mcm, review, cancel]: ").toLowerCase();
-
-    switch (cazType) {
-      case "sim":
-        ISENGARD_SIM = prompt("Enter the SIM ticket ID or link: ");
-        process.env["ISENGARD_SIM"] = ISENGARD_SIM;
-        break;
-      case "mcm":
-        ISENGARD_MCM = prompt("Enter the MCM ID or link: ");
-        process.env["ISENGARD_MCM"] = ISENGARD_MCM;
-        break;
-      case "review":
-        ISENGARD_REVIEW_ID = prompt("Enter the Consensus review ID or link: ")
-        process.env["ISENGARD_REVIEW_ID"] = ISENGARD_REVIEW_ID;
-        break;
-      case "cancel":
-        break;
-      default:
-        console.error("Invalid Contingent Authorization justification type.");
-        break;
-    }
-  }
-
-  if (ISENGARD_SIM) {
-    return { SIM: { Link: ISENGARD_SIM } };
-  }
-
-  if (ISENGARD_MCM) {
-    return { MCM: { Link: ISENGARD_MCM } };
-  }
-
-  if (ISENGARD_REVIEW_ID) {
-    return { Review: { ReviewId: ISENGARD_REVIEW_ID } };
-  }
-
-  throw new Error(
-    `Failed to get Isengard credentials due to missing Contingent Authorization justification. Provide justification when prompted, or by setting one of the environment variables (ISENGARD_MCM, ISENGARD_REVIEW_ID, ISENGARD_SIM).`
-  );
-};
+import { AmplifyAccount } from "./accounts";
+import { EvaluateContingentAuthorizationEntry } from "@amzn/isengard/dist/src/contingent-authorization/types";
+import confirm from "../utils/confirm";
 
 /**
  * Taken from https://code.amazon.com/packages/BenderLibIsengard/blobs/a8494f0efbec05349f301c6c24f7e97640cfdb9d/--/src/isengard/_cli/functions.py#L53
@@ -82,20 +36,60 @@ export const isContingentAuthNeeded = async (
   );
 };
 
-/**
- * Returns a contingent authorization token for the given account.
- *
- * This function is memoized to avoid Isengard throttling. The same token can be used for all interactions with the same account.
- */
-export const getCAZToken: (accountId: string) => Promise<string> = memoizeWith(
-  String,
-  async (accountId: string) => {
-    return (
-      await getContingentAuthorizationToken({
-        AWSAccountID: accountId,
-        Bypass: false,
-        Justifications: [getCAZJustification()],
-      })
-    ).ContingentAuthorizationToken;
+const toPreflightRequest = (
+  account: AmplifyAccount,
+  role: string
+): EvaluateContingentAuthorizationEntry => {
+  return {
+    Resource: `arn:aws:iam::${account.accountId}:role/${role}`,
+    Action: "*",
+  };
+};
+
+interface PreflightCAZParams {
+  accounts: AmplifyAccount | AmplifyAccount[];
+  role: string | string[];
+}
+
+export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) => {
+  const accountsArray = Array.isArray(accounts) ? accounts : [accounts];
+  const roleArray = Array.isArray(role) ? role : [role];
+
+  const EvaluateContingentAuthorizationEntries = [];
+  // sequentially since Isengard has low limits
+  for (const account of accountsArray) {
+    for (const role of roleArray) {
+      EvaluateContingentAuthorizationEntries.push(
+        toPreflightRequest(account, role)
+      );
+    }
   }
-);
+
+  if (EvaluateContingentAuthorizationEntries.length === 0) {
+    // no accounts need CAZ
+    return;
+  }
+
+  console.log(
+    `Requesting Contingent Authorization for Roles: ${EvaluateContingentAuthorizationEntries.map(
+      (a) => a.Resource
+    ).join(", ")}\n`
+  );
+
+  const batchEvaluateContingentAuthorizationResponse =
+    await batchEvaluateContingentAuthorization({
+      ContingentAuthorizationVersion: "1.0",
+      EvaluateContingentAuthorizationEntries,
+    });
+
+  console.log(batchEvaluateContingentAuthorizationResponse.WorkflowUrl);
+  console.log(
+    "\nGo to the above URL to provide justification for CAZ. You may skip this step if you have provided CAZ justification for the exact same Accounts and Role in the last hour"
+  );
+  const confirmed: boolean = await confirm("Are you ready to continue?");
+  if (!confirmed) {
+    throw new Error(
+      "CAZ justification is required to continue. Please provide justification and try again."
+    );
+  }
+};

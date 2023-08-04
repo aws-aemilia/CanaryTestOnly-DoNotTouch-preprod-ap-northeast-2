@@ -51,7 +51,7 @@
     "@amzn/aws-fraud-global-data-node-sdk": "^2.14.0",
     "@amzn/aws-fraud-types": "^2.14.0",
     "@amzn/aws-identity-management-admin-service-internal": "*",
-    "@amzn/isengard": "5.0.8",
+    "@amzn/isengard": "5.1.4",
     "@amzn/rip-helper": "^1.1.822",
     "@amzn/sim-client": "*",
     "@amzn/tickety-typescript-sdk": "*",
