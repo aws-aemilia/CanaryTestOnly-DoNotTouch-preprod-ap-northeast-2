@@ -43,7 +43,8 @@
     "deleteIntegTestApps": "ts-node OpsTools/integTests/deleteTestApps.ts",
     "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts",
     "updateCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/updateCustomerAccountLimit.ts",
-    "generateOncallReport": "ts-node OpsTools/oncallReport/generate.ts"
+    "generateOncallReport": "ts-node OpsTools/oncallReport/generate.ts",
+    "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts"
   },
   "author": "",
   "license": "ISC",

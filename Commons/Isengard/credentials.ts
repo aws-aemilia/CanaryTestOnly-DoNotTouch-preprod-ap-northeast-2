@@ -1,3 +1,4 @@
+import integTestAccounts from "./cache/integTestAccounts.json";
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 
@@ -13,11 +14,17 @@ const allowedRoles = [
   "SDCLimitManagement",
 ];
 
+// Accounts where is safe to assume high risk roles like Admin
+const lowRiskAccountIds = [...integTestAccounts.map((acc) => acc.accountId)];
+
 const getIsengardCredentials = async (
   accountId: string,
   iamRoleName = "ReadOnly"
 ): Promise<AwsCredentialIdentity> => {
-  if (!allowedRoles.includes(iamRoleName)) {
+  if (
+    !lowRiskAccountIds.includes(accountId) &&
+    !allowedRoles.includes(iamRoleName)
+  ) {
     throw new Error(
       `Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`
     );

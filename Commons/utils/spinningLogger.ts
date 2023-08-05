@@ -1,6 +1,6 @@
 import { BaseLogger, Logger } from "pino";
 import { createSpinner, Spinner } from "nanospinner";
-import { createLogger } from "../utils/logger";
+import { createLogger } from "./logger";
 
 export class SpinningLogger implements BaseLogger {
   level: string;
