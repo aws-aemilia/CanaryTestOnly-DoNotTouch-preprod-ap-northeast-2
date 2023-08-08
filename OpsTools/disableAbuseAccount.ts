@@ -1,6 +1,11 @@
 import yargs from "yargs";
 import { AbuseAccountAction, updateBlockStatusForAccountId } from "../Commons/Fraud";
 import { getTicket } from "../Commons/SimT";
+import {
+  controlPlaneAccounts,
+  preflightCAZ,
+  Stage,
+} from "../Commons/Isengard";
 
 const extractAccountIds = (text: string): string[] => {
   const accountIdRegex = /(?<!\d)[\d]{12}(?!\d)/g;
@@ -107,8 +112,12 @@ const main = async () => {
     }).argv;
 
   const { accountId, ticket, ignoreTicket, stage, unblock, role } = args;
-  // Export ticket ID to environment, as it's needed for Contingent Authorization.
-  process.env["ISENGARD_SIM"] = ticket;
+
+  // Need OncallOperator to send messages to Abuse queue
+  await preflightCAZ({
+    accounts: await controlPlaneAccounts({ stage: stage as Stage }),
+    role: ["OncallOperator"],
+  });
 
   const action = unblock ? "Unblock" : "Block";
 
