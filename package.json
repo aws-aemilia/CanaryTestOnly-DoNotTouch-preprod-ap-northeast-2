@@ -47,6 +47,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@amzn/awsamplifycomputeservice-client": "*",
+    "@amzn/midway-client": "^4.0.6",
     "@amzn/aws-fraud-api-client": "^2.14.0",
     "@amzn/aws-fraud-global-data-node-sdk": "^2.14.0",
     "@amzn/aws-fraud-types": "^2.14.0",
@@ -82,6 +83,7 @@
     "@aws-sdk/client-sqs": "^3.100.0",
     "@aws-sdk/client-wafv2": "^3.245.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
+    "aws4": "^1.12.0",
     "@octokit/rest": "^19.0.4",
     "@types/aws-lambda": "^8.10.115",
     "aws-sdk": "2.1203.0",
@@ -119,6 +121,7 @@
     "@types/prompt-sync": "4.1.1",
     "@types/ramda": "^0.28.14",
     "@types/yargs": "^17.0.11",
+    "@types/aws4": "^1.11.2",
     "prettier": "2.6.2",
     "ts-node": "^10.9.1",
     "tslint": "^5.12.1",
