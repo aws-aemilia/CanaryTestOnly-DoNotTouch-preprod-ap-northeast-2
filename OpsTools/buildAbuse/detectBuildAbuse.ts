@@ -6,7 +6,8 @@ import { AppDO } from "../../Commons/dynamodb";
 import {
   controlPlaneAccount,
   controlPlaneAccounts,
-  getIsengardCredentialsProvider, preflightCAZ,
+  getIsengardCredentialsProvider,
+  preflightCAZ,
   Region,
   Stage,
 } from "../../Commons/Isengard";
@@ -103,7 +104,9 @@ const main = async () => {
       }
       return true;
     });
-    await reportAccounts(unreportedAccounts);
+    if (unreportedAccounts.length > 0) {
+      await reportAccounts(unreportedAccounts);
+    }
 
     const cpAccounts = await controlPlaneAccounts({ stage: "prod" })
 
