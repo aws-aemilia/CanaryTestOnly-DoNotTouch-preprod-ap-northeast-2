@@ -3,12 +3,16 @@ import {
   controlPlaneAccount,
   Region,
   Stage,
+  preflightCAZ,
+  controlPlaneAccounts,
+  getIsengardCredentialsProvider
 } from "../../Commons/Isengard";
 import { exec } from "../../Commons/utils/exec";
 import confirm from "../../Commons/utils/confirm";
 import sleep from "../../Commons/utils/sleep";
 import { createLogger } from "../../Commons/utils/logger";
 import { buildMinervaCommand } from "./build-minerva-commands";
+import { toRegionName } from "../../Commons/utils/regions";
 import { getArgs } from "./get-args";
 
 async function main() {
@@ -25,10 +29,10 @@ async function main() {
 
   logger.info(`
   ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ THIS MUST BE RUN FROM A DEV DESKTOP WITH ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ aws-minerva (MAWS) INSTALLED             ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ THIS MUST BE RUN FROM A DEV DESKTOP WITH  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ aws-minerva (MAWS) INSTALLED              ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
   ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-
+  
   Docs link:
   https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/SDC#HGettingstarted:SetupyourCloudDesktoptousetheMinervaCLI
   `);
@@ -37,7 +41,14 @@ async function main() {
     `Found ${integrationTestAccounts.length} potential integration accounts to update`
   );
 
-  const allMinervaCommands: string[] = [];
+  const sdcManagementRole = "SDCLimitManagement";
+
+  await preflightCAZ({
+    accounts: await controlPlaneAccounts({ stage: filterToStage as Stage }),
+    role: sdcManagementRole,
+  });
+
+
   for (const integrationTestAccount of integrationTestAccounts) {
     const {
       accountId: integTestAccountId,
@@ -83,33 +94,33 @@ async function main() {
       <Region>region
     );
 
+    const regionName = toRegionName(region);
+
+    const credentialsProvider = getIsengardCredentialsProvider(controlPlaneAccountResponse.accountId, sdcManagementRole);
+
+    const credentials = await credentialsProvider();
+
     const minervaCommand = buildMinervaCommand({
-      controlPlaneAccountId: controlPlaneAccountResponse.accountId,
-      integTestAccountId,
+      accountId: integTestAccountId,
       ripServiceName,
-      region,
+      regionName,
       limitName,
       value,
     });
 
-    allMinervaCommands.push(minervaCommand);
-  }
+    if (dryRun) {
+      logger.info(minervaCommand, "\n\n\n\n");
+    }
 
-  if (dryRun) {
-    allMinervaCommands.forEach((command) => logger.info(command, "\n\n\n\n"));
-    process.exit(0);
-  }
+    const shouldContinue = await pinoSafeConfirm(
+      "All command built. Ready to run commands?"
+    );
+    if (!shouldContinue) {
+      process.exit(1);
+    }
 
-  const shouldContinue = await pinoSafeConfirm(
-    "All command built. Ready to run commands?"
-  );
-  if (!shouldContinue) {
-    process.exit(1);
-  }
-
-  for (const command of allMinervaCommands) {
-    logger.info(`Running command: ${command}`);
-    const { stdout, stderr } = await exec(command);
+    logger.info(`Running command: ${minervaCommand}`);
+    const { stdout, stderr } = await exec(minervaCommand, credentials);
 
     if (stderr) {
       logger.error(stderr);

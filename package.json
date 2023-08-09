@@ -40,7 +40,8 @@
     "cancelRunningBuilds": "ts-node OpsTools/buildAbuse/cancelRunningBuilds.ts",
     "asyncDeletionDLQ": "ts-node OpsTools/ssrv1DeletionDLQ.ts",
     "deleteIntegTestApps": "ts-node OpsTools/integTests/deleteTestApps.ts",
-    "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts"
+    "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts",
+    "updateCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/updateCustomerAccountLimit.ts"
   },
   "author": "",
   "license": "ISC",

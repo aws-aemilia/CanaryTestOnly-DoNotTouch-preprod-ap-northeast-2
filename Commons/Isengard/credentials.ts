@@ -10,6 +10,7 @@ const allowedRoles = [
   'FullReadOnly',
   'ReleaseCustomDomain',
   'TicketyFullAccess',
+  'SDCLimitManagement',
 ];
 
 const getIsengardCredentials = async (
