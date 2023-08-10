@@ -124,7 +124,7 @@ export class PagingClient {
   private mapRawPage(rawPage: RawPage): Page {
     return {
       subject: this.extractSubject(rawPage.subject),
-      ticketId: this.extractTicketId(rawPage.subject) || "",
+      ticketId: this.extractTicketId(rawPage.subject) || null,
       sender: rawPage.sender,
       sentTime: new Date(rawPage.sentTime * 1000),
     };

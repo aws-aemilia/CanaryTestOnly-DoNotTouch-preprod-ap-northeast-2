@@ -18,7 +18,7 @@ export interface RawPage {
 // Represents our own simplified version of a Page with attributes parsed for convenience
 export interface Page {
     subject: string;
-    ticketId: string;
+    ticketId: string | null;
     sender: string;
     sentTime: Date;
 }

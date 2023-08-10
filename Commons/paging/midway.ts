@@ -34,7 +34,7 @@ export async function getSsoCookie(): Promise<MidwayCookie> {
         if (err) {
           reject(err);
         } else if (!cookie) {
-          reject("amzn_sso_token not found in midway cookie");
+          reject("amzn_sso_token not found in midway cookie. Have you run mwinit?");
         } else {
           resolve(cookie as MidwayCookie);
         }
