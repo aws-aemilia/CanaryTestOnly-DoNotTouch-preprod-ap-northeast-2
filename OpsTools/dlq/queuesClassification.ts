@@ -12,16 +12,23 @@ const CUSTOMER_ACTION_DLQ = ["DeploymentServiceDLQ"];
  * <br>
  * This messages represent idempotent operations and should NEVER be deleted, since they can leave resources in an inconsistent state if they are not processed.
  */
-const IDEMPOTENT_ASYNC_TASK_DLQ = [
+export const IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ = [
   "AemiliaControlPlaneLambda-AsyncResourceDeletionDLQ",
   "AccountClosingDeletionDLQ",
+];
+export const IDEMPOTENT_ASYNC_TASK_METERING_DLQ = [
+  "MeteringHostingDataTransferDLQ"
 ];
 
 export const SAFE_TO_READ_QUEUES = [
   ...CUSTOMER_ACTION_DLQ,
-  ...IDEMPOTENT_ASYNC_TASK_DLQ,
+  ...IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ,
+  ...IDEMPOTENT_ASYNC_TASK_METERING_DLQ,
 ];
 
-export const SAFE_TO_REDRIVE_QUEUES = [...IDEMPOTENT_ASYNC_TASK_DLQ];
+export const SAFE_TO_REDRIVE_QUEUES = [
+  ...IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ,
+  ...IDEMPOTENT_ASYNC_TASK_METERING_DLQ,
+];
 
 export const SAFE_TO_PURGE_QUEUES = [...CUSTOMER_ACTION_DLQ];

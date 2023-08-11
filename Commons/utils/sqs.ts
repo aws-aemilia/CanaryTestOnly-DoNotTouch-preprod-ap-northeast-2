@@ -23,6 +23,8 @@ export async function pollMessages(
 ): Promise<Message[]> {
   const messages: Message[] = [];
 
+  // This loop doesn't work - even when there are > 10 messages on the queue, on subsequent polls, it doesn't return any
+  // messages. Need to figure out why, but for now, we may just need to rerun scripts multiple times for > 10 messages
   while (messages.length < maxMessages) {
     const result = await sqsClient.send(
       new ReceiveMessageCommand({

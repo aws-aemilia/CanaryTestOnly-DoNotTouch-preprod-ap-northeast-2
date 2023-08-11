@@ -1,32 +1,54 @@
 import {
   AmplifyAccount,
   controlPlaneAccount,
-  getIsengardCredentialsProvider,
+  getIsengardCredentialsProvider, meteringAccount,
+  preflightCAZ,
   Region,
   Stage,
 } from "../../Commons/Isengard";
 import {
   DeleteMessageCommand,
+  Message,
   SendMessageCommand,
+  SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import {
-  getQueueUrl,
-  getSourceQueueUrl,
-  pollMessages,
-  prettyPrint,
-} from "../../Commons/utils/sqs";
+import { getQueueUrl, getSourceQueueUrl, pollMessages, prettyPrint, } from "../../Commons/utils/sqs";
 import log from "../../Commons/utils/logger";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { SAFE_TO_REDRIVE_QUEUES } from "./queuesClassification";
+import {
+  IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ,
+  IDEMPOTENT_ASYNC_TASK_METERING_DLQ,
+  SAFE_TO_REDRIVE_QUEUES
+} from "./queuesClassification";
+import { toRegionName } from "../../Commons/utils/regions";
+
+function constructSendMessageCommandInput(sourceQueueUrl: string, message: Message, dlqUrl: string) {
+  let input: SendMessageCommandInput = {
+    QueueUrl: sourceQueueUrl,
+    MessageBody: message.Body,
+  };
+
+  // FIFO queues require the MessageGroupId to be set: https://tiny.amazon.com/1hvjn2qcl
+  if (dlqUrl.endsWith(".fifo")) {
+    input = {
+      ...input,
+      MessageGroupId: JSON.parse(message.Body!).fifoMessageGroupId,
+    }
+  }
+  return input;
+}
 
 async function redrive(account: AmplifyAccount, dlq: string) {
+  const role = "OncallOperator";
+
+  await preflightCAZ({ accounts: account, role });
   const sqsClient = new SQSClient({
     region: account.region,
     credentials: getIsengardCredentialsProvider(
       account.accountId,
-      "OncallOperator"
+      role
     ),
   });
 
@@ -40,13 +62,11 @@ async function redrive(account: AmplifyAccount, dlq: string) {
 
   for (const message of messages) {
     log.info(`Redriving message: ${prettyPrint(message)}`);
+
     // Send the message to the main queue
-    await sqsClient.send(
-      new SendMessageCommand({
-        QueueUrl: sourceQueueUrl,
-        MessageBody: message.Body,
-      })
-    );
+    let input = constructSendMessageCommandInput(sourceQueueUrl, message, dlqUrl);
+    await sqsClient.send(new SendMessageCommand(input));
+
     // Delete the message from the DLQ
     await sqsClient.send(
       new DeleteMessageCommand({
@@ -83,16 +103,11 @@ async function main() {
       choices: SAFE_TO_REDRIVE_QUEUES,
       demandOption: true,
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { region, stage, ticket, dlq } = args;
+  let { region, stage, dlq } = args;
 
   if (!SAFE_TO_REDRIVE_QUEUES.includes(dlq)) {
     throw new Error(
@@ -100,10 +115,18 @@ async function main() {
     );
   }
 
-  process.env.ISENGARD_SIM = ticket;
+  let account: AmplifyAccount;
+  if (IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ.includes(dlq)) {
+    account = await controlPlaneAccount(stage as Stage, region as Region);
+  } else if (IDEMPOTENT_ASYNC_TASK_METERING_DLQ) {
+    account = await meteringAccount(stage as Stage, region as Region);
+    dlq = `${stage}-${toRegionName(region)}-${dlq}`;  // Metering queues need the stage and region to be prepended
+  } else {
+    throw new Error(`DLQ ${dlq} not found in existing accounts.`);
+  }
 
   await redrive(
-    await controlPlaneAccount(stage as Stage, region as Region),
+    account,
     dlq
   );
 }
