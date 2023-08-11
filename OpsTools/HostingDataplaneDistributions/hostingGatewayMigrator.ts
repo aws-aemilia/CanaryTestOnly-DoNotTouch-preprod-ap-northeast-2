@@ -1,5 +1,9 @@
 import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
-import { CloudFront } from "@aws-sdk/client-cloudfront";
+import {
+  CloudFront,
+  DistributionConfig,
+  NoSuchDistribution,
+} from "@aws-sdk/client-cloudfront";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
@@ -9,16 +13,19 @@ import {
   Region,
   Stage,
   controlPlaneAccount,
+  controlPlaneAccounts,
   dataPlaneAccount,
   getIsengardCredentialsProvider,
+  preflightCAZ,
 } from "../../Commons/Isengard";
 import { WarmResourcesDAO } from "../../Commons/dynamodb/tables/WarmResourcesDAO";
+import sleep from "../../Commons/utils/sleep";
+import { getDomainName } from "../hostingDataplane/utils/utils";
 import { getCloudFormationOutput } from "./cfnUtils";
 import {
   fetchDistribution,
   getDistributionsForApp,
 } from "./distributionsUtils";
-import { getDomainName } from "../hostingDataplane/utils/utils";
 
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
@@ -28,7 +35,6 @@ Migrates the given app to use HostingGateway instead of Lambda@Edge functions fo
 This is meant to be used one-off migration of developer apps/integration test apps. Customer applications may use a more automated mechanism in the future.
 
 Usage:
-ada credentials update --account=$AWS_ACCOUNT_ID --role=admin --once
 ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=test --alias=$(whoami) --region=us-west-2 --dryRun
 ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="ca-central-1" --dryRun
 `
@@ -53,11 +59,6 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="
     .option("alias", {
       describe: "Your alias ",
       type: "string",
-      demandOption: false,
-    })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
       demandOption: true,
     })
     .option("dryRun", {
@@ -68,13 +69,21 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="
     .version(false)
     .help().argv;
 
-  let { stage, region, appId, alias, ticket, dryRun } = args;
-  process.env.ISENGARD_SIM = ticket;
+  let { stage, region, appId, alias, dryRun } = args;
 
-  if (stage === "test" && !alias) {
-    throw new Error("--alias argument must be provided with stage=test");
-  }
+  const cpAccount = await controlPlaneAccount(stage as Stage, region as Region);
+  await preflightCAZ({ accounts: cpAccount, role: "OncallOperator" });
 
+  await migrateApp(stage, region, appId, alias, dryRun!!);
+};
+
+async function migrateApp(
+  stage: string,
+  region: string,
+  appId: string,
+  alias: string,
+  dryRun: boolean
+) {
   let controlplaneCredentials: Provider<AwsCredentialIdentity> | undefined;
   let dataplaneCredentials: Provider<AwsCredentialIdentity> | undefined;
 
@@ -136,10 +145,25 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="
   );
 
   for (let distId of appDistributions) {
-    const { distributionConfig, eTag } = await fetchDistribution(
-      cfClient,
-      distId
-    );
+    let distributionConfig: DistributionConfig | undefined;
+    let eTag: string | undefined;
+    try {
+      const fetchedDist = await fetchDistribution(cfClient, distId);
+
+      distributionConfig = fetchedDist.distributionConfig;
+      eTag = fetchedDist.eTag;
+    } catch (e) {
+      if (e instanceof NoSuchDistribution) {
+        console.warn("Distribution does not exist. Skipping");
+        continue;
+      }
+      throw e;
+    }
+
+    if (!eTag || !distributionConfig) {
+      throw new Error("Invalid state");
+    }
+
     const originId = "HostingGatewayALB";
 
     distributionConfig.Origins!.Quantity = 1;
@@ -188,6 +212,7 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="
         DistributionConfig: distributionConfig,
       });
       console.info("Updated the distribution", res);
+      await sleep(2000);
     }
   }
 
@@ -197,7 +222,7 @@ ts-node hostingGatewayMigrator.ts --appId=d36vtia1ezp4ol --stage=prod --region="
     const res = await warmResourcesDAO.updateResourceDistType(appId, "GATEWAY");
     console.log("Updated resourceDistType", res);
   }
-};
+}
 
 function getDdbClient(
   region: string,
