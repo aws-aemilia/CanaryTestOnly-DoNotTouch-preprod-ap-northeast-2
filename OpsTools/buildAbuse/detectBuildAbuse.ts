@@ -13,13 +13,14 @@ import {
 } from "../../Commons/Isengard";
 import { getAppsByAppIds } from "../../Commons/libs/Amplify";
 import { doQuery } from "../../Commons/libs/CloudWatch";
-import { createTicket, CreateTicketParams } from "../../Commons/SimT/createTicket";
 import { BatchIterator } from "../../Commons/utils/BatchIterator";
 import fs from "fs";
 import confirm from "../../Commons/utils/confirm";
 import { stopBuilds } from "./stopBuilds";
 import { readReportedAccountIds, reportedAccountsFile, } from "./reportedAccounts";
 import { toRegionName } from "../../Commons/utils/regions";
+import { TicketData } from "@amzn/tickety-typescript-sdk";
+import { TicketyService } from "../../Commons/SimT/Tickety";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -149,31 +150,27 @@ We need help blocking these accounts from an AWS level.
 
 This is the same type of accounts associated with prior abuse ticket: https://t.corp.amazon.com/P83259214`;
 
-  const ticketParams: CreateTicketParams = {
-    title:
-      "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
+  const ticketData: TicketData = {
+    title: "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
     description,
-    assignedFolder: "59885462-b9aa-49dc-9627-0468b1a76fad",
-    extensions: {
-      tt: {
-        category: "AWS",
-        type: "Fraud",
-        item: "Investigate Account",
-        assignedGroup: "AWS Fraud Investigations",
-        caseType: "Trouble Ticket",
-        impact: 3,
-      },
-    },
-  };
+    severity: "SEV_3",
+    categorization: [
+      { key: "category", value: "AWS" },
+      { key: "type", value: "Fraud" },
+      { key: "item", value: "Investigate Account" },
+    ],
+  }
 
-  console.log(ticketParams);
+  console.log(ticketData);
   const proceed = await confirm(`Do you want to cut the above ticket?`);
   if (!proceed) {
     console.log("Skipping cutting ticket");
-    return "";
+    return;
   }
 
-  await createTicket(ticketParams);
+  const ticketyService = new TicketyService();
+  const output = await ticketyService.createTicket(ticketData);
+  console.log(`Created ticket: ${output.id}`)
   writeReportedAccountIds(unreportedAccounts, new Date());
 }
 

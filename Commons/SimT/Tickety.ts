@@ -8,6 +8,7 @@ import {
   TicketReference,
   Tickety,
   AccessDeniedException,
+  TicketData,
 } from "@amzn/tickety-typescript-sdk";
 
 // Full Tickety documentation can be found in:
@@ -70,6 +71,14 @@ export class TicketyService {
     }
 
     return comments.comments;
+  }
+
+  async createTicket(ticket: TicketData) {
+    return await this.tickety.createTicket({
+      ticket,
+      awsAccountId: this.accountId,
+      ticketingSystemName: this.systemName
+    });
   }
 
   private createTickety(
