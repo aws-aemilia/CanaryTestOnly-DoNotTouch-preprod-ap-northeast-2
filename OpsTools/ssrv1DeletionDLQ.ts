@@ -1,23 +1,19 @@
 import yargs from "yargs";
 import fs from "fs";
 import logger from "../Commons/utils/logger";
-import { pollMessages, getQueueUrl } from "../Commons/utils/sqs";
+import { getQueueUrl, pollMessages } from "../Commons/utils/sqs";
 import { insightsQuery } from "../Commons/libs/CloudWatch";
 import {
-  Region,
-  Stage,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
+  preflightCAZ,
+  Region,
+  Stage,
+  StandardRoles,
 } from "../Commons/Isengard";
-import {
-  SQSClient,
-  Message,
-  DeleteMessageCommand,
-  SendMessageCommand,
-} from "@aws-sdk/client-sqs";
+import { DeleteMessageCommand, Message, SendMessageCommand, SQSClient, } from "@aws-sdk/client-sqs";
 import { toRegionName } from "../Commons/utils/regions";
 import dayjs from "dayjs";
-import { createTicket } from "../Commons/SimT/createTicket";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
 
 /**
@@ -55,20 +51,15 @@ async function main() {
     .usage(
       `
       Reads messages from the AsyncResourceDeletionDLQ and if it finds one related
-      to the Lambda@Edge replication issue, it cuts a ticket to CloudFront so they
-      can cleanup the resources.
+      to the Lambda@Edge replication issue, it redrives the message.
 
       Usage:
 
-      npx ts-node ssrv1DeletionDLQ.ts --stage prod \
-        --region BOM \
-        --ticket V0123456789
+      npx ts-node ssrv1DeletionDLQ.ts --stage prod --region BOM
 
       If you're happy with the results, run it again with --deleteMessages.
 
-      npx ts-node ssrv1DeletionDLQ.ts --stage prod \
-        --region BOM \
-        --ticket V0123456789 \
+      npx ts-node ssrv1DeletionDLQ.ts --stage prod --region BOM \
         --deleteMessages
       `
     )
@@ -84,14 +75,9 @@ async function main() {
       type: "string",
       demandOption: true,
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .option("output", {
       describe:
-        "Path of a file where to write the DLQ messages (Defaults to ./${ticket}.txt)",
+        "Path of a file where to write the DLQ messages (Defaults to ./${region}-${stage}-${dateTime}.txt)",
       type: "string",
       demandOption: false,
     })
@@ -105,22 +91,19 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { region, stage, ticket, deleteMessages, output } = args;
-  process.env.ISENGARD_SIM = ticket;
-  const outputFile = output ? output : `./${ticket}.txt`;
+  const { region, stage, deleteMessages, output } = args;
+  const outputFile = output ? output : `./${region}-${stage}-${new Date()}.txt`;
+
+  const account = await controlPlaneAccount(stage as Stage, region as Region);
+  const role = StandardRoles.OncallOperator;
+  await preflightCAZ({ accounts: account, role })
+  const controlPlaneCreds = getIsengardCredentialsProvider(account.accountId, role);
 
   const regionName = toRegionName(region);
-  const cpAccount = await controlPlaneAccount(stage as Stage, region as Region);
-  const controlPlaneCreds = getIsengardCredentialsProvider(
-    cpAccount.accountId,
-    "OncallOperator"
-  );
-
   const sqsClient = new SQSClient({
     region: regionName,
     credentials: controlPlaneCreds,
   });
-
   const cwClient = new CloudWatchLogsClient({
     region: regionName,
     credentials: controlPlaneCreds,
