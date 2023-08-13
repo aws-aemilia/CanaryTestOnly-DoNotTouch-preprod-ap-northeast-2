@@ -4,15 +4,30 @@ import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getIsengardCredentialsProvider } from "../Isengard";
 import logger from "../utils/logger";
 import {
+  AccessDeniedException,
+  CategorizationEntry,
   CommentReference,
+  TicketData,
   TicketReference,
   Tickety,
-  AccessDeniedException,
-  TicketData,
 } from "@amzn/tickety-typescript-sdk";
 
 // Full Tickety documentation can be found in:
 // https://w.amazon.com/bin/view/IssueManagement/SIMTicketing/TicketyAPI/GettingStarted
+
+/**
+ * Construct the categorization array with the desired CTI that gets passed into CreateTicket calls.
+ *
+ * Other fields like assignedGroup can also be passed to CreateTicket, but it's almost never necessary, as the ticket
+ * will automatically be assigned to the resolver group of the given CTI.
+ */
+export function createCategorization(category: string, type: string, item: string): (CategorizationEntry)[] {
+  return [
+    { key: "category", value: category },
+    { key: "type", value: type },
+    { key: "item", value: item },
+  ]
+}
 
 export class TicketyService {
   private readonly tickety: Tickety;

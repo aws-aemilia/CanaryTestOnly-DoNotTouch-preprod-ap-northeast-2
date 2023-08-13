@@ -1,11 +1,7 @@
 import yargs from "yargs";
 import { AbuseAccountAction, updateBlockStatusForAccountId } from "../Commons/Fraud";
-import { getTicket } from "../Commons/SimT";
-import {
-  controlPlaneAccounts,
-  preflightCAZ,
-  Stage,
-} from "../Commons/Isengard";
+import { controlPlaneAccounts, preflightCAZ, Stage, } from "../Commons/Isengard";
+import { TicketyService } from "../Commons/SimT/Tickety";
 
 const extractAccountIds = (text: string): string[] => {
   const accountIdRegex = /(?<!\d)[\d]{12}(?!\d)/g;
@@ -17,18 +13,22 @@ const validateAbuseTicket = async (
   accountId: string,
   action: "Block" | "Unblock" = "Block"
 ) => {
-  const ticketData = await getTicket(ticket);
+  const ticketyService = new TicketyService();
+  const ticketData = await ticketyService.getTicket(ticket);
+  if (!ticketData) {
+    throw new Error("ticket not found");
+  }
 
   const uniqueAccountIds = [
     ...new Set([
-      ...extractAccountIds(ticketData.title),
-      ...extractAccountIds(ticketData.description),
+      ...extractAccountIds(ticketData.title ?? ""),
+      ...extractAccountIds(ticketData.description ?? ""),
     ]),
   ];
 
   const abuseTicketTitlePrefix = `Amplify Abuse - Request to ${action} AWS Customer`;
 
-  if (!ticketData.title.includes(abuseTicketTitlePrefix)) {
+  if (!ticketData.title?.includes(abuseTicketTitlePrefix)) {
     throw new Error(
       `The provided ticket does not look like an abuse report ticket. Expecting "${abuseTicketTitlePrefix}" to be present in the title`
     );

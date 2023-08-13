@@ -20,7 +20,7 @@ import { stopBuilds } from "./stopBuilds";
 import { readReportedAccountIds, reportedAccountsFile, } from "./reportedAccounts";
 import { toRegionName } from "../../Commons/utils/regions";
 import { TicketData } from "@amzn/tickety-typescript-sdk";
-import { TicketyService } from "../../Commons/SimT/Tickety";
+import { createCategorization, TicketyService } from "../../Commons/SimT/Tickety";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -40,7 +40,7 @@ const main = async () => {
     .version(false)
     .help().argv;
 
-  let { region, stage, ticket } = args;
+  let { region, stage } = args;
   region = toRegionName(region);
 
   // Need FullReadOnly for queries and OncallOperator to StopBuilds
@@ -154,11 +154,7 @@ This is the same type of accounts associated with prior abuse ticket: https://t.
     title: "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
     description,
     severity: "SEV_3",
-    categorization: [
-      { key: "category", value: "AWS" },
-      { key: "type", value: "Fraud" },
-      { key: "item", value: "Investigate Account" },
-    ],
+    categorization: createCategorization("AWS", "Fraud", "Investigate Account"),
   }
 
   console.log(ticketData);

@@ -1,7 +1,8 @@
 import yargs from "yargs";
-import { createTicket } from "./createTicket";
 import pino from "pino";
 import pinoPretty from "pino-pretty";
+import { createCategorization, TicketyService } from "./Tickety";
+import { TicketData } from "@amzn/tickety-typescript-sdk";
 
 const logger = pino(pinoPretty());
 
@@ -91,21 +92,14 @@ ADDITIONAL FIELDS required if requested limit value is higher than 1,000 vCPU co
 3. If not, which AZs will be targeted: 
     A: NA`;
 
-  const ID = await createTicket({
+  const ticketData: TicketData = {
     title: "Fargate Resource Limit Increase | INTERNAL Account",
     description,
-    assignedFolder: "dd6cd852-62da-4706-9808-3395d7f2741f",
-    extensions: {
-      tt: {
-        category: "AWS",
-        type: "ECS Fargate",
-        item: "Limit Increase",
-        assignedGroup: "AWS Support Operations - ECS",
-        caseType: "Trouble Ticket",
-        impact: stage === "prod" ? 3 : 4,
-      },
-    },
-  });
+    severity: stage === "prod" ? "SEV_3" : "SEV_4",
+    categorization: createCategorization("AWS", "ECS Fargate", "Limit Increase"),
+  };
+  const ticketyService = new TicketyService();
+  const ID = await ticketyService.createTicket(ticketData)
 
   logger.info(`\nTicket created: ${ID}`);
 };

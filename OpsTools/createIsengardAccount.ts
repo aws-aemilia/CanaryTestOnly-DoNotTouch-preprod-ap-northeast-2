@@ -12,12 +12,12 @@ import {
 import yargs from "yargs";
 import { deleteCache } from "../Commons/Isengard/cache";
 import { increaseIAMRoles } from "../Commons/service-quotas";
+import sleep from "../Commons/utils/sleep";
 import {
   requestComputeCellLambdaConcurrency,
   requestMaxLambdaConcurrency,
-  requestMaxLambdaStorage,
-} from "../Commons/SimT";
-import sleep from "../Commons/utils/sleep";
+  requestMaxLambdaStorage
+} from "../Commons/SimT/LambdaLimitIncrease";
 
 // TODO: add this type to the AmplifyAccount type and update Isengard cache
 type AmplifyAccountType = "computeServiceControlPlane" |  "computeServiceCell" | "dataPlane"; 
