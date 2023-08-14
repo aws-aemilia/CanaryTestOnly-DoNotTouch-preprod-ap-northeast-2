@@ -29,6 +29,7 @@ export enum Category {
     Pipelines = "Pipelines Blocked",
     CustomerEscalations = "Customer Escalations",
     Other = "Other",
+    WebhookProcessor = "Webhook Processor",
 }
 
 export interface EntriesByCategory {

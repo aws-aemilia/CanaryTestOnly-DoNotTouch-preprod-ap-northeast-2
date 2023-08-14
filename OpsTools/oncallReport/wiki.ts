@@ -34,7 +34,7 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
     .map((e: ReportEntry) => {
       const ticketLink = e.ticketId ? toWikiLink(e.ticketId, `https://t.corp.amazon.com/${e.ticketId}`) : "N/A";
       const subject = toWikiText(e.pageSubject);
-      const rootCause = e.rootCause || "N/A";
+      const rootCause = toWikiText(e.rootCause || "N/A");
       const timeSpent = `${e.timeSpentMinutes} minutes`;
       const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(e.pageTimestamp)}`;
       return toWikiRow([
@@ -47,7 +47,7 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
     })
     .join("\n");
 
-  const tableTitle = `== ${title} ==`;
+  const tableTitle = `=== ${title} ===`;
   return [tableTitle, tableHeader, rows].join("\n");
 }
 

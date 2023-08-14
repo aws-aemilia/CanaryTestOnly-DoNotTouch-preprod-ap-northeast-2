@@ -48,6 +48,10 @@ const categoryMappings: CategoryMapping[] = [
     pattern: new RegExp(/- Case \d{11}/),
     category: Category.CustomerEscalations,
   },
+  {
+    pattern: "AemiliaWebhookProcessorService",
+    category: Category.WebhookProcessor
+  }
 ];
 
 export function getCategory(pageSubject: string): Category {

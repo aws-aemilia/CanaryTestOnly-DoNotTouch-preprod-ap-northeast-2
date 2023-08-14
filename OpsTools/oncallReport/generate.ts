@@ -42,6 +42,7 @@ async function main() {
     oneWeekAgo.toDate(),
     today.toDate()
   );
+  pages.reverse();  // Reverse the order of pages so that they're displayed from oldest to newest
 
   logger.info("Looks like you got %s pages.", pages.length);
   const reportEntries: ReportEntry[] = [];
