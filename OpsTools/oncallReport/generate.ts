@@ -71,12 +71,12 @@ async function main() {
     const ticket = await ticketyService.getTicket(page.ticketId);
 
     if (!ticket || !ticket.ticketId) {
-      // This can happen if you don't have permissions to access the ticket
-      logger.warn("Unable to get ticket %s", page.ticketId);
+      logger.warn("Unable to fetch ticket %s. It may be a secure ticket", page.ticketId);
       reportEntries.push({
+        ticketId: page.ticketId,
         pageTimestamp: page.sentTime,
         pageSubject: page.subject,
-        rootCause: "No ticket associated to this page.",
+        rootCause: "Unable to fetch root cause",
         timeSpentMinutes: 0,
         category: getCategory(page.subject),
         pain: toPain(page.sentTime),
