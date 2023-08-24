@@ -24,7 +24,10 @@ import { createCategorization, TicketyService } from "../../Commons/SimT/Tickety
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
-    .usage(`Detect malicious build requests, report them to Fraud team, and cancel their builds.`)
+    .usage(`Detect malicious build requests, report them to Fraud team, and cancel their builds.
+    
+        npx ts-node OpsTools/buildAbuse/detectBuildAbuse.ts
+    `)
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
