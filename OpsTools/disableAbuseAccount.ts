@@ -1,6 +1,9 @@
 import yargs from "yargs";
-import { AbuseAccountAction, updateBlockStatusForAccountId } from "../Commons/Fraud";
-import { controlPlaneAccounts, preflightCAZ, Stage, } from "../Commons/Isengard";
+import {
+  AbuseAccountAction,
+  updateBlockStatusForAccountId,
+} from "../Commons/Fraud";
+import { controlPlaneAccounts, preflightCAZ, Stage } from "../Commons/Isengard";
 import { TicketyService } from "../Commons/SimT/Tickety";
 
 const extractAccountIds = (text: string): string[] => {
@@ -51,7 +54,6 @@ const validateAbuseTicket = async (
       `The provided accountId (${accountId}) does not match the accountId found in the ${ticket} ticket (${uniqueAccountIds[0]})`
     );
   }
-
 };
 
 const main = async () => {

@@ -11,8 +11,7 @@ export function buildMinervaCommand({
   regionName: string;
   value: string;
 }) {
-  return (
-    `
+  return `
 /apollo/env/AWSMinervaCLI/bin/aws-minerva minerva set-subject-limit \\
     --rip-service-name ${ripServiceName} \\
     --region ${regionName} \\
@@ -28,6 +27,5 @@ export function buildMinervaCommand({
     --subject-type ACCOUNT \\
     --subject-id ${accountId} \\
     --output json
-  `
-  );
+  `;
 }

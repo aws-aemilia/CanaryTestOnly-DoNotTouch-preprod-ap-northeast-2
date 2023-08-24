@@ -2,16 +2,16 @@ import { dataPlaneAccount, Region, Stage } from "../../Commons/Isengard";
 import yargs from "yargs";
 import { getCloudFormationOutputs } from "../../Commons/utils/cloudFormation";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { getRoute53Client, updateRecordsInHostedZone } from "../../Commons/route53";
+import {
+  getRoute53Client,
+  updateRecordsInHostedZone,
+} from "../../Commons/route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 require("util").inspect.defaultOptions.depth = null;
 
 const addRecord = async (stage: Stage, region: Region) => {
-  const account = await dataPlaneAccount(
-    stage,
-    region
-  );
+  const account = await dataPlaneAccount(stage, region);
   const stackName = `HostingGateway-${stage}`;
   const outputs = await getCloudFormationOutputs({
     amplifyAccount: account,

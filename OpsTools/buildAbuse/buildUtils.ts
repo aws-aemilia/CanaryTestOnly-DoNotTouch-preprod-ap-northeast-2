@@ -108,7 +108,7 @@ export const getJobTaskArn = async (
 export const cancelBuild = async (
   taskArn: string,
   codeBuildClient: CodeBuildClient,
-  logger: Console,
+  logger: Console
 ) => {
   try {
     const stopBuildCommand = new StopBuildCommand({

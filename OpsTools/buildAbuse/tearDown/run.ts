@@ -1,7 +1,13 @@
 import { updateBlockStatusForAccountIds } from "../../../Commons/Fraud";
 import yargs from "yargs";
 import { getReportedAccountIds } from "./common";
-import {controlPlaneAccount, controlPlaneAccounts, preflightCAZ, Region, Stage} from "../../../Commons/Isengard";
+import {
+  controlPlaneAccount,
+  controlPlaneAccounts,
+  preflightCAZ,
+  Region,
+  Stage,
+} from "../../../Commons/Isengard";
 
 async function blockAccounts(
   stage: string,
@@ -19,7 +25,8 @@ async function blockAccounts(
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
-    .usage(`
+    .usage(
+      `
     Blocks accounts that have been reported as abusive crypto-miners by sending a BLOCK_IGNORE_CLOUDFRONT message.
     
     This tool is intended to be used to process older accounts that were reported before 04/20 by the buildAbuse tool.
@@ -58,7 +65,7 @@ async function main() {
   await preflightCAZ({
     accounts: await controlPlaneAccount(stage as Stage, region as Region),
     role: "OncallOperator",
-  })
+  });
 
   const targetAccountIds = getReportedAccountIds({
     reportedAfter,

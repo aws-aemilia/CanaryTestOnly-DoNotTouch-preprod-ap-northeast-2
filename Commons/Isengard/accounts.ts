@@ -31,7 +31,7 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
 
     const { airportCode, stage } = match.groups!;
 
-    if (airportCode === 'kix') {
+    if (airportCode === "kix") {
       // kix has not launched yet.
       return [];
     }
@@ -98,7 +98,9 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
-const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
+const getComputeServiceControlPlaneAccounts = async (): Promise<
+  AmplifyAccount[]
+> => {
   const nameRegex =
     /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
@@ -123,7 +125,9 @@ const getComputeServiceControlPlaneAccounts = async (): Promise<AmplifyAccount[]
   });
 };
 
-const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
+const getComputeServiceDataPlaneAccounts = async (): Promise<
+  AmplifyAccount[]
+> => {
   const nameRegex =
     /^(aws-amplify-|aws-mobile-amplify\+)compute-service-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-cell(?<cellNumber>\d+)@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
@@ -143,7 +147,7 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<AmplifyAccount[]> =
         airportCode,
         region: toRegionName(airportCode),
         stage,
-        cellNumber
+        cellNumber,
       },
     ];
   });
@@ -197,7 +201,7 @@ const getKinesisConsumerAccounts = async (): Promise<AmplifyAccount[]> => {
       },
     ];
   });
-}
+};
 
 const getMeteringAccounts = async (): Promise<AmplifyAccount[]> => {
   const nameRegex =
@@ -270,7 +274,8 @@ const getDomainAccounts = async (): Promise<AmplifyAccount[]> => {
 };
 
 const getUluruAccounts = async (): Promise<AmplifyAccount[]> => {
-  const nameRegex = /^aws-amplify\+cfn\+(?<stage>beta|gamma|prod)-(?<airportCodeMessedUp>[a-z0-9]+)@amazon.com$/;
+  const nameRegex =
+    /^aws-amplify\+cfn\+(?<stage>beta|gamma|prod)-(?<airportCodeMessedUp>[a-z0-9]+)@amazon.com$/;
   const allAccounts: AccountListItem[] = await listIsengardAccounts();
 
   return allAccounts.flatMap((acc) => {
@@ -285,7 +290,10 @@ const getUluruAccounts = async (): Promise<AmplifyAccount[]> => {
     const { airportCodeMessedUp, stage } = match.groups!;
 
     // Fix the airport code by inserting the hyphens and turn `useast1` into `us-east-1`.
-    const airportCode = airportCodeMessedUp.replace(/([a-z]{2})([a-z]+)(\d{1})/, "$1-$2-$3");
+    const airportCode = airportCodeMessedUp.replace(
+      /([a-z]{2})([a-z]+)(\d{1})/,
+      "$1-$2-$3"
+    );
 
     return [
       {
@@ -317,8 +325,8 @@ const withFindByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): ((stage: Stage, region: Region) => Promise<AmplifyAccount>) => {
   return async (stage: Stage, region: Region) => {
-    const accs = await fn()
-    const found: AmplifyAccount | undefined = (accs).find(
+    const accs = await fn();
+    const found: AmplifyAccount | undefined = accs.find(
       (a) =>
         a.stage === stage &&
         (a.region === region ||
@@ -326,7 +334,9 @@ const withFindByRegionAndStage = (
     );
     if (found === undefined) {
       throw new Error(
-        `Could not find account for stage,region = ${stage},${region}. Account set was ${accs.map(x=>x.email)}`
+        `Could not find account for stage,region = ${stage},${region}. Account set was ${accs.map(
+          (x) => x.email
+        )}`
       );
     }
     return found;
@@ -415,7 +425,8 @@ export const consoleAccount: (
   "consoleAccounts"
 );
 
-export const computeServiceControlPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
+export const computeServiceControlPlaneAccounts: AccountsLookupFn =
+  defaultGetAccounts(
     getComputeServiceControlPlaneAccounts,
     "computeServiceControlPlaneAccounts"
   );
@@ -427,16 +438,21 @@ export const computeServiceControlPlaneAccount: (
   "computeServiceControlPlaneAccounts"
 );
 
-export const computeServiceDataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
+export const computeServiceDataPlaneAccounts: AccountsLookupFn =
+  defaultGetAccounts(
     getComputeServiceDataPlaneAccounts,
     "computeServiceDataPlaneAccounts"
   );
 
-export const computeServiceDataPlaneAccount: (stage: Stage, region: Region, cellNumber: number) => Promise<AmplifyAccount> = pipe(
+export const computeServiceDataPlaneAccount: (
+  stage: Stage,
+  region: Region,
+  cellNumber: number
+) => Promise<AmplifyAccount> = pipe(
   () => getComputeServiceDataPlaneAccounts,
-    curry(withFileCache)('computeServiceDataPlaneAccounts'),
+  curry(withFileCache)("computeServiceDataPlaneAccounts"),
   withFindByRegionAndStageAndCell
-)()
+)();
 
 export const dataPlaneAccounts: AccountsLookupFn = defaultGetAccounts(
   getDataPlaneAccounts,
@@ -478,8 +494,8 @@ export const uluruAccount: (
 );
 
 export const meteringAccounts: AccountsLookupFn = defaultGetAccounts(
-    getMeteringAccounts,
-    "meteringAccounts"
+  getMeteringAccounts,
+  "meteringAccounts"
 );
 
 export const meteringAccount: (
@@ -491,9 +507,9 @@ export const meteringAccount: (
 );
 
 export const domainAccounts: AccountsLookupFn = defaultGetAccounts(
-    getDomainAccounts,
-    "domainAccounts"
-)
+  getDomainAccounts,
+  "domainAccounts"
+);
 
 export const domainAccount: (
   stage: Stage,
@@ -526,14 +542,15 @@ export enum AmplifyAccountType {
   domain = "domain",
 }
 
-export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> = {
-  controlPlane: controlPlaneAccounts,
-  integTest: integTestAccounts,
-  console: consoleAccounts,
-  computeServiceControlPlane: computeServiceControlPlaneAccounts,
-  computeServiceDataPlane: computeServiceDataPlaneAccounts,
-  dataPlane: dataPlaneAccounts,
-  kinesisConsumer: kinesisConsumerAccounts,
-  metering: meteringAccounts,
-  domain: domainAccounts
-};
+export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
+  {
+    controlPlane: controlPlaneAccounts,
+    integTest: integTestAccounts,
+    console: consoleAccounts,
+    computeServiceControlPlane: computeServiceControlPlaneAccounts,
+    computeServiceDataPlane: computeServiceDataPlaneAccounts,
+    dataPlane: dataPlaneAccounts,
+    kinesisConsumer: kinesisConsumerAccounts,
+    metering: meteringAccounts,
+    domain: domainAccounts,
+  };

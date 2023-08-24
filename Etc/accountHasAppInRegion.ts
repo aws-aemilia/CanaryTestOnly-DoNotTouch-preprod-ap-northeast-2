@@ -6,21 +6,31 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage } from "../Commons/Isengard";
+import {
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "../Commons/Isengard";
 import { toRegionName, toAirportCode } from "../Commons/utils/regions";
-const fs = require('fs');
+const fs = require("fs");
 
 const LOWERCASE_STAGE: Stage = "prod";
 // const LOWERCASE_STAGE: Stage = "gamma";
 
-async function listAppsWithGivenAccountsInDDB(accountIds: string[], region: Region) {
-
+async function listAppsWithGivenAccountsInDDB(
+  accountIds: string[],
+  region: Region
+) {
   const airportCode = toAirportCode(region);
   const regionName = toRegionName(region);
 
-  const controlPlaneAccount_ = await controlPlaneAccount(LOWERCASE_STAGE, airportCode);
+  const controlPlaneAccount_ = await controlPlaneAccount(
+    LOWERCASE_STAGE,
+    airportCode
+  );
 
-  const role = LOWERCASE_STAGE === 'prod' ? "FullReadOnly" : "ReadOnly";
+  const role = LOWERCASE_STAGE === "prod" ? "FullReadOnly" : "ReadOnly";
   const dynamoDB = new DynamoDB({
     region: regionName,
     credentials: getIsengardCredentialsProvider(
@@ -30,7 +40,7 @@ async function listAppsWithGivenAccountsInDDB(accountIds: string[], region: Regi
   });
   const accountIdsWithAmplifyApps: string[] = [];
   for (const accountId of accountIds) {
-    console.log('querying accountId', accountId);
+    console.log("querying accountId", accountId);
     const queryCommandInput: QueryCommandInput = {
       TableName: [LOWERCASE_STAGE, regionName, "App"].join("-"),
       Select: "SPECIFIC_ATTRIBUTES",
@@ -63,7 +73,9 @@ async function listAppsWithGivenAccountsInDDB(accountIds: string[], region: Regi
 
 async function getArgs() {
   return (await yargs(hideBin(process.argv))
-    .usage("Detect if any of the given accounts have an app deployed in the given region")
+    .usage(
+      "Detect if any of the given accounts have an app deployed in the given region"
+    )
     .option("region", {
       describe: `Region to check (e.g. "pdx", "PDX", "us-west-2").`,
       type: "string",
@@ -79,18 +91,19 @@ async function getArgs() {
     .strict()
     .version(false)
     .help().argv) as {
-      region: Region;
-      filename: string;
-    };
+    region: Region;
+    filename: string;
+  };
 }
 
 async function main() {
   const { region, filename } = await getArgs();
-  const accounts = JSON.parse(fs.readFileSync(filename, 'utf8'));
+  const accounts = JSON.parse(fs.readFileSync(filename, "utf8"));
   const result = await listAppsWithGivenAccountsInDDB(accounts, region);
   console.log(`The following accounts have an app in ${region}`, result);
 }
 
 // example: npx ts-node accountHasAppInRegion.ts --region iad --filename accounts1.json
-main().then()
-  .catch(e => console.warn(e));
+main()
+  .then()
+  .catch((e) => console.warn(e));

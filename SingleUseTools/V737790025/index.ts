@@ -42,7 +42,7 @@ const removeDanglingCustomDomainIdFromLambdaEdgeConfig = async (
     const lambdaEdgeConfig = await getLambdaEdgeConfigForAppOrDomain(
       ddbClient,
       appId,
-      ["appId","customRuleConfigs"],
+      ["appId", "customRuleConfigs"]
     );
 
     if (!lambdaEdgeConfig) {

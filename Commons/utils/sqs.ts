@@ -112,7 +112,7 @@ export async function getSourceQueueUrl(
  */
 export function prettyPrint(msg: Message): string {
   try {
-    return JSON.stringify(JSON.parse(msg.Body!), null, 2) ;
+    return JSON.stringify(JSON.parse(msg.Body!), null, 2);
   } catch (e) {
     return msg.Body ?? "";
   }

@@ -68,17 +68,17 @@ const revokeUserPermissionIfExists = withCatchOnErrorMsg(
 );
 
 type PermissionDiff = {
-  groupsToAdd: string[],
-  groupsToDelete: string[],
-  usersToAdd: string[],
-  usersToDelete: string[],
-}
+  groupsToAdd: string[];
+  groupsToDelete: string[];
+  usersToAdd: string[];
+  usersToDelete: string[];
+};
 
 export const computePermissionDiff = async (
   accountId: string,
   IAMRoleName: string,
   Group?: string,
-  Users?: string[],
+  Users?: string[]
 ): Promise<PermissionDiff> => {
   const permissionsForIAMRoles = await listPermissionsForAWSAccount(accountId);
   const foundRole = permissionsForIAMRoles.find(
@@ -89,7 +89,7 @@ export const computePermissionDiff = async (
     groupsToAdd: [],
     groupsToDelete: [],
     usersToAdd: [],
-    usersToDelete: []
+    usersToDelete: [],
   };
 
   if (!foundRole) {
@@ -106,7 +106,9 @@ export const computePermissionDiff = async (
     // Add the requested group
     permissions.groupsToAdd.push(Group);
     // Remove the rest
-    permissions.groupsToDelete.push(...foundRole.GroupList.filter(g => g !== Group));
+    permissions.groupsToDelete.push(
+      ...foundRole.GroupList.filter((g) => g !== Group)
+    );
   }
 
   if (!Users) {
@@ -117,7 +119,9 @@ export const computePermissionDiff = async (
     // Add the requested users
     permissions.usersToAdd.push(...Users);
     // Remove the rest
-    permissions.usersToDelete.push(...foundRole.UserList.filter(u => !Users.includes(u)));
+    permissions.usersToDelete.push(
+      ...foundRole.UserList.filter((u) => !Users.includes(u))
+    );
   }
 
   return permissions;
@@ -251,7 +255,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     accountId,
     IAMRoleName,
     role.Group,
-    role.Users,
+    role.Users
   );
 
   for (const groupToDelete of permissionDiff.groupsToDelete) {

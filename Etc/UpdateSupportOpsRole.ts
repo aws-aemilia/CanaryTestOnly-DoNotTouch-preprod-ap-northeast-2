@@ -32,7 +32,7 @@ const main = async () => {
       console.log(grantUserPermissionResponse);
     } catch (e) {
       if (
-          (e as Error).message ===
+        (e as Error).message ===
         "Unable to grant user permission: User Permission already exists"
       ) {
         console.log("User Permission already exists. skipping...");
@@ -69,13 +69,14 @@ const main = async () => {
       }
     }
 
-    const synchronizeIAMRolePolicyWithPolicyTemplateResponse = await synchronizeIAMRolePolicyWithPolicyTemplate({
-      AWSAccountID: account.accountId,
-      IAMRoleName: supportRoleName,
-      IsGroupOwned: true,
-      OwnerID: ownerID,
-      PolicyTemplateName: policyTemplateName,
-    });
+    const synchronizeIAMRolePolicyWithPolicyTemplateResponse =
+      await synchronizeIAMRolePolicyWithPolicyTemplate({
+        AWSAccountID: account.accountId,
+        IAMRoleName: supportRoleName,
+        IsGroupOwned: true,
+        OwnerID: ownerID,
+        PolicyTemplateName: policyTemplateName,
+      });
 
     console.log(synchronizeIAMRolePolicyWithPolicyTemplateResponse);
   }

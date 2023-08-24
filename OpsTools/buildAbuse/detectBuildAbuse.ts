@@ -17,17 +17,25 @@ import { BatchIterator } from "../../Commons/utils/BatchIterator";
 import fs from "fs";
 import confirm from "../../Commons/utils/confirm";
 import { stopBuilds } from "./stopBuilds";
-import { readReportedAccountIds, reportedAccountsFile, } from "./reportedAccounts";
+import {
+  readReportedAccountIds,
+  reportedAccountsFile,
+} from "./reportedAccounts";
 import { toRegionName } from "../../Commons/utils/regions";
 import { TicketData } from "@amzn/tickety-typescript-sdk";
-import { createCategorization, TicketyService } from "../../Commons/SimT/Tickety";
+import {
+  createCategorization,
+  TicketyService,
+} from "../../Commons/SimT/Tickety";
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
-    .usage(`Detect malicious build requests, report them to Fraud team, and cancel their builds.
+    .usage(
+      `Detect malicious build requests, report them to Fraud team, and cancel their builds.
     
         npx ts-node OpsTools/buildAbuse/detectBuildAbuse.ts
-    `)
+    `
+    )
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
@@ -112,25 +120,27 @@ const main = async () => {
       await reportAccounts(unreportedAccounts);
     }
 
-    const cpAccounts = await controlPlaneAccounts({ stage: "prod" })
+    const cpAccounts = await controlPlaneAccounts({ stage: "prod" });
 
-    console.log("Stopping builds in ALL regions")
-    const stopBuildsInRegionPromises: Promise<void>[] = cpAccounts.map(async (account) => {
-      const regionalControlplaneCredentials = getIsengardCredentialsProvider(
+    console.log("Stopping builds in ALL regions");
+    const stopBuildsInRegionPromises: Promise<void>[] = cpAccounts.map(
+      async (account) => {
+        const regionalControlplaneCredentials = getIsengardCredentialsProvider(
           account.accountId,
           "OncallOperator"
-      );
+        );
 
-      await stopBuilds(
+        await stopBuilds(
           stage as Stage,
           account.region as Region,
           regionalControlplaneCredentials,
           unreportedAccounts,
           3,
           console,
-          false,
-      )
-    });
+          false
+        );
+      }
+    );
     await Promise.all(stopBuildsInRegionPromises);
   }
   process.exit(0);
@@ -154,11 +164,12 @@ We need help blocking these accounts from an AWS level.
 This is the same type of accounts associated with prior abuse ticket: https://t.corp.amazon.com/P83259214`;
 
   const ticketData: TicketData = {
-    title: "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
+    title:
+      "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
     description,
     severity: "SEV_3",
     categorization: createCategorization("AWS", "Fraud", "Investigate Account"),
-  }
+  };
 
   console.log(ticketData);
   const proceed = await confirm(`Do you want to cut the above ticket?`);
@@ -169,7 +180,7 @@ This is the same type of accounts associated with prior abuse ticket: https://t.
 
   const ticketyService = new TicketyService();
   const output = await ticketyService.createTicket(ticketData);
-  console.log(`Created ticket: ${output.id}`)
+  console.log(`Created ticket: ${output.id}`);
   writeReportedAccountIds(unreportedAccounts, new Date());
 }
 

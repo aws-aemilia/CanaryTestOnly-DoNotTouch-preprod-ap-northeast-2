@@ -119,12 +119,13 @@ export const getHostedZone = async (
   let hostedZone: HostedZone | undefined;
 
   do {
-    const response: ListHostedZonesByNameCommandOutput = await route53Client.send(
-      new ListHostedZonesByNameCommand({
-        DNSName: domainName,
-        HostedZoneId: nextPage,
-      })
-    );
+    const response: ListHostedZonesByNameCommandOutput =
+      await route53Client.send(
+        new ListHostedZonesByNameCommand({
+          DNSName: domainName,
+          HostedZoneId: nextPage,
+        })
+      );
 
     nextPage = response.NextHostedZoneId;
     hostedZone = response.HostedZones?.find(
@@ -136,7 +137,7 @@ export const getHostedZone = async (
       return hostedZone;
     }
   } while (nextPage);
-  
+
   logger.info("Hosted zone not found");
   return null;
 };

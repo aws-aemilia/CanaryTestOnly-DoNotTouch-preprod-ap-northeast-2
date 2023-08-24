@@ -202,7 +202,9 @@ export const updateWarmingPoolDistributionType = async (
  * @param {QueryCommandOutput} page a page of query results from WarmingPool Table.
  * @return {WarmingPoolDistribution[]}
  */
-export const convertToWarmingPoolDistributionFormat = (page: QueryCommandOutput) => {
+export const convertToWarmingPoolDistributionFormat = (
+  page: QueryCommandOutput
+) => {
   if (!page.Items) {
     return [];
   }

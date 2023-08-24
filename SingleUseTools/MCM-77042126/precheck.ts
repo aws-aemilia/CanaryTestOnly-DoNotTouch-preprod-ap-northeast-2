@@ -89,12 +89,15 @@ async function assertSuccessfulRequest(
   testDistribution: TestDistribution,
   testAppId: string
 ) {
-  const response = await axios.get(`https://${testDistribution.domainId}.cloudfront.net`, {
-    method: "GET",
-    headers: {
-      Host: `main.${testAppId}.amplifyapp.com`,
-    },
-  });
+  const response = await axios.get(
+    `https://${testDistribution.domainId}.cloudfront.net`,
+    {
+      method: "GET",
+      headers: {
+        Host: `main.${testAppId}.amplifyapp.com`,
+      },
+    }
+  );
 
   if (response.status !== 200) {
     logger.error("Response status is not 200");

@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 
 export const withFileCache = <T extends Array<any>, U>(
   filename: string,
-  fn: (...args: T) => Promise<U>,
+  fn: (...args: T) => Promise<U>
 ) => {
   return async (...args: T): Promise<U> => {
     const filePath = path.join(__dirname, "cache", `${filename}.json`);
@@ -19,9 +19,9 @@ export const withFileCache = <T extends Array<any>, U>(
   };
 };
 
-export const deleteCache = async(filename: string) => {
+export const deleteCache = async (filename: string) => {
   const filePath = path.join(__dirname, "cache", `${filename}.json`);
   if (existsSync(filePath)) {
-    unlinkSync(filePath)
+    unlinkSync(filePath);
   }
-}
+};

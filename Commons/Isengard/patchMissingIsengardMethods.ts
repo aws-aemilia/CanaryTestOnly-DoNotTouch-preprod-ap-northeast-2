@@ -24,4 +24,7 @@ export type RevokeGroupPermissionResponse = {
   message: string;
 };
 
-export const revokeGroupPermission = getIsengardCall<RevokeGroupPermissionRequest, RevokeGroupPermissionResponse>("RevokeGroupPermission");
+export const revokeGroupPermission = getIsengardCall<
+  RevokeGroupPermissionRequest,
+  RevokeGroupPermissionResponse
+>("RevokeGroupPermission");

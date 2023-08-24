@@ -7,7 +7,9 @@ import { BranchDAO } from "../../../Commons/dynamodb/tables/BranchDAO";
 import { AppDO, BranchDO } from "../../../Commons/dynamodb";
 import { AppDAO } from "../../../Commons/dynamodb/tables/AppDAO";
 
-export async function getApps(acc: AmplifyAccount): Promise<{ withoutBranches: AppDO[], withBranches: AppDO[] }> {
+export async function getApps(
+  acc: AmplifyAccount
+): Promise<{ withoutBranches: AppDO[]; withBranches: AppDO[] }> {
   const branchDAO = new BranchDAO(
     acc.stage,
     acc.region,
@@ -45,11 +47,12 @@ export async function getApps(acc: AmplifyAccount): Promise<{ withoutBranches: A
     allApps.push(...(paginateElement.Items! as AppDO[]));
   }
 
-
   return {
-    withoutBranches: allApps.filter((app) => !appIdsWithBranches.has(app.appId)),
-    withBranches: allApps.filter((app) => appIdsWithBranches.has(app.appId))
-  }
+    withoutBranches: allApps.filter(
+      (app) => !appIdsWithBranches.has(app.appId)
+    ),
+    withBranches: allApps.filter((app) => appIdsWithBranches.has(app.appId)),
+  };
 }
 
 export const toDistroARN = (acc: AmplifyAccount, distributionId: string) =>

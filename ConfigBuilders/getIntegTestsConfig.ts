@@ -1,4 +1,9 @@
-import {AmplifyAccount, controlPlaneAccounts, integTestAccounts, meteringAccounts} from "../Commons/Isengard";
+import {
+  AmplifyAccount,
+  controlPlaneAccounts,
+  integTestAccounts,
+  meteringAccounts,
+} from "../Commons/Isengard";
 import { getCloudFormationOutputs } from "../Commons/utils/cloudFormation";
 import sleep from "../Commons/utils/sleep";
 
@@ -51,7 +56,8 @@ const getIntegTestsConfig = async () => {
   const testAccounts: Record<string, string> = {};
 
   integTestaccounts.forEach((account) => {
-    testAccounts[`${account.stage}.${account.region}.integTestAccountId`] = account.accountId
+    testAccounts[`${account.stage}.${account.region}.integTestAccountId`] =
+      account.accountId;
   });
 
   console.log("//======== integrationTestAccounts =========");
@@ -60,7 +66,9 @@ const getIntegTestsConfig = async () => {
   const controlPlaneAccountIds: Record<string, string> = {};
 
   accounts.forEach((account) => {
-    controlPlaneAccountIds[`${account.stage}.${account.region}.controlPlaneAccountId`] = account.accountId
+    controlPlaneAccountIds[
+      `${account.stage}.${account.region}.controlPlaneAccountId`
+    ] = account.accountId;
   });
 
   console.log("//======== controlPlaneAccounts =========");
@@ -69,10 +77,10 @@ const getIntegTestsConfig = async () => {
   console.log("//======== meteringAccounts =========");
   const meteringAccountIds: Record<string, string> = {};
   (await meteringAccounts()).forEach((account) => {
-    meteringAccountIds[`${account.stage}.${account.region}.meteringAccountId`] = account.accountId
+    meteringAccountIds[`${account.stage}.${account.region}.meteringAccountId`] =
+      account.accountId;
   });
   console.log(toJavaMapBuilderPut(meteringAccountIds));
-
 };
 
 /**

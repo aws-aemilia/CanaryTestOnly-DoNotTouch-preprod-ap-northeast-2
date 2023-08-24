@@ -11,7 +11,7 @@ export async function rollbackRecords(
   route53Client: Route53Client,
   gatewayRootDomain: string,
   hostedZoneId: string,
-  cfnOutputs: CloudFormationOutputs,
+  cfnOutputs: CloudFormationOutputs
 ): Promise<void> {
   logger.info("Rolling back DNS changes");
   logger.info("Fetching existing A records from hosted zone");

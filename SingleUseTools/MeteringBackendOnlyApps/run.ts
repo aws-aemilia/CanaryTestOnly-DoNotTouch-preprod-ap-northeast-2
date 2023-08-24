@@ -50,7 +50,9 @@ async function run({
       distributionId: branchlessApp.cloudFrontDistributionId,
     });
 
-    logger.info(`Sending SNS msg actionType=${msg.actionType} App=${msg.appArn}, Distro=${msg.resource}`);
+    logger.info(
+      `Sending SNS msg actionType=${msg.actionType} App=${msg.appArn}, Distro=${msg.resource}`
+    );
 
     await sns.send(
       new PublishCommand({

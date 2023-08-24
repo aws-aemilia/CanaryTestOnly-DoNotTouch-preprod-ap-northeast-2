@@ -231,28 +231,30 @@ export const findApp = async (
 };
 
 export const getAppIdsForAccount = async (
-    documentClient: DynamoDBDocumentClient,
-    stage: string,
-    region: string,
-    accountId: string
+  documentClient: DynamoDBDocumentClient,
+  stage: string,
+  region: string,
+  accountId: string
 ): Promise<string[]> => {
-
   const queryCommandInput: QueryCommandInput = {
     TableName: `${stage}-${region}-App`,
     ProjectionExpression: "appId",
     IndexName: "accountId-appId-index",
     KeyConditionExpression: "accountId = :accountId",
     ExpressionAttributeValues: {
-      ":accountId": accountId
+      ":accountId": accountId,
     },
   };
 
   const appIds: string[] = [];
 
-  for await (const page of paginateQuery({client: documentClient}, queryCommandInput)) {
+  for await (const page of paginateQuery(
+    { client: documentClient },
+    queryCommandInput
+  )) {
     if (!page.Items) continue;
     appIds.push(...page.Items.map((item) => item.appId));
   }
 
   return appIds;
-}
+};

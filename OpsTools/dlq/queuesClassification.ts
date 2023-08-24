@@ -17,7 +17,7 @@ export const IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ = [
   "AccountClosingDeletionDLQ",
 ];
 export const IDEMPOTENT_ASYNC_TASK_METERING_DLQ = [
-  "MeteringHostingDataTransferDLQ"
+  "MeteringHostingDataTransferDLQ",
 ];
 
 export const SAFE_TO_READ_QUEUES = [

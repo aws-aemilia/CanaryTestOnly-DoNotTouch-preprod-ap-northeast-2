@@ -20,24 +20,22 @@ import { KonaFileReader } from "./KonaFileReader";
 import * as path from "path";
 import { BatchIterator } from "../../Commons/utils/BatchIterator";
 
-
 /**
  * Branch A
- * 
+ *
  * 08/01 Billing Start
- * 
- * 
- * 
+ *
+ *
+ *
  * 09/01 Kona files (contains Branch A)
- * 
- * 
+ *
+ *
  * Deleted Branch A + STOP metering message sent
- * 
+ *
  * 09/26 Generated Invalid ARNs based on Branche DDB --> invalid ARNS = ARNS not longer exist in DB
- * 
- * 09/28 RemoSnapshot -> branchARNs + storagePrefix currently active 
+ *
+ * 09/28 RemoSnapshot -> branchARNs + storagePrefix currently active
  */
-
 
 const main = async () => {
   const args = await yargs(hideBin(process.argv))
@@ -122,7 +120,6 @@ ts-node billingAuditor.ts --stage prod --region ap-northeast-2 --konaFile "konaf
     deletedBranchArnsSinceBillingMonthFileStream.write(arn + "\n");
   }
   deletedBranchArnsSinceBillingMonthFileStream.close();
-
 
   const dynamodb = await getDDbClient(account);
 

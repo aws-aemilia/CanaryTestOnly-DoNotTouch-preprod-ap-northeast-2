@@ -2,23 +2,25 @@ import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 
 const allowedRoles = [
-  'ReadOnly',
-  'OncallOperator',
-  'SupportOps',
-  'NAPS-Admin',
-  'Route53Manager',
-  'FullReadOnly',
-  'ReleaseCustomDomain',
-  'TicketyFullAccess',
-  'SDCLimitManagement',
+  "ReadOnly",
+  "OncallOperator",
+  "SupportOps",
+  "NAPS-Admin",
+  "Route53Manager",
+  "FullReadOnly",
+  "ReleaseCustomDomain",
+  "TicketyFullAccess",
+  "SDCLimitManagement",
 ];
 
 const getIsengardCredentials = async (
-  accountId: string, iamRoleName="ReadOnly"
+  accountId: string,
+  iamRoleName = "ReadOnly"
 ): Promise<AwsCredentialIdentity> => {
-
   if (!allowedRoles.includes(iamRoleName)) {
-    throw new Error(`Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`)
+    throw new Error(
+      `Refusing to provide credentials for role ${iamRoleName}. Consider using one of ${allowedRoles} instead`
+    );
   }
 
   try {
@@ -31,7 +33,6 @@ const getIsengardCredentials = async (
       expiration: new Date(creds.expiration),
     };
   } catch (e) {
-
     const fancyErrorMessage = `
  ┌─────────────────────────────────────────────────────────────────────┐
  │ Failed to get Isengard credentials!                                 │
@@ -40,7 +41,10 @@ const getIsengardCredentials = async (
 `;
 
     console.error(fancyErrorMessage);
-    console.error('Exception on getIsengardCredentials was:', (e as Error).message);
+    console.error(
+      "Exception on getIsengardCredentials was:",
+      (e as Error).message
+    );
     throw e;
   }
 };
@@ -51,5 +55,7 @@ const getIsengardCredentials = async (
  * @param iamRoleName
  */
 export const getIsengardCredentialsProvider = (
-  accountId: string, iamRoleName="ReadOnly"
-): Provider<AwsCredentialIdentity> => getIsengardCredentials.bind(null, accountId, iamRoleName);
+  accountId: string,
+  iamRoleName = "ReadOnly"
+): Provider<AwsCredentialIdentity> =>
+  getIsengardCredentials.bind(null, accountId, iamRoleName);

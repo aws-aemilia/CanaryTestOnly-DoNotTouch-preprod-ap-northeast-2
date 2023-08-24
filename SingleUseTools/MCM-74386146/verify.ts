@@ -2,10 +2,7 @@ import yargs from "yargs";
 import pino from "pino";
 import pinoPretty from "pino-pretty";
 import { hideBin } from "yargs/helpers";
-import {
-  getRecordsFromHostedZone,
-  getHostedZone,
-} from "../../Commons/route53";
+import { getRecordsFromHostedZone, getHostedZone } from "../../Commons/route53";
 import { toRegionName } from "../../Commons/utils/regions";
 import { ResourceRecordSet, Route53Client } from "@aws-sdk/client-route-53";
 import {

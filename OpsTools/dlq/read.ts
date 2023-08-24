@@ -70,7 +70,7 @@ async function main() {
   }
 
   const account = await controlPlaneAccount(stage as Stage, region as Region);
-  await preflightCAZ({accounts : account, role : "OncallOperator"});
+  await preflightCAZ({ accounts: account, role: "OncallOperator" });
   await read(account, dlq);
 }
 

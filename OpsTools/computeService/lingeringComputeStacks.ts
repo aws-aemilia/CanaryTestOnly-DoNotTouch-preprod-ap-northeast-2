@@ -23,27 +23,27 @@ import { checkAppExists } from "../../Commons/dynamodb";
 /**
  * Finds compute stacks created by canary accounts that do not have a corresponding
  * Amplify App in the control plane and deletes them by starting a Destroyer Step Function
- * execution in Compute Service. This happened when we migrated from WEB_DYNAMIC to 
- * WEB_COMPUTE because of a bug in Control Plane where compute stacks were not deleted when 
+ * execution in Compute Service. This happened when we migrated from WEB_DYNAMIC to
+ * WEB_COMPUTE because of a bug in Control Plane where compute stacks were not deleted when
  * the corresponding app was deleted.
- * 
- * Why is this script safe? 
+ *
+ * Why is this script safe?
  * - Because it only destroys compute stacks for accounts that we own (canaries), not for
  * customer accounts.
  * - Because before deleting the compute stack, it checks if the App indeed doesn't exist
- * in the Control Plane dynamodb App table. 
- * 
+ * in the Control Plane dynamodb App table.
+ *
  * Is this script idempotent?
  * Yes, if there are no more compute stacks to delete, it won't do anything.
- * 
+ *
  * Technically this script will only be used once to cleanup all those thousands of lingering
- * compute stacks, but I am checking-in this script in case we ever need it again. 
- * 
- * To Run: 
+ * compute stacks, but I am checking-in this script in case we ever need it again.
+ *
+ * To Run:
  * npx ts-node OpsTools/computeService/lingeringComputeStacks \
  * --stage prod \
  * --region yul
- * 
+ *
  */
 
 const ROLE_NAME = "OncallOperator";
@@ -51,7 +51,7 @@ const ROLE_NAME = "OncallOperator";
 const startDestroyExecution = async (
   sfnClient: SFNClient,
   computeAccount: AmplifyAccount,
-  computeStackId: string,
+  computeStackId: string
 ) => {
   if (!computeStackId) {
     throw new Error("Invalid compute stackId" + computeStackId);
@@ -158,7 +158,7 @@ const destroyCanaryComputeStacks = async (
     console.log(
       `Checking if corresponding app ${computeStack.appId} exists in control plane`
     );
-    
+
     const appExists = await checkAppExists(
       controlPlaneDocumentClient,
       canaryAccount.stage,
@@ -167,8 +167,14 @@ const destroyCanaryComputeStacks = async (
     );
 
     if (!appExists) {
-      console.log("Corresponding app does not exist. Its okay to delete compute stack");
-      await startDestroyExecution(sfnClient, computeAccount, computeStack.computeStackId);
+      console.log(
+        "Corresponding app does not exist. Its okay to delete compute stack"
+      );
+      await startDestroyExecution(
+        sfnClient,
+        computeAccount,
+        computeStack.computeStackId
+      );
     }
   }
 };

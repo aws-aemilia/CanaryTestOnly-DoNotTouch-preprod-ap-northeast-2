@@ -16,16 +16,18 @@ import {
   GetQueryResultsCommandOutput,
 } from "@aws-sdk/client-cloudwatch-logs";
 import sleep from "../../Commons/utils/sleep";
-import {capitalize} from "../../Commons/Isengard/createAccount/createAmplifyAccount";
+import { capitalize } from "../../Commons/Isengard/createAccount/createAmplifyAccount";
 
 const { hideBin } = require("yargs/helpers");
 
 const ATTACK_THRESHOLD = 100000;
-const LOWERCASE_PROD: Stage = "prod"
+const LOWERCASE_PROD: Stage = "prod";
 
 async function getArgs() {
   return (await yargs(hideBin(process.argv))
-    .usage("Detect cache-busting attacks on Amplify apps in a given region, and if one is taking place, mitigate the attack on the app's CloudFront distributions.")
+    .usage(
+      "Detect cache-busting attacks on Amplify apps in a given region, and if one is taking place, mitigate the attack on the app's CloudFront distributions."
+    )
     .option("region", {
       describe: `Region to detect/mitigate attacks (e.g. "pdx", "PDX", "us-west-2").`,
       type: "string",
@@ -33,12 +35,14 @@ async function getArgs() {
       alias: "r",
     })
     .option("contributors", {
-      describe: "Number of highest-traffic Amplify apps to inspect for attacks.",
+      describe:
+        "Number of highest-traffic Amplify apps to inspect for attacks.",
       type: "number",
       default: 3,
     })
     .option("minutes", {
-      describe: "Relative time range prior to the current time to check for attacks.",
+      describe:
+        "Relative time range prior to the current time to check for attacks.",
       type: "number",
       default: 30,
     })
@@ -66,8 +70,14 @@ async function getArgs() {
 
 async function getClients(airportCode: AirportCode, regionName: RegionName) {
   // Trailing underscore prevents namespace collision between the const and the function
-  const kinesisConsumerAccount_ = await kinesisConsumerAccount(LOWERCASE_PROD, airportCode);
-  const controlPlaneAccount_ = await controlPlaneAccount(LOWERCASE_PROD, airportCode);
+  const kinesisConsumerAccount_ = await kinesisConsumerAccount(
+    LOWERCASE_PROD,
+    airportCode
+  );
+  const controlPlaneAccount_ = await controlPlaneAccount(
+    LOWERCASE_PROD,
+    airportCode
+  );
 
   // CloudWatch clients for querying Contributor Insights (i.e. Alpine rules) and Log Insights to detect attacks
   const cloudWatchConfig = {
@@ -82,7 +92,10 @@ async function getClients(airportCode: AirportCode, regionName: RegionName) {
   // DynamoDB client for finding domain ID's of all CloudFront distributions for an app
   const dynamoDb = new DynamoDB({
     region: regionName,
-    credentials: getIsengardCredentialsProvider(controlPlaneAccount_.accountId, "FullReadOnly"),
+    credentials: getIsengardCredentialsProvider(
+      controlPlaneAccount_.accountId,
+      "FullReadOnly"
+    ),
   });
 
   // CloudFront client for removing or restoring query parameter from cache key
@@ -181,7 +194,9 @@ async function isCacheBusting(
     startTime: startTime,
     endTime: endTime,
     queryString: queryString,
-    logGroupName: `/aws/fargate/AmplifyHostingKinesisConsumer-${capitalize(LOWERCASE_PROD)}/application.log`,
+    logGroupName: `/aws/fargate/AmplifyHostingKinesisConsumer-${capitalize(
+      LOWERCASE_PROD
+    )}/application.log`,
   });
   if (!response.queryId) {
     throw new Error("QueryId missing, something went wrong.");
@@ -288,7 +303,9 @@ async function appToAppDistro(
   if (items?.length == 1 && items[0].cloudFrontDistributionId.S) {
     return items[0].cloudFrontDistributionId.S;
   } else {
-    throw new Error(`App ${appId} not found, or it doesn't have a default app distribution.`);
+    throw new Error(
+      `App ${appId} not found, or it doesn't have a default app distribution.`
+    );
   }
 }
 
@@ -318,7 +335,11 @@ async function appToDomainDistros(
   return domainDistros;
 }
 
-async function getDistributionIds(dynamoDb: DynamoDB, domainId: string, regionName: RegionName) {
+async function getDistributionIds(
+  dynamoDb: DynamoDB,
+  domainId: string,
+  regionName: RegionName
+) {
   const domainTable = `${LOWERCASE_PROD}-${regionName}-Domain`;
   const appTable = `${LOWERCASE_PROD}-${regionName}-App`;
 
@@ -351,7 +372,11 @@ Edge Tools: https://edge-tools.amazon.com/distributions/${distributionId}`
   return distributionIds;
 }
 
-async function changeCachePolicy(cloudFront: CloudFront, distributionId: string, queryString: boolean) {
+async function changeCachePolicy(
+  cloudFront: CloudFront,
+  distributionId: string,
+  queryString: boolean
+) {
   const distribution = await cloudFront.getDistribution({ Id: distributionId });
 
   // Setting QueryString to false is equivalent to setting "Query strings" to "None" in the CloudFront console, and
@@ -359,7 +384,8 @@ async function changeCachePolicy(cloudFront: CloudFront, distributionId: string,
   let distributionConfig = distribution.Distribution?.DistributionConfig;
   if (distributionConfig) {
     try {
-      distributionConfig.DefaultCacheBehavior!.ForwardedValues!.QueryString = queryString;
+      distributionConfig.DefaultCacheBehavior!.ForwardedValues!.QueryString =
+        queryString;
     } catch {
       throw new Error("DistributionConfig is missing attributes.");
     }
@@ -370,17 +396,33 @@ async function changeCachePolicy(cloudFront: CloudFront, distributionId: string,
     DistributionConfig: distributionConfig,
     IfMatch: distribution.ETag ?? distributionId,
   });
-  console.log(`Query strings are now ${queryString ? "enabled" : "disabled"} for the cache keys of distribution ${distributionId}.`);
+  console.log(
+    `Query strings are now ${
+      queryString ? "enabled" : "disabled"
+    } for the cache keys of distribution ${distributionId}.`
+  );
 }
 
-async function configureCloudFrontDistros(dynamoDb: DynamoDB, cloudFront: CloudFront, domainId: string, regionName: RegionName, queryString: boolean) {
-  const distributionIds = await getDistributionIds(dynamoDb, domainId, regionName);
+async function configureCloudFrontDistros(
+  dynamoDb: DynamoDB,
+  cloudFront: CloudFront,
+  domainId: string,
+  regionName: RegionName,
+  queryString: boolean
+) {
+  const distributionIds = await getDistributionIds(
+    dynamoDb,
+    domainId,
+    regionName
+  );
   for (const distributionId of distributionIds) {
     await changeCachePolicy(cloudFront, distributionId, queryString);
   }
 
   if (queryString) {
-    console.log(`Mitigation has been successfully reverted on CloudFront domain ${domainId} and all distributions on the same app.`);
+    console.log(
+      `Mitigation has been successfully reverted on CloudFront domain ${domainId} and all distributions on the same app.`
+    );
   } else {
     console.log(
       `Mitigation has been successfully applied to CloudFront domain ${domainId} and all distributions on the same app.
@@ -397,33 +439,55 @@ async function main() {
   const { region, contributors, minutes, mitigate, revert } = await getArgs();
   const regionName = toRegionName(region);
   const airportCode = toAirportCode(region);
-  const { cloudWatch, cloudWatchLogs, dynamoDb, cloudFront } = await getClients(airportCode, regionName);
+  const { cloudWatch, cloudWatchLogs, dynamoDb, cloudFront } = await getClients(
+    airportCode,
+    regionName
+  );
 
   if (mitigate) {
     console.warn(
-`You have selected the "mitigate" option, which will bypass the detection phase and immediately perform the mitigation
+      `You have selected the "mitigate" option, which will bypass the detection phase and immediately perform the mitigation
 on the CloudFront distribution ${mitigate} and all other distributions associated with the same Amplify app.`
     );
     console.log("==========");
-    await configureCloudFrontDistros(dynamoDb, cloudFront, mitigate, regionName, false);
-
+    await configureCloudFrontDistros(
+      dynamoDb,
+      cloudFront,
+      mitigate,
+      regionName,
+      false
+    );
   } else if (revert) {
     console.warn(
-`You have selected the "revert" option, which will revert mitigation on the CloudFront distribution ${revert} and all
+      `You have selected the "revert" option, which will revert mitigation on the CloudFront distribution ${revert} and all
 other distributions associated with the same Amplify app.`
     );
     console.log("==========");
-    await configureCloudFrontDistros(dynamoDb, cloudFront, revert, regionName, true);
-
+    await configureCloudFrontDistros(
+      dynamoDb,
+      cloudFront,
+      revert,
+      regionName,
+      true
+    );
   } else {
-    console.log(`Detecting potential cache-busting attack in ${LOWERCASE_PROD}-${airportCode}...`);
+    console.log(
+      `Detecting potential cache-busting attack in ${LOWERCASE_PROD}-${airportCode}...`
+    );
     console.log("==========");
 
-    const topTalkers = (await getTopTalkers(cloudWatch, contributors, minutes)) ?? [];
+    const topTalkers =
+      (await getTopTalkers(cloudWatch, contributors, minutes)) ?? [];
 
     for (const talker of topTalkers) {
       if (await isCacheBusting(cloudWatchLogs, talker.domainId, { minutes })) {
-        await configureCloudFrontDistros(dynamoDb, cloudFront, talker.domainId, regionName, false);
+        await configureCloudFrontDistros(
+          dynamoDb,
+          cloudFront,
+          talker.domainId,
+          regionName,
+          false
+        );
       }
     }
   }
@@ -435,5 +499,6 @@ other distributions associated with the same Amplify app.`
   // }))
 }
 
-main().then()
-  .catch(e => console.warn(e));
+main()
+  .then()
+  .catch((e) => console.warn(e));

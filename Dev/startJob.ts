@@ -1,8 +1,8 @@
-import { Amplify, JobType } from '@aws-sdk/client-amplify';
-import { createSpinningLogger } from '../Commons/utils/logger';
-import yargs from 'yargs';
+import { Amplify, JobType } from "@aws-sdk/client-amplify";
+import { createSpinningLogger } from "../Commons/utils/logger";
+import yargs from "yargs";
 
-async function main () {
+async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `Start a job on an app.
@@ -23,26 +23,29 @@ async function main () {
             export APP_ID=dxxxxx
             export BRANCH_NAME=main
             npx ts-node startJob.ts
-        `,
+        `
     )
-    .option('amplifyEndpoint', {
-      describe: 'Endpoint for amplify control plane. Defaults to: process.env.ENDPOINT',
-      type: 'string',
+    .option("amplifyEndpoint", {
+      describe:
+        "Endpoint for amplify control plane. Defaults to: process.env.ENDPOINT",
+      type: "string",
       default: process.env.ENDPOINT,
     })
-    .option('amplifyRegion', {
-      describe: 'Region for amplify control plane. Defaults to: process.env.REGION',
-      type: 'string',
+    .option("amplifyRegion", {
+      describe:
+        "Region for amplify control plane. Defaults to: process.env.REGION",
+      type: "string",
       default: process.env.REGION,
     })
-    .option('appId', {
-      describe: 'App id to start a job on. Defaults to: process.env.APP_ID',
-      type: 'string',
+    .option("appId", {
+      describe: "App id to start a job on. Defaults to: process.env.APP_ID",
+      type: "string",
       default: process.env.APP_ID,
     })
-    .option('branchName', {
-      describe: 'Branch name to start a job on. Defaults to: process.env.BRANCH_NAME',
-      type: 'string',
+    .option("branchName", {
+      describe:
+        "Branch name to start a job on. Defaults to: process.env.BRANCH_NAME",
+      type: "string",
       default: process.env.BRANCH_NAME,
     })
     .strict()
@@ -78,18 +81,20 @@ async function main () {
     logger.update(`Job status: ${getJobResult.job?.summary?.status}`);
 
     if (
-      getJobResult.job?.summary?.status === 'COMPLETED' ||
-      getJobResult.job?.summary?.status === 'FAILED' ||
-      getJobResult.job?.summary?.status === 'CANCELED'
+      getJobResult.job?.summary?.status === "COMPLETED" ||
+      getJobResult.job?.summary?.status === "FAILED" ||
+      getJobResult.job?.summary?.status === "CANCELED"
     ) {
-      logger.spinnerStop(`Job hit terminal status: ${getJobResult.job?.summary?.status}`);
+      logger.spinnerStop(
+        `Job hit terminal status: ${getJobResult.job?.summary?.status}`
+      );
       break;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 
-  logger.info('Done!');
+  logger.info("Done!");
 }
 
 main().then(console.log).catch(console.error);

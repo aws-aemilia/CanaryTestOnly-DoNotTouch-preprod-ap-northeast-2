@@ -1,9 +1,6 @@
 import { toRegionName } from "../../../Commons/utils/regions";
 
-export const getDomainName = (
-  stage: string,
-  region: string
-) => {
+export const getDomainName = (stage: string, region: string) => {
   const regionName = toRegionName(region);
   return `${stage}.${regionName}.gateway.amplify.aws.dev`;
 };

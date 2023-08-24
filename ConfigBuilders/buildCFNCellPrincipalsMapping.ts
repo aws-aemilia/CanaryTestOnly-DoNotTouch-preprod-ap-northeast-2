@@ -36,10 +36,13 @@ const buildCFNCellPrincipalsMapping = async () => {
       const cellPrincipals = (
         await computeServiceDataPlaneAccounts({
           // preprod control plane uses gamma compute service stack
-          stage: (stage === 'preprod' ? 'gamma' : stage) as Stage,
+          stage: (stage === "preprod" ? "gamma" : stage) as Stage,
           region: region as Region,
         })
-      ).map((acc) => `arn:aws:iam::${acc.accountId}:role/ComputeServiceCrossAccountRole`);
+      ).map(
+        (acc) =>
+          `arn:aws:iam::${acc.accountId}:role/ComputeServiceCrossAccountRole`
+      );
 
       cfnMap[region][stage] =
         cellPrincipals.length > 0 ? cellPrincipals : [noCellsMarker];
@@ -83,6 +86,4 @@ const buildCFNCellPrincipalsMapping = async () => {
   return JSON.stringify({ ...mappings, ...conditions }, null, 2);
 };
 
-buildCFNCellPrincipalsMapping()
-    .then(console.log)
-    .catch(console.log);
+buildCFNCellPrincipalsMapping().then(console.log).catch(console.log);

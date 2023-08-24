@@ -3,7 +3,13 @@ import { readFile } from "fs/promises";
 import { createSpinningLogger } from "../Commons/utils/logger";
 import path from "path";
 import yargs from "yargs";
-import { controlPlaneAccounts, getIsengardCredentialsProvider, preflightCAZ, Stage, StandardRoles } from "../Commons/Isengard";
+import {
+  controlPlaneAccounts,
+  getIsengardCredentialsProvider,
+  preflightCAZ,
+  Stage,
+  StandardRoles,
+} from "../Commons/Isengard";
 import { insightsQuery } from "../Commons/libs/CloudWatch";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
 
@@ -38,7 +44,8 @@ async function main() {
       choices: ["beta", "gamma", "preprod", "prod"],
     })
     .option("logGroupPrefix", {
-      describe: "Prefix for the CW log group, for example /aws/lambda/AemiliaControlPlane-Function-",
+      describe:
+        "Prefix for the CW log group, for example /aws/lambda/AemiliaControlPlane-Function-",
       type: "string",
       demandOption: true,
     })
@@ -53,7 +60,8 @@ async function main() {
       demandOption: false,
     })
     .option("startDate", {
-      describe: "Query start date in ISO format, for example 2022-04-01T00:00:00",
+      describe:
+        "Query start date in ISO format, for example 2022-04-01T00:00:00",
       type: "string",
       demandOption: true,
     })
@@ -63,7 +71,8 @@ async function main() {
       demandOption: true,
     })
     .option("outputDir", {
-      describe: "Folder where to write the CSV files that contain query results",
+      describe:
+        "Folder where to write the CSV files that contain query results",
       type: "string",
       demandOption: false,
     })
@@ -84,7 +93,17 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { stage, logGroupPrefix, query, queryFile, startDate, endDate, outputDir, noEmptyFiles, role } = args;
+  const {
+    stage,
+    logGroupPrefix,
+    query,
+    queryFile,
+    startDate,
+    endDate,
+    outputDir,
+    noEmptyFiles,
+    role,
+  } = args;
 
   if (!query && !queryFile) {
     throw new Error("Either query or queryFile must be provided");
@@ -95,7 +114,9 @@ async function main() {
     queryToExecute = await readFile(path.join(__dirname, queryFile), "utf-8");
   }
 
-  const resolveOutputFolder = outputDir ?? path.join(__dirname, "..", "tmp", `query_results_${Date.now()}}`);
+  const resolveOutputFolder =
+    outputDir ??
+    path.join(__dirname, "..", "tmp", `query_results_${Date.now()}}`);
 
   if (!existsSync(resolveOutputFolder)) {
     logger.info("Output directory does not exist, creating it");
@@ -103,41 +124,59 @@ async function main() {
     logger.info(outputDir, "Output directory created successfully");
   }
 
-  const controlPlaneAccountsForStage =  await controlPlaneAccounts({stage: stage as Stage});
+  const controlPlaneAccountsForStage = await controlPlaneAccounts({
+    stage: stage as Stage,
+  });
 
   await preflightCAZ({
     accounts: controlPlaneAccountsForStage,
-    role
-  })
+    role,
+  });
 
   let regionsLeftToGetLogsFrom = controlPlaneAccountsForStage.length;
-  logger.update(`Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`);
+  logger.update(
+    `Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`
+  );
   logger.spinnerStart();
-  const queryPromises = controlPlaneAccountsForStage.map(async (controlPlaneAccount) => {
-    logger.info(controlPlaneAccount, "Beginning query for region");
-    const cloudwatchClient = new CloudWatchLogsClient({
-      region: controlPlaneAccount.region,
-      credentials: getIsengardCredentialsProvider(controlPlaneAccount.accountId, role),
-    });
+  const queryPromises = controlPlaneAccountsForStage.map(
+    async (controlPlaneAccount) => {
+      logger.info(controlPlaneAccount, "Beginning query for region");
+      const cloudwatchClient = new CloudWatchLogsClient({
+        region: controlPlaneAccount.region,
+        credentials: getIsengardCredentialsProvider(
+          controlPlaneAccount.accountId,
+          role
+        ),
+      });
 
-    const logs = await insightsQuery(cloudwatchClient, logGroupPrefix, queryToExecute, new Date(startDate), new Date(endDate), logger);
+      const logs = await insightsQuery(
+        cloudwatchClient,
+        logGroupPrefix,
+        queryToExecute,
+        new Date(startDate),
+        new Date(endDate),
+        logger
+      );
 
-    const fileName = controlPlaneAccount.region.concat(".json");
-    const outputFile = path.join(resolveOutputFolder, fileName);
+      const fileName = controlPlaneAccount.region.concat(".json");
+      const outputFile = path.join(resolveOutputFolder, fileName);
 
-    regionsLeftToGetLogsFrom--;
-    logger.update(`Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`);
+      regionsLeftToGetLogsFrom--;
+      logger.update(
+        `Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`
+      );
 
-    if (logs.length === 0) {
-      logger.info(`No results found for ${controlPlaneAccount.region}`);
-      if (noEmptyFiles) {
-        return;
+      if (logs.length === 0) {
+        logger.info(`No results found for ${controlPlaneAccount.region}`);
+        if (noEmptyFiles) {
+          return;
+        }
       }
-    }
 
-    logger.info({ outputFile }, "Writing results to file");
-    await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
-  });
+      logger.info({ outputFile }, "Writing results to file");
+      await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
+    }
+  );
 
   try {
     await Promise.all(queryPromises);

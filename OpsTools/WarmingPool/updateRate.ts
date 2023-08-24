@@ -15,9 +15,11 @@ import {
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
-    .usage(`
+    .usage(
+      `
     Updates the teigger rate for Warming Pool events
-    ts-node updateRate.ts --region="us-east-2" --stage="prod" --ticket="V874802994"`)
+    ts-node updateRate.ts --region="us-east-2" --stage="prod" --ticket="V874802994"`
+    )
     .option("stage", {
       describe: "stage to run the command",
       type: "string",

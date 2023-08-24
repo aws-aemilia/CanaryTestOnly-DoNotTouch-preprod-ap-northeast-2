@@ -1,7 +1,7 @@
 import { Region, Stage } from "../../types";
 import { toAirportCode } from "../../../utils/regions";
 import { capitalize } from "../createAmplifyAccount";
-import {AccountPurposeFn} from "./types";
+import { AccountPurposeFn } from "./types";
 
 export const computeServiceCellPurposeFn: AccountPurposeFn = (
   stage: Stage,

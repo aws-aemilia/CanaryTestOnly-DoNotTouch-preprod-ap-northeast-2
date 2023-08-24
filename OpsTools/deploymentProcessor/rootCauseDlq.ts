@@ -1,7 +1,11 @@
 import yargs from "yargs";
 import fs from "fs";
 import logger from "../../Commons/utils/logger";
-import { SFNClient, DescribeExecutionCommand, DescribeExecutionCommandOutput } from "@aws-sdk/client-sfn";
+import {
+  SFNClient,
+  DescribeExecutionCommand,
+  DescribeExecutionCommandOutput,
+} from "@aws-sdk/client-sfn";
 import { pollMessages } from "../../Commons/utils/sqs";
 import { doQuery } from "../../Commons/libs/CloudWatch";
 import {
@@ -78,11 +82,13 @@ async function main() {
       demandOption: true,
     })
     .option("outputPath", {
-      describe: "Path of a file where to write the results and DLQ messages (i.e. ~/Desktop/yul.txt)",
+      describe:
+        "Path of a file where to write the results and DLQ messages (i.e. ~/Desktop/yul.txt)",
       type: "string",
     })
     .option("deleteMessages", {
-      describe: "If provided, messages with a root cause will be deleted from the DLQ",
+      describe:
+        "If provided, messages with a root cause will be deleted from the DLQ",
       type: "boolean",
       demandOption: false,
     })
@@ -94,16 +100,25 @@ async function main() {
 
   const regionName = toRegionName(region);
   const cpAccount = await controlPlaneAccount(stage as Stage, region as Region);
-  const computeServiceAccount = await computeServiceControlPlaneAccount(stage as Stage, region as Region);
+  const computeServiceAccount = await computeServiceControlPlaneAccount(
+    stage as Stage,
+    region as Region
+  );
 
   await preflightCAZ({
     accounts: [cpAccount, computeServiceAccount],
     role: ["OncallOperator"],
   });
 
-  const controlPlaneCreds = getIsengardCredentialsProvider(cpAccount.accountId, "OncallOperator");
+  const controlPlaneCreds = getIsengardCredentialsProvider(
+    cpAccount.accountId,
+    "OncallOperator"
+  );
 
-  const computeCreds = getIsengardCredentialsProvider(computeServiceAccount.accountId, "OncallOperator");
+  const computeCreds = getIsengardCredentialsProvider(
+    computeServiceAccount.accountId,
+    "OncallOperator"
+  );
 
   const sqsClient = new SQSClient({
     region: regionName,
@@ -137,19 +152,36 @@ async function main() {
   for (const sqsMessage of sqsMessages) {
     const message = parseMessage(sqsMessage);
     if (!message) {
-      logger.error(sqsMessage, "Failed to parse SQS message. Unable to root cause");
+      logger.error(
+        sqsMessage,
+        "Failed to parse SQS message. Unable to root cause"
+      );
       continue;
     }
 
-    logger.info(`This was a ${message.payload.platform ? message.payload.platform : "Manual"} deployment`);
+    logger.info(
+      `This was a ${
+        message.payload.platform ? message.payload.platform : "Manual"
+      } deployment`
+    );
 
     if (message.payload.platform === "WEB_COMPUTE") {
       // Attempt to find root cause in compute service
-      let computeServiceRootCause = await rootCauseComputeDeployment(computeDocumentClient, computeSfnClient, message);
+      let computeServiceRootCause = await rootCauseComputeDeployment(
+        computeDocumentClient,
+        computeSfnClient,
+        message
+      );
 
       // But also check deployment processor to have full picture of what happened
       logger.info("Looking for error in deployment processor");
-      let deploymentProcessorRootCause = await rootCauseDeployment(documentClient, stage, regionName, message, cpAccount);
+      let deploymentProcessorRootCause = await rootCauseDeployment(
+        documentClient,
+        stage,
+        regionName,
+        message,
+        cpAccount
+      );
 
       if (!computeServiceRootCause && !deploymentProcessorRootCause) {
         // No root cause found anywhere.
@@ -169,13 +201,25 @@ async function main() {
         message.rootCause.push(...computeServiceRootCause);
       }
     } else {
-      message.rootCause = await rootCauseDeployment(documentClient, stage, regionName, message, cpAccount);
+      message.rootCause = await rootCauseDeployment(
+        documentClient,
+        stage,
+        regionName,
+        message,
+        cpAccount
+      );
     }
 
     if (message.rootCause) {
       const rootCauseFile = outputPath
         ? outputPath
-        : path.join(__dirname, "..", "..", "tmp", `deployment_processor_dlq_${region}_${Date.now()}.txt`);
+        : path.join(
+            __dirname,
+            "..",
+            "..",
+            "tmp",
+            `deployment_processor_dlq_${region}_${Date.now()}.txt`
+          );
       writeRootCauseToOutputFile(message, rootCauseFile);
       if (deleteMessages) {
         await deleteMessage(sqsClient, queueUrl, message);
@@ -186,7 +230,11 @@ async function main() {
   }
 }
 
-async function deleteMessage(sqsClient: SQSClient, queueUrl: string, message: DLQMessage) {
+async function deleteMessage(
+  sqsClient: SQSClient,
+  queueUrl: string,
+  message: DLQMessage
+) {
   logger.info("Deleting message from DLQ");
   await sqsClient.send(
     new DeleteMessageCommand({
@@ -211,7 +259,10 @@ function parseMessage(sqsMessage: Message): DLQMessage | null {
 
   // Extract message timestamp from attributes
   if (!sqsMessage.Attributes || !sqsMessage.Attributes.SentTimestamp) {
-    logger.error(payload, "Message doesn't have a SentTimestamp attribute, unable to root cause");
+    logger.error(
+      payload,
+      "Message doesn't have a SentTimestamp attribute, unable to root cause"
+    );
 
     return null;
   }
@@ -231,7 +282,13 @@ async function rootCauseDeployment(
   controlPlaneAccount: AmplifyAccount
 ): Promise<RootCause | null> {
   // Lookup Job in DynamoDB
-  const job = await findJob(documentClient, stage, region, message.payload.branchArn, message.payload.buildId);
+  const job = await findJob(
+    documentClient,
+    stage,
+    region,
+    message.payload.branchArn,
+    message.payload.buildId
+  );
 
   let deploymentStartTime: Date;
   let deploymentEndTime: Date;
@@ -240,7 +297,10 @@ async function rootCauseDeployment(
     // Find the deployment step in the JobDO
     const deploymentStep = job.jobSteps.find((step) => step.name === "DEPLOY");
     if (!deploymentStep) {
-      logger.error(message, "Unable to find deployment step in job. Cannot root cause");
+      logger.error(
+        message,
+        "Unable to find deployment step in job. Cannot root cause"
+      );
       return null;
     }
 
@@ -248,7 +308,10 @@ async function rootCauseDeployment(
     deploymentStartTime = new Date(deploymentStep.startTime);
     deploymentEndTime = dayjs(deploymentStep.endTime).add(1, "minute").toDate(); // logs are sometimes after deployment end time. Not sure why
   } else {
-    logger.warn(message, "Unable to find job in DynamoDB. Branch was likely deleted");
+    logger.warn(
+      message,
+      "Unable to find job in DynamoDB. Branch was likely deleted"
+    );
     // Since job was deleted, we will assume deployment start time and end time based on the SQS message
     deploymentStartTime = new Date(message.sentTimestamp);
     deploymentEndTime = dayjs(message.sentTimestamp).add(10, "minute").toDate();
@@ -265,7 +328,10 @@ async function rootCauseDeployment(
   );
 
   if (!logs) {
-    logger.error(message, "Unable to find errors in Deployment Processor logs. Cannot root cause");
+    logger.error(
+      message,
+      "Unable to find errors in Deployment Processor logs. Cannot root cause"
+    );
     return null;
   }
 
@@ -278,19 +344,32 @@ async function rootCauseComputeDeployment(
   stepFunctionsClient: SFNClient,
   message: DLQMessage
 ): Promise<RootCause | null> {
-  const computeDeployment = await findDeployment(documentClient, message.payload.branchArn, message.payload.buildId);
+  const computeDeployment = await findDeployment(
+    documentClient,
+    message.payload.branchArn,
+    message.payload.buildId
+  );
 
   if (!computeDeployment) {
-    logger.error(message, "Deployment not found in DynamoDB. Unable to root cause");
+    logger.error(
+      message,
+      "Deployment not found in DynamoDB. Unable to root cause"
+    );
     return null;
   }
 
   if (!computeDeployment.stateMachineExecutionArn) {
-    logger.info(computeDeployment, "Compute deployment is missing stateMachineExecutionArn. This is not expected");
+    logger.info(
+      computeDeployment,
+      "Compute deployment is missing stateMachineExecutionArn. This is not expected"
+    );
     return null;
   }
 
-  logger.info("Checking deployer state machine execution details = %s", computeDeployment.stateMachineExecutionArn);
+  logger.info(
+    "Checking deployer state machine execution details = %s",
+    computeDeployment.stateMachineExecutionArn
+  );
   const response = await stepFunctionsClient.send(
     new DescribeExecutionCommand({
       executionArn: computeDeployment.stateMachineExecutionArn,
@@ -315,17 +394,24 @@ async function rootCauseComputeDeployment(
   return errorMessages;
 }
 
-function extractErrorsFromStateMachineExecution(execution: DescribeExecutionCommandOutput): string[] {
+function extractErrorsFromStateMachineExecution(
+  execution: DescribeExecutionCommandOutput
+): string[] {
   let failureCause: StateMachineFailureCause;
 
   if (!execution.cause) {
-    logger.info(execution, "State machine execution is missing a failure cause");
+    logger.info(
+      execution,
+      "State machine execution is missing a failure cause"
+    );
     return [];
   }
 
   try {
     // Check if the cause is a parseable object that contains a stack trace and errorType.
-    failureCause = JSON.parse(execution.cause as string) as StateMachineFailureCause;
+    failureCause = JSON.parse(
+      execution.cause as string
+    ) as StateMachineFailureCause;
   } catch (err) {
     // If it's not parseable, it means it is a plain string.
     return [execution.cause as string];

@@ -1,5 +1,8 @@
 import yargs from "yargs";
-import { disableDistribution, enableDistribution } from "../../Commons/utils/cloudfront";
+import {
+  disableDistribution,
+  enableDistribution,
+} from "../../Commons/utils/cloudfront";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import logger from "../../Commons/utils/logger";
 import {

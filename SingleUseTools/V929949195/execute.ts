@@ -1,12 +1,18 @@
-import { GetObjectCommand, S3Client, HeadObjectCommand, CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  S3Client,
+  HeadObjectCommand,
+  CopyObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
 } from "../../Commons/Isengard";
 import logger from "../../Commons/utils/logger";
 
-// One time script to delete problematic files that contain unicode characters 
-// to resolve ticket: https://t.corp.amazon.com/V929949195/communication. 
+// One time script to delete problematic files that contain unicode characters
+// to resolve ticket: https://t.corp.amazon.com/V929949195/communication.
 
 async function main() {
   process.env.ISENGARD_SIM = "V929949195";
@@ -112,12 +118,13 @@ async function main() {
 
   for (const problematicFile of problematicFiles) {
     logger.info(`Deleting ${problematicFile}`);
-    await s3Client.send(new DeleteObjectCommand({
+    await s3Client.send(
+      new DeleteObjectCommand({
         Bucket: "aws-amplify-prod-ap-northeast-2-website-hosting",
         Key: problematicFile,
-    }));
+      })
+    );
   }
-  
 }
 
 main()

@@ -50,19 +50,21 @@ const categoryMappings: CategoryMapping[] = [
   },
   {
     pattern: "AemiliaWebhookProcessorService",
-    category: Category.WebhookProcessor
-  }
+    category: Category.WebhookProcessor,
+  },
 ];
 
 export function getCategory(pageSubject: string): Category {
   // Evaluate the page subject against all category mappings, the first one that matches wins.
-  const mapping: CategoryMapping | undefined = categoryMappings.find((mapping: CategoryMapping) => {
-    if (typeof mapping.pattern === "string") {
-      return pageSubject.includes(mapping.pattern);
-    } else {
-      return mapping.pattern.test(pageSubject);
+  const mapping: CategoryMapping | undefined = categoryMappings.find(
+    (mapping: CategoryMapping) => {
+      if (typeof mapping.pattern === "string") {
+        return pageSubject.includes(mapping.pattern);
+      } else {
+        return mapping.pattern.test(pageSubject);
+      }
     }
-  });
+  );
 
   if (!mapping) {
     return Category.Other;

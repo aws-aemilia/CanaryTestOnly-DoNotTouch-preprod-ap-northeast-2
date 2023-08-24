@@ -24,7 +24,7 @@ const unsafeResetSecret = async (
     : await getNamedSecretLocations(stage, region);
 
   const secretLocations = Object.values(namedSecretLocations).flatMap((s) =>
-      Array.isArray(s) ? s : [s]
+    Array.isArray(s) ? s : [s]
   );
 
   const secretValue = newSecret();

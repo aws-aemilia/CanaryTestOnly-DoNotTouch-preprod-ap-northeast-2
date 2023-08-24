@@ -45,43 +45,55 @@ export const getNamedSecretLocations = async (
   region: Region
 ): Promise<NamedSecretLocations> => ({
   edgeLambda: {
-    account: await locateAccountWithGammaSpecialCase(controlPlaneAccount, stage, region),
+    account: await locateAccountWithGammaSpecialCase(
+      controlPlaneAccount,
+      stage,
+      region
+    ),
     secretStore: ddbLambdaEdgeConfigSecretStore,
   },
-  ... await getComputeServiceOnlyNamedSecretLocations(stage, region)
+  ...(await getComputeServiceOnlyNamedSecretLocations(stage, region)),
 });
-
 
 export const getComputeServiceOnlyNamedSecretLocations = async (
   stage: Stage,
   region: Region
-): Promise<Pick<NamedSecretLocations, 'gatewayA' | 'gatewayB' | 'integTest' | 'hostingDataplaneIntegTest'>> => ({
-  gatewayA: (await dataPlaneAccounts({ stage, region })).flatMap(
-    (acc) => [
-      { account: acc, secretStore: elbSecretStoreWithPriority("5") },
-      {
-        account: acc,
-        secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretA"),
-      },
-    ]
-  ),
-  gatewayB: (await dataPlaneAccounts({ stage, region })).flatMap(
-    (acc) => [
-      { account: acc, secretStore: elbSecretStoreWithPriority("10") },
-      {
-        account: acc,
-        secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretB"),
-      },
-    ]
-  ),
+): Promise<
+  Pick<
+    NamedSecretLocations,
+    "gatewayA" | "gatewayB" | "integTest" | "hostingDataplaneIntegTest"
+  >
+> => ({
+  gatewayA: (await dataPlaneAccounts({ stage, region })).flatMap((acc) => [
+    { account: acc, secretStore: elbSecretStoreWithPriority("5") },
+    {
+      account: acc,
+      secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretA"),
+    },
+  ]),
+  gatewayB: (await dataPlaneAccounts({ stage, region })).flatMap((acc) => [
+    { account: acc, secretStore: elbSecretStoreWithPriority("10") },
+    {
+      account: acc,
+      secretStore: secretsManagerSecretStoreWithName("SharedGatewaySecretB"),
+    },
+  ]),
   integTest: {
-    account: await locateAccountWithGammaSpecialCase(integTestAccount, stage, region),
+    account: await locateAccountWithGammaSpecialCase(
+      integTestAccount,
+      stage,
+      region
+    ),
     secretStore: secretsManagerSecretStoreWithName(
       "CellGatewayOriginVerifyHeader"
     ),
   },
   hostingDataplaneIntegTest: {
-    account: await locateAccountWithGammaSpecialCase(integTestAccount, stage, region),
+    account: await locateAccountWithGammaSpecialCase(
+      integTestAccount,
+      stage,
+      region
+    ),
     secretStore: secretsManagerSecretStoreWithName(
       "HostingGatewayOriginVerifyHeader"
     ),

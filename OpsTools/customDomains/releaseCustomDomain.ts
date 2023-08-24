@@ -14,7 +14,8 @@ import {
   Region,
   Stage,
   controlPlaneAccount,
-  getIsengardCredentialsProvider, preflightCAZ,
+  getIsengardCredentialsProvider,
+  preflightCAZ,
 } from "../../Commons/Isengard";
 import {
   CloudFrontClient,
@@ -64,7 +65,7 @@ async function main() {
   const regionName = toRegionName(region);
   const cpAccount = await controlPlaneAccount(stage as Stage, region as Region);
 
-  await preflightCAZ({accounts: cpAccount, role: "ReleaseCustomDomain"});
+  await preflightCAZ({ accounts: cpAccount, role: "ReleaseCustomDomain" });
 
   const controlPlaneCreds = getIsengardCredentialsProvider(
     cpAccount.accountId,

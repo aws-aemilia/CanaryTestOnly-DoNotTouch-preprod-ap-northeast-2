@@ -6,7 +6,10 @@
  * ts-node buildComputeApiEndpoints.ts
  */
 
-import { AmplifyAccount, computeServiceControlPlaneAccounts } from "../Commons/Isengard";
+import {
+  AmplifyAccount,
+  computeServiceControlPlaneAccounts,
+} from "../Commons/Isengard";
 import { fetchCloudFormationOutputs } from "../Commons/utils/cloudFormation";
 import { capitalize } from "../Commons/Isengard/createAccount/createAmplifyAccount";
 

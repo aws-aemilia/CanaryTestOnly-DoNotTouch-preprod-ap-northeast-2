@@ -7,12 +7,12 @@ import {
 
 /**
  * Returns an item from the WarmFrontEndResources
- * 
+ *
  * @param dynamodb DocumentClient
  * @param stage i.e. beta, prod, gamma
  * @param region i.e. us-west-2
  * @param resourceId The ID for the warm resource
- * 
+ *
  * @returns a DynanmoDB item or null if not found
  */
 export const getWarmResource = async (
@@ -22,7 +22,10 @@ export const getWarmResource = async (
   resourceId: string
 ): Promise<object | null> => {
   try {
-    console.log("Looking up resource in WarmFrontEndResources table", resourceId);
+    console.log(
+      "Looking up resource in WarmFrontEndResources table",
+      resourceId
+    );
     const queryResponse = await dynamodb.send(
       new GetCommand({
         TableName: `${stage}-${region}-WarmFrontEndResources`,
@@ -53,7 +56,7 @@ export const getWarmResource = async (
 
 /**
  * List all resources in the WarmingPool.
- * 
+ *
  * @param documentClient DocumentClient with control plane credentials
  * @param stage i.e. beta, gamma, prod
  * @param region i.e. us-west-2

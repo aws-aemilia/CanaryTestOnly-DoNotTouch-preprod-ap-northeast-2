@@ -8,10 +8,7 @@ import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
 } from "../Commons/Isengard";
-import {
-  AppDO,
-  BranchDO
-} from "../Commons/dynamodb";
+import { AppDO, BranchDO } from "../Commons/dynamodb";
 import { AppDAO } from "../Commons/dynamodb/tables/AppDAO";
 import { BranchDAO } from "../Commons/dynamodb/tables/BranchDAO";
 import { AsyncResourceDeletionQueue } from "../Commons/sqs/AsyncResourceDeletionQueue";

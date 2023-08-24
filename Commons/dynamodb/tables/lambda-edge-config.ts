@@ -19,7 +19,7 @@ const TABLE_NAME = `LambdaEdgeConfig`;
 export const getLambdaEdgeConfigForAppOrDomain = async (
   dynamodb: DynamoDBDocumentClient,
   domainOrAppId: string,
-  attributesToGet: string[],
+  attributesToGet: string[]
 ) => {
   if (!domainOrAppId) {
     console.log("Invalid app or domain");

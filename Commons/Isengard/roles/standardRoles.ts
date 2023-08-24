@@ -31,13 +31,14 @@ export const adminRoleFn = (stage: Stage): AmplifyRole => ({
 
 export const releaseDomainRole: AmplifyRole = {
   IAMRoleName: "ReleaseCustomDomain",
-  Description: "To run ops tool to release a custom domain from a suspended AWS account",
+  Description:
+    "To run ops tool to release a custom domain from a suspended AWS account",
   ContingentAuth: 1,
   PolicyTemplateReference: [
     {
       OwnerID: "aws-mobile-amplify-oncall",
       PolicyTemplateName: "ReleaseCustomDomain",
-    }
+    },
   ],
   Group: POSIX_GROUP,
   FederationTimeOutMin: 15,
@@ -94,7 +95,7 @@ const mobileCoreSupportRole: AmplifyRole = {
     {
       OwnerID: "aws-mobile-amplify-oncall",
       PolicyTemplateName: "MobileCoreSupport",
-    }
+    },
   ],
 };
 

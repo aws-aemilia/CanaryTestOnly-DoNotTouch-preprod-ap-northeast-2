@@ -1,6 +1,11 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { controlPlaneAccount, getIsengardCredentialsProvider, Stage, StandardRoles } from "../../Commons/Isengard";
+import {
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Stage,
+  StandardRoles,
+} from "../../Commons/Isengard";
 import { CloudFront, MinimumProtocolVersion } from "@aws-sdk/client-cloudfront";
 import { toRegionName } from "../../Commons/utils/regions";
 import { createLogger } from "../../Commons/utils/logger";
@@ -9,8 +14,9 @@ const LATEST_TLS_VERSION = MinimumProtocolVersion.TLSv1_2_2021;
 const logger = createLogger();
 
 async function getArgs() {
-  return (await yargs(hideBin(process.argv))
-    .usage(`
+  return await yargs(hideBin(process.argv))
+    .usage(
+      `
       Upgrade a CloudFront distribution to the latest TLS version (as of now, ${LATEST_TLS_VERSION}).
       
       Example:
@@ -30,13 +36,14 @@ async function getArgs() {
         --region pdx \
         --distributionId E3JJ5J4JIPW1XO \
         --stage beta
-    `)
+    `
+    )
     .option("stage", {
       describe: `The stage that the distribution is in (e.g. prod, beta, gamma).`,
       type: "string",
       default: "prod",
       alias: "s",
-      choices: ["beta", "gamma", "preprod", "prod"]
+      choices: ["beta", "gamma", "preprod", "prod"],
     })
     .option("region", {
       describe: `The region that the distribution is in (e.g. pdx, PDX, us-west-2).`,
@@ -57,32 +64,43 @@ async function getArgs() {
     })
     .strict()
     .version(false)
-    .help().argv)
+    .help().argv;
 }
 
 async function main() {
   const { stage, region, distributionId, ticket } = await getArgs();
   const regionName = toRegionName(region);
-  process.env.ISENGARD_SIM = ticket ?? "";  // If the ticket option isn't provided, set the env var to an empty string so that the interactive prompt is used
+  process.env.ISENGARD_SIM = ticket ?? ""; // If the ticket option isn't provided, set the env var to an empty string so that the interactive prompt is used
 
-  const controlPlaneAccount_ = await controlPlaneAccount(stage as Stage, regionName);
+  const controlPlaneAccount_ = await controlPlaneAccount(
+    stage as Stage,
+    regionName
+  );
   const cloudFront = new CloudFront({
     region: regionName,
     credentials: getIsengardCredentialsProvider(
       controlPlaneAccount_.accountId,
-      StandardRoles.OncallOperator,
+      StandardRoles.OncallOperator
     ),
   });
 
-  const getDistributionOutput = await cloudFront.getDistribution({Id: distributionId});
-  const distributionConfig = getDistributionOutput.Distribution?.DistributionConfig;
+  const getDistributionOutput = await cloudFront.getDistribution({
+    Id: distributionId,
+  });
+  const distributionConfig =
+    getDistributionOutput.Distribution?.DistributionConfig;
 
-  if (distributionConfig?.ViewerCertificate?.MinimumProtocolVersion == LATEST_TLS_VERSION) {
-    logger.warn(`Distribution ${distributionId} already has the latest TLS version; skipping update.`)
-
+  if (
+    distributionConfig?.ViewerCertificate?.MinimumProtocolVersion ==
+    LATEST_TLS_VERSION
+  ) {
+    logger.warn(
+      `Distribution ${distributionId} already has the latest TLS version; skipping update.`
+    );
   } else {
     try {
-      distributionConfig!.ViewerCertificate!.MinimumProtocolVersion = LATEST_TLS_VERSION;
+      distributionConfig!.ViewerCertificate!.MinimumProtocolVersion =
+        LATEST_TLS_VERSION;
     } catch {
       throw new Error(
         `DistributionConfig is missing attribute path ViewerCertificate.MinimumProtocolVersion: ${distributionConfig}`
@@ -92,9 +110,11 @@ async function main() {
     await cloudFront.updateDistribution({
       Id: distributionId,
       IfMatch: getDistributionOutput.ETag,
-      DistributionConfig: distributionConfig
+      DistributionConfig: distributionConfig,
     });
-    logger.info(`Upgraded distribution ${distributionId} to TLS version ${LATEST_TLS_VERSION}.`)
+    logger.info(
+      `Upgraded distribution ${distributionId} to TLS version ${LATEST_TLS_VERSION}.`
+    );
   }
 }
 

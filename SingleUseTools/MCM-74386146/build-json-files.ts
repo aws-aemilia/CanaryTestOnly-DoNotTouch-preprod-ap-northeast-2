@@ -1,5 +1,8 @@
 import fs from "fs";
-import { getRecordsFromHostedZone, getRoute53Client } from "../../Commons/route53";
+import {
+  getRecordsFromHostedZone,
+  getRoute53Client,
+} from "../../Commons/route53";
 import { dataPlaneAccounts, Stage } from "../../Commons/Isengard";
 
 async function main() {

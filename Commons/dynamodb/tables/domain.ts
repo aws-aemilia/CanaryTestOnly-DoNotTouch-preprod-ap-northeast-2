@@ -204,7 +204,7 @@ export const paginateDomains = (
   stage: string,
   region: string,
   attributesToGet: string[] = ["appId"],
-  expressionAttributeNames?: Record<string, string>,
+  expressionAttributeNames?: Record<string, string>
 ) => {
   return paginateScan(
     {
@@ -214,14 +214,14 @@ export const paginateDomains = (
     {
       TableName: `${stage}-${region}-Domain`,
       ProjectionExpression: attributesToGet.join(","),
-      ExpressionAttributeNames: expressionAttributeNames
+      ExpressionAttributeNames: expressionAttributeNames,
     }
   );
 };
 
 /**
  * List Domains for a given appId.
- * 
+ *
  * @param documentClient DynamoDB document client
  * @param stage i.e. beta, prod, gamma
  * @param region i.e. us-west-2
@@ -252,20 +252,20 @@ export const paginateDomainsForApp = async (
 };
 
 /**
- * 
+ *
  * Finds the domains associated with the given appId
- * 
+ *
  * @param documentClient DocumentClient with credentials for the Control Plane account
  * @param stage The stage to find the App in
  * @param region The region to find the App in
  * @param appId The appId that the domain belongs to
- * @returns 
+ * @returns
  */
 export const findDomainsByAppId = async (
   documentClient: DynamoDBDocumentClient,
   stage: string,
   region: string,
-  appId: string,
+  appId: string
 ): Promise<DomainDO[] | null> => {
   try {
     const response = await documentClient.send(

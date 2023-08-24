@@ -6,7 +6,11 @@ import pinoPretty from "pino-pretty";
 
 import { AmplifyClient, ListAppsCommand } from "@aws-sdk/client-amplify";
 import { integTestAccount } from "../Commons/Isengard/accounts";
-import { getIsengardCredentialsProvider, Region, Stage } from "../Commons/Isengard";
+import {
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "../Commons/Isengard";
 
 const log = pino(pinoPretty());
 
@@ -65,11 +69,11 @@ export async function canListApps({
   try {
     await client.send(new ListAppsCommand({}));
     log.info("ListApps success");
-    return true
+    return true;
   } catch (err) {
     log.info(err, "ListApps failed");
 
-    return false
+    return false;
   }
 }
 
@@ -110,7 +114,9 @@ async function main() {
     stage = args.domain.split(".")[0] as Stage;
     region = args.domain.split(".")[1] as Region;
   } else {
-    throw new Error('cannot pick region and stage from domain - this is required for selecting Integ Test account for ListApps check')
+    throw new Error(
+      "cannot pick region and stage from domain - this is required for selecting Integ Test account for ListApps check"
+    );
   }
 
   const canEstablishConnection1_0 = canEstablishConnection({

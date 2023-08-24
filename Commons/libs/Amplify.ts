@@ -15,7 +15,7 @@ export async function getAppsByAppIds(
         [appTableName]: {
           Keys: [
             ...appIds.map((appId) => ({
-              appId: appId
+              appId: appId,
             })),
           ],
         },

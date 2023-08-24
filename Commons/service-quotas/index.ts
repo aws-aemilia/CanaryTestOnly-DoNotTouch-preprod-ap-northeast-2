@@ -5,10 +5,7 @@ import {
   GetRequestedServiceQuotaChangeCommand,
 } from "@aws-sdk/client-service-quotas";
 
-import {
-  AmplifyAccount,
-  getIsengardCredentialsProvider,
-} from "../Isengard";
+import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
 
 import sleep from "../utils/sleep";
 

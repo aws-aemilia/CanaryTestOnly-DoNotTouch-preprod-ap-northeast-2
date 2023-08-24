@@ -1,7 +1,8 @@
 import {
   AmplifyAccount,
   controlPlaneAccount,
-  getIsengardCredentialsProvider, meteringAccount,
+  getIsengardCredentialsProvider,
+  meteringAccount,
   preflightCAZ,
   Region,
   Stage,
@@ -13,18 +14,27 @@ import {
   SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import { getQueueUrl, getSourceQueueUrl, pollMessages, prettyPrint, } from "../../Commons/utils/sqs";
+import {
+  getQueueUrl,
+  getSourceQueueUrl,
+  pollMessages,
+  prettyPrint,
+} from "../../Commons/utils/sqs";
 import log from "../../Commons/utils/logger";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
   IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ,
   IDEMPOTENT_ASYNC_TASK_METERING_DLQ,
-  SAFE_TO_REDRIVE_QUEUES
+  SAFE_TO_REDRIVE_QUEUES,
 } from "./queuesClassification";
 import { toRegionName } from "../../Commons/utils/regions";
 
-function constructSendMessageCommandInput(sourceQueueUrl: string, message: Message, dlqUrl: string) {
+function constructSendMessageCommandInput(
+  sourceQueueUrl: string,
+  message: Message,
+  dlqUrl: string
+) {
   let input: SendMessageCommandInput = {
     QueueUrl: sourceQueueUrl,
     MessageBody: message.Body,
@@ -35,7 +45,7 @@ function constructSendMessageCommandInput(sourceQueueUrl: string, message: Messa
     input = {
       ...input,
       MessageGroupId: JSON.parse(message.Body!).fifoMessageGroupId,
-    }
+    };
   }
   return input;
 }
@@ -46,10 +56,7 @@ async function redrive(account: AmplifyAccount, dlq: string) {
   await preflightCAZ({ accounts: account, role });
   const sqsClient = new SQSClient({
     region: account.region,
-    credentials: getIsengardCredentialsProvider(
-      account.accountId,
-      role
-    ),
+    credentials: getIsengardCredentialsProvider(account.accountId, role),
   });
 
   const dlqUrl = await getQueueUrl(sqsClient, dlq);
@@ -64,7 +71,11 @@ async function redrive(account: AmplifyAccount, dlq: string) {
     log.info(`Redriving message: ${prettyPrint(message)}`);
 
     // Send the message to the main queue
-    let input = constructSendMessageCommandInput(sourceQueueUrl, message, dlqUrl);
+    let input = constructSendMessageCommandInput(
+      sourceQueueUrl,
+      message,
+      dlqUrl
+    );
     await sqsClient.send(new SendMessageCommand(input));
 
     // Delete the message from the DLQ
@@ -120,15 +131,12 @@ async function main() {
     account = await controlPlaneAccount(stage as Stage, region as Region);
   } else if (IDEMPOTENT_ASYNC_TASK_METERING_DLQ) {
     account = await meteringAccount(stage as Stage, region as Region);
-    dlq = `${stage}-${toRegionName(region)}-${dlq}`;  // Metering queues need the stage and region to be prepended
+    dlq = `${stage}-${toRegionName(region)}-${dlq}`; // Metering queues need the stage and region to be prepended
   } else {
     throw new Error(`DLQ ${dlq} not found in existing accounts.`);
   }
 
-  await redrive(
-    account,
-    dlq
-  );
+  await redrive(account, dlq);
 }
 
 main().then(console.log).catch(console.error);

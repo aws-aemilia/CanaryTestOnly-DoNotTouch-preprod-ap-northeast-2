@@ -46,22 +46,22 @@ const getComputeCellLambdaConcurrency = () => {
 };
 
 const maxLambdaConcurrencyLambdaLimit: LambdaLimit = {
-  lambdaLimitName: 'Concurrent Limit',
-  ctiItem: 'Limit Increase - Concurrent Executions',
-  limitValueFn: getMaxAllowedLambdaConcurrency
-}
+  lambdaLimitName: "Concurrent Limit",
+  ctiItem: "Limit Increase - Concurrent Executions",
+  limitValueFn: getMaxAllowedLambdaConcurrency,
+};
 
 const computeCellLambdaConcurrencyLambdaLimit: LambdaLimit = {
-  lambdaLimitName: 'Concurrent Limit',
-  ctiItem: 'Limit Increase - Concurrent Executions',
-  limitValueFn: getComputeCellLambdaConcurrency
-}
+  lambdaLimitName: "Concurrent Limit",
+  ctiItem: "Limit Increase - Concurrent Executions",
+  limitValueFn: getComputeCellLambdaConcurrency,
+};
 
 const maxCodeStorageLambdaLimit: LambdaLimit = {
-  lambdaLimitName: 'Code Storage Limit in GB',
-  ctiItem: 'Limit Increase - Code Storage',
-  limitValueFn: () => maxCodeStorage
-}
+  lambdaLimitName: "Code Storage Limit in GB",
+  ctiItem: "Limit Increase - Code Storage",
+  limitValueFn: () => maxCodeStorage,
+};
 
 /**
  * Cuts a ticket to Lambda requesting a Limit increase. The ticket will be resolved automatically by a bot.
@@ -75,10 +75,12 @@ const createLambdaLimitIncreaseTicket = async (
     title: `Lambda limit increase for Amplify Hosting - ${account.accountId}`,
     description: `BOT PROCESS\nAWS ID: ${account.accountId}\nRequested ${
       lambdaLimit.lambdaLimitName
-    }: ${lambdaLimit.limitValueFn(account)} \nRegion: ${account.airportCode.toUpperCase()}`,
+    }: ${lambdaLimit.limitValueFn(
+      account
+    )} \nRegion: ${account.airportCode.toUpperCase()}`,
     severity: "SEV_3",
     categorization: createCategorization("AWS", "Lambda", lambdaLimit.ctiItem),
-  }
+  };
 
   const output = await ticketyService.createTicket(ticketData);
   if (output.id) {
@@ -88,6 +90,16 @@ const createLambdaLimitIncreaseTicket = async (
   }
 };
 
-export const requestMaxLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(null, maxLambdaConcurrencyLambdaLimit)
-export const requestComputeCellLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(null, computeCellLambdaConcurrencyLambdaLimit)
-export const requestMaxLambdaStorage = createLambdaLimitIncreaseTicket.bind(null, maxCodeStorageLambdaLimit)
+export const requestMaxLambdaConcurrency = createLambdaLimitIncreaseTicket.bind(
+  null,
+  maxLambdaConcurrencyLambdaLimit
+);
+export const requestComputeCellLambdaConcurrency =
+  createLambdaLimitIncreaseTicket.bind(
+    null,
+    computeCellLambdaConcurrencyLambdaLimit
+  );
+export const requestMaxLambdaStorage = createLambdaLimitIncreaseTicket.bind(
+  null,
+  maxCodeStorageLambdaLimit
+);

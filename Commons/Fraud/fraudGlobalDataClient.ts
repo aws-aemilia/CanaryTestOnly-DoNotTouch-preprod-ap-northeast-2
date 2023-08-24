@@ -71,15 +71,15 @@ export class FraudGlobalDataClient {
     // The FGD client is flawed and calls the credentials provider for ALL requests, even if the credentials are not expired,
     // which causes Isengard throttles. To work around this we store credentials in a variable.
     const staticCredentials = await getIsengardCredentialsProvider(
-        serviceAccount.accountId,
-        "OncallOperator"
-    )()
+      serviceAccount.accountId,
+      "OncallOperator"
+    )();
 
     // init the Fraud Tools Client
     const client = new FgdPublishedProxy(
       new fapi.Client(
         fapi.Client.createAxiosInstance(),
-          async () => staticCredentials,
+        async () => staticCredentials
       ),
       this.region as f.AwsRegionCode,
       apiUrl

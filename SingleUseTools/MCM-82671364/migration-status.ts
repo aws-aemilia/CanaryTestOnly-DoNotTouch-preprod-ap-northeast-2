@@ -1,23 +1,32 @@
-import { LambdaEdgeConfig, getDynamoDBDocumentClient, paginateLambdaEdgeConfigs } from '../../Commons/dynamodb';
-import { createLogger } from '../../Commons/utils/logger';
-import sleep from '../../Commons/utils/sleep';
-import yargs from 'yargs';
-import { Region, getIsengardCredentialsProvider, controlPlaneAccounts, Stage } from '../../Commons/Isengard';
+import {
+  LambdaEdgeConfig,
+  getDynamoDBDocumentClient,
+  paginateLambdaEdgeConfigs,
+} from "../../Commons/dynamodb";
+import { createLogger } from "../../Commons/utils/logger";
+import sleep from "../../Commons/utils/sleep";
+import yargs from "yargs";
+import {
+  Region,
+  getIsengardCredentialsProvider,
+  controlPlaneAccounts,
+  Stage,
+} from "../../Commons/Isengard";
 
 const logger = createLogger();
 
-async function main () {
+async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `Gather migration status for Static Asset Separation
 
         Usage:
         npx ts-node customerimpact.ts --ticket V1234567
-      `,
+      `
     )
-    .option('ticket', {
-      describe: 'Ticket for CAZ',
-      type: 'string',
+    .option("ticket", {
+      describe: "Ticket for CAZ",
+      type: "string",
       require: true,
     })
     .strict()
@@ -27,7 +36,7 @@ async function main () {
   const { ticket } = args;
   process.env.ISENGARD_SIM = ticket;
 
-  const stage = 'prod';
+  const stage = "prod";
 
   const outcomes: {
     stage: string;
@@ -39,7 +48,7 @@ async function main () {
   }[] = [];
 
   const accounts = await controlPlaneAccounts({ stage: stage as Stage });
-  const allRegionPromises = accounts.map(async account => {
+  const allRegionPromises = accounts.map(async (account) => {
     const region = account.region;
     const regionLogger = logger.child({ region });
     const uniqueApps = new Set<{
@@ -50,10 +59,19 @@ async function main () {
       isStaticAssetSeparated: boolean;
     }>();
 
-    regionLogger.info(`Starting execution for ${account.airportCode} (${account.accountId})`);
-    const credentials = getIsengardCredentialsProvider(account.accountId, 'FullReadOnly');
+    regionLogger.info(
+      `Starting execution for ${account.airportCode} (${account.accountId})`
+    );
+    const credentials = getIsengardCredentialsProvider(
+      account.accountId,
+      "FullReadOnly"
+    );
     const ddbClient = getDynamoDBDocumentClient(region as Region, credentials);
-    const pages = paginateLambdaEdgeConfigs(ddbClient, ['appId', 'branchConfig', 'customDomainIds']);
+    const pages = paginateLambdaEdgeConfigs(ddbClient, [
+      "appId",
+      "branchConfig",
+      "customDomainIds",
+    ]);
 
     regionLogger.info(`Paginating through lambda edge config table...`);
     for await (const page of pages) {
@@ -68,14 +86,14 @@ async function main () {
         });
       }
 
-      regionLogger.info('Sleeping between pages...');
+      regionLogger.info("Sleeping between pages...");
       await sleep(1000);
     }
 
     regionLogger.info(`Found ${uniqueApps.size} unique apps in ${region}`);
     let staticAssetSeparatedAppCount = 0;
     let computeApps = 0;
-    uniqueApps.forEach(app => {
+    uniqueApps.forEach((app) => {
       if (app.isStaticAssetSeparated) {
         staticAssetSeparatedAppCount++;
       }
@@ -107,13 +125,15 @@ async function main () {
   console.table(outcomes);
 }
 
-function isStaticAssetSeparated (edgeConfig: Partial<LambdaEdgeConfig>): boolean {
+function isStaticAssetSeparated(
+  edgeConfig: Partial<LambdaEdgeConfig>
+): boolean {
   if (!edgeConfig.branchConfig) {
     return false;
   }
 
   for (const branchConfig of Object.values(edgeConfig.branchConfig)) {
-    if (branchConfig.version && branchConfig.version === '1') {
+    if (branchConfig.version && branchConfig.version === "1") {
       return true;
     }
   }
@@ -121,15 +141,15 @@ function isStaticAssetSeparated (edgeConfig: Partial<LambdaEdgeConfig>): boolean
   return false;
 }
 
-function isComputeApp (edgeConfig: Partial<LambdaEdgeConfig>): boolean {
+function isComputeApp(edgeConfig: Partial<LambdaEdgeConfig>): boolean {
   if (!edgeConfig.branchConfig) {
     return false;
   }
 
   for (const branchConfig of Object.values(edgeConfig.branchConfig)) {
-    if (branchConfig.version && branchConfig.version === '1') {
+    if (branchConfig.version && branchConfig.version === "1") {
       return true;
-    } else if ((branchConfig as any)['computeServiceFunctionName']) {
+    } else if ((branchConfig as any)["computeServiceFunctionName"]) {
       return true;
     }
   }

@@ -21,12 +21,11 @@ async function verify(stage: string, region: string) {
       )
   );
 
-  const brokenApps = appsWithBranches.filter(
-    (app) =>
-      meteringEventsService.isStopped(
-        toDistroARN(acc, app.cloudFrontDistributionId)
-      )
-  )
+  const brokenApps = appsWithBranches.filter((app) =>
+    meteringEventsService.isStopped(
+      toDistroARN(acc, app.cloudFrontDistributionId)
+    )
+  );
 
   logger.info(`
 Stage: ${stage}, Region: ${region}
@@ -41,11 +40,19 @@ Found ${brokenApps.length} apps with branches that DO have hosting metering STOP
 
   if (badApps.length > 0) {
     throw new Error(
-      `Found ${badApps.length} branch-less Apps that do NOT have hosting metering STOPPED: ${badApps.map(app => `\n${app.appId}: ${app.createTime}`)}`
+      `Found ${
+        badApps.length
+      } branch-less Apps that do NOT have hosting metering STOPPED: ${badApps.map(
+        (app) => `\n${app.appId}: ${app.createTime}`
+      )}`
     );
   } else if (brokenApps.length > 0) {
     throw new Error(
-      `Found ${brokenApps.length} apps with branches that DO have hosting metering STOPPED. ${brokenApps.map(app => `\n${app.appId}: ${app.createTime}`)}`
+      `Found ${
+        brokenApps.length
+      } apps with branches that DO have hosting metering STOPPED. ${brokenApps.map(
+        (app) => `\n${app.appId}: ${app.createTime}`
+      )}`
     );
   } else {
     logger.info("Verification succeeded!");
@@ -82,7 +89,7 @@ async function main() {
     .help().argv;
 
   process.env.ISENGARD_MCM = args.mcm;
-  const {stage, region} = args
+  const { stage, region } = args;
 
   await verify(stage, region);
 }

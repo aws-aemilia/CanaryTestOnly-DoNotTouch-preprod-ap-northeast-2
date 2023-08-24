@@ -96,10 +96,14 @@ ADDITIONAL FIELDS required if requested limit value is higher than 1,000 vCPU co
     title: "Fargate Resource Limit Increase | INTERNAL Account",
     description,
     severity: stage === "prod" ? "SEV_3" : "SEV_4",
-    categorization: createCategorization("AWS", "ECS Fargate", "Limit Increase"),
+    categorization: createCategorization(
+      "AWS",
+      "ECS Fargate",
+      "Limit Increase"
+    ),
   };
   const ticketyService = new TicketyService();
-  const ID = await ticketyService.createTicket(ticketData)
+  const ID = await ticketyService.createTicket(ticketData);
 
   logger.info(`\nTicket created: ${ID}`);
 };

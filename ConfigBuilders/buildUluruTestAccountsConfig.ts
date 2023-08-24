@@ -12,29 +12,29 @@ import {
 
 /**
  * WHAT IS THIS?
- * 
+ *
  * This script is used to generate the testAccountsConfig.yml file:
  * https://tiny.amazon.com/166174hyr/testAccountsConfigyml
- * 
- * The testAccountsConfig.yml file contains a list of resources that Uluru team needs to run the 
- * Contract Tests V2 in our own accounts as opposed to running them in Uluru service accounts. 
- * This file is optional, if not provided, Contract Tests will run in Uluru service accounts. However, 
- * its best to run them in our own accounts so that we can troubleshoot failures easier. 
- * 
- * This script will pull resources from CloudFormation that are created by this stack: 
+ *
+ * The testAccountsConfig.yml file contains a list of resources that Uluru team needs to run the
+ * Contract Tests V2 in our own accounts as opposed to running them in Uluru service accounts.
+ * This file is optional, if not provided, Contract Tests will run in Uluru service accounts. However,
+ * its best to run them in our own accounts so that we can troubleshoot failures easier.
+ *
+ * This script will pull resources from CloudFormation that are created by this stack:
  * https://tiny.amazon.com/idpnhxk3/ContractTeststemplateyml
- * 
+ *
  * and deployed via this pipeline:
  * https://pipelines.amazon.com/pipelines/AWSCloudFormationResourceProvidersAmplify
- * 
+ *
  * Contract Tests v2 are only enforced in production accounts, so this script will only pull resources
  * from production accounts, although the resources also exist in beta and gamma accounts, they are just
  * not used nor included in the testAccountsConfig.yml file.
- * 
+ *
  * INSTRUCTIONS
- * 
+ *
  * 1. Run this script `brazil-build uluru-generate-test-accounts-config`
- * 2. Copy the contents of the generated YAML file and paste them here: 
+ * 2. Copy the contents of the generated YAML file and paste them here:
  * https://tiny.amazon.com/166174hyr/testAccountsConfigyml
  */
 
@@ -101,10 +101,10 @@ async function main() {
     }:role/${role.PhysicalResourceId!!}`;
 
     const resources = {
-        regionName: account.region,
-        iamRoleArn,
-        s3BucketName,
-        kmsKeyArn,
+      regionName: account.region,
+      iamRoleArn,
+      s3BucketName,
+      kmsKeyArn,
     };
 
     logger.info(resources, "Found contract tests resources");
@@ -114,9 +114,12 @@ async function main() {
   // Convert to YAML and save to file
   const outputFile = "testAccountsConfig.yml";
   logger.info(`Writing result to file ${outputFile}`);
-  fs.writeFileSync(outputFile, yaml.dump({
-    testAccounts: contractTestResources,
-  }));
+  fs.writeFileSync(
+    outputFile,
+    yaml.dump({
+      testAccounts: contractTestResources,
+    })
+  );
 }
 
 main()

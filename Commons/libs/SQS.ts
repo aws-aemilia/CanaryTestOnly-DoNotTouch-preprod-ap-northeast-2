@@ -11,13 +11,15 @@ export const sendMessage = async (
   queueUrl: string,
   messageBody: string,
   role: string,
-  client?: SQSClient,
+  client?: SQSClient
 ): Promise<void> => {
   try {
-    const sqsClient = client ? client : new SQSClient({
-      region: account.region,
-      credentials: getIsengardCredentialsProvider(account.accountId, role),
-    });
+    const sqsClient = client
+      ? client
+      : new SQSClient({
+          region: account.region,
+          credentials: getIsengardCredentialsProvider(account.accountId, role),
+        });
 
     const sendMessageCommand = new SendMessageCommand({
       QueueUrl: queueUrl,

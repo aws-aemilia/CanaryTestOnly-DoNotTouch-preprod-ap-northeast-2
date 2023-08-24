@@ -90,23 +90,24 @@ export async function getDistributionsToRollback(
     { client: dbclient },
     queryCommandInput
   )) {
-    const warmingPoolDistributions = convertToWarmingPoolDistributionFormat(page);
+    const warmingPoolDistributions =
+      convertToWarmingPoolDistributionFormat(page);
     for (const warmingPoolDistribution of warmingPoolDistributions) {
       const appId = warmingPoolDistribution.resourceId;
-      
+
       // save CLAIMED, GATEWAY distributions to rollback
       if (warmingPoolDistribution.distributionType === "GATEWAY") {
-          const distributionsForApp = await getDistributionsForApp(
-            dynamoDBClient,
-            stage,
-            region as Region,
-            appId
-          );
-          for (const distributionId of distributionsForApp) {
-            const distributions = distributionsToRollback.get(appId) || [];
-            distributions.push(distributionId);
-            distributionsToRollback.set(appId, distributions);
-          }
+        const distributionsForApp = await getDistributionsForApp(
+          dynamoDBClient,
+          stage,
+          region as Region,
+          appId
+        );
+        for (const distributionId of distributionsForApp) {
+          const distributions = distributionsToRollback.get(appId) || [];
+          distributions.push(distributionId);
+          distributionsToRollback.set(appId, distributions);
+        }
       }
       // save CLAIMED, LAMBDA_AT_EDGE distributions that have at least one GATEWAY custom domain distribution
       else if (warmingPoolDistribution.distributionType === "LAMBDA_AT_EDGE") {
@@ -121,18 +122,19 @@ export async function getDistributionsToRollback(
           for (const customDomainDistributionId of customDomainDistributions) {
             // if any of these are Gateway distributions, add them to the list
 
-              const { eTag, distributionConfig } = await fetchDistribution(
-                cloudFrontClient,
-                customDomainDistributionId
+            const { eTag, distributionConfig } = await fetchDistribution(
+              cloudFrontClient,
+              customDomainDistributionId
+            );
+            if (isGatewayDistribution(distributionConfig)) {
+              console.log(
+                `Found GATEWAY custom domain distributions for LAMBDA_AT_EDGE app ${appId}`
               );
-              if (isGatewayDistribution(distributionConfig)) {
-                console.log(`Found GATEWAY custom domain distributions for LAMBDA_AT_EDGE app ${appId}`)
 
-                const distributions = distributionsToRollback.get(appId) || [];
-                distributions.push(customDomainDistributionId);
-                distributionsToRollback.set(appId, distributions);
-              }
-
+              const distributions = distributionsToRollback.get(appId) || [];
+              distributions.push(customDomainDistributionId);
+              distributionsToRollback.set(appId, distributions);
+            }
           }
         }
       }
@@ -194,7 +196,9 @@ export async function getCustomDomainDistributionsForApp(
       }
     });
   }
-  console.log(`Found ${distributions} custome domain distributions for app ${appId}`);
+  console.log(
+    `Found ${distributions} custome domain distributions for app ${appId}`
+  );
 
   return distributions;
 }
@@ -474,7 +478,7 @@ export const validateAndGetGatewayDistribution = async (
       `Invalid distribution provided for rollback. Not a Gateway distribution`
     );
   }
-  
+
   return {
     eTag,
     distributionConfig,

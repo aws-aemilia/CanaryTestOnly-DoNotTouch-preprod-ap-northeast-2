@@ -14,8 +14,8 @@ export const computeServiceControlPlanePurposeFn: AccountPurposeFn = (
   Name: `compute-service-${stage}-${toAirportCode(
     region
   ).toLowerCase()}@amazon.com`,
-  Description: `Amplify Compute Service Control Plane - ${capitalize(stage)} - ${toAirportCode(
-    region
-  ).toUpperCase()}`,
+  Description: `Amplify Compute Service Control Plane - ${capitalize(
+    stage
+  )} - ${toAirportCode(region).toUpperCase()}`,
   Group: `Amplify Compute Service/${capitalize(stage)}`,
 });

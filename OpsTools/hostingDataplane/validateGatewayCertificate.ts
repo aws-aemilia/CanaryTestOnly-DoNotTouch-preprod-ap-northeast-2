@@ -16,12 +16,18 @@ import {
 import sleep from "../../Commons/utils/sleep";
 import yargs from "yargs";
 import { getDomainName, HOSTED_ZONE_ID } from "./utils/utils";
-import { updateRecordsInHostedZone, getRoute53Client } from "../../Commons/route53";
+import {
+  updateRecordsInHostedZone,
+  getRoute53Client,
+} from "../../Commons/route53";
 import { ChangeBatch } from "aws-sdk/clients/route53";
 
 const pollDelayMilliseconds = 30_000;
 
-const addValidationRecords = async (stage: Stage, resourceRecord: ResourceRecord) => {
+const addValidationRecords = async (
+  stage: Stage,
+  resourceRecord: ResourceRecord
+) => {
   const changeBatch: ChangeBatch = {
     Changes: [
       {
@@ -46,10 +52,7 @@ const getGatewayCertificate: (
 ) => Promise<CertificateDetail | undefined> = async (
   account: AmplifyAccount
 ) => {
-  const domainName = getDomainName(
-    account.stage,
-    account.region
-  );
+  const domainName = getDomainName(account.stage, account.region);
   const acmClient = new ACMClient({
     region: account.region,
     credentials: getIsengardCredentialsProvider(account.accountId),
@@ -90,10 +93,7 @@ const waitForAndValidtaeACMCertificate = async (
   stage: Stage,
   region: Region
 ) => {
-  const account = await dataPlaneAccount(
-    stage,
-    region
-  );
+  const account = await dataPlaneAccount(stage, region);
 
   let cert: CertificateDetail | undefined;
   do {
@@ -149,10 +149,7 @@ For convenience this tool polls for ACM certs until it finds one, so you can run
 
   const { stage, region } = args;
 
-  await waitForAndValidtaeACMCertificate(
-    stage as Stage,
-    region as Region,
-  );
+  await waitForAndValidtaeACMCertificate(stage as Stage, region as Region);
 };
 
 main()

@@ -487,10 +487,7 @@ function isReverseProxy(
   const isPath = new RegExp(/^\//);
 
   return (
-    isPath.test(source) &&
-    isUrl.test(target) &&
-    status === "200" &&
-    !isSSRRule
+    isPath.test(source) && isUrl.test(target) && status === "200" && !isSSRRule
   );
 }
 

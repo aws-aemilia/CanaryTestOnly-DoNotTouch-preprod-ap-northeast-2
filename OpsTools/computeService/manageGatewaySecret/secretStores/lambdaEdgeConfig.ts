@@ -11,7 +11,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import base64 from "base64-js";
-import {readSecretFn, SecretStore} from "./types";
+import { readSecretFn, SecretStore } from "./types";
 
 const TABLE_NAME = "LambdaEdgeConfig";
 
@@ -23,7 +23,7 @@ const decodeSecret = (encoded: string): string => {
 };
 const readSecret: readSecretFn = async (account: AmplifyAccount) => {
   const dynamodb = new DynamoDBClient({
-    region: 'us-east-1', // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
+    region: "us-east-1", // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
     credentials: getIsengardCredentialsProvider(account.accountId),
   });
   const documentClient = DynamoDBDocumentClient.from(dynamodb);
@@ -58,7 +58,7 @@ const writeSecret = async (
   );
 
   const dynamodb = new DynamoDBClient({
-    region: 'us-east-1', // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
+    region: "us-east-1", // Always use us-east-1 since LambdaEdgeConfig is a global table, and some regions don't support global tables
     credentials: getIsengardCredentialsProvider(
       account.accountId,
       "OncallOperator"
@@ -79,5 +79,5 @@ const writeSecret = async (
 
 export const ddbLambdaEdgeConfigSecretStore: SecretStore = {
   readSecret,
-  writeSecret
-}
+  writeSecret,
+};

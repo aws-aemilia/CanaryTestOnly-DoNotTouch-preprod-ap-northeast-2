@@ -52,7 +52,8 @@ export async function applyUpdateToAllItemsInTable(
     { client: ddbClient, startingToken },
     scanCommandInput
   )) {
-    const updateCommands: UpdateCommand[] = page?.Items?.map(updateCommandFn) ?? [];
+    const updateCommands: UpdateCommand[] =
+      page?.Items?.map(updateCommandFn) ?? [];
     const updateFns: (() => Promise<void>)[] = updateCommands.map(
       (cmd) => async () => {
         return ddbSendIgnoringExceptions(ddbClient, cmd);
@@ -134,7 +135,9 @@ export async function verifyMigration(
       `FAILED: Found ${badItems.length} bad items on table ${TableName}`
     );
     // log.error(JSON.stringify(badItems, null, 2));
-    throw new Error(`Verification failed. Found ${badItems.length} that failed verification`);
+    throw new Error(
+      `Verification failed. Found ${badItems.length} that failed verification`
+    );
   }
 
   log.info(`Successfully verified all Items on table ${TableName}!`);

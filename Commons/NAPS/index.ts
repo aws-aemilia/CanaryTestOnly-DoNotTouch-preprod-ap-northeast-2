@@ -7,7 +7,6 @@ import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
  */
 const adminAccount = "532897458220";
 
-
 /**
  * Adds the accounts to the Service Principal.
  * If the account is already a member of the SP, the request succeeds without errors.

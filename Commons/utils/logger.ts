@@ -12,7 +12,10 @@ export function createLogger(loggingLevel: string = "info") {
   );
 }
 
-export function createSpinningLogger(loggingLevel: string = "info", spinnerText?: string) {
+export function createSpinningLogger(
+  loggingLevel: string = "info",
+  spinnerText?: string
+) {
   return new SpinningLogger(loggingLevel, spinnerText);
 }
 

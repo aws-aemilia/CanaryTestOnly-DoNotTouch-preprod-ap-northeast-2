@@ -45,12 +45,14 @@ const main = async () => {
   );
 
   if (accounts.length === 0 && accountId) {
-    throw new Error(`The account ${accountId} is not recognized as a ${stage} Compute Service account`);
+    throw new Error(
+      `The account ${accountId} is not recognized as a ${stage} Compute Service account`
+    );
   }
 
   const servicePrincipal = servicePrincipals[stage];
 
-  console.log(`adding ${accounts.length} accounts to ${servicePrincipal}`)
+  console.log(`adding ${accounts.length} accounts to ${servicePrincipal}`);
 
   await addAccountsToServicePrincipal(accounts, servicePrincipal);
 };

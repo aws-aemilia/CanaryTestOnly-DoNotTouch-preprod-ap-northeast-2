@@ -102,9 +102,9 @@ export const readSecretsFromELB = async (
   return secretValue
     ? {
         value: secretValue,
-        meta: `${dataPlaneAccount.email} - ELB priority:${secretRule!.Priority} ${
-          secretRule!.RuleArn
-        }`,
+        meta: `${dataPlaneAccount.email} - ELB priority:${
+          secretRule!.Priority
+        } ${secretRule!.RuleArn}`,
       }
     : {
         meta: `${dataPlaneAccount.email} - ELB priority:${

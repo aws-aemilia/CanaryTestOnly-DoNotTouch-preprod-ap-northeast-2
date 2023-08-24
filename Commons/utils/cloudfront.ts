@@ -90,7 +90,7 @@ export async function disableDistribution({
  * Waits for a Distribution to be in status Deployed.
  * Useful when updating a distribution, as it takes minutes changes to be deployed.
  * Timeout is 5 minutes.
- * 
+ *
  * @param cloudFrontClient CloudFront client
  * @param distributionId Distribution ID (i.e. E1ZB2Y3X400001)
  */

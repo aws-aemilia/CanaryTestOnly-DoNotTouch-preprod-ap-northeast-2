@@ -11,9 +11,7 @@ export const dataPlanePurposeFn: AccountPurposeFn = (
     region
   ).toLowerCase()}@amazon.com`,
   // Name must be less than 50 chars
-  Name: `dataplane-${stage}-${toAirportCode(
-    region
-  ).toLowerCase()}@amazon.com`,
+  Name: `dataplane-${stage}-${toAirportCode(region).toLowerCase()}@amazon.com`,
   Description: `Amplify Hosting Data Plane - ${stage} - ${region}`,
   Group: `Amplify Data Plane/${capitalize(stage)}`,
 });

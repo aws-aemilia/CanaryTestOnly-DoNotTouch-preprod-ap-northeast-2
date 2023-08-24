@@ -5,7 +5,7 @@ import logger from "../../Commons/utils/logger";
 import { whoAmI } from "../../Commons/utils";
 import { PagingClient } from "../../Commons/paging";
 import { TicketyService } from "../../Commons/SimT/Tickety";
-import {getCategory, groupByCategory} from "./categories";
+import { getCategory, groupByCategory } from "./categories";
 import { OncallReport, Pain, ReportEntry } from "./types";
 import { toWikiSyntax } from "./wiki";
 import { TicketReference } from "@amzn/tickety-typescript-sdk";
@@ -42,7 +42,7 @@ async function main() {
     oneWeekAgo.toDate(),
     today.toDate()
   );
-  pages.reverse();  // Reverse the order of pages so that they're displayed from oldest to newest
+  pages.reverse(); // Reverse the order of pages so that they're displayed from oldest to newest
 
   logger.info("Looks like you got %s pages.", pages.length);
   const reportEntries: ReportEntry[] = [];
@@ -71,7 +71,10 @@ async function main() {
     const ticket = await ticketyService.getTicket(page.ticketId);
 
     if (!ticket || !ticket.ticketId) {
-      logger.warn("Unable to fetch ticket %s. It may be a secure ticket", page.ticketId);
+      logger.warn(
+        "Unable to fetch ticket %s. It may be a secure ticket",
+        page.ticketId
+      );
       reportEntries.push({
         ticketId: page.ticketId,
         pageTimestamp: page.sentTime,
@@ -108,9 +111,15 @@ async function main() {
 
 function createReport(entries: ReportEntry[]): OncallReport {
   const entriesByCategory = groupByCategory(entries);
-  const workingHourPages = entries.filter(e => e.pain === Pain.WorkingHours).length;
-  const afterHourPages = entries.filter(e => e.pain === Pain.AfterHours).length;
-  const sleepingHourPages = entries.filter(e => e.pain === Pain.SleepingHours).length;
+  const workingHourPages = entries.filter(
+    (e) => e.pain === Pain.WorkingHours
+  ).length;
+  const afterHourPages = entries.filter(
+    (e) => e.pain === Pain.AfterHours
+  ).length;
+  const sleepingHourPages = entries.filter(
+    (e) => e.pain === Pain.SleepingHours
+  ).length;
 
   return {
     workingHourPages,
@@ -122,7 +131,9 @@ function createReport(entries: ReportEntry[]): OncallReport {
 }
 
 function writeToFile(content: string, extension: string) {
-  const reportName = `oncall-report-${dayjs().format("YYYY-MM-DD")}.${extension}`;
+  const reportName = `oncall-report-${dayjs().format(
+    "YYYY-MM-DD"
+  )}.${extension}`;
   fs.writeFileSync(reportName, content);
   logger.info("Report saved at %s", reportName);
 }
@@ -139,10 +150,7 @@ function toPain(pageTimestamp: Date): Pain {
 }
 
 function getRootCauseText(ticket: TicketReference) {
-  return [
-      ticket.rootCause,
-      ticket.rootCauseDetails,
-  ].join(". ");
+  return [ticket.rootCause, ticket.rootCauseDetails].join(". ");
 }
 
 function welcomeMessage() {

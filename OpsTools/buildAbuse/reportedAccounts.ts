@@ -11,7 +11,10 @@ export type ReportedAccount = {
   disabled?: boolean;
 };
 
-export const reportedAccountsFile = path.join(__dirname, "account_reported.json");
+export const reportedAccountsFile = path.join(
+  __dirname,
+  "account_reported.json"
+);
 
 export function readReportedAccountIds(): ReportedAccounts {
   return JSON.parse(fs.readFileSync(reportedAccountsFile, "utf8"));

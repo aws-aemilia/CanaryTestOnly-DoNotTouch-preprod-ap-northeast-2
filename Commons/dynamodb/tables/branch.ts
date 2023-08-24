@@ -1,7 +1,4 @@
-import {
-  DynamoDBDocumentClient,
-  paginateQuery,
-} from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, paginateQuery } from "@aws-sdk/lib-dynamodb";
 
 /**
  * List all branches for a given appId

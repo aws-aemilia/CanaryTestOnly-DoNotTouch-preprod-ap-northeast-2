@@ -80,7 +80,7 @@ async function main() {
 
     let nextToken = undefined;
     const toDelete: App[] = [];
-    logger.info(withNameContaining, "Looking for apps with name")
+    logger.info(withNameContaining, "Looking for apps with name");
 
     do {
       let result: ListAppsCommandOutput = await amplifyClient.send(

@@ -21,12 +21,16 @@ import {
  * Other fields like assignedGroup can also be passed to CreateTicket, but it's almost never necessary, as the ticket
  * will automatically be assigned to the resolver group of the given CTI.
  */
-export function createCategorization(category: string, type: string, item: string): (CategorizationEntry)[] {
+export function createCategorization(
+  category: string,
+  type: string,
+  item: string
+): CategorizationEntry[] {
   return [
     { key: "category", value: category },
     { key: "type", value: type },
     { key: "item", value: item },
-  ]
+  ];
 }
 
 export class TicketyService {
@@ -92,7 +96,7 @@ export class TicketyService {
     return await this.tickety.createTicket({
       ticket,
       awsAccountId: this.accountId,
-      ticketingSystemName: this.systemName
+      ticketingSystemName: this.systemName,
     });
   }
 

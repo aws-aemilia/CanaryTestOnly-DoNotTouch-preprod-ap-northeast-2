@@ -4,7 +4,10 @@ import {
 } from "@aws-sdk/client-service-quotas";
 import yaml from "js-yaml";
 import fs from "fs";
-import { controlPlaneAccounts, getIsengardCredentialsProvider } from "../Commons/Isengard";
+import {
+  controlPlaneAccounts,
+  getIsengardCredentialsProvider,
+} from "../Commons/Isengard";
 
 // This script is useful to fetch the current Lambda Concurrency quota that we have on
 // each region per production account. Since we use Lambda@Edge and it consumes Lambda
@@ -38,7 +41,7 @@ async function main() {
   const limits: any = {};
   const concurrencyQuotaCode = "L-B99A9384";
 
-  const accounts = await controlPlaneAccounts({stage: "prod"})
+  const accounts = await controlPlaneAccounts({ stage: "prod" });
 
   for await (const account of accounts) {
     console.log("Fetching credentials for", account.accountId);
@@ -54,7 +57,7 @@ async function main() {
     for await (const region of regions) {
       const quotas = new ServiceQuotasClient({
         region,
-        credentials: getIsengardCredentialsProvider(account.accountId)
+        credentials: getIsengardCredentialsProvider(account.accountId),
       });
 
       console.log("Fetching quota for", region);

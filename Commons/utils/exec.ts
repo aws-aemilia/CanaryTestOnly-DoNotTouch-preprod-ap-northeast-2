@@ -13,8 +13,8 @@ export async function exec(
       AWS_ACCESS_KEY_ID: credentials.accessKeyId,
       AWS_SECRET_ACCESS_KEY: credentials.secretAccessKey,
       AWS_SESSION_TOKEN: credentials.sessionToken,
-    } 
-    const { stdout, stderr } = await execAsync(command, {env});
+    };
+    const { stdout, stderr } = await execAsync(command, { env });
     return { stdout, stderr };
   } catch (e) {
     console.log(`Failed to run command: ${command}`);

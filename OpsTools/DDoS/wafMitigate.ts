@@ -1,9 +1,24 @@
-import { AmplifyAccount, controlPlaneAccount, getIsengardCredentialsProvider, Region, Stage, } from "../../Commons/Isengard";
+import {
+  AmplifyAccount,
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "../../Commons/Isengard";
 import { doQuery } from "../../Commons/libs/CloudWatch";
 import { getCloudFormationResources } from "../../Commons/utils/cloudFormation";
 import logger from "../../Commons/utils/logger";
-import { CreateWebACLCommand, CreateWebACLCommandOutput, Scope, WAFV2Client, } from "@aws-sdk/client-wafv2";
-import { CloudFrontClient, GetDistributionConfigCommand, NoSuchDistribution, } from "@aws-sdk/client-cloudfront";
+import {
+  CreateWebACLCommand,
+  CreateWebACLCommandOutput,
+  Scope,
+  WAFV2Client,
+} from "@aws-sdk/client-wafv2";
+import {
+  CloudFrontClient,
+  GetDistributionConfigCommand,
+  NoSuchDistribution,
+} from "@aws-sdk/client-cloudfront";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { updateDistribution } from "../../Commons/utils/cloudfront";
@@ -120,47 +135,49 @@ async function getDDoSAppFromLogs(
 
   if (recentDDoSEvents.length > 1) {
     logger.info(recentDDoSEvents);
-    throw new Error("There are multiple recent DDoS events. This tool only operates on a single distribution. Run the tool using --distributionId");
+    throw new Error(
+      "There are multiple recent DDoS events. This tool only operates on a single distribution. Run the tool using --distributionId"
+    );
   }
   return recentDDoSEvents[0];
 }
 
 async function main() {
-
   const args = await yargs(hideBin(process.argv))
-      .usage(
-          `
+    .usage(
+      `
         Creates a WAF web ACL and attaches it to the distribution that was hit by a DDoS attack. The web ACL initially
         uses an IP reputation list to block botnet traffic, and a rate-based rule to allow up to 2,000 requests per
         5 minutes.
         `
-      )
-      .option("stage", {
-        describe: "beta, gamma or prod",
-        type: "string",
-        demandOption: true,
-        choices: ["beta", "gamma", "prod"],
-      })
-      .option("region", {
-        describe: "i.e. us-west-2 or pdx",
-        type: "string",
-        demandOption: true,
-      })
-      .option("ticket", {
-        describe: "i.e. D69568945. Used for Contingent Auth",
-        type: "string",
-        demandOption: true,
-      })
-      .option("distributionId", {
-        describe: "Target distributionId. If not provided, will find the distributionId from the logs",
-        type: "string",
-        demandOption: false,
-      })
-      .strict()
-      .version(false)
-      .help().argv;
+    )
+    .option("stage", {
+      describe: "beta, gamma or prod",
+      type: "string",
+      demandOption: true,
+      choices: ["beta", "gamma", "prod"],
+    })
+    .option("region", {
+      describe: "i.e. us-west-2 or pdx",
+      type: "string",
+      demandOption: true,
+    })
+    .option("ticket", {
+      describe: "i.e. D69568945. Used for Contingent Auth",
+      type: "string",
+      demandOption: true,
+    })
+    .option("distributionId", {
+      describe:
+        "Target distributionId. If not provided, will find the distributionId from the logs",
+      type: "string",
+      demandOption: false,
+    })
+    .strict()
+    .version(false)
+    .help().argv;
 
-  const {stage, region, distributionId, ticket} = args;
+  const { stage, region, distributionId, ticket } = args;
 
   process.env.ISENGARD_SIM = ticket;
 
@@ -174,14 +191,14 @@ async function main() {
     ),
   });
 
-  let targetDistributionId: string
+  let targetDistributionId: string;
 
   if (distributionId) {
     logger.info(distributionId, "Using provided distributionId");
     targetDistributionId = distributionId;
   } else {
     logger.info(
-        "querying the logs to find the distributionId from recent DDoS mitigation events"
+      "querying the logs to find the distributionId from recent DDoS mitigation events"
     );
     const ddosEvent = await getDDoSAppFromLogs(acc);
     logger.info(ddosEvent, "Found DDoS event in the logs");
@@ -192,15 +209,21 @@ async function main() {
 
   try {
     await cloudFrontClient.send(
-        new GetDistributionConfigCommand({ Id: targetDistributionId })
+      new GetDistributionConfigCommand({ Id: targetDistributionId })
     );
   } catch (e) {
-    if (e instanceof NoSuchDistribution){
-      logger.error(`ERROR: The distribution ${targetDistributionId} does not exist`);
-      if (distributionId){
-        logger.error(`You provided the --distributionId param. Double check that you used the correct distributionId, region, and stage`);
+    if (e instanceof NoSuchDistribution) {
+      logger.error(
+        `ERROR: The distribution ${targetDistributionId} does not exist`
+      );
+      if (distributionId) {
+        logger.error(
+          `You provided the --distributionId param. Double check that you used the correct distributionId, region, and stage`
+        );
       }
-      logger.error(`The most likely cause is that the customer already deleted the App or Custom Domain. You can query the logs to confirm: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/ControlPlane/#HCheckifaDistributionwasdeleted`);
+      logger.error(
+        `The most likely cause is that the customer already deleted the App or Custom Domain. You can query the logs to confirm: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/ControlPlane/#HCheckifaDistributionwasdeleted`
+      );
       return;
     }
     throw e;
@@ -212,7 +235,7 @@ async function main() {
   logger.info("WAF created and attached to distribution");
   logger.info(createWAFOutput.Summary);
 
-  logger.info("Success!!! All mitigation steps are complete")
+  logger.info("Success!!! All mitigation steps are complete");
 }
 
 main().then(console.log).catch(console.error);

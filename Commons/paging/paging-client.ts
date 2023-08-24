@@ -18,7 +18,8 @@ import {
  */
 export class PagingClient {
   private readonly hostName: string = "us-west-2.paging.corp.a2z.com";
-  private readonly pagingIamRole: string = "arn:aws:iam::991761955833:role/FederatedAccessRole-prod";
+  private readonly pagingIamRole: string =
+    "arn:aws:iam::991761955833:role/FederatedAccessRole-prod";
   private readonly serviceName: string = "sos";
   private readonly pagerApi: AxiosInstance;
   private readonly amazonAlias: string;

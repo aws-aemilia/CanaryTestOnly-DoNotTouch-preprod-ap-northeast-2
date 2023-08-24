@@ -97,4 +97,4 @@ async function getArgs() {
     .help().argv;
 
   return args as InputArgs;
-};
+}

@@ -69,7 +69,11 @@ async function main() {
     const acc = await controlPlaneAccount("prod" as Stage, region as Region);
     props.accountId = acc.accountId;
     props.region = acc.region;
-  } else if (/(beta|gamma|preprod)\.[\w\d-]+\.controlplane\.amplify\.aws\.dev/.test(args.domain)) {
+  } else if (
+    /(beta|gamma|preprod)\.[\w\d-]+\.controlplane\.amplify\.aws\.dev/.test(
+      args.domain
+    )
+  ) {
     const stage = args.domain.split(".")[0] as Stage;
     const region = args.domain.split(".")[1] as Region;
 
@@ -137,7 +141,7 @@ async function updateMinTLSVersionForDomain({
           op: "replace",
           path: "/securityPolicy",
           value: securityPolicy,
-        }
+        },
       ],
     })
   );

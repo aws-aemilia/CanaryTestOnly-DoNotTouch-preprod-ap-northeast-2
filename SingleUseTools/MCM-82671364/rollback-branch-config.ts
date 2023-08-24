@@ -14,7 +14,6 @@ import path from "path";
 import csv from "csvtojson";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
-
 interface ScriptInput {
   stage: Stage;
   region: Region;
@@ -89,7 +88,7 @@ const main = async () => {
 
     logger.warn(`Looking up input file: ${input}`);
 
-    branchesToUpdate.push(...await csv().fromFile(input));
+    branchesToUpdate.push(...(await csv().fromFile(input)));
 
     if (branchesToUpdate.length < 1) {
       logger.warn(
@@ -126,13 +125,16 @@ const main = async () => {
   const dynamodbIADClient = getDynamoDBDocumentClient("us-east-1", credentials);
   const dynamodbClient = getDynamoDBDocumentClient(region, credentials);
 
-  const appsToUpdate = branchesToUpdate.reduce<{[appId: string]: string[]}>((acc, {appId, branchName}) => {
-    if (!acc[appId]) {
-      acc[appId] = [];
-    }
-    acc[appId].push(branchName);
-    return acc;
-  }, {});
+  const appsToUpdate = branchesToUpdate.reduce<{ [appId: string]: string[] }>(
+    (acc, { appId, branchName }) => {
+      if (!acc[appId]) {
+        acc[appId] = [];
+      }
+      acc[appId].push(branchName);
+      return acc;
+    },
+    {}
+  );
 
   for (const appId of Object.keys(appsToUpdate)) {
     const domainIds = (
@@ -147,9 +149,18 @@ const main = async () => {
     const branchNames = appsToUpdate[appId];
 
     for (const appOrDomainId of appOrDomainIdsToUpdate) {
-      logger.info(`Updating branch config version for appOrDomainId: ${appOrDomainId} to "0"`);
-      await updateBranchConfigVersion(dynamodbIADClient, appOrDomainId, branchNames, "0");
-      logger.info(`Updated branch config version for appOrDomainId: ${appOrDomainId} to "0"`);
+      logger.info(
+        `Updating branch config version for appOrDomainId: ${appOrDomainId} to "0"`
+      );
+      await updateBranchConfigVersion(
+        dynamodbIADClient,
+        appOrDomainId,
+        branchNames,
+        "0"
+      );
+      logger.info(
+        `Updated branch config version for appOrDomainId: ${appOrDomainId} to "0"`
+      );
     }
   }
 };
@@ -160,12 +171,18 @@ const updateBranchConfigVersion = async (
   branchNames: string[],
   version: string
 ) => {
-  const branchExpression = branchNames.reduce<{[branchNamePlaceholder: string]: string}>((acc, branchName, i) => {
+  const branchExpression = branchNames.reduce<{
+    [branchNamePlaceholder: string]: string;
+  }>((acc, branchName, i) => {
     acc[`#${branchName}${i}`] = branchName;
     return acc;
   }, {});
 
-  const updateExpression = `SET ${branchNames.map((branchName, i) => `#branchConfig.#${branchName}${i}.#version = :version`).join(", ")}`;
+  const updateExpression = `SET ${branchNames
+    .map(
+      (branchName, i) => `#branchConfig.#${branchName}${i}.#version = :version`
+    )
+    .join(", ")}`;
 
   await dynamodb.send(
     new UpdateCommand({

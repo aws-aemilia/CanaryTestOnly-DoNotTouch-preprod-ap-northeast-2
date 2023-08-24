@@ -214,10 +214,7 @@ const main = async () => {
     `${outputDir}/rolled-back-branches.csv`,
     `appId,branchName\n`
   );
-  await writeFile(
-    `${outputDir}/skipped-branches.csv`,
-    `appId,branchName\n`
-  );
+  await writeFile(`${outputDir}/skipped-branches.csv`, `appId,branchName\n`);
 
   for (const app of apps) {
     const { appId } = app;

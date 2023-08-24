@@ -60,7 +60,7 @@ export const paginateJobsForBranch = async (
   stage: string,
   region: string,
   branchArn: string,
-  attributesToGet: string[] = ["branchArn", "jobId"],
+  attributesToGet: string[] = ["branchArn", "jobId"]
 ) => {
   return paginateQuery(
     {
@@ -80,20 +80,20 @@ export const paginateJobsForBranch = async (
 
 /**
  * Finds all jobs for a given branch and status. Returns an empty array if not found.
- * 
+ *
  * @param dynamodb Document client with creds for control plane account
  * @param stage Stage name (i.e. prod)
  * @param region Region name (i.e. us-west-2)
  * @param branchArn The branchArn of the job
  * @param statuses The status of the jobs to find
- * @returns 
+ * @returns
  */
- export const getJobIdsForBranchArn = async (
+export const getJobIdsForBranchArn = async (
   dynamodb: DynamoDBDocumentClient,
   stage: Stage,
   region: Region,
   branchArn: string,
-  status: string,
+  status: string
 ) => {
   const queryCommandInput: QueryCommandInput = {
     TableName: `${stage}-${region}-Job`,

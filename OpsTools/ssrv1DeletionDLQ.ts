@@ -11,7 +11,12 @@ import {
   Stage,
   StandardRoles,
 } from "../Commons/Isengard";
-import { DeleteMessageCommand, Message, SendMessageCommand, SQSClient, } from "@aws-sdk/client-sqs";
+import {
+  DeleteMessageCommand,
+  Message,
+  SendMessageCommand,
+  SQSClient,
+} from "@aws-sdk/client-sqs";
 import { toRegionName } from "../Commons/utils/regions";
 import dayjs from "dayjs";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
@@ -96,8 +101,11 @@ async function main() {
 
   const account = await controlPlaneAccount(stage as Stage, region as Region);
   const role = StandardRoles.OncallOperator;
-  await preflightCAZ({ accounts: account, role })
-  const controlPlaneCreds = getIsengardCredentialsProvider(account.accountId, role);
+  await preflightCAZ({ accounts: account, role });
+  const controlPlaneCreds = getIsengardCredentialsProvider(
+    account.accountId,
+    role
+  );
 
   const regionName = toRegionName(region);
   const sqsClient = new SQSClient({
@@ -120,7 +128,7 @@ async function main() {
   logger.info("Searching for Async Deletion queue");
   const sourceQueueUrl = await getQueueUrl(
     sqsClient,
-    "AemiliaControlPlaneLambda-AsyncResourceDeletionQueue",
+    "AemiliaControlPlaneLambda-AsyncResourceDeletionQueue"
   );
 
   logger.info(`Polling messages from ${queueUrl}`);
@@ -152,7 +160,7 @@ async function main() {
     const logs = await insightsQuery(
       cwClient,
       "/aws/lambda/AemiliaControlPlaneLambda-AsyncResourceDeletion",
-        `parse @message 'Lambda was unable to delete * because it is a replicated function' as functionArn ` +
+      `parse @message 'Lambda was unable to delete * because it is a replicated function' as functionArn ` +
         `| filter ispresent(functionArn) and functionArn like '${message.payload.AppDO.accountId}'`,
       startDate,
       endDate
@@ -176,7 +184,9 @@ async function main() {
         await redriveMessage(sqsClient, sourceQueueUrl, message);
         await deleteMessage(sqsClient, queueUrl, message);
       } else {
-        logger.info("Now run the same command with --deleteMessages to delete the messages from the DLQ");
+        logger.info(
+          "Now run the same command with --deleteMessages to delete the messages from the DLQ"
+        );
       }
     }
   }
@@ -246,7 +256,7 @@ async function redriveMessage(
     AppDO: {
       ...message.payload.AppDO,
       platform: "WEB",
-    }
+    },
   };
 
   const response = await sqsClient.send(

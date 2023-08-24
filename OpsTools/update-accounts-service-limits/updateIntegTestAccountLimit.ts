@@ -5,7 +5,7 @@ import {
   Stage,
   preflightCAZ,
   controlPlaneAccounts,
-  getIsengardCredentialsProvider
+  getIsengardCredentialsProvider,
 } from "../../Commons/Isengard";
 import { exec } from "../../Commons/utils/exec";
 import confirm from "../../Commons/utils/confirm";
@@ -47,7 +47,6 @@ async function main() {
     accounts: await controlPlaneAccounts({ stage: filterToStage as Stage }),
     role: sdcManagementRole,
   });
-
 
   for (const integrationTestAccount of integrationTestAccounts) {
     const {
@@ -96,7 +95,10 @@ async function main() {
 
     const regionName = toRegionName(region);
 
-    const credentialsProvider = getIsengardCredentialsProvider(controlPlaneAccountResponse.accountId, sdcManagementRole);
+    const credentialsProvider = getIsengardCredentialsProvider(
+      controlPlaneAccountResponse.accountId,
+      sdcManagementRole
+    );
 
     const credentials = await credentialsProvider();
 

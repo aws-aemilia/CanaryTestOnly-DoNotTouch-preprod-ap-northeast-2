@@ -1,4 +1,10 @@
-import { AmplifyAccount, controlPlaneAccounts, getIsengardCredentialsProvider, Region, Stage } from "../Isengard";
+import {
+  AmplifyAccount,
+  controlPlaneAccounts,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "../Isengard";
 import { SQSClient } from "@aws-sdk/client-sqs";
 import { sendMessage } from "../libs/SQS";
 import { whoAmI } from "../utils";
@@ -9,7 +15,10 @@ import sleep from "../utils/sleep";
 const { chunkPromise, PromiseFlavor } = require("chunk-promise");
 const logger = pino(pinoPretty());
 
-export type AbuseAccountAction = "BLOCK" | "UNBLOCK" | "BLOCK_IGNORE_CLOUDFRONT";
+export type AbuseAccountAction =
+  | "BLOCK"
+  | "UNBLOCK"
+  | "BLOCK_IGNORE_CLOUDFRONT";
 
 const buildMessage = (
   abuseAccountId: string,
@@ -31,16 +40,22 @@ export const updateBlockStatusForAccountIds = async (
   stage: string,
   action: AbuseAccountAction,
   role: string,
-  { region, concurrency }: { region?: string, concurrency?: number } = {}
+  { region, concurrency }: { region?: string; concurrency?: number } = {}
 ) => {
-  const controlPLaneAccounts = (await controlPlaneAccounts({stage: stage as Stage, region: region as Region}))
+  const controlPLaneAccounts = await controlPlaneAccounts({
+    stage: stage as Stage,
+    region: region as Region,
+  });
 
   for (const controlPLaneAccount of controlPLaneAccounts) {
     const sqsClient = new SQSClient({
       region: controlPLaneAccount.region,
-      credentials: getIsengardCredentialsProvider(controlPLaneAccount.accountId, role),
+      credentials: getIsengardCredentialsProvider(
+        controlPLaneAccount.accountId,
+        role
+      ),
     });
-    
+
     const promises: (() => Promise<void>)[] = [];
 
     for (const abuseAccountId of abuseAccountIds) {
@@ -70,7 +85,10 @@ export const updateBlockStatusForAccountId = async (
   role: string,
   { region }: { region?: string } = {}
 ) => {
-  const controlPLaneAccounts = (await controlPlaneAccounts({stage: stage as Stage, region: region as Region}))
+  const controlPLaneAccounts = await controlPlaneAccounts({
+    stage: stage as Stage,
+    region: region as Region,
+  });
 
   for (const controlPLaneAccount of controlPLaneAccounts) {
     logger.info(

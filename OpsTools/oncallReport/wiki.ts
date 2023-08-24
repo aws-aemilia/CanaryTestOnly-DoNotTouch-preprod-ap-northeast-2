@@ -14,9 +14,15 @@ export function toWikiSyntax(oncallReport: OncallReport): string {
 function toWikiSummary(oncallReport: OncallReport): string {
   return `
 |=(% style="background-color: rgb(237, 237, 237);" %)Summary
-|**${painEmoji(Pain.WorkingHours)} Working hours pages**: ${oncallReport.workingHourPages}
-|**${painEmoji(Pain.AfterHours)} After hours pages**: ${oncallReport.afterHourPages}
-|**${painEmoji(Pain.SleepingHours)} Sleeping hours pages**: ${oncallReport.sleepingHourPages}
+|**${painEmoji(Pain.WorkingHours)} Working hours pages**: ${
+    oncallReport.workingHourPages
+  }
+|**${painEmoji(Pain.AfterHours)} After hours pages**: ${
+    oncallReport.afterHourPages
+  }
+|**${painEmoji(Pain.SleepingHours)} Sleeping hours pages**: ${
+    oncallReport.sleepingHourPages
+  }
 |**Total Pages**: ${oncallReport.totalPages}
   `;
 }
@@ -32,11 +38,15 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
 
   const rows = reportEntries
     .map((e: ReportEntry) => {
-      const ticketLink = e.ticketId ? toWikiLink(e.ticketId, `https://t.corp.amazon.com/${e.ticketId}`) : "N/A";
+      const ticketLink = e.ticketId
+        ? toWikiLink(e.ticketId, `https://t.corp.amazon.com/${e.ticketId}`)
+        : "N/A";
       const subject = toWikiText(e.pageSubject);
       const rootCause = toWikiText(e.rootCause || "N/A");
       const timeSpent = `${e.timeSpentMinutes} minutes`;
-      const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(e.pageTimestamp)}`;
+      const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(
+        e.pageTimestamp
+      )}`;
       return toWikiRow([
         ticketLink,
         subject,
