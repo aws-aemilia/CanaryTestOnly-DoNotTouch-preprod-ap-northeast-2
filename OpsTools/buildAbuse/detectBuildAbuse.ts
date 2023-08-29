@@ -27,12 +27,15 @@ import {
   createCategorization,
   TicketyService,
 } from "../../Commons/SimT/Tickety";
+import logger from "../../Commons/utils/logger";
+
+const ACCOUNTS_TO_STOP_AT_A_TIME_LIMIT = 3;
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `Detect malicious build requests, report them to Fraud team, and cancel their builds.
-    
+
         npx ts-node OpsTools/buildAbuse/detectBuildAbuse.ts
     `
     )
@@ -135,7 +138,7 @@ const main = async () => {
           account.region as Region,
           regionalControlplaneCredentials,
           unreportedAccounts,
-          3,
+          ACCOUNTS_TO_STOP_AT_A_TIME_LIMIT,
           console,
           false
         );
@@ -143,6 +146,11 @@ const main = async () => {
     );
     await Promise.all(stopBuildsInRegionPromises);
   }
+
+  logger.info(
+    "See all tickets cut to fraud team here: https://tiny.amazon.com/5gdq0zlm/amplify-hosting-fraud"
+  );
+
   process.exit(0);
 };
 

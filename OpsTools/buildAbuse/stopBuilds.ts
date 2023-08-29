@@ -6,6 +6,7 @@ import { Region, Stage } from "../../Commons/Isengard";
 import confirm from "../../Commons/utils/confirm";
 const { chunkPromise, PromiseFlavor } = require("chunk-promise");
 import { Credentials, Provider } from "@aws-sdk/types";
+import { sleepWithJitter } from "../../Commons/utils/sleep";
 
 /**
  * Stop all running builds for a given list of accounts.
@@ -127,6 +128,10 @@ export const stopBuildsForAccount = async (
       await cancelBuild(taskArn, codeBuildClient, logger);
 
       logger.log(`Build ${taskArn} for accountID ${accountId} cancelled`);
+      logger.log(
+        "Sleeping to prevent exceeding CodeBuild rate limit for stopping builds"
+      );
+      await sleepWithJitter(500, 800);
     }
   }
 };
