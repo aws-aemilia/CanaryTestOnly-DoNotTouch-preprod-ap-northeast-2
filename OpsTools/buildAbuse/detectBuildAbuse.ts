@@ -30,6 +30,8 @@ import {
 import logger from "../../Commons/utils/logger";
 
 const ACCOUNTS_TO_STOP_AT_A_TIME_LIMIT = 3;
+const TWENTY_FOUR_HOURS_IN_MINUTES = 1_440;
+const MAX_ACCOUNT_IDS_PER_TICKET = 500;
 
 const main = async () => {
   const args = await yargs(process.argv.slice(2))
@@ -66,7 +68,7 @@ const main = async () => {
   const maliciousAppIds = await getMaliciousApps(
     stage,
     region,
-    minutesAgo(1440),
+    minutesAgo(TWENTY_FOUR_HOURS_IN_MINUTES),
     new Date()
   );
 
@@ -94,7 +96,7 @@ const main = async () => {
   apps.forEach((a) => accountIds.add(a.accountId));
 
   for (let accountId of accountIds) {
-    console.log(
+    logger.info(
       `===========Apps in Account ${accountId}, https://genie.console.amplify.aws.a2z.com/prod/customer/${accountId}}===========`
     );
     const appsInAccount = apps.filter((a) => (a.accountId = accountId));
@@ -104,7 +106,7 @@ const main = async () => {
       if (!appName.match(/^task\d+$/)) {
         throw new Error("Illegal app name, Check detect CW insight query");
       }
-      console.log(a.appId, a.name, a.cloneUrl);
+      logger.info({ appId: a.appId, name: a.name, cloneurl: a.cloneUrl });
     });
   }
 
@@ -119,13 +121,32 @@ const main = async () => {
       }
       return true;
     });
+
     if (unreportedAccounts.length > 0) {
-      await reportAccounts(unreportedAccounts);
+      // There is a maximum number of accounts allowed per ticket.
+      // We will loop until we have completed sending tickets for all accounts.
+      let reportCreatedForAccounts: string[] = [];
+      while (reportCreatedForAccounts.length < unreportedAccounts.length) {
+        const currentIndex = reportCreatedForAccounts.length;
+        let howManyItemsToCapture =
+          unreportedAccounts.length - reportCreatedForAccounts.length;
+        if (howManyItemsToCapture > MAX_ACCOUNT_IDS_PER_TICKET) {
+          howManyItemsToCapture = MAX_ACCOUNT_IDS_PER_TICKET;
+        }
+        const accountsToReport = unreportedAccounts.slice(
+          currentIndex,
+          currentIndex + howManyItemsToCapture
+        );
+        await reportAccounts(accountsToReport);
+
+        reportCreatedForAccounts =
+          reportCreatedForAccounts.concat(accountsToReport);
+      }
     }
 
     const cpAccounts = await controlPlaneAccounts({ stage: "prod" });
 
-    console.log("Stopping builds in ALL regions");
+    logger.info("Stopping builds in ALL regions");
     const stopBuildsInRegionPromises: Promise<void>[] = cpAccounts.map(
       async (account) => {
         const regionalControlplaneCredentials = getIsengardCredentialsProvider(
@@ -148,47 +169,68 @@ const main = async () => {
   }
 
   logger.info(
-    "See all tickets cut to fraud team here: https://tiny.amazon.com/5gdq0zlm/amplify-hosting-fraud"
+    "View all created tickets: https://tiny.amazon.com/ko59loyb/amplify-hosting-fraud"
   );
-
   process.exit(0);
 };
 
 async function reportAccounts(unreportedAccounts: string[]) {
   const accountsList = unreportedAccounts.join("\n");
   const description = `
-Please give this Ticket ID to the Abuse agent who is assisting you.
+THERE IS A LIMIT OF 500 ACCOUNTS PER TICKET. WE ARE RESEARCHING A WAY TO EXPAND THIS.
 
-AWS account ID: Multiple
-Case ID:
+A bot will conduct initial triage and then transfer to a human operator if needed. You will need to format your request properly or the bot will get confused. Please provide any supporting information as a comment, do not otherwise modify the fields in the description of this ticket. Documentation is here:
+https://w.amazon.com/bin/view/AWSFraudTeam/FraudResponseTeam/Contact/Auto-triage/
 
-How can we help: We are the Amplify Hosting team. We have a customer creating spam builds to our service. They are creating multiple Amplify apps and triggering builds across multiple regions.
+Backticks \` in below fields must be kept in order for the bot to understand the input
 
-Account ID
+Please also modify "[Insert Service Name]" in the Title so we can better follow-up on your request.
+
+For an example of a successful request, see:
+https://t.corp.amazon.com/P69228836
+
+question/concern (what are you hoping to determine about these accounts?):
+if this field is left blank we may auto-resolve, inferring that the bot's reports were sufficient to address your concerns
+\`\`\`
+provide context here
+\`\`\`
+
+report_types:
+\`\`\`
+fraud_check
+cluster_report
+ec2_usage
+\`\`\`
+
+account_ids:
+\`\`\`
 ${accountsList}
-
-We need help blocking these accounts from an AWS level.
-
-This is the same type of accounts associated with prior abuse ticket: https://t.corp.amazon.com/P83259214`;
+\`\`\`
+`;
 
   const ticketData: TicketData = {
-    title:
-      "AWS T&S Abuse query - Amplify Hosting Spam builds - Account ID - Multiple",
+    title: "Bulk Account Review Request for [Amplify Hosting]",
     description,
     severity: "SEV_3",
-    categorization: createCategorization("AWS", "Fraud", "Investigate Account"),
+    categorization: createCategorization(
+      "AWS",
+      "Fraud",
+      "Investigate Bulk Accounts"
+    ),
   };
 
-  console.log(ticketData);
-  const proceed = await confirm(`Do you want to cut the above ticket?`);
+  logger.info({ ticketData });
+  const proceed = await confirm(
+    `Do you want to cut the above ticket for ${unreportedAccounts.length} accounts?`
+  );
   if (!proceed) {
-    console.log("Skipping cutting ticket");
+    logger.info("Skipping cutting ticket");
     return;
   }
 
   const ticketyService = new TicketyService();
   const output = await ticketyService.createTicket(ticketData);
-  console.log(`Created ticket: ${output.id}`);
+  logger.info(`Created ticket: ${output.id}`);
   writeReportedAccountIds(unreportedAccounts, new Date());
 }
 
@@ -256,7 +298,6 @@ function writeReportedAccountIds(accountIds: string[], reportedOn: Date) {
 
 main()
   .then()
-  .catch((e) => {
-    console.log("\nSomething went wrong");
-    console.log(e);
+  .catch((err) => {
+    logger.error({ err }, "\nSomething went wrong");
   });
