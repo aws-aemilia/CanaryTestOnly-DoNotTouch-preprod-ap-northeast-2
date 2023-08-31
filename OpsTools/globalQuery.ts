@@ -116,7 +116,7 @@ async function main() {
 
   const resolveOutputFolder =
     outputDir ??
-    path.join(__dirname, "..", "tmp", `query_results_${Date.now()}}`);
+    path.join(__dirname, "..", "tmp", `query_results_${Date.now()}`);
 
   if (!existsSync(resolveOutputFolder)) {
     logger.info("Output directory does not exist, creating it");
