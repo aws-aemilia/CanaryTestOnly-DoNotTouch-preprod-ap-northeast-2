@@ -11,6 +11,7 @@ import {
   getIsengardCredentialsProvider,
   controlPlaneAccounts,
   Stage,
+  preflightCAZ,
 } from "../../Commons/Isengard";
 
 const logger = createLogger();
@@ -21,20 +22,12 @@ async function main() {
       `Gather migration status for Static Asset Separation
 
         Usage:
-        npx ts-node customerimpact.ts --ticket V1234567
+        npx ts-node customerimpact.ts
       `
     )
-    .option("ticket", {
-      describe: "Ticket for CAZ",
-      type: "string",
-      require: true,
-    })
     .strict()
     .version(false)
     .help().argv;
-
-  const { ticket } = args;
-  process.env.ISENGARD_SIM = ticket;
 
   const stage = "prod";
 
@@ -48,6 +41,12 @@ async function main() {
   }[] = [];
 
   const accounts = await controlPlaneAccounts({ stage: stage as Stage });
+
+  await preflightCAZ({
+    accounts,
+    role: "FullReadOnly",
+  });
+
   const allRegionPromises = accounts.map(async (account) => {
     const region = account.region;
     const regionLogger = logger.child({ region });
