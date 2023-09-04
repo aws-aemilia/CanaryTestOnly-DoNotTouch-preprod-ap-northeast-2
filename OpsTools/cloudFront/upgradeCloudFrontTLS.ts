@@ -3,6 +3,7 @@ import { hideBin } from "yargs/helpers";
 import {
   controlPlaneAccount,
   getIsengardCredentialsProvider,
+  preflightCAZ,
   Stage,
   StandardRoles,
 } from "../../Commons/Isengard";
@@ -18,19 +19,19 @@ async function getArgs() {
     .usage(
       `
       Upgrade a CloudFront distribution to the latest TLS version (as of now, ${LATEST_TLS_VERSION}).
-      
+
       Example:
       # Upgrade distribution E3JJ5J4JIPW1XO in PDX (an interactive prompt for Contingent Authorization will appear)
       ts-node upgradeCloudFrontTLS.ts \
         --region pdx \
         --distributionId E3JJ5J4JIPW1XO
-        
+
       # Upgrade distribution E3JJ5J4JIPW1XO in PDX with a ticket for Contingent Authorization
       ts-node upgradeCloudFrontTLS.ts \
         --region pdx \
         --distributionId E3JJ5J4JIPW1XO \
         --ticket https://t.corp.amazon.com/V938010847/communication
-        
+
       # Upgrade distribution E3JJ5J4JIPW1XO in beta PDX
       ts-node upgradeCloudFrontTLS.ts \
         --region pdx \
@@ -57,25 +58,25 @@ async function getArgs() {
       demandOption: true,
       alias: "d",
     })
-    .option("ticket", {
-      describe: `A SIM ticket used to pass Contingent Authorization.`,
-      type: "string",
-      alias: "t",
-    })
     .strict()
     .version(false)
     .help().argv;
 }
 
 async function main() {
-  const { stage, region, distributionId, ticket } = await getArgs();
+  const { stage, region, distributionId } = await getArgs();
   const regionName = toRegionName(region);
-  process.env.ISENGARD_SIM = ticket ?? ""; // If the ticket option isn't provided, set the env var to an empty string so that the interactive prompt is used
 
   const controlPlaneAccount_ = await controlPlaneAccount(
     stage as Stage,
     regionName
   );
+
+  await preflightCAZ({
+    accounts: [controlPlaneAccount_],
+    role: StandardRoles.OncallOperator,
+  });
+
   const cloudFront = new CloudFront({
     region: regionName,
     credentials: getIsengardCredentialsProvider(
