@@ -1,16 +1,13 @@
 import yargs from "yargs";
 import { exec } from "../../Commons/utils/exec";
-import {
-  updateCommand,
-  prepareMinervaExecution,
-} from "./build-minerva-commands";
+import { getCommand, prepareMinervaExecution } from "./build-minerva-commands";
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
-      "Update the service limit for customer's account. " +
+      "Read the service limit for customer's account. " +
         "Example usage:\n" +
-        "npx ts-node updateCustomerAccountLimit.ts --region iad --accountId 386460259235 --limitName CUSTOMER_APP_PER_REGION_COUNT --value 30"
+        "npx ts-node getCustomerAccountLimit.ts --region iad --accountId 386460259235 --limitName CUSTOMER_APP_PER_REGION_COUNT"
     )
     .option("stage", {
       describe: "Stage to run the command in",
@@ -47,16 +44,11 @@ async function main() {
         "MAXIMUM_APP_CREATIONS_PER_HOUR",
       ],
     })
-    .option("value", {
-      description: "Value to update limit with",
-      type: "string",
-      demandOption: true,
-    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, accountId, limitName, value } = args;
+  const { stage, region, accountId, limitName } = args;
 
   const { regionName, ripServiceName, credentials, logger } =
     await prepareMinervaExecution({
@@ -64,12 +56,11 @@ async function main() {
       region,
     });
 
-  const minervaCommand = updateCommand({
+  const minervaCommand = getCommand({
     accountId,
     ripServiceName,
     regionName,
     limitName,
-    value,
   });
 
   logger.info(`Running limit increase command: ${minervaCommand}`);
@@ -80,13 +71,10 @@ async function main() {
   } else {
     logger.info(
       `
-***** COPY EVERYTHING BELOW TO PASTE INTO TICKET *****
-Customer limit increased: \n` +
+Current customer limit: \n` +
         "```\n" +
         `${stdout}` +
-        "```\n" +
-        `Note: The limit is only applicable in the ${regionName} region.  If the customer would like another limit increase please make another request via the [Service Quotas dashboard](https://aws.amazon.com/blogs/mt/introducing-service-quotas-view-and-manage-your-quotas-for-aws-services-from-one-central-location/).
-`
+        "```\n"
     );
   }
 }

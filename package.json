@@ -44,7 +44,9 @@
     "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts",
     "updateCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/updateCustomerAccountLimit.ts",
     "generateOncallReport": "ts-node OpsTools/oncallReport/generate.ts",
-    "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts"
+    "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts",
+    "getCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/getCustomerAccountLimit.ts"
+
   },
   "author": "",
   "license": "ISC",
