@@ -116,10 +116,9 @@ export const cancelBuild = async (
     });
     await codeBuildClient.send(stopBuildCommand);
   } catch (error) {
-    if ((error as Error).name === "ThrottlingException") {
-      logger.warn(
-        `ThrottlingException from CodeBuild for ${taskArn}. Skipping...`
-      );
-    }
+    logger.error(`Failed to stop build: ${taskArn}`);
+    logger.error(error);
+
+    throw error;
   }
 };
