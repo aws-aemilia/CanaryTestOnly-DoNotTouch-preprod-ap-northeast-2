@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "fmt": "npm run prettier",
     "prepublishOnly": "prettier . --check && tsc",
     "prettier": "prettier . --write",
     "test": "echo \"Error: no test specified\" && exit 0",

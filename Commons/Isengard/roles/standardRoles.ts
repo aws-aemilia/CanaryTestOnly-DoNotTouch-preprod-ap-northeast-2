@@ -15,7 +15,7 @@ const oncallOperatorRole: AmplifyRole = {
     },
   ],
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
-  Group: POSIX_GROUP,
+  Groups: [POSIX_GROUP],
   FederationTimeOutMin: 15,
 };
 
@@ -25,7 +25,7 @@ export const adminRoleFn = (stage: Stage): AmplifyRole => ({
     "The Admin role is a highly permissive role that has *.* policy. Use with extreme caution and only for emergencies",
   ContingentAuth: 2,
   PolicyARNs: ["arn:aws:iam::aws:policy/AdministratorAccess"],
-  Group: stage === "prod" ? undefined : POSIX_GROUP,
+  Groups: stage === "prod" ? [] : [POSIX_GROUP],
   FederationTimeOutMin: 15,
 });
 
@@ -40,7 +40,7 @@ export const releaseDomainRole: AmplifyRole = {
       PolicyTemplateName: "ReleaseCustomDomain",
     },
   ],
-  Group: POSIX_GROUP,
+  Groups: [POSIX_GROUP],
   FederationTimeOutMin: 15,
 };
 
@@ -59,7 +59,7 @@ const readOnlyRole: AmplifyRole = {
       PolicyTemplateName: "StandardAuthorizationRolePolicy-Amplify-Extra",
     },
   ],
-  Group: POSIX_GROUP,
+  Groups: [POSIX_GROUP],
   FederationTimeOutMin: 90,
 };
 
@@ -69,7 +69,7 @@ const fullReadOnlyRole: AmplifyRole = {
     "The FullReadOnly role does not allow mutations. Use this role for read-only operations that need access to customer data",
   ContingentAuth: 1,
   PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
-  Group: POSIX_GROUP,
+  Groups: [POSIX_GROUP],
   FederationTimeOutMin: 60,
 };
 
@@ -81,7 +81,7 @@ const lambdaInvokerRole: AmplifyRole = {
     "arn:aws:iam::aws:policy/service-role/AWSLambdaRole",
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
   ],
-  Group: POSIX_GROUP,
+  Groups: [POSIX_GROUP],
   FederationTimeOutMin: 60,
 };
 
@@ -89,7 +89,7 @@ const mobileCoreSupportRole: AmplifyRole = {
   IAMRoleName: "MobileCoreSupport",
   Description: "For mobile core support team to access build logs",
   ContingentAuth: 1,
-  Group: "support-ops-mobile-core", // https://permissions.amazon.com/a/team/aws-support-ops-mobile-core
+  Groups: ["support-ops-mobile-core"], // https://permissions.amazon.com/a/team/aws-support-ops-mobile-core
   FederationTimeOutMin: 60,
   PolicyTemplateReference: [
     {
@@ -97,6 +97,22 @@ const mobileCoreSupportRole: AmplifyRole = {
       PolicyTemplateName: "MobileCoreSupport",
     },
   ],
+};
+
+const bonesBootstrapRole: AmplifyRole = {
+  IAMRoleName: "BONESBootstrap",
+  Description: "",
+  ContingentAuth: 1,
+  PolicyTemplateReference: [
+    {
+      OwnerID: "ppratik",
+      PolicyTemplateName: "BONESBootstrapUserPolicy",
+      IsGroupOwned: false,
+    },
+  ],
+  PolicyARNs: [],
+  Groups: [POSIX_GROUP],
+  FederationTimeOutMin: 60,
 };
 
 export const getRolesForStage = (
@@ -109,6 +125,7 @@ export const getRolesForStage = (
   LambdaInvoker: AmplifyRole;
   MobileCoreSupport: AmplifyRole;
   ReleaseCustomDomain: AmplifyRole;
+  BONESBootstrap: AmplifyRole;
 } => {
   return {
     OncallOperator: oncallOperatorRole,
@@ -118,5 +135,6 @@ export const getRolesForStage = (
     LambdaInvoker: lambdaInvokerRole,
     MobileCoreSupport: mobileCoreSupportRole,
     ReleaseCustomDomain: releaseDomainRole,
+    BONESBootstrap: bonesBootstrapRole,
   };
 };

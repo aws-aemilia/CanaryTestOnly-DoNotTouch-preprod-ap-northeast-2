@@ -77,7 +77,7 @@ type PermissionDiff = {
 export const computePermissionDiff = async (
   accountId: string,
   IAMRoleName: string,
-  Group?: string,
+  Groups?: string[],
   Users?: string[]
 ): Promise<PermissionDiff> => {
   const permissionsForIAMRoles = await listPermissionsForAWSAccount(accountId);
@@ -98,17 +98,20 @@ export const computePermissionDiff = async (
     );
   }
 
-  if (!Group) {
-    // Remove all groups if Group input is empty
-    permissions.groupsToDelete.push(...foundRole.GroupList);
-    permissions.groupsToAdd = [];
-  } else {
-    // Add the requested group
-    permissions.groupsToAdd.push(Group);
-    // Remove the rest
-    permissions.groupsToDelete.push(
-      ...foundRole.GroupList.filter((g) => g !== Group)
-    );
+  const groups = Groups ?? [];
+  for (const g of groups) {
+    if (foundRole.GroupList.includes(g)) {
+      continue;
+    }
+    permissions.groupsToAdd.push(g);
+  }
+
+  for (const g of foundRole.GroupList) {
+    if (groups.includes(g)) {
+      continue;
+    }
+
+    permissions.groupsToDelete.push(g);
   }
 
   if (!Users) {
@@ -151,9 +154,13 @@ export type AmplifyRole = {
   IAMRoleName: string;
   Description: string;
   ContingentAuth: number;
-  Group?: string;
+  Groups?: string[];
   PolicyARNs?: string[];
-  PolicyTemplateReference?: { PolicyTemplateName: string; OwnerID: string }[];
+  PolicyTemplateReference?: {
+    PolicyTemplateName: string;
+    OwnerID: string;
+    IsGroupOwned?: boolean;
+  }[];
   FederationTimeOutMin: number;
   Users?: string[];
 };
@@ -245,7 +252,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     await synchronizeIAMRolePolicyWithPolicyTemplate({
       AWSAccountID: accountId,
       IAMRoleName,
-      IsGroupOwned: true,
+      IsGroupOwned: isenPolicyToSync.IsGroupOwned ?? true,
       OwnerID: isenPolicyToSync.OwnerID,
       PolicyTemplateName: isenPolicyToSync.PolicyTemplateName,
     });
@@ -254,7 +261,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
   const permissionDiff = await computePermissionDiff(
     accountId,
     IAMRoleName,
-    role.Group,
+    role.Groups,
     role.Users
   );
 

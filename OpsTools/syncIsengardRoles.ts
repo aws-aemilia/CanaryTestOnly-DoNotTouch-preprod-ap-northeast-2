@@ -6,6 +6,7 @@ import {
   getAccountsLookupFn,
   preflightCAZForAdministrativeIsengardCalls,
   Region,
+  Stage,
 } from "../Commons/Isengard";
 import { upsertRole } from "../Commons/Isengard/roles/upsertRole";
 import yargs from "yargs";
@@ -17,11 +18,19 @@ const main = async () => {
       `
     Sync all Isengard roles in prod accounts. This is useful when an Isengard Policy 
     is updated or when the role properties are modified on node-scripts/Isengard/roles/standardRoles.ts
+
+    npx ts-node OpsTools/syncIsengardRoles.ts --accountType controlPlane --stage preprod
     `
     )
     .option("region", {
       describe: "i.e. us-west-2. If not present it syncs roles in ALL regions",
       type: "string",
+    })
+    .option("stage", {
+      describe: "Stage to run the command in",
+      type: "string",
+      default: "prod",
+      choices: ["beta", "gamma", "preprod", "prod"],
     })
     .option("accountType", {
       describe: "If not present it syncs roles in ALL accountTypes",
@@ -34,8 +43,8 @@ const main = async () => {
 
   const { accountType } = args;
   const region = args.region as Region;
+  const stage = args.stage as Stage;
 
-  const stage = "prod";
   const roles = getRolesForStage(stage);
 
   // Roles that should exist in all of our service accounts.
@@ -43,9 +52,10 @@ const main = async () => {
     roles.FullReadOnly,
     roles.ReadOnly,
     roles.OncallOperator,
+    roles.BONESBootstrap,
   ];
 
-  // Roles that shoud only exist in Control Plane accounts.
+  // Roles that should only exist in Control Plane accounts.
   const controlPlaneAccountRoles = [
     roles.MobileCoreSupport,
     roles.ReleaseCustomDomain,
