@@ -25,18 +25,52 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const alias = whoAmI();
+  const reportEntries = await getReportEntries();
+
+  logger.info("Generating report in JSON and Wiki formats");
+  const oncallReport = createReport(reportEntries);
+  const wikiSyntax = toWikiSyntax(oncallReport);
+  const jsonReport = JSON.stringify(oncallReport, null, 2);
+
+  logger.info("Writing report to files");
+  writeToFile(wikiSyntax, "wiki");
+  writeToFile(jsonReport, "json");
+  logger.info("You're all set! 🎉");
+}
+
+function createReport(entries: ReportEntry[]): OncallReport {
+  const entriesByCategory = groupByCategory(entries);
+  const workingHourPages = entries.filter(
+    (e) => e.pain === Pain.WorkingHours
+  ).length;
+  const afterHourPages = entries.filter(
+    (e) => e.pain === Pain.AfterHours
+  ).length;
+  const sleepingHourPages = entries.filter(
+    (e) => e.pain === Pain.SleepingHours
+  ).length;
+
+  return {
+    workingHourPages,
+    afterHourPages,
+    sleepingHourPages,
+    totalPages: entries.length,
+    entriesByCategory,
+  };
+}
+
+async function getReportEntries(): Promise<ReportEntry[]> {
   const today = dayjs().hour(9).minute(0);
   const oneWeekAgo = dayjs(today).subtract(7, "day");
-
-  const pagingClient = new PagingClient(alias);
-  const ticketyService = new TicketyService();
 
   logger.info(
     "Fetching all the pages you received from %s to %s",
     oneWeekAgo.format("MM/DD HH:mm"),
     today.format("MM/DD HH:mm")
   );
+
+  const pagingClient = new PagingClient(whoAmI());
+  const ticketyService = new TicketyService();
 
   const pages = await pagingClient.listPages(
     oneWeekAgo.toDate(),
@@ -91,6 +125,7 @@ async function main() {
       pageTimestamp: page.sentTime,
       pageSubject: page.subject,
       ticketId: page.ticketId,
+      ticketStatus: ticket.status,
       rootCause: getRootCauseText(ticket),
       timeSpentMinutes: ticket.totalTimeSpentInMinutes || 0,
       category: getCategory(page.subject),
@@ -98,36 +133,7 @@ async function main() {
     });
   }
 
-  logger.info("Generating report in JSON and Wiki formats");
-  const oncallReport = createReport(reportEntries);
-  const wikiSyntax = toWikiSyntax(oncallReport);
-  const jsonReport = JSON.stringify(oncallReport, null, 2);
-
-  logger.info("Writing report to files");
-  writeToFile(wikiSyntax, "wiki");
-  writeToFile(jsonReport, "json");
-  logger.info("You're all set! 🎉");
-}
-
-function createReport(entries: ReportEntry[]): OncallReport {
-  const entriesByCategory = groupByCategory(entries);
-  const workingHourPages = entries.filter(
-    (e) => e.pain === Pain.WorkingHours
-  ).length;
-  const afterHourPages = entries.filter(
-    (e) => e.pain === Pain.AfterHours
-  ).length;
-  const sleepingHourPages = entries.filter(
-    (e) => e.pain === Pain.SleepingHours
-  ).length;
-
-  return {
-    workingHourPages,
-    afterHourPages,
-    sleepingHourPages,
-    totalPages: entries.length,
-    entriesByCategory,
-  };
+  return reportEntries;
 }
 
 function writeToFile(content: string, extension: string) {

@@ -2,6 +2,7 @@ export interface ReportEntry {
   pageTimestamp: Date;
   pageSubject: string;
   ticketId?: string;
+  ticketStatus?: string;
   rootCause?: string;
   timeSpentMinutes: number;
   category: Category;

@@ -31,29 +31,29 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
   const tableHeader = [
     `|=(% style="width: 10%;" %)Ticket`,
     `|=(% style="width: 40%;" %)Subject`,
-    `|=(% style="width: 30%;" %)Root Cause`,
-    `|=(% style="width: 8%;" %)Time Spent`,
+    `|=(% style="width: 38%;" %)Root Cause`,
     `|=(% style="width: 12%;" %)Timestamps`,
   ].join("");
 
   const rows = reportEntries
     .map((e: ReportEntry) => {
+      const statusHighlight =
+        e.ticketStatus &&
+        e.ticketStatus !== "Resolved" &&
+        e.ticketStatus !== "Closed"
+          ? ` (**${e.ticketStatus}**)`
+          : "";
+
       const ticketLink = e.ticketId
-        ? toWikiLink(e.ticketId, `https://t.corp.amazon.com/${e.ticketId}`)
+        ? toWikiLink(e.ticketId, `https://t.corp.amazon.com/${e.ticketId}`) +
+          statusHighlight
         : "N/A";
       const subject = toWikiText(e.pageSubject);
       const rootCause = toWikiText(e.rootCause || "N/A");
-      const timeSpent = `${e.timeSpentMinutes} minutes`;
       const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(
         e.pageTimestamp
       )}`;
-      return toWikiRow([
-        ticketLink,
-        subject,
-        rootCause,
-        timeSpent,
-        timeWithPainEmoji,
-      ]);
+      return toWikiRow([ticketLink, subject, rootCause, timeWithPainEmoji]);
     })
     .join("\n");
 
@@ -69,8 +69,13 @@ function toWikiLink(text: string, link: string) {
   return `[[${text}>>${link}]]`;
 }
 
+/**
+ * Safely render all text as wiki text. Preserves links
+ */
 function toWikiText(text: string) {
-  return `{{{${text}}}}`;
+  const linkRegex = /https:\/\/[^ ]+/g;
+  const textWithLinksProcessed = text.replace(linkRegex, "}}}$&{{{");
+  return `{{{${textWithLinksProcessed}}}}`;
 }
 
 function toHumanDate(date: Date) {
