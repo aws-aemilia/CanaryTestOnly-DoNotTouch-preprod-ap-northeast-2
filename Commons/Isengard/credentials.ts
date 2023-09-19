@@ -12,6 +12,7 @@ const allowedRoles = [
   "ReleaseCustomDomain",
   "TicketyFullAccess",
   "SDCLimitManagement",
+  "LambdaInvoker",
 ];
 
 // Accounts where is safe to assume high risk roles like Admin
