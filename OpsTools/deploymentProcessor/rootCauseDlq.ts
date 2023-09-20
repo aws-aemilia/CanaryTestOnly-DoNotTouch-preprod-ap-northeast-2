@@ -107,7 +107,7 @@ async function main() {
 
   await preflightCAZ({
     accounts: [cpAccount, computeServiceAccount],
-    role: ["OncallOperator"],
+    role: ["OncallOperator", "FullReadOnly"],
   });
 
   const controlPlaneCreds = getIsengardCredentialsProvider(
