@@ -13,7 +13,10 @@
     "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types/"
-    ]
+    ],
+    "paths": {
+      "Commons/*": ["./Commons/*"],
+    }
   },
   "exclude": [
     "node_modules",
@@ -24,4 +27,8 @@
   "include": [
     "**/*"
   ],
+  "ts-node": {
+    // Do not forget to `npm i -D tsconfig-paths`
+    "require": ["tsconfig-paths/register"]
+  }
 }
