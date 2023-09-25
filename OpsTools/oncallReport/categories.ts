@@ -9,6 +9,10 @@ interface CategoryMapping {
 // The pattern can be a string literal or a RegExp.
 const categoryMappings: CategoryMapping[] = [
   {
+    pattern: "Pipeline blocked",
+    category: Category.Pipelines,
+  },
+  {
     pattern: "AemiliaCanaryLambda",
     category: Category.Canaries,
   },
@@ -31,10 +35,6 @@ const categoryMappings: CategoryMapping[] = [
   {
     pattern: "ddos_mitigation_succeeded",
     category: Category.DDoS,
-  },
-  {
-    pattern: "Pipeline blocked",
-    category: Category.Pipelines,
   },
   {
     pattern: "AmplifyHostingKinesisConsumer",

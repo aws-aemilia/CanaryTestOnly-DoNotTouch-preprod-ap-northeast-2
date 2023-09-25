@@ -4,6 +4,7 @@ export interface ReportEntry {
   ticketId?: string;
   ticketStatus?: string;
   rootCause?: string;
+  rootCauseText: string;
   timeSpentMinutes: number;
   category: Category;
   pain: Pain;

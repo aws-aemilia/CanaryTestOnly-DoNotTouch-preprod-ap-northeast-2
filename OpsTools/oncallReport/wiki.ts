@@ -29,7 +29,7 @@ function toWikiSummary(oncallReport: OncallReport): string {
 
 function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
   const tableHeader = [
-    `|=(% style="width: 10%;" %)Ticket`,
+    `(% class="active" %)|=(% style="width: 10%;" %)Ticket`,
     `|=(% style="width: 40%;" %)Subject`,
     `|=(% style="width: 38%;" %)Root Cause`,
     `|=(% style="width: 12%;" %)Timestamps`,
@@ -49,7 +49,7 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
           statusHighlight
         : "N/A";
       const subject = toWikiText(e.pageSubject);
-      const rootCause = toWikiText(e.rootCause || "N/A");
+      const rootCause = toWikiText(e.rootCauseText);
       const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(
         e.pageTimestamp
       )}`;
@@ -57,7 +57,7 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
     })
     .join("\n");
 
-  const tableTitle = `=== ${title} ===`;
+  const tableTitle = `=== ${title} (${reportEntries.length}) ===`;
   return [tableTitle, tableHeader, rows].join("\n");
 }
 

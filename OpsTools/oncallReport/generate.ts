@@ -23,7 +23,7 @@ async function main() {
     )
     .option("commonRootCauseThreshold", {
       describe:
-        "The minimum number of tickets that need to share the same root cause ticket to be grouped together. Tip: set to 99 to disable this feature",
+        "The minimum number of tickets that need to share the same root cause to be grouped together. Tip: Set to 99 to disable",
       type: "number",
       default: 3,
     })
@@ -34,11 +34,9 @@ async function main() {
   const { commonRootCauseThreshold } = args;
 
   const reportEntries = await getReportEntries();
+  const oncallReport = createReport(reportEntries, commonRootCauseThreshold);
 
   logger.info("Generating report in JSON and Wiki formats");
-  const oncallReport = createReport(reportEntries, {
-    commonRootCauseThreshold,
-  });
   const wikiSyntax = toWikiSyntax(oncallReport);
   const jsonReport = JSON.stringify(oncallReport, null, 2);
 
@@ -50,17 +48,17 @@ async function main() {
 
 function createReport(
   entries: ReportEntry[],
-  { commonRootCauseThreshold }: { commonRootCauseThreshold: number } = {
-    commonRootCauseThreshold: 3,
-  }
+  commonRootCauseThreshold: number
 ): OncallReport {
   const entriesByCategory = groupByCategory(entries, commonRootCauseThreshold);
   const workingHourPages = entries.filter(
     (e) => e.pain === Pain.WorkingHours
   ).length;
+
   const afterHourPages = entries.filter(
     (e) => e.pain === Pain.AfterHours
   ).length;
+
   const sleepingHourPages = entries.filter(
     (e) => e.pain === Pain.SleepingHours
   ).length;
@@ -91,6 +89,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
     oneWeekAgo.toDate(),
     today.toDate()
   );
+
   pages.reverse(); // Reverse the order of pages so that they're displayed from oldest to newest
 
   logger.info("Looks like you got %s pages.", pages.length);
@@ -108,7 +107,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
       reportEntries.push({
         pageTimestamp: page.sentTime,
         pageSubject: page.subject,
-        rootCause: "No ticket associated to this page.",
+        rootCauseText: "No ticket associated to this page.",
         timeSpentMinutes: 0,
         category: getCategory(page.subject),
         pain: toPain(page.sentTime),
@@ -128,7 +127,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
         ticketId: page.ticketId,
         pageTimestamp: page.sentTime,
         pageSubject: page.subject,
-        rootCause: "Unable to fetch root cause",
+        rootCauseText: "Unable to fetch root cause",
         timeSpentMinutes: 0,
         category: getCategory(page.subject),
         pain: toPain(page.sentTime),
@@ -141,7 +140,8 @@ async function getReportEntries(): Promise<ReportEntry[]> {
       pageSubject: page.subject,
       ticketId: page.ticketId,
       ticketStatus: ticket.status,
-      rootCause: getRootCauseText(ticket),
+      rootCause: ticket.rootCause,
+      rootCauseText: getRootCauseText(ticket),
       timeSpentMinutes: ticket.totalTimeSpentInMinutes || 0,
       category: getCategory(page.subject),
       pain: toPain(page.sentTime),
