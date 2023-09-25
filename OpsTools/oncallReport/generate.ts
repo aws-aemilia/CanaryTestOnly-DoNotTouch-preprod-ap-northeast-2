@@ -21,14 +21,24 @@ async function main() {
        brazil-build generateOncallReport
       `
     )
+    .option("commonRootCauseThreshold", {
+      describe:
+        "The minimum number of tickets that need to share the same root cause ticket to be grouped together. Tip: set to 99 to disable this feature",
+      type: "number",
+      default: 3,
+    })
     .strict()
     .version(false)
     .help().argv;
 
+  const { commonRootCauseThreshold } = args;
+
   const reportEntries = await getReportEntries();
 
   logger.info("Generating report in JSON and Wiki formats");
-  const oncallReport = createReport(reportEntries);
+  const oncallReport = createReport(reportEntries, {
+    commonRootCauseThreshold,
+  });
   const wikiSyntax = toWikiSyntax(oncallReport);
   const jsonReport = JSON.stringify(oncallReport, null, 2);
 
@@ -38,8 +48,13 @@ async function main() {
   logger.info("You're all set! 🎉");
 }
 
-function createReport(entries: ReportEntry[]): OncallReport {
-  const entriesByCategory = groupByCategory(entries);
+function createReport(
+  entries: ReportEntry[],
+  { commonRootCauseThreshold }: { commonRootCauseThreshold: number } = {
+    commonRootCauseThreshold: 3,
+  }
+): OncallReport {
+  const entriesByCategory = groupByCategory(entries, commonRootCauseThreshold);
   const workingHourPages = entries.filter(
     (e) => e.pain === Pain.WorkingHours
   ).length;
