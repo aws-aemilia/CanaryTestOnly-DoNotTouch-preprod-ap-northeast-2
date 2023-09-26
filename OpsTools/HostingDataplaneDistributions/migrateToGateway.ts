@@ -11,6 +11,7 @@ import {
   StandardRoles,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
+  preflightCAZ,
 } from "Commons/Isengard";
 import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
 import logger from "Commons/utils/logger";
@@ -55,6 +56,9 @@ async function main() {
   const { appId, skipWait } = args;
 
   const account = await controlPlaneAccount(stage, region);
+
+  await preflightCAZ({ accounts: account, role: StandardRoles.OncallOperator });
+
   const credentials = getIsengardCredentialsProvider(
     account.accountId,
     StandardRoles.OncallOperator
