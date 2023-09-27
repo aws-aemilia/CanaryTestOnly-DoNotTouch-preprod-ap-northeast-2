@@ -77,37 +77,39 @@ async function runRequestsInSingleRegion(
   concurrentRequestsPerRegion: number
 ): Promise<SingleRegionResults> {
   const allProblems: {
+    requestNumber: number;
     problems: Problem[];
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
     ahioResult: Partial<AhioInvocationResult>;
   }[] = [];
   const allSuccesses: {
+    requestNumber: number;
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
     ahioResult: Partial<AhioInvocationResult>;
   }[] = [];
 
-  const allRequestPromises = oneRegionsLogs.logs.map(async (oneLog) => {
-    // Use a cell account from the region corresponding to the request
-    const cellAccountForRegion = cellAccountsForStage.find(
-      (oneAccount) => oneAccount.region === oneRegionsLogs.account.region
+  // Use a cell account from the region corresponding to the request
+  const cellAccountForRegion = cellAccountsForStage.find(
+    (oneAccount) => oneAccount.region === oneRegionsLogs.account.region
+  );
+
+  if (!cellAccountForRegion) {
+    throw new Error(
+      `Could not find cellaccount for region ${oneRegionsLogs.account.region}`
     );
+  }
 
-    if (!cellAccountForRegion) {
-      throw new Error(
-        `Could not find cellaccount for region ${oneRegionsLogs.account.region}`
-      );
-    }
+  const lambdaClient = new LambdaClient({
+    region: cellAccountForRegion.region,
+    credentials: getIsengardCredentialsProvider(
+      cellAccountForRegion.accountId,
+      "LambdaInvoker"
+    ),
+  });
 
-    const lambdaClient = new LambdaClient({
-      region: cellAccountForRegion.region,
-      credentials: getIsengardCredentialsProvider(
-        cellAccountForRegion.accountId,
-        "LambdaInvoker"
-      ),
-    });
-
+  const allRequestPromises = oneRegionsLogs.logs.map(async (oneLog, requestNumber) => {
     // Convert image request to AHIO request on the fly - this allows
     // presigned URLs to have the appropriate lifetime
     const ahioRequest = await convertImageRequestToAhioRequest(
@@ -136,6 +138,7 @@ async function runRequestsInSingleRegion(
     const problems = findProblemsWithAhioRequest(ahioInvocationResult, oneLog);
     if (problems.length === 0) {
       allSuccesses.push({
+        requestNumber,
         imageRequest: oneLog,
         ahioRequest: {
           ...ahioRequest,
@@ -147,6 +150,7 @@ async function runRequestsInSingleRegion(
     } else {
       allProblems.push({
         problems,
+        requestNumber,
         imageRequest: oneLog,
         ahioRequest: redactSensitiveInfoFromAhioRequest(ahioRequest),
         ahioResult: redactSensitiveInfoFromAhioResult(
@@ -177,9 +181,14 @@ async function runRequestsInSingleRegion(
 }
 
 function redactSensitiveInfoFromAhioRequest(ahioRequest: AhioRequest) {
-  const presignedUrl = new URL(ahioRequest.presignedS3Url || "");
+
+  let presignedUrl: URL | string = "";
+  if(ahioRequest.presignedS3Url) {
+    presignedUrl = new URL(ahioRequest.presignedS3Url);
+    presignedUrl.search = "";
+  }
+
   // Remove all sensitive information from the presigned url
-  presignedUrl.search = "";
   return {
     ...ahioRequest,
     presignedS3Url: presignedUrl.toString(),
@@ -194,7 +203,7 @@ function redactSensitiveInfoFromAhioResult(
     ...ahioResult,
     log: shouldRedactLogs
       ? ""
-      : Buffer.from(ahioResult.log, "base64").toString("ascii"),
+      : ahioResult.log,
     response: {
       ...ahioResult.response,
       // If it's not base64 encoded, it's an error and we should log it

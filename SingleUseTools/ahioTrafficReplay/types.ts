@@ -74,18 +74,22 @@ export interface AhioInvocationResult {
   response: AhioResponse;
   log: string;
   timeTakenMs: number;
+lambdaTimeTakenMs: number
+
 }
 
 export enum ProblemType {
   MISSING_HEADERS = "MISSING_HEADERS",
-  TIME = "TIME",
+  TIME_WITH_NETWORK = "TIME_WITH_NETWORK",
+  TIME_FROM_LAMBDA = "TIME_FROM_LAMBDA",
   SIZE = "SIZE",
   NON_200 = "NON_200",
+  MIME_TYPE_MISMATCH = "MIME_TYPE_MISMATCH",
 }
 
 export interface ProblemData {
-  original: number;
-  ahio: number;
+  original: number | string;
+  ahio: number | string;
 }
 
 export interface Problem {
@@ -98,12 +102,14 @@ export interface SingleRegionResults {
   problemCount: number;
   successCount: number;
   allProblems: {
+    requestNumber: number;
     problems: Problem[];
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
     ahioResult: Partial<AhioInvocationResult>;
   }[];
   allSuccesses: {
+    requestNumber: number;
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
     ahioResult: Partial<AhioInvocationResult>;

@@ -13,6 +13,7 @@ import logger from "../../Commons/utils/logger";
 import { getArgs } from "./getArgs";
 import { getImageRequestsFromHgLogs } from "./getImageRequestsFromHgLogs";
 import { runRequestsInAllRegions } from "./runRequestsInAllRegions";
+import { SingleRegionResults } from "./types";
 
 async function main() {
   const args = await getArgs();
@@ -75,10 +76,30 @@ async function main() {
         join(args.outputDir, `${oneRegionResult.region}.json`),
         JSON.stringify(oneRegionResult, null, 2)
       );
+
+      const csvContents = await outputGraphableData(oneRegionResult);
+      await writeFile(
+        join(args.outputDir, `${oneRegionResult.region}.graphable.csv`),
+        csvContents
+      );
     } else {
       logger.info(`No results for ${oneRegionResult.region}`);
     }
   }
+}
+
+async function outputGraphableData(oneRegionResult: SingleRegionResults) {
+  // Create CSV that will be graphable in excel
+  const csvLines: string[] = [];
+  csvLines.push("RequestNumber,Region,ImageRequestTime,AhioTimeNetwork,AhioTimeLambda");
+  oneRegionResult.allProblems.forEach(entry => {
+    csvLines.push(`${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`);
+  });
+  oneRegionResult.allSuccesses.forEach(entry => {
+    csvLines.push(`${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`);
+  });
+
+  return csvLines.join("\n");
 }
 
 main().then(console.log).catch(console.error);

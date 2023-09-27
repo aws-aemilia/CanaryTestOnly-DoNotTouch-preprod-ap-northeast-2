@@ -38,6 +38,17 @@ export async function convertImageRequestToAhioRequest(
     });
   }
 
+  let formats = ["image/webp"];
+  if(imageRequest.contentTypeHeader === "image/avif") {
+    formats = [ "image/avif" ];
+  }
+  if(imageRequest.contentTypeHeader === "image/png") {
+    formats = [ "image/png" ];
+  }
+  if(imageRequest.contentTypeHeader === "image/jpeg") {
+    formats = [ "image/jpeg" ];
+  }
+
   return {
     schemaVersion: 0,
     accountId: "123456789012",
@@ -54,7 +65,7 @@ export async function convertImageRequestToAhioRequest(
       sizes: [widthFromRequest, heightFromRequest],
       domains,
       remotePatterns: [],
-      formats: ["image/webp", "image/avif"],
+      formats,
       minimumCacheTTL: 60, // Default from NextJS
       dangerouslyAllowSVG: false, // Default from NextJS
     },
