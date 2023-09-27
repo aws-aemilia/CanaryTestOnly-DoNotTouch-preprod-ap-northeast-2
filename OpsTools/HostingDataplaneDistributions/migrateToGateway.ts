@@ -13,7 +13,6 @@ import {
   getIsengardCredentialsProvider,
   preflightCAZ,
 } from "Commons/Isengard";
-import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
 import logger from "Commons/utils/logger";
 
 async function main() {
@@ -64,9 +63,6 @@ async function main() {
     StandardRoles.OncallOperator
   );
 
-  const appDAO = new AppDAO(stage, region, credentials);
-  const { accountId } = await appDAO.getAppById(appId, ["accountId"]);
-
   const client = new AmplifyCloudFrontBrokerClient({
     endpoint: `https://${stage}.${region}.cfbroker.amplify.aws.dev`,
     credentials,
@@ -74,7 +70,6 @@ async function main() {
 
   const res = await client.send(
     new MigrateAppToGatewayCommand({
-      accountId,
       appId,
     })
   );
