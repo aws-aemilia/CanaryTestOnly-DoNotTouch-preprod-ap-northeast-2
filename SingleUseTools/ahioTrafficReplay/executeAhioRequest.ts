@@ -22,10 +22,12 @@ export async function executeAhioRequest(
   const responsePayloadString = new TextDecoder().decode(response.Payload);
   const parseBody = JSON.parse(responsePayloadString) as AhioResponse;
 
-  const log = response.LogResult ? Buffer.from(response.LogResult, "base64").toString("ascii") : "";
-  if(log && log.includes("Billed Duration: ")) {
+  const log = response.LogResult
+    ? Buffer.from(response.LogResult, "base64").toString("ascii")
+    : "";
+  if (log && log.includes("Billed Duration: ")) {
     const matches = /Billed Duration: ([0-9]+) ms/.exec(log);
-    if(matches && matches.length >= 1) {
+    if (matches && matches.length >= 1) {
       lambdaTimeTakenMs = parseInt(matches[1]);
     }
   }

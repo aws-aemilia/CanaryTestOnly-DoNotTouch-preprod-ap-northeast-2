@@ -75,6 +75,8 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
     outputDir: args.outputDir || join(__dirname, "../../", DEFAULT_OUTPUT_DIR),
     region: args.region,
     stage: args.stage,
-    startDate: new Date(args.startDate || dayjs().subtract(2, "minutes").format()),
+    startDate: new Date(
+      args.startDate || dayjs().subtract(2, "minutes").format()
+    ),
   };
 }

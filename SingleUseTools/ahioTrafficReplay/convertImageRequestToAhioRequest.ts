@@ -39,14 +39,14 @@ export async function convertImageRequestToAhioRequest(
   }
 
   let formats = ["image/webp"];
-  if(imageRequest.contentTypeHeader === "image/avif") {
-    formats = [ "image/avif" ];
+  if (imageRequest.contentTypeHeader === "image/avif") {
+    formats = ["image/avif"];
   }
-  if(imageRequest.contentTypeHeader === "image/png") {
-    formats = [ "image/png" ];
+  if (imageRequest.contentTypeHeader === "image/png") {
+    formats = ["image/png"];
   }
-  if(imageRequest.contentTypeHeader === "image/jpeg") {
-    formats = [ "image/jpeg" ];
+  if (imageRequest.contentTypeHeader === "image/jpeg") {
+    formats = ["image/jpeg"];
   }
 
   return {

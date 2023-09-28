@@ -74,8 +74,7 @@ export interface AhioInvocationResult {
   response: AhioResponse;
   log: string;
   timeTakenMs: number;
-lambdaTimeTakenMs: number
-
+  lambdaTimeTakenMs: number;
 }
 
 export enum ProblemType {

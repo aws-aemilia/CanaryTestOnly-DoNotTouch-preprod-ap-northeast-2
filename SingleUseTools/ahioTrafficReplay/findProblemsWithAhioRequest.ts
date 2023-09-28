@@ -1,4 +1,4 @@
-import logger from '../../Commons/utils/logger'
+import logger from "../../Commons/utils/logger";
 
 import {
   AhioInvocationResult,
@@ -34,19 +34,28 @@ export function findProblemsWithAhioRequest(
   }
 
   const problems: Problem[] = [];
-  if (ahioInvocationResult.response.headers['content-type'] !== imageRequest.contentTypeHeader) {
+  if (
+    ahioInvocationResult.response.headers["content-type"] !==
+    imageRequest.contentTypeHeader
+  ) {
     problems.push({
       type: ProblemType.MIME_TYPE_MISMATCH,
       data: {
         original: imageRequest.contentTypeHeader,
-        ahio: ahioInvocationResult.response.headers['content-type'],
+        ahio: ahioInvocationResult.response.headers["content-type"],
       },
     });
   }
 
   if (ahioInvocationResult.timeTakenMs > imageRequest.timeTakenMs * 1.1) {
-    if(ahioInvocationResult.timeTakenMs > imageRequest.timeTakenMs * 1.5) {
-      logger.trace({ ahioTimeTaken: ahioInvocationResult.timeTakenMs, imageRequestTimeTaken: ahioInvocationResult.timeTakenMs }, "Excessive network latency detected, falling back to lambda invocation time");
+    if (ahioInvocationResult.timeTakenMs > imageRequest.timeTakenMs * 1.5) {
+      logger.trace(
+        {
+          ahioTimeTaken: ahioInvocationResult.timeTakenMs,
+          imageRequestTimeTaken: ahioInvocationResult.timeTakenMs,
+        },
+        "Excessive network latency detected, falling back to lambda invocation time"
+      );
     } else {
       problems.push({
         type: ProblemType.TIME_WITH_NETWORK,
@@ -58,7 +67,10 @@ export function findProblemsWithAhioRequest(
     }
   }
 
-  if (ahioInvocationResult.lambdaTimeTakenMs > imageRequest.timeTakenMs * 1.05) {
+  if (
+    ahioInvocationResult.lambdaTimeTakenMs >
+    imageRequest.timeTakenMs * 1.05
+  ) {
     problems.push({
       type: ProblemType.TIME_FROM_LAMBDA,
       data: {

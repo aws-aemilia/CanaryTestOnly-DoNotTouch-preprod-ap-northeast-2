@@ -91,12 +91,18 @@ async function main() {
 async function outputGraphableData(oneRegionResult: SingleRegionResults) {
   // Create CSV that will be graphable in excel
   const csvLines: string[] = [];
-  csvLines.push("RequestNumber,Region,ImageRequestTime,AhioTimeNetwork,AhioTimeLambda");
-  oneRegionResult.allProblems.forEach(entry => {
-    csvLines.push(`${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`);
+  csvLines.push(
+    "RequestNumber,Region,ImageRequestTime,AhioTimeNetwork,AhioTimeLambda"
+  );
+  oneRegionResult.allProblems.forEach((entry) => {
+    csvLines.push(
+      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`
+    );
   });
-  oneRegionResult.allSuccesses.forEach(entry => {
-    csvLines.push(`${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`);
+  oneRegionResult.allSuccesses.forEach((entry) => {
+    csvLines.push(
+      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`
+    );
   });
 
   return csvLines.join("\n");

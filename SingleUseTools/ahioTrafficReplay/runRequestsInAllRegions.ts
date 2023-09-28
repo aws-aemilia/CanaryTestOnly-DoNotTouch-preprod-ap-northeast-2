@@ -109,62 +109,67 @@ async function runRequestsInSingleRegion(
     ),
   });
 
-  const allRequestPromises = oneRegionsLogs.logs.map(async (oneLog, requestNumber) => {
-    // Convert image request to AHIO request on the fly - this allows
-    // presigned URLs to have the appropriate lifetime
-    const ahioRequest = await convertImageRequestToAhioRequest(
-      oneLog,
-      controlPlaneAccountForRegion
-    );
+  const allRequestPromises = oneRegionsLogs.logs.map(
+    async (oneLog, requestNumber) => {
+      // Convert image request to AHIO request on the fly - this allows
+      // presigned URLs to have the appropriate lifetime
+      const ahioRequest = await convertImageRequestToAhioRequest(
+        oneLog,
+        controlPlaneAccountForRegion
+      );
 
-    // If nextJsCache is HIT or STALE
-    //   - Make second request to AHIO
-    //   - Second request allows for "Cached" request possibility
-    // Make request to AHIO and capture results
-    if (
-      oneLog.nextCacheHeader === "HIT" ||
-      oneLog.nextCacheHeader === "STALE"
-    ) {
-      // Execute request and throw it out to prime the cache
-      await executeAhioRequest(ahioRequest, lambdaClient);
+      // If nextJsCache is HIT or STALE
+      //   - Make second request to AHIO
+      //   - Second request allows for "Cached" request possibility
+      // Make request to AHIO and capture results
+      if (
+        oneLog.nextCacheHeader === "HIT" ||
+        oneLog.nextCacheHeader === "STALE"
+      ) {
+        // Execute request and throw it out to prime the cache
+        await executeAhioRequest(ahioRequest, lambdaClient);
+      }
+
+      const ahioInvocationResult = await executeAhioRequest(
+        ahioRequest,
+        lambdaClient
+      );
+
+      // Compare outcome of Image Request and  AHIO request
+      const problems = findProblemsWithAhioRequest(
+        ahioInvocationResult,
+        oneLog
+      );
+      if (problems.length === 0) {
+        allSuccesses.push({
+          requestNumber,
+          imageRequest: oneLog,
+          ahioRequest: {
+            ...ahioRequest,
+            // Don't log presigned urls
+            presignedS3Url: "",
+          },
+          ahioResult: redactSensitiveInfoFromAhioResult(ahioInvocationResult),
+        });
+      } else {
+        allProblems.push({
+          problems,
+          requestNumber,
+          imageRequest: oneLog,
+          ahioRequest: redactSensitiveInfoFromAhioRequest(ahioRequest),
+          ahioResult: redactSensitiveInfoFromAhioResult(
+            ahioInvocationResult,
+            false
+          ),
+        });
+      }
+
+      allRequests -= 1;
+      logger.update(
+        `Making all requests - Regions Remaining: ${regionsRemaining} - Total Requests Remaining: ${allRequests}`
+      );
     }
-
-    const ahioInvocationResult = await executeAhioRequest(
-      ahioRequest,
-      lambdaClient
-    );
-
-    // Compare outcome of Image Request and  AHIO request
-    const problems = findProblemsWithAhioRequest(ahioInvocationResult, oneLog);
-    if (problems.length === 0) {
-      allSuccesses.push({
-        requestNumber,
-        imageRequest: oneLog,
-        ahioRequest: {
-          ...ahioRequest,
-          // Don't log presigned urls
-          presignedS3Url: "",
-        },
-        ahioResult: redactSensitiveInfoFromAhioResult(ahioInvocationResult),
-      });
-    } else {
-      allProblems.push({
-        problems,
-        requestNumber,
-        imageRequest: oneLog,
-        ahioRequest: redactSensitiveInfoFromAhioRequest(ahioRequest),
-        ahioResult: redactSensitiveInfoFromAhioResult(
-          ahioInvocationResult,
-          false
-        ),
-      });
-    }
-
-    allRequests -= 1;
-    logger.update(
-      `Making all requests - Regions Remaining: ${regionsRemaining} - Total Requests Remaining: ${allRequests}`
-    );
-  });
+  );
 
   await PromisePool.withConcurrency(concurrentRequestsPerRegion)
     .for(allRequestPromises)
@@ -181,9 +186,8 @@ async function runRequestsInSingleRegion(
 }
 
 function redactSensitiveInfoFromAhioRequest(ahioRequest: AhioRequest) {
-
   let presignedUrl: URL | string = "";
-  if(ahioRequest.presignedS3Url) {
+  if (ahioRequest.presignedS3Url) {
     presignedUrl = new URL(ahioRequest.presignedS3Url);
     presignedUrl.search = "";
   }
@@ -201,9 +205,7 @@ function redactSensitiveInfoFromAhioResult(
 ) {
   return {
     ...ahioResult,
-    log: shouldRedactLogs
-      ? ""
-      : ahioResult.log,
+    log: shouldRedactLogs ? "" : ahioResult.log,
     response: {
       ...ahioResult.response,
       // If it's not base64 encoded, it's an error and we should log it
