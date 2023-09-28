@@ -70,7 +70,6 @@ async function main() {
 
   const res = await client.send(
     new MigrateAppToGatewayCommand({
-      accountId: account.accountId,
       appId,
     })
   );
