@@ -18,7 +18,7 @@ async function main() {
   const args = await getArgs();
 
   const regionResultsFileName = join(args.outputDir, "ca-central-1.json");
-  const problemIndex = 0;
+  const problemRequestNumber = 24;
 
   const regionResultsRawFileContents = await readFile(
     regionResultsFileName,
@@ -27,7 +27,15 @@ async function main() {
   const regionResults: SingleRegionResults = JSON.parse(
     regionResultsRawFileContents
   );
-  const oneProblem = regionResults.allProblems[problemIndex];
+  const oneProblem = regionResults.allProblems.find(
+    (problem) => problem.requestNumber === problemRequestNumber
+  );
+
+  if (!oneProblem) {
+    throw new Error(
+      `No problem found for request number ${problemRequestNumber}`
+    );
+  }
 
   const controlPlaneAccountsForStage = await controlPlaneAccounts({
     stage: args.stage as Stage,

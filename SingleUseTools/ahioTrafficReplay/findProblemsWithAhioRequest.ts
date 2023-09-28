@@ -81,11 +81,18 @@ export function findProblemsWithAhioRequest(
   }
 
   if (
-    ahioInvocationResult.response.headers["Content-Length"] &&
+    ahioInvocationResult.response.headers["content-length"] &&
     imageRequest.contentLengthHeader
   ) {
-    const ahioResponseSize = Number(
-      ahioInvocationResult.response.headers["Content-Length"]
+    const ahioResponseSize = parseInt(
+      ahioInvocationResult.response.headers["content-length"]
+    );
+    logger.info(
+      {
+        ahioResponseSize,
+        imageRequestContentLength: imageRequest.contentLengthHeader,
+      },
+      "Size check"
     );
     if (ahioResponseSize > imageRequest.contentLengthHeader * 1.05) {
       problems.push({

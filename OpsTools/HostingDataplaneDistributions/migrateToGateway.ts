@@ -21,7 +21,7 @@ async function main() {
       `Migrate application to HostingGateway. This script sends a request to CloudFrontBroker to queue the app migration.
 
       Usage:
-      
+
       npx ts-node OpsTools/HostingDataplaneDistributions/migrateToGateway.ts --stage prod --region us-west-2 --appId d302wq0kjlxqv1
       `
     )
@@ -70,6 +70,7 @@ async function main() {
 
   const res = await client.send(
     new MigrateAppToGatewayCommand({
+      accountId: account.accountId,
       appId,
     })
   );
