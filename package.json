@@ -26,6 +26,7 @@
     "stopCacheBusting": "ts-node OpsTools/DDoS/stopCacheBusting.ts",
     "mapAppIds": "ts-node OpsTools/mapAppIds.ts",
     "createCustomDomains": "ts-node OpsTools/custom-domain-maker",
+    "releaseCustomDomain": "ts-node OpsTools/customDomains/releaseCustomDomain.ts",
     "validateGatewayCertificate": "ts-node OpsTools/hostingDataplane/validateGatewayCertificate.ts",
     "registerComputeCell": "ts-node OpsTools/computeService/registerCellAtControlPlane.ts",
     "unsafeResetSecret": "ts-node OpsTools/computeService/manageGatewaySecret/unsafeResetSecret.ts",
