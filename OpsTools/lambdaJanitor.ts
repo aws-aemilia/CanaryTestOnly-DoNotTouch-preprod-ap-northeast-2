@@ -77,11 +77,19 @@ async function main() {
         return true;
       },
     })
+    .option("skipConfirmation", {
+      alias: "yes",
+      describe: "Whether to skip deletion confirmation prompts",
+      type: "boolean",
+      demandOption: false,
+      default: false,
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { region, numVersionsToKeep, roleName, accountId } = args;
+  const { region, numVersionsToKeep, roleName, accountId, skipConfirmation } =
+    args;
   const regionName = toRegionName(region);
 
   const lambdaClient = new LambdaClient({
@@ -157,7 +165,10 @@ async function main() {
 
       logger.info("=====================================");
 
-      if (await confirm("Are you sure you want to delete these versions?")) {
+      if (
+        skipConfirmation ||
+        (await confirm("Are you sure you want to delete these versions?"))
+      ) {
         // Delete them in parallel with rate limit
         const deletions = versionsToDelete.map((version) =>
           deleteFunctionRateLimit(() => deleteVersion(lambdaClient, version))
