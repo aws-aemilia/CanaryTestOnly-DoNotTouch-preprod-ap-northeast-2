@@ -46,6 +46,7 @@
     "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts",
     "updateCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/updateCustomerAccountLimit.ts",
     "generateOncallReport": "ts-node OpsTools/oncallReport/generate.ts",
+    "s3Janitor": "ts-node OpsTools/s3Janitor.ts",
     "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts",
     "getCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/getCustomerAccountLimit.ts"
   },

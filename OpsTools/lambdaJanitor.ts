@@ -14,6 +14,7 @@ import {
   AliasConfiguration,
   DeleteFunctionCommand,
 } from "@aws-sdk/client-lambda";
+import sleep from "Commons/utils/sleep";
 
 const spinner = new SpinningLogger();
 const deleteFunctionRateLimit = rateLimit(3);
@@ -25,13 +26,13 @@ async function main() {
         ||
         ||
         ||    Welcome to Lambda Janitor! Let's sweep, let's clear, with not a single
-        ||    smear. Unused functions will disappear, making Lambda space cheer!  
+        ||    smear. Unused functions will disappear, making Lambda space cheer!
         ||
-        ||             
-        ||            
+        ||
+        ||
        /||\\           ____.-.____
       /||||\\         [___________]
-      ======          | | | | | | 
+      ======          | | | | | |
       ||||||          | | | | | |
       ||||||          | | | | | |
       ||||||          |_________|
@@ -41,10 +42,10 @@ async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
       `
-      Deletes unused versions of Lambda functions. Can only be run in low risk 
+      Deletes unused versions of Lambda functions. Can only be run in low risk
       accounts like integration tests because it needs lambda:DeleteFunction
-      permission which the standard safe roles don't have. 
-      
+      permission which the standard safe roles don't have.
+
       Usage:
         brazil-build lambdaJanitor -- --region=iad --accountId=1111111111
       `
@@ -167,7 +168,8 @@ async function main() {
 
       if (
         skipConfirmation ||
-        (await confirm("Are you sure you want to delete these versions?"))
+        (versionsToDelete.length > 0 &&
+          (await confirm("Are you sure you want to delete these versions?")))
       ) {
         // Delete them in parallel with rate limit
         const deletions = versionsToDelete.map((version) =>
@@ -233,6 +235,10 @@ async function listVersions(
   const allVersions: FunctionConfiguration[] = [];
   for await (const versionsPage of versionsPaginator) {
     for (const version of versionsPage.Versions || []) {
+      // Avoid rate limiting
+      if (allVersions.length % 100 === 0) {
+        await sleep(200);
+      }
       spinner.update(version.Version!);
       allVersions.push(version);
     }
