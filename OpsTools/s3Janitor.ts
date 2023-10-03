@@ -12,7 +12,11 @@ import {
   DeleteObjectsCommand,
   DeleteBucketCommand,
 } from "@aws-sdk/client-s3";
-import sleep from "Commons/utils/sleep";
+import {
+  CloudFrontClient,
+  ListDistributionsCommand,
+  ListDistributionsCommandOutput,
+} from "@aws-sdk/client-cloudfront";
 
 const spinner = new SpinningLogger();
 const deleteBucketRateLimit = rateLimit(3);
@@ -91,19 +95,60 @@ async function main() {
     credentials: getIsengardCredentialsProvider(accountId, roleName),
   });
 
+  const cloudFrontClient = new CloudFrontClient({
+    region: regionName,
+    credentials: getIsengardCredentialsProvider(accountId, roleName),
+  });
+
+  const cloudFrontClientIAD = new CloudFrontClient({
+    region: "iad",
+    credentials: getIsengardCredentialsProvider(accountId, roleName),
+  });
+
+  logger.info(
+    "Gathering all s3 buckets associated with CloudFront distributions"
+  );
+
+  // We need to gather buckets from the assigned region AND iad - most of our tests run
+  // in iad and we do not want to remove resources utilized in this region.
+  const regionCloudFrontBuckets = await listS3BucketsForDistributions(
+    cloudFrontClient
+  );
+  const iadCloudFrontBuckets = await listS3BucketsForDistributions(
+    cloudFrontClientIAD
+  );
+  const cloudFrontBuckets = [
+    ...regionCloudFrontBuckets,
+    ...iadCloudFrontBuckets,
+  ];
+
+  const cloudFrontBucketMap: { [key: string]: boolean } = {};
+  cloudFrontBuckets.forEach((bucket) => (cloudFrontBucketMap[bucket] = true));
+
   logger.info("Listing S3 Buckets");
 
   const buckets = await listBuckets(s3Client);
   const bucketNamesToDelete = buckets
     .map((bucket) => bucket.Name || "")
+    // Do not remove buckets that are mapped to CloudFront distros
+    .filter((bucketName) => {
+      if (!cloudFrontBucketMap[bucketName]) {
+        return true;
+      }
+      logger.info(
+        `Skipping ${bucketName} because it's assigned to CloudFront distro`
+      );
+      return false;
+    })
     .filter((bucketName) => bucketName) // Remove empty bucket names
     .filter((bucketName) => !bucketName.includes("do-not-delete"))
     .filter(
       (bucketName) =>
         /^[a-z0-9]{5,8}-[a-z0-9]{5,8}$/.test(bucketName || "") || // Matches bucket names like: 9ftwr85-0wdhhac
         /^backend-app-.*?-master-.*?-deployment$/.test(bucketName || "") || // Matches bucket names like: backend-app-a2f4b679-master-231458-deployment
-        /^amplify-.*?-master-.*?-deployment$/.test(bucketName || "")
-    ); // Matches bucket names like: amplify-amplifye93f6aa840164-staging-04817-deployment
+        /^amplify-.*?-master-.*?-deployment$/.test(bucketName || "") || // Matches bucket names like: amplify-amplifye93f6aa840164-master-04817-deployment
+        /^amplify-.*?-staging-.*?-deployment$/.test(bucketName || "") // Matches bucket names like: amplify-amplifye93f6aa840164-staging-04817-deployment
+    );
 
   logger.info({ bucketsToDelete: bucketNamesToDelete }, "Buckets to delete");
 
@@ -187,6 +232,42 @@ async function deleteBucket(s3Client: S3Client, bucketName: string) {
   } catch (error) {
     logger.error(error, "Error deleting the bucket:");
   }
+}
+
+async function listS3BucketsForDistributions(
+  cloudfrontClient: CloudFrontClient
+): Promise<string[]> {
+  let cloudFrontS3Buckets: string[] = [];
+
+  try {
+    let lastDistributionResponse = null;
+    // List CloudFront distributions
+    do {
+      const distributionsResponse: ListDistributionsCommandOutput =
+        await cloudfrontClient.send(
+          new ListDistributionsCommand({
+            Marker: lastDistributionResponse?.DistributionList?.NextMarker,
+          })
+        );
+      lastDistributionResponse = distributionsResponse;
+
+      // Loop through distributions
+      for (const distribution of distributionsResponse?.DistributionList
+        ?.Items || []) {
+        // Loop through S3 origins
+        for (const origin of distribution?.Origins?.Items || []) {
+          if (origin.Id) {
+            const s3BucketName = origin.Id;
+            cloudFrontS3Buckets.push(s3BucketName || "");
+          }
+        }
+      }
+    } while (lastDistributionResponse?.DistributionList?.IsTruncated);
+  } catch (error) {
+    console.error("Error listing CloudFront distributions:", error);
+  }
+
+  return cloudFrontS3Buckets.filter((x) => x);
 }
 
 main()
