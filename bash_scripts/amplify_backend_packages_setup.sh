@@ -37,7 +37,7 @@ function sed_dash_i() {
 
 # $1 = The message: "Deploy <service>: BEGIN"
 # $2 = Workspace name:
-# $3 = Package name: 
+# $3 = Package name:
 # $4 = Versionset name:
 function download_and_build_package() {
     echo -e "${GREEN}Setup $3: BEGIN${NC}"
@@ -63,7 +63,7 @@ function download_and_build_package() {
         # Pipeline/Versionset is "Containers" but package is "Container"
         if [ "$2/src/$3" = "AemiliaContainers/src/AemiliaContainer" ]; then
             brazil ws --use -p "AemiliaContainerNode10"
-            
+
             # Modify Container package
             originalText="033345365959"
             newText="$(echo ${ACCOUNT_ID})"
@@ -98,6 +98,13 @@ function download_and_build_package() {
             originalText="033345365959"
             newText="$(echo ${ACCOUNT_ID})"
             sed_dash_i "s/$originalText/$newText/g" src/AemiliaContainerLambda/configuration/cloudFormation/deploy.template.yml
+        fi
+
+        if [ "$2/src/$3" = "AmplifyHostingKinesisConsumer/src/AmplifyHostingKinesisConsumer" ]; then
+            brazil ws --use -p "AmplifyHostingKinesisConsumerCDK"
+            originalText="domain.toLowerCase(),"
+            newText="\"test\","
+            sed_dash_i "s/$originalText/$newText/g" src/AmplifyHostingKinesisConsumer/src/com/amazon/amplifyhostingkinesisconsumer/dagger/AmplifyHostingKinesisConsumerModule.java
         fi
 
         cd "src/$3"
@@ -151,5 +158,6 @@ download_and_build_package "Setup edge lambda association: BEGIN" "AemiliaEdgeLa
 download_and_build_package "Setup pioneer execute: BEGIN" "AWSMobilePioneerExecute" "AWSMobilePioneerExecute" "AWSMobilePioneer/execute"
 download_and_build_package "Setup container lambda: BEGIN" "AemiliaContainerLambda" "AemiliaContainerLambda" "AemiliaContainerLambda/development"
 download_and_build_package "Setup Containers: BEGIN" "AemiliaContainers" "AemiliaContainer" "AemiliaContainers/development"
+download_and_build_package "Setup Kinesis Consymer: BEGIN" "AmplifyHostingKinesisConsumer" "AmplifyHostingKinesisConsumer" "AmplifyHostingKinesisConsumer/development"
 
 echo -e "${GREEN}ALL ITEMS COMPLETE. SCRIPT END.${NC}"
