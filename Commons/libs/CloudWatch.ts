@@ -2,9 +2,13 @@ import {
   CloudWatchLogsClient,
   DescribeLogGroupsCommand,
   DescribeLogGroupsCommandOutput,
+  DescribeQueriesCommand,
+  DescribeQueriesCommandOutput,
   GetQueryResultsCommand,
   GetQueryResultsCommandOutput,
+  QueryStatus,
   StartQueryCommand,
+  StopQueryCommand,
 } from "@aws-sdk/client-cloudwatch-logs";
 import { BaseLogger, pino } from "pino";
 import pinoPretty from "pino-pretty";
@@ -37,13 +41,13 @@ export async function insightsQuery(
   logger: BaseLogger = defaultLogger
 ): Promise<Log[]> {
   try {
-    const logGroupName = await getLogGroup(client, logGroupPrefix, logger);
+    const logGroupNames = await getLogGroups(client, logGroupPrefix, logger);
 
     const command = new StartQueryCommand({
       endTime: toEpochInSeconds(endDate),
       startTime: toEpochInSeconds(startDate),
       queryString: query,
-      logGroupNames: [logGroupName],
+      logGroupNames,
     });
 
     logger.info("Starting log insights query");
@@ -120,13 +124,13 @@ export async function doQuery(
       ),
     });
 
-    const logGroupName = await getLogGroup(client, logGroupPrefix, logger);
+    const logGroupNames = await getLogGroups(client, logGroupPrefix, logger);
 
     const command = new StartQueryCommand({
       endTime: toEpochInSeconds(endDate),
       startTime: toEpochInSeconds(startDate),
       queryString: query,
-      logGroupNames: [logGroupName],
+      logGroupNames,
     });
 
     logger.info(
@@ -156,6 +160,7 @@ export async function doQuery(
 
     logger.info(`Query completed ${account.region}`);
 
+    console.log("Found results: ", queryResults.results?.length);
     if (queryResults.results) {
       for (const logLine of queryResults.results) {
         // iterating over rows
@@ -181,11 +186,11 @@ function toEpochInSeconds(date: Date): number {
   return date.getTime() / 1000;
 }
 
-async function getLogGroup(
+export async function getLogGroups(
   cwLogsClient: CloudWatchLogsClient,
   logPrefix: string,
   logger: BaseLogger = defaultLogger
-): Promise<string> {
+): Promise<string[]> {
   let nextToken: string | undefined;
   let response: DescribeLogGroupsCommandOutput;
 
@@ -207,14 +212,54 @@ async function getLogGroup(
   }
 
   const logGroups = response.logGroups;
-  const logGroup = logGroups.find((logGroup) =>
+  const logGroupsWithPrefix = logGroups.filter((logGroup) =>
     logGroup.logGroupName?.startsWith(logPrefix)
   );
+  const logGroupNames = logGroupsWithPrefix
+    .map((logGroup) => logGroup.logGroupName)
+    .filter((x) => !!x) as string[];
 
-  if (!logGroup || !logGroup.logGroupName) {
+  if (!logGroupNames.length) {
     throw new Error(`Log group with prefix ${logPrefix} not found`);
   }
 
-  logger.info(`Found log group ${logGroup.logGroupName}`);
-  return logGroup.logGroupName;
+  logger.info(`Found log group ${logGroupNames.join(",")}`);
+  return logGroupNames;
+}
+
+export async function cancelRunningQueries(
+  client: CloudWatchLogsClient,
+  logGroupPrefix: string,
+  logger: BaseLogger = defaultLogger
+): Promise<string[]> {
+  const logGroupNames = await getLogGroups(client, logGroupPrefix, logger);
+
+  let nextToken: string | undefined;
+  let response: DescribeQueriesCommandOutput;
+
+  do {
+    response = await client.send(
+      new DescribeQueriesCommand({
+        nextToken,
+        logGroupName: logGroupNames[0],
+        status: QueryStatus.Running,
+      })
+    );
+
+    if (response.nextToken) {
+      nextToken = response.nextToken;
+    }
+  } while (nextToken);
+
+  const runningQueries =
+    response.queries
+      ?.filter((q) => q.status === QueryStatus.Running)
+      .map((q) => q.queryId!) ?? [];
+
+  for (let queryId of runningQueries) {
+    logger.info("Stopping query", queryId);
+    response = await client.send(new StopQueryCommand({ queryId }));
+  }
+
+  return runningQueries;
 }
