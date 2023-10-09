@@ -7,6 +7,8 @@ import {
   AccessDeniedException,
   CategorizationEntry,
   CommentReference,
+  ContentType,
+  CreateTicketCommentCommandOutput,
   TicketData,
   TicketReference,
   Tickety,
@@ -90,6 +92,25 @@ export class TicketyService {
     }
 
     return comments.comments;
+  }
+
+  async postTicketComment(
+    ticketId: string,
+    comment: string,
+    commentType:
+      | "ANNOUNCEMENTS"
+      | "CORRESPONDENCE"
+      | "WORKLOG" = "CORRESPONDENCE",
+    contentType: ContentType = ContentType.MARKDOWN
+  ): Promise<CreateTicketCommentCommandOutput> {
+    return this.tickety.createTicketComment({
+      ticketId,
+      awsAccountId: this.accountId,
+      ticketingSystemName: this.systemName,
+      threadName: commentType,
+      message: comment,
+      contentType,
+    });
   }
 
   async createTicket(ticket: TicketData) {

@@ -78,6 +78,12 @@ const preflightCAZFlow = async ({
     return;
   }
 
+  await batchEvaluateCAZ(EvaluateContingentAuthorizationEntries);
+};
+
+const batchEvaluateCAZ = async (
+  EvaluateContingentAuthorizationEntries: EvaluateContingentAuthorizationEntry[]
+) => {
   const batchEvaluateContingentAuthorizationResponse =
     await batchEvaluateContingentAuthorization({
       ContingentAuthorizationVersion: "1.0",
@@ -123,3 +129,31 @@ export const preflightCAZ = async ({ accounts, role }: PreflightCAZParams) =>
 export const preflightCAZForAdministrativeIsengardCalls = async (
   accounts: AmplifyAccount[]
 ) => preflightCAZFlow({ accounts });
+
+/**
+ * Makes a preflight request to Isengard for Contingent Authorization (CAZ) for the given array of account and role combinations.
+ * <br>
+ * This will print the URL that you need to visit to provide justification for CAZ.
+ */
+export const preflightCAZForAccountRoleCombinations = async (
+  accountRoles: {
+    account: AmplifyAccount;
+    role: string;
+  }[]
+) => {
+  const EvaluateContingentAuthorizationEntries = [];
+
+  // sequentially since Isengard has low limits
+  for (const { account, role } of accountRoles) {
+    EvaluateContingentAuthorizationEntries.push(
+      toPreflightRequest(account, role)
+    );
+  }
+
+  if (EvaluateContingentAuthorizationEntries.length === 0) {
+    // no accounts need CAZ
+    return;
+  }
+
+  await batchEvaluateCAZ(EvaluateContingentAuthorizationEntries);
+};

@@ -8,6 +8,7 @@
     "prepublishOnly": "prettier . --check && tsc",
     "prettier": "prettier . --write",
     "test": "echo \"Error: no test specified\" && exit 0",
+    "customerImpact": "ts-node OpsTools/customerImpact/run.ts",
     "noisy-reverse-proxy": "ts-node Gists/noisyReverseProxy.ts",
     "P60053501": "ts-node singleUseTools/P60053501/findAbusers.ts",
     "current-lambda-limits": "ts-node Gists/getCurrentLambdaLimits.ts",

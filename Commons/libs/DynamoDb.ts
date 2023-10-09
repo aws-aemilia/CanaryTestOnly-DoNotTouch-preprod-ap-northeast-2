@@ -1,6 +1,12 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
+import {
+  AmplifyAccount,
+  Region,
+  StandardRoles,
+  getIsengardCredentialsProvider,
+} from "../Isengard";
+import { memoizeWith } from "ramda";
 
 export async function getDDbClient(account: AmplifyAccount) {
   const credentials = getIsengardCredentialsProvider(account.accountId);
@@ -10,3 +16,25 @@ export async function getDDbClient(account: AmplifyAccount) {
   });
   return DynamoDBDocumentClient.from(dynamodbClient);
 }
+
+/**
+ * Memoize dynamodb client by region, accountId and role
+ */
+export const getMemoizedDynamoDBClient = memoizeWith(
+  (region: Region, accountId: string, role: StandardRoles) =>
+    `${region}-${accountId}-${role}`,
+  (
+    region: Region,
+    accountId: string,
+    role: StandardRoles,
+    options?: DynamoDBClientConfig
+  ): DynamoDBDocumentClient => {
+    const dynamoDb = new DynamoDBClient({
+      region,
+      credentials: getIsengardCredentialsProvider(accountId, role),
+      ...options,
+    });
+    const dynamodbClient = DynamoDBDocumentClient.from(dynamoDb);
+    return dynamodbClient;
+  }
+);

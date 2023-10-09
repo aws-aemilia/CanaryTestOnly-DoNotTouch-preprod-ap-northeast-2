@@ -8,8 +8,15 @@ import {
 } from "@aws-sdk/client-cloudwatch-logs";
 import { BaseLogger, pino } from "pino";
 import pinoPretty from "pino-pretty";
-import { AmplifyAccount, getIsengardCredentialsProvider } from "../Isengard";
+import {
+  AmplifyAccount,
+  Region,
+  StandardRoles,
+  getIsengardCredentialsProvider,
+} from "../Isengard";
 import sleep from "../utils/sleep";
+import { memoizeWith } from "ramda";
+import { CloudWatchClientConfig } from "@aws-sdk/client-cloudwatch";
 
 const defaultLogger = pino(pinoPretty());
 
@@ -218,3 +225,24 @@ async function getLogGroup(
   logger.info(`Found log group ${logGroup.logGroupName}`);
   return logGroup.logGroupName;
 }
+
+/**
+ * Memoize CloudWatchLogsClient by region, accountId and role
+ */
+export const getMemoizedCloudWatchLogsClient = memoizeWith(
+  (region: Region, accountId: string, role: StandardRoles) =>
+    `${region}-${accountId}-${role}`,
+  (
+    region: Region,
+    accountId: string,
+    role: StandardRoles,
+    options?: CloudWatchClientConfig
+  ): CloudWatchLogsClient => {
+    const client = new CloudWatchLogsClient({
+      region,
+      credentials: getIsengardCredentialsProvider(accountId, role),
+      ...options,
+    });
+    return client;
+  }
+);

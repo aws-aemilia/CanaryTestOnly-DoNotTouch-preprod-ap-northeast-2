@@ -7,7 +7,11 @@ import {
   QueryCommand,
   QueryCommandInput,
   paginateQuery,
+  BatchGetCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { Region } from "../../Isengard";
+import { Stage } from "aws-sdk/clients/amplify";
+import { chunkArray } from "Commons/utils/chunkArray";
 
 /**
  * @deprecated Use AppDO interface instead. This uses the DynamoDB syntax
@@ -257,4 +261,57 @@ export const getAppIdsForAccount = async (
   }
 
   return appIds;
+};
+
+/**
+ * Returns a list of customer account IDs for a given list of appIds.
+ *
+ * @param dynamoDBClient DocumentClient with credentials for the Control Plane account
+ * @param region i.e. us-west-2
+ * @param appIds The list of appIds
+ * @returns
+ */
+export const mapAppIdsToCustomerAccountIds = async (
+  appIds: string[],
+  stage: Stage,
+  region: Region,
+  dynamoDBClient: DynamoDBDocumentClient
+): Promise<string[]> => {
+  const customerAccountIds: string[] = [];
+
+  // Chunk appIds into array of 100 items each
+  const appIdChunks = chunkArray(appIds, 100);
+
+  for (const appIdChunk of appIdChunks) {
+    const result = await dynamoDBClient.send(
+      new BatchGetCommand({
+        RequestItems: {
+          [`${stage}-${region}-App`]: {
+            Keys: appIdChunk.map((appId) => ({ appId })),
+            ProjectionExpression: "accountId",
+          },
+        },
+      })
+    );
+
+    if (!result.Responses) {
+      continue;
+    }
+
+    if (
+      result.UnprocessedKeys &&
+      Object.keys(result.UnprocessedKeys).length > 0
+    ) {
+      console.error(result.UnprocessedKeys);
+      throw new Error("Db returned unprocessed keys");
+    }
+
+    for (const item of result.Responses[`${stage}-${region}-App`]) {
+      if (item.accountId) {
+        customerAccountIds.push(item.accountId);
+      }
+    }
+  }
+
+  return customerAccountIds;
 };
