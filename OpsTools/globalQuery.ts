@@ -4,21 +4,30 @@ import { createSpinningLogger } from "../Commons/utils/logger";
 import path from "path";
 import yargs from "yargs";
 import {
+  AmplifyAccount,
+  AmplifyAccountType,
   controlPlaneAccounts,
+  getAccountsLookupFn,
   getIsengardCredentialsProvider,
-  preflightCAZ,
+  Region,
   Stage,
   StandardRoles,
 } from "../Commons/Isengard";
 import { insightsQuery } from "../Commons/libs/CloudWatch";
 import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
+import {
+  getDynamoDBDocumentClient,
+  mapAppIdsToCustomerAccountIds,
+} from "Commons/dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { preflightCAZForAccountRoleCombinations } from "Commons/Isengard/contingentAuthZ";
 
 const logger = createSpinningLogger();
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
     .usage(
-      `Run a CloudWatch logs query in all Control Plane accounts
+      `Run a CloudWatch logs query in any of our service accounts
 
       Usage:
       brazil-build globalQuery \
@@ -35,6 +44,25 @@ async function main() {
         --startDate '2023-04-02T00:00:00-00:00' \
         --endDate '2023-04-08T00:00:00-00:00' \
         --queryFile ./query.txt
+
+      Usage in customerImpact mode where the query outputs a list of appIds:
+      brazil-build globalQuery \
+        --stage prod \
+        --logGroupPrefix AWSCodeBuild \
+        --startDate '2023-04-02T00:00:00-00:00' \
+        --endDate '2023-04-08T00:00:00-00:00' \
+        --query 'filter @message like /No matching version/ | display @logStream |  parse @logStream "*/*" as appId, l | group by appId | display appId'
+        --customerImpact
+        --outputType appId
+
+      Usage in customerImpact mode where the query outputs a list of accountIds:
+      brazil-build globalQuery \
+        --stage prod \
+        --logGroupPrefix AWSCodeBuild \
+        --startDate '2023-04-02T00:00:00-00:00' \
+        --endDate '2023-04-08T00:00:00-00:00' \
+        --query 'filter isFault="true" and stepName="BUILD" and buildPhase="BuildExecution" | stats count(*) by accountId | display accountId'
+        --customerImpact
       `
     )
     .option("stage", {
@@ -89,6 +117,28 @@ async function main() {
       type: "boolean",
       demandOption: false,
     })
+    .option("accountType", {
+      describe:
+        "The type of account i.e. controlPlane, dataPlane, computeServiceControlPlane, kinesisConsumer etc",
+      choices: Object.values(AmplifyAccountType),
+      default: "controlPlane",
+      type: "boolean",
+      demandOption: false,
+    })
+    .option("customerImpact", {
+      describe: "Output as customer impact",
+      default: false,
+      type: "boolean",
+      demandOption: false,
+    })
+    .option("outputType", {
+      describe:
+        "The type of output (appIds or accountIds) produced by your customer impact query",
+      default: "accountId",
+      choices: ["accountId", "appId"],
+      type: "string",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
@@ -103,6 +153,9 @@ async function main() {
     outputDir,
     noEmptyFiles,
     role,
+    accountType,
+    customerImpact,
+    outputType,
   } = args;
 
   if (!query && !queryFile) {
@@ -124,59 +177,117 @@ async function main() {
     logger.info(outputDir, "Output directory created successfully");
   }
 
-  const controlPlaneAccountsForStage = await controlPlaneAccounts({
+  const accountLookupFn =
+    getAccountsLookupFn[accountType as AmplifyAccountType];
+  const accountsForStage = await accountLookupFn({
     stage: stage as Stage,
   });
 
-  await preflightCAZ({
-    accounts: controlPlaneAccountsForStage,
-    role,
-  });
+  let controlPlaneAccountsForStage: AmplifyAccount[] | undefined;
+  if (customerImpact && outputType === "appId") {
+    controlPlaneAccountsForStage = await controlPlaneAccounts({
+      stage: stage as Stage,
+    });
+  }
 
-  let regionsLeftToGetLogsFrom = controlPlaneAccountsForStage.length;
+  await preflightCAZForAccountRoleCombinations([
+    ...accountsForStage.map((account) => ({
+      account,
+      role,
+    })),
+    ...(controlPlaneAccountsForStage?.map((account) => ({
+      account,
+      role: StandardRoles.FullReadOnly,
+    })) ?? []),
+  ]);
+
+  let regionsLeftToGetLogsFrom = accountsForStage.length;
   logger.update(
     `Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`
   );
   logger.spinnerStart();
-  const queryPromises = controlPlaneAccountsForStage.map(
-    async (controlPlaneAccount) => {
-      logger.info(controlPlaneAccount, "Beginning query for region");
-      const cloudwatchClient = new CloudWatchLogsClient({
-        region: controlPlaneAccount.region,
-        credentials: getIsengardCredentialsProvider(
-          controlPlaneAccount.accountId,
-          role
-        ),
-      });
+  const queryPromises = accountsForStage.map(async (account) => {
+    logger.info(account, "Beginning query for region");
+    const cloudwatchClient = new CloudWatchLogsClient({
+      region: account.region,
+      credentials: getIsengardCredentialsProvider(account.accountId, role),
+    });
 
-      const logs = await insightsQuery(
-        cloudwatchClient,
-        logGroupPrefix,
-        queryToExecute,
-        new Date(startDate),
-        new Date(endDate),
-        logger
+    /**
+     * If the query outputs the result as a lit of appIds, we need to map the appIds to
+     * the accountIds. For this, we need to talk to DynamoDB and run a query.
+     */
+    let dynamoDBClient: DynamoDBDocumentClient | undefined;
+
+    if (customerImpact && outputType === "appId") {
+      dynamoDBClient = getDynamoDBDocumentClient(
+        account.region as Region,
+        getIsengardCredentialsProvider(
+          account.accountId,
+          StandardRoles.FullReadOnly
+        )
       );
+    }
 
-      const fileName = controlPlaneAccount.region.concat(".json");
-      const outputFile = path.join(resolveOutputFolder, fileName);
+    const logs = await insightsQuery(
+      cloudwatchClient,
+      logGroupPrefix,
+      queryToExecute,
+      new Date(startDate),
+      new Date(endDate),
+      logger
+    );
 
-      regionsLeftToGetLogsFrom--;
-      logger.update(
-        `Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`
-      );
+    const fileName = customerImpact
+      ? account.region.concat(".txt")
+      : account.region.concat(".json");
+    const outputFile = path.join(resolveOutputFolder, fileName);
 
-      if (logs.length === 0) {
-        logger.info(`No results found for ${controlPlaneAccount.region}`);
-        if (noEmptyFiles) {
-          return;
+    regionsLeftToGetLogsFrom--;
+    logger.update(
+      `Fetching global query results. Regions remaining: ${regionsLeftToGetLogsFrom}`
+    );
+
+    if (logs.length === 0) {
+      logger.info(`No results found for ${account.region}`);
+      if (noEmptyFiles) {
+        return;
+      }
+    }
+
+    if (customerImpact) {
+      let customerAccountIds: string[] = [];
+
+      if (outputType === "accountId") {
+        customerAccountIds.push(...logs.map((log) => log.accountId));
+      } else {
+        if (!dynamoDBClient) {
+          throw new Error(
+            "DynamoDBClient is undefined when outputType is appId. Cannot map appIds to customerAccountIds without DynamoDBClient"
+          );
         }
+
+        const appIds = logs.map((log) => log.appId);
+        customerAccountIds.push(
+          ...(await mapAppIdsToCustomerAccountIds(
+            appIds,
+            stage as Stage,
+            account.region as Region,
+            dynamoDBClient
+          ))
+        );
       }
 
+      customerAccountIds = [...new Set(customerAccountIds)];
+
       logger.info({ outputFile }, "Writing results to file");
-      await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
+      await writeFileSync(outputFile, customerAccountIds.join("\n"));
+      return;
     }
-  );
+
+    logger.info({ outputFile }, "Writing results to file");
+    await writeFileSync(outputFile, JSON.stringify(logs, null, 2));
+  });
 
   try {
     await Promise.all(queryPromises);
