@@ -22,8 +22,6 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 dayjs.extend(utc);
 const logger = createLogger();
 
-// TODO: COE action item flavor - Where the impact is not just faults, but an adhoc query - For this, you can simply extend the `global-query.ts` script
-
 interface ScriptInput {
   serviceComponents?: ServiceComponent[];
   start: string;

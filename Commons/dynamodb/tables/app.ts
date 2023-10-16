@@ -11,7 +11,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Region } from "../../Isengard";
 import { Stage } from "aws-sdk/clients/amplify";
-import { chunkArray } from "Commons/utils/chunkArray";
+import _ from "lodash";
 
 /**
  * @deprecated Use AppDO interface instead. This uses the DynamoDB syntax
@@ -280,7 +280,7 @@ export const mapAppIdsToCustomerAccountIds = async (
   const customerAccountIds: string[] = [];
 
   // Chunk appIds into array of 100 items each
-  const appIdChunks = chunkArray(appIds, 100);
+  const appIdChunks = _.chunk(appIds, 100);
 
   for (const appIdChunk of appIdChunks) {
     const result = await dynamoDBClient.send(
