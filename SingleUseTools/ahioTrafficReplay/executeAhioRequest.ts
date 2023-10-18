@@ -19,19 +19,22 @@ export async function executeAhioRequest(
   let attempts = 0;
   let response;
   let timeTakenMs;
-  while(!response && attempts < 10) {
+  while (!response && attempts < 10) {
     attempts++;
     try {
       const startTime = new Date();
       response = await lambdaClient.send(invokeCommand);
       timeTakenMs = new Date().getTime() - startTime.getTime();
-    } catch(error) {
-      logger.error(error, `Failed while invoking ahio, retrying. Attempt: ${attempts}`);
+    } catch (error) {
+      logger.error(
+        error,
+        `Failed while invoking ahio, retrying. Attempt: ${attempts}`
+      );
       await sleep(200);
     }
   }
 
-  if(!response || !timeTakenMs) {
+  if (!response || !timeTakenMs) {
     return {
       log: "FAILED TO INVOKE",
       timeTakenMs: Infinity,

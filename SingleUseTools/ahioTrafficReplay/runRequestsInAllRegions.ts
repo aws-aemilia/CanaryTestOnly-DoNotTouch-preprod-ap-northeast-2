@@ -9,6 +9,8 @@ import {
   HostingGatewayImageRequest,
   HostingGatewayImageRequestRegionLogs,
   Problem,
+  ProblemSummary,
+  ProblemType,
   SingleRegionResults,
 } from "./types";
 import { executeAhioRequest } from "./executeAhioRequest";
@@ -98,7 +100,7 @@ async function runRequestsInSingleRegion(
 
   if (!cellAccountForRegion) {
     throw new Error(
-      `Could not find cellaccount for region ${oneRegionsLogs.account.region}`
+      `Could not find cell account for region ${oneRegionsLogs.account.region}`
     );
   }
 
@@ -181,10 +183,26 @@ async function runRequestsInSingleRegion(
     // Just execute the promise
     .process((value) => value);
 
+  const problemSummary: ProblemSummary = {
+    [ProblemType.FAILED_INVOCATION]: 0,
+    [ProblemType.MIME_TYPE_MISMATCH]: 0,
+    [ProblemType.MISSING_HEADERS]: 0,
+    [ProblemType.NON_200]: 0,
+    [ProblemType.SIZE]: 0,
+    [ProblemType.TIME_FROM_LAMBDA]: 0,
+    [ProblemType.TIME_WITH_NETWORK]: 0,
+  };
+  allProblems.forEach((problems) => {
+    problems.problems.forEach((oneProblem) => {
+      problemSummary[oneProblem.type] = problemSummary[oneProblem.type] + 1;
+    });
+  });
+
   return {
     region: oneRegionsLogs.account.region,
     problemCount: allProblems.length,
     successCount: allSuccesses.length,
+    problemSummary,
     allProblems,
     allSuccesses,
   };
@@ -208,7 +226,7 @@ function redactSensitiveInfoFromAhioResult(
   ahioResult?: AhioInvocationResult,
   shouldRedactLogs: boolean = true
 ): AhioInvocationResult | undefined {
-  if(!ahioResult) {
+  if (!ahioResult) {
     return;
   }
   return {
@@ -218,7 +236,9 @@ function redactSensitiveInfoFromAhioResult(
       statusCode: 0, // Make TS happy
       ...ahioResult.response,
       // If it's not base64 encoded, it's an error and we should log it
-      body: ahioResult.response?.isBase64Encoded ? "" : ahioResult.response?.body,
+      body: ahioResult.response?.isBase64Encoded
+        ? ""
+        : ahioResult.response?.body,
     },
   };
 }

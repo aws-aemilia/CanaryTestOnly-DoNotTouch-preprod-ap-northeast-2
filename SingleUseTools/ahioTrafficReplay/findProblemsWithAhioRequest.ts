@@ -11,10 +11,12 @@ export function findProblemsWithAhioRequest(
   ahioInvocationResult: AhioInvocationResult,
   imageRequest: HostingGatewayImageRequest
 ): Problem[] {
-  if(!ahioInvocationResult.response) {
-    return [{
-      type: ProblemType.FAILED_INVOCATION
-    }];
+  if (!ahioInvocationResult.response) {
+    return [
+      {
+        type: ProblemType.FAILED_INVOCATION,
+      },
+    ];
   }
   // Ahio response times need to be within 10% of image request to be valid
   // Ahio response size needs to be within 5% of image request to be valid

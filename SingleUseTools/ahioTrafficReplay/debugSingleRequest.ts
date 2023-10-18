@@ -21,11 +21,11 @@ interface DebugSingleRequestArgs {
 async function main() {
   const args = await getArgs();
 
-  if(!args.problemRequestNumber) {
-    console.log("You must provide the problemRequestNumber argument")
+  if (!args.problemRequestNumber) {
+    console.log("You must provide the problemRequestNumber argument");
   }
-  if(!args.region) {
-    console.log("You must provide the region argument")
+  if (!args.region) {
+    console.log("You must provide the region argument");
   }
 
   const regionResultsFileName = join(args.outputDir, `${args.region}.json`);

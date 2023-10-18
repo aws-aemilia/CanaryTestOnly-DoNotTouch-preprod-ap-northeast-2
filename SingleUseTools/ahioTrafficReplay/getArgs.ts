@@ -65,8 +65,7 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
       demandOption: false,
     })
     .option("problemRequestNumber", {
-      describe:
-        "The number of the problem you want to further diagnose",
+      describe: "The number of the problem you want to further diagnose",
       type: "string",
       demandOption: false,
     })

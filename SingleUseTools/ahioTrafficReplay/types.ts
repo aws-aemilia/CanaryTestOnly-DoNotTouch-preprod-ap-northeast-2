@@ -98,10 +98,13 @@ export interface Problem {
   data?: ProblemData;
 }
 
+export type ProblemSummary = Record<ProblemType, number>;
+
 export interface SingleRegionResults {
   region: string;
   problemCount: number;
   successCount: number;
+  problemSummary: ProblemSummary;
   allProblems: {
     requestNumber: number;
     problems: Problem[];
