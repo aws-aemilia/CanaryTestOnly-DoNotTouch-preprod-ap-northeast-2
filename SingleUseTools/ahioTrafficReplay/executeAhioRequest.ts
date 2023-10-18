@@ -1,6 +1,8 @@
 import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 import { AhioInvocationResult, AhioRequest, AhioResponse } from "./types";
 import { TextDecoder } from "node:util";
+import logger from "Commons/utils/logger";
+import sleep from "Commons/utils/sleep";
 
 const AHIO_FUNCTION_NAME = "AmplifyHostingImageOptimizer";
 
@@ -14,9 +16,29 @@ export async function executeAhioRequest(
     LogType: "Tail",
   });
 
-  const startTime = new Date();
-  const response = await lambdaClient.send(invokeCommand);
-  const timeTakenMs = new Date().getTime() - startTime.getTime();
+  let attempts = 0;
+  let response;
+  let timeTakenMs;
+  while(!response && attempts < 10) {
+    attempts++;
+    try {
+      const startTime = new Date();
+      response = await lambdaClient.send(invokeCommand);
+      timeTakenMs = new Date().getTime() - startTime.getTime();
+    } catch(error) {
+      logger.error(error, `Failed while invoking ahio, retrying. Attempt: ${attempts}`);
+      await sleep(200);
+    }
+  }
+
+  if(!response || !timeTakenMs) {
+    return {
+      log: "FAILED TO INVOKE",
+      timeTakenMs: Infinity,
+      lambdaTimeTakenMs: Infinity,
+    };
+  }
+
   let lambdaTimeTakenMs = -1;
 
   const responsePayloadString = new TextDecoder().decode(response.Payload);

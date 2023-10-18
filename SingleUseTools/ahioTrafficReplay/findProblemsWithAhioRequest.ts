@@ -11,6 +11,11 @@ export function findProblemsWithAhioRequest(
   ahioInvocationResult: AhioInvocationResult,
   imageRequest: HostingGatewayImageRequest
 ): Problem[] {
+  if(!ahioInvocationResult.response) {
+    return [{
+      type: ProblemType.FAILED_INVOCATION
+    }];
+  }
   // Ahio response times need to be within 10% of image request to be valid
   // Ahio response size needs to be within 5% of image request to be valid
   if (!ahioInvocationResult.response.headers) {
@@ -47,29 +52,9 @@ export function findProblemsWithAhioRequest(
     });
   }
 
-  if (ahioInvocationResult.timeTakenMs > imageRequest.timeTakenMs * 1.1) {
-    if (ahioInvocationResult.timeTakenMs > imageRequest.timeTakenMs * 1.5) {
-      logger.trace(
-        {
-          ahioTimeTaken: ahioInvocationResult.timeTakenMs,
-          imageRequestTimeTaken: ahioInvocationResult.timeTakenMs,
-        },
-        "Excessive network latency detected, falling back to lambda invocation time"
-      );
-    } else {
-      problems.push({
-        type: ProblemType.TIME_WITH_NETWORK,
-        data: {
-          original: imageRequest.timeTakenMs,
-          ahio: ahioInvocationResult.timeTakenMs,
-        },
-      });
-    }
-  }
-
   if (
-    ahioInvocationResult.lambdaTimeTakenMs >
-    imageRequest.timeTakenMs * 1.05
+    ahioInvocationResult.lambdaTimeTakenMs > 100 &&
+    ahioInvocationResult.lambdaTimeTakenMs > imageRequest.timeTakenMs * 1.1
   ) {
     problems.push({
       type: ProblemType.TIME_FROM_LAMBDA,
@@ -87,7 +72,7 @@ export function findProblemsWithAhioRequest(
     const ahioResponseSize = parseInt(
       ahioInvocationResult.response.headers["content-length"]
     );
-    logger.info(
+    logger.trace(
       {
         ahioResponseSize,
         imageRequestContentLength: imageRequest.contentLengthHeader,

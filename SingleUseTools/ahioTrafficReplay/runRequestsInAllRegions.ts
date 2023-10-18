@@ -16,6 +16,7 @@ import { findProblemsWithAhioRequest } from "./findProblemsWithAhioRequest";
 import { convertImageRequestToAhioRequest } from "./convertImageRequestToAhioRequest";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { createSpinningLogger } from "../../Commons/utils/logger";
+import sleep from "Commons/utils/sleep";
 
 const logger = createSpinningLogger();
 let regionsRemaining: number = 0;
@@ -81,13 +82,13 @@ async function runRequestsInSingleRegion(
     problems: Problem[];
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
-    ahioResult: Partial<AhioInvocationResult>;
+    ahioResult?: Partial<AhioInvocationResult>;
   }[] = [];
   const allSuccesses: {
     requestNumber: number;
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
-    ahioResult: Partial<AhioInvocationResult>;
+    ahioResult?: Partial<AhioInvocationResult>;
   }[] = [];
 
   // Use a cell account from the region corresponding to the request
@@ -128,12 +129,16 @@ async function runRequestsInSingleRegion(
       ) {
         // Execute request and throw it out to prime the cache
         await executeAhioRequest(ahioRequest, lambdaClient);
+        // Wait to ensure we don't hit rate limits
+        await sleep(100);
       }
 
       const ahioInvocationResult = await executeAhioRequest(
         ahioRequest,
         lambdaClient
       );
+      // Wait to ensure we don't hit rate limits
+      await sleep(100);
 
       // Compare outcome of Image Request and  AHIO request
       const problems = findProblemsWithAhioRequest(
@@ -200,16 +205,20 @@ function redactSensitiveInfoFromAhioRequest(ahioRequest: AhioRequest) {
 }
 
 function redactSensitiveInfoFromAhioResult(
-  ahioResult: AhioInvocationResult,
+  ahioResult?: AhioInvocationResult,
   shouldRedactLogs: boolean = true
-) {
+): AhioInvocationResult | undefined {
+  if(!ahioResult) {
+    return;
+  }
   return {
     ...ahioResult,
     log: shouldRedactLogs ? "" : ahioResult.log,
     response: {
+      statusCode: 0, // Make TS happy
       ...ahioResult.response,
       // If it's not base64 encoded, it's an error and we should log it
-      body: ahioResult.response.isBase64Encoded ? "" : ahioResult.response.body,
+      body: ahioResult.response?.isBase64Encoded ? "" : ahioResult.response?.body,
     },
   };
 }

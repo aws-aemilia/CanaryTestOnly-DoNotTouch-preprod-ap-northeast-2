@@ -96,12 +96,12 @@ async function outputGraphableData(oneRegionResult: SingleRegionResults) {
   );
   oneRegionResult.allProblems.forEach((entry) => {
     csvLines.push(
-      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`
+      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult?.timeTakenMs},${entry.ahioResult?.lambdaTimeTakenMs}`
     );
   });
   oneRegionResult.allSuccesses.forEach((entry) => {
     csvLines.push(
-      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult.timeTakenMs},${entry.ahioResult.lambdaTimeTakenMs}`
+      `${entry.requestNumber},${oneRegionResult.region},${entry.imageRequest.timeTakenMs},${entry.ahioResult?.timeTakenMs},${entry.ahioResult?.lambdaTimeTakenMs}`
     );
   });
 

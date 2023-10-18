@@ -64,6 +64,12 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
       type: "string",
       demandOption: false,
     })
+    .option("problemRequestNumber", {
+      describe:
+        "The number of the problem you want to further diagnose",
+      type: "string",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
@@ -76,7 +82,7 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
     region: args.region,
     stage: args.stage,
     startDate: new Date(
-      args.startDate || dayjs().subtract(2, "minutes").format()
+      args.startDate || dayjs().subtract(60, "minutes").format()
     ),
   };
 }

@@ -6,7 +6,6 @@ import {
   StandardRoles,
   computeServiceDataPlaneAccounts,
   controlPlaneAccounts,
-  dataPlaneAccounts,
   preflightCAZ,
 } from "../../Commons/Isengard";
 import logger from "../../Commons/utils/logger";
@@ -14,11 +13,23 @@ import { getArgs } from "./getArgs";
 import { runRequestsInAllRegions } from "./runRequestsInAllRegions";
 import { SingleRegionResults } from "./types";
 
+interface DebugSingleRequestArgs {
+  problemRequestNumber: number;
+  region: Region;
+}
+
 async function main() {
   const args = await getArgs();
 
-  const regionResultsFileName = join(args.outputDir, "ca-central-1.json");
-  const problemRequestNumber = 24;
+  if(!args.problemRequestNumber) {
+    console.log("You must provide the problemRequestNumber argument")
+  }
+  if(!args.region) {
+    console.log("You must provide the region argument")
+  }
+
+  const regionResultsFileName = join(args.outputDir, `${args.region}.json`);
+  const problemRequestNumber = args.problemRequestNumber;
 
   const regionResultsRawFileContents = await readFile(
     regionResultsFileName,

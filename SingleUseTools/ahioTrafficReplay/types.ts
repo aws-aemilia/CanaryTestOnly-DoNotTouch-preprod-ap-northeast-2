@@ -7,6 +7,7 @@ export interface AhioTrafficReplayArgs {
   region?: string;
   stage: string;
   startDate: Date;
+  problemRequestNumber?: number;
 }
 
 export interface HostingGatewayImageRequest {
@@ -71,13 +72,14 @@ export interface AhioRequest {
 }
 
 export interface AhioInvocationResult {
-  response: AhioResponse;
+  response?: AhioResponse;
   log: string;
   timeTakenMs: number;
   lambdaTimeTakenMs: number;
 }
 
 export enum ProblemType {
+  FAILED_INVOCATION = "FAILED_INVOCATION",
   MISSING_HEADERS = "MISSING_HEADERS",
   TIME_WITH_NETWORK = "TIME_WITH_NETWORK",
   TIME_FROM_LAMBDA = "TIME_FROM_LAMBDA",
@@ -105,12 +107,12 @@ export interface SingleRegionResults {
     problems: Problem[];
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
-    ahioResult: Partial<AhioInvocationResult>;
+    ahioResult?: Partial<AhioInvocationResult>;
   }[];
   allSuccesses: {
     requestNumber: number;
     imageRequest: HostingGatewayImageRequest;
     ahioRequest: Partial<AhioRequest>;
-    ahioResult: Partial<AhioInvocationResult>;
+    ahioResult?: Partial<AhioInvocationResult>;
   }[];
 }
