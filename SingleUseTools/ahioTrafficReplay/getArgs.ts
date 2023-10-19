@@ -30,8 +30,8 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
-      default: "prod",
       choices: ["beta", "gamma", "preprod", "prod"],
+      demandOption: true,
     })
     .option("startDate", {
       describe:
@@ -46,10 +46,9 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
       demandOption: false,
     })
     .option("concurrentRequestsPerRegion", {
-      describe:
-        "Maximum number of concurrent requests to allow per region (defaults to 10)",
+      describe: "Maximum number of concurrent requests to allow per region",
       type: "number",
-      default: 10,
+      default: 1,
       demandOption: false,
     })
     .option("outputDir", {
@@ -81,7 +80,10 @@ export async function getArgs(): Promise<AhioTrafficReplayArgs> {
     region: args.region,
     stage: args.stage,
     startDate: new Date(
-      args.startDate || dayjs().subtract(60, "minutes").format()
+      args.startDate || dayjs().subtract(2, "minutes").format()
     ),
+    problemRequestNumber: args.problemRequestNumber
+      ? parseInt(args.problemRequestNumber)
+      : undefined,
   };
 }
