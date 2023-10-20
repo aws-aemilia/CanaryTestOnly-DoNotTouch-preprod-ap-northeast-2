@@ -1,10 +1,18 @@
 import logger from "../Commons/utils/logger";
-import { SpinningLogger } from "../Commons/utils/spinningLogger";
-import { getIsengardCredentialsProvider } from "../Commons/Isengard";
+import {
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "../Commons/Isengard";
 import { toRegionName } from "../Commons/utils/regions";
 import rateLimit from "p-limit";
 import confirm from "../Commons/utils/confirm";
 import yargs from "yargs";
+import {
+  integTestAccounts,
+  integTestAccount,
+  AmplifyAccount,
+} from "../Commons/Isengard/accounts";
 import {
   S3Client,
   ListObjectsCommand,
@@ -18,10 +26,13 @@ import {
   ListDistributionsCommandOutput,
 } from "@aws-sdk/client-cloudfront";
 
-const spinner = new SpinningLogger();
 const deleteBucketRateLimit = rateLimit(3);
-let deletedMB = 0;
+let deletedBuckets = 0;
+let emptiedBuckets = 0;
+const DEFAULT_STAGE = "preprod";
 
+// FUTURE IMPROVEMENTS:
+// - Dynamically determine region for bucket name: https://stackoverflow.com/questions/62996989/how-can-i-determine-the-region-for-a-public-aws-s3-bucket
 async function main() {
   logger.info(
     `
@@ -49,17 +60,25 @@ async function main() {
       and s3:DeleteBucket permissions which the standard safe roles
       don't have.
 
-      NOTE: You will need to run this for each region - s3 is a "global"
+      NOTE: Our integration tests create their buckets in IAD, so one
+      will typically run this command against region IAD but use the
+      integration test account for the region in which they are deleting
+      buckets. By default, stage will be assigned to "${DEFAULT_STAGE}" unless
+      otherwise specified. This is because we tend to run into these
+      bucket limits in preprod more often than other stages.
+      
+      You will need to run this for each region - s3 is a "global"
       service, but buckets are regional. This means list buckets will
       list all buckets globally, but a region must be specified to delete.
-      You will see "Permenent Redirect" errors for the buckets that are
+      You will see "PermanentRedirect" errors for the buckets that are
       not in the region you've specified.
 
       Usage:
-        brazil-build s3janitor -- --region=iad --accountId=1111111111
+        brazil-build s3Janitor -- --region=<region where bucket lives> --accountRegion=<region of integration test account that owns the bucket> --stage=<stage of integration test account that owns the bucket>
+        brazil-build s3Janitor -- --region=IAD --accountRegion=YUL --stage gamma
 
       Dry Run:
-        brazil-build s3janitor -- --region=iad --accountId=1111111111 --dryRun
+        brazil-build s3Janitor -- --region=iad --accountRegion=YUL --dryRun
       `
     )
     .option("region", {
@@ -73,36 +92,98 @@ async function main() {
       default: "Admin",
       demandOption: true,
     })
-    .option("accountId", {
-      describe: "AWS account to delete functions from",
+    .option("accountRegion", {
+      describe: "AWS region of the account to delete buckets from",
       type: "string",
-      demandOption: true,
+      demandOption: false,
+    })
+    .option("stage", {
+      describe: "Stage of the account to delete buckets from",
+      type: "string",
+      demandOption: false,
     })
     .option("dryRun", {
       describe: "Output bucket names that will be deleted",
       type: "boolean",
       demandOption: false,
     })
+    .option("all", {
+      describe: "Delete buckets in all regions",
+      type: "boolean",
+      demandOption: false,
+    })
+    .check((argv) => {
+      if (!(argv.all || argv.accountRegion)) {
+        throw new Error("Must specify either --all or --accountRegion");
+      }
+      return true;
+    })
+    .conflicts("all", "accountRegion")
+    .conflicts("all", "stage")
     .strict()
     .version(false)
     .help().argv;
 
-  const { region, roleName, accountId, dryRun } = args;
-  const regionName = toRegionName(region);
+  const {
+    region: bucketRegion,
+    roleName,
+    accountRegion,
+    dryRun,
+    all: allRegionsAndAllStages,
+    stage: requestedStage,
+  } = args;
 
+  let stage: Stage = DEFAULT_STAGE;
+  if (requestedStage) {
+    if (requestedStage === "prod") {
+      throw new Error("Cannot delete buckets in prod");
+    }
+    stage = requestedStage as Stage;
+  }
+
+  if (allRegionsAndAllStages) {
+    const integTestAccountsList = await integTestAccounts();
+    for (const testAccount of integTestAccountsList) {
+      await deleteBuckets(bucketRegion, testAccount, roleName, dryRun);
+    }
+  } else if (accountRegion) {
+    const integAccount = await integTestAccount(stage, accountRegion as Region);
+    await deleteBuckets(bucketRegion, integAccount, roleName, dryRun);
+  } else {
+    throw new Error("Must specify either --all or --accountRegion");
+  }
+}
+
+async function deleteBuckets(
+  bucketRegion: string,
+  testAccount: AmplifyAccount,
+  roleName: string,
+  dryRun: boolean | undefined
+) {
+  const regionName = toRegionName(bucketRegion);
+  logger.info(testAccount, `Targeting region: ${regionName}`);
   const s3Client = new S3Client({
     region: regionName,
-    credentials: getIsengardCredentialsProvider(accountId, roleName),
+    credentials: getIsengardCredentialsProvider(
+      testAccount.accountId,
+      roleName
+    ),
   });
 
   const cloudFrontClient = new CloudFrontClient({
     region: regionName,
-    credentials: getIsengardCredentialsProvider(accountId, roleName),
+    credentials: getIsengardCredentialsProvider(
+      testAccount.accountId,
+      roleName
+    ),
   });
 
   const cloudFrontClientIAD = new CloudFrontClient({
     region: "iad",
-    credentials: getIsengardCredentialsProvider(accountId, roleName),
+    credentials: getIsengardCredentialsProvider(
+      testAccount.accountId,
+      roleName
+    ),
   });
 
   logger.info(
@@ -151,6 +232,7 @@ async function main() {
     );
 
   logger.info({ bucketsToDelete: bucketNamesToDelete }, "Buckets to delete");
+  logger.info(`${bucketNamesToDelete.length} buckets.`);
 
   if (dryRun) {
     logger.info("Exiting without deleting buckets");
@@ -167,6 +249,12 @@ async function main() {
     );
 
     await Promise.all(deletions);
+    logger.info(
+      `Emptied ${emptiedBuckets}/${bucketNamesToDelete.length} buckets`
+    );
+    logger.info(
+      `Deleted ${deletedBuckets}/${bucketNamesToDelete.length} buckets`
+    );
     logger.info("Finished deleting buckets");
   }
 }
@@ -210,7 +298,8 @@ async function emptyBucket(s3Client: S3Client, bucketName: string) {
     });
     await s3Client.send(deleteObjectsCommand);
 
-    logger.info({ bucketName }, "Bucket emptied");
+    logger.debug(`Bucket emptied: ${bucketName}`);
+    emptiedBuckets++;
   } catch (error) {
     logger.error(error, "Error emptying the bucket:");
   }
@@ -228,7 +317,8 @@ async function deleteBucket(s3Client: S3Client, bucketName: string) {
     const deleteBucketCommand = new DeleteBucketCommand(deleteBucketParams);
     await s3Client.send(deleteBucketCommand);
 
-    logger.info({ bucketName }, "Bucket deleted");
+    logger.info(`Bucket deleted: ${bucketName}`);
+    deletedBuckets++;
   } catch (error) {
     logger.error(error, "Error deleting the bucket:");
   }
