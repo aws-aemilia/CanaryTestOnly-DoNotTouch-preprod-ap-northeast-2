@@ -1,0 +1,27 @@
+{
+  "name": "amplify-dev-companion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "auth": "ada credentials update --account=$AWS_ACCOUNT_ID --role=admin --once",
+    "start": "npm run auth && ts-node src/cli.tsx",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "ink": "^3.2.0",
+    "ink-select-input": "^4.2.2",
+    "react": "^17.0.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.1",
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/react": "^17.0.67",
+    "esbuild": "^0.19.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
