@@ -29,7 +29,6 @@ import {
 const deleteBucketRateLimit = rateLimit(3);
 let deletedBuckets = 0;
 let emptiedBuckets = 0;
-const DEFAULT_STAGE = "preprod";
 
 // FUTURE IMPROVEMENTS:
 // - Dynamically determine region for bucket name: https://stackoverflow.com/questions/62996989/how-can-i-determine-the-region-for-a-public-aws-s3-bucket
@@ -61,11 +60,10 @@ async function main() {
       don't have.
 
       NOTE: Our integration tests create their buckets in IAD, so one
-      will typically run this command against region IAD but use the
-      integration test account for the region in which they are deleting
-      buckets. By default, stage will be assigned to "${DEFAULT_STAGE}" unless
-      otherwise specified. This is because we tend to run into these
-      bucket limits in preprod more often than other stages.
+      will typically run this command against 'bucketRegion' IAD but provide
+      the region and stage for the test account that owns the buckets. If
+      no region is provided this script will run against all regions in the
+      provided stage.
       
       You will need to run this for each region - s3 is a "global"
       service, but buckets are regional. This means list buckets will
@@ -74,14 +72,19 @@ async function main() {
       not in the region you've specified.
 
       Usage:
-        brazil-build s3Janitor -- --region=<region where bucket lives> --accountRegion=<region of integration test account that owns the bucket> --stage=<stage of integration test account that owns the bucket>
-        brazil-build s3Janitor -- --region=IAD --accountRegion=YUL --stage gamma
+        brazil-build s3Janitor -- --bucketRegion=<region where bucket lives> --accountRegion=<region of integration test account that owns the bucket> --stage=<stage of integration test account that owns the bucket>
+
+        brazil-build s3Janitor -- --bucketRegion=IAD --regions=YUL --regions BAH --stage=gamma
+
+        brazil-build s3Janitor -- --bucketRegion=IAD --stage=gamma
 
       Dry Run:
-        brazil-build s3Janitor -- --region=iad --accountRegion=YUL --dryRun
+        brazil-build s3Janitor -- --bucketRegion=IAD --regions=YUL --stage=gamma --dryRun
+
+        brazil-build s3Janitor -- --bucketRegion=IAD --stage=gamma --dryRun
       `
     )
-    .option("region", {
+    .option("bucketRegion", {
       describe: "The region or airport code (i.e. iad, or us-east-1)",
       type: "string",
       demandOption: true,
@@ -92,76 +95,62 @@ async function main() {
       default: "Admin",
       demandOption: true,
     })
-    .option("accountRegion", {
+    .option("regions", {
       describe: "AWS region of the account to delete buckets from",
-      type: "string",
+      type: "array",
       demandOption: false,
     })
     .option("stage", {
       describe: "Stage of the account to delete buckets from",
       type: "string",
-      demandOption: false,
+      demandOption: true,
     })
     .option("dryRun", {
       describe: "Output bucket names that will be deleted",
       type: "boolean",
       demandOption: false,
     })
-    .option("all", {
-      describe: "Delete buckets in all regions",
-      type: "boolean",
-      demandOption: false,
-    })
-    .check((argv) => {
-      if (!(argv.all || argv.accountRegion)) {
-        throw new Error("Must specify either --all or --accountRegion");
-      }
-      return true;
-    })
-    .conflicts("all", "accountRegion")
-    .conflicts("all", "stage")
+    .alias("regions", "accountRegions")
+    .alias("stage", "requestedStage")
     .strict()
     .version(false)
     .help().argv;
 
-  const {
-    region: bucketRegion,
-    roleName,
-    accountRegion,
-    dryRun,
-    all: allRegionsAndAllStages,
-    stage: requestedStage,
-  } = args;
+  const { bucketRegion, roleName, accountRegions, dryRun, requestedStage } =
+    args;
 
-  let stage: Stage = DEFAULT_STAGE;
-  if (requestedStage) {
-    if (requestedStage === "prod") {
-      throw new Error("Cannot delete buckets in prod");
-    }
-    stage = requestedStage as Stage;
+  const stage: Stage = requestedStage as Stage;
+  const integTestAccounts: AmplifyAccount[] = await getIntegTestAccounts(
+    stage,
+    accountRegions
+  );
+  if (integTestAccounts.length > 1) {
+    logger.info(
+      integTestAccounts,
+      "Deleting buckets from the following accounts"
+    );
   }
-
-  if (allRegionsAndAllStages) {
-    const integTestAccountsList = await integTestAccounts();
-    for (const testAccount of integTestAccountsList) {
-      await deleteBuckets(bucketRegion, testAccount, roleName, dryRun);
-    }
-  } else if (accountRegion) {
-    const integAccount = await integTestAccount(stage, accountRegion as Region);
-    await deleteBuckets(bucketRegion, integAccount, roleName, dryRun);
-  } else {
-    throw new Error("Must specify either --all or --accountRegion");
+  for (const integTestAccount of integTestAccounts) {
+    logger.info(
+      integTestAccount,
+      `Gathering bucket information in region ${bucketRegion} for account`
+    );
+    await deleteBuckets(
+      bucketRegion as Region,
+      integTestAccount,
+      roleName,
+      dryRun
+    );
   }
 }
 
 async function deleteBuckets(
-  bucketRegion: string,
+  bucketRegion: Region,
   testAccount: AmplifyAccount,
   roleName: string,
   dryRun: boolean | undefined
 ) {
   const regionName = toRegionName(bucketRegion);
-  logger.info(testAccount, `Targeting region: ${regionName}`);
   const s3Client = new S3Client({
     region: regionName,
     credentials: getIsengardCredentialsProvider(
@@ -207,7 +196,6 @@ async function deleteBuckets(
   cloudFrontBuckets.forEach((bucket) => (cloudFrontBucketMap[bucket] = true));
 
   logger.info("Listing S3 Buckets");
-
   const buckets = await listBuckets(s3Client);
   const bucketNamesToDelete = buckets
     .map((bucket) => bucket.Name || "")
@@ -241,6 +229,8 @@ async function deleteBuckets(
 
   if (
     bucketNamesToDelete.length > 0 &&
+    // TODO: Figure out a good dx flow for not prompting for every test account.
+    //       Currently we're previewing the bucket names prior to deleting them.
     (await confirm("Are you sure you want to delete these buckets?"))
   ) {
     // Delete them in parallel with rate limit
@@ -358,6 +348,21 @@ async function listS3BucketsForDistributions(
   }
 
   return cloudFrontS3Buckets.filter((x) => x);
+}
+
+// If accountRegions is defined, get the integ test account for each region
+// else use all integ test accounts for the stage
+async function getIntegTestAccounts(
+  stage: Stage,
+  accountRegions: (string | number)[] | undefined
+) {
+  if (accountRegions) {
+    return await Promise.all(
+      accountRegions.map((region) => integTestAccount(stage, region as Region))
+    );
+  } else {
+    return await integTestAccounts({ stage: stage });
+  }
 }
 
 main()
