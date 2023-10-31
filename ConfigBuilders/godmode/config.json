@@ -2779,6 +2779,9 @@
         "ARN - Cell2": {
           "account": "449879167594"
         },
+        "ARN - Cell3": {
+          "account": "191045910240"
+        },
         "BAH": {
           "account": "778656315944"
         },
@@ -2797,6 +2800,9 @@
         "BOM - Cell2": {
           "account": "193673746969"
         },
+        "BOM - Cell3": {
+          "account": "717528404532"
+        },
         "CDG": {
           "account": "067021532459"
         },
@@ -2805,6 +2811,9 @@
         },
         "CDG - Cell2": {
           "account": "281366225315"
+        },
+        "CDG - Cell3": {
+          "account": "740958913807"
         },
         "CMH": {
           "account": "763602849397"
@@ -2815,6 +2824,9 @@
         "CMH - Cell2": {
           "account": "700783956012"
         },
+        "CMH - Cell3": {
+          "account": "433682806563"
+        },
         "DUB": {
           "account": "721353850853"
         },
@@ -2823,6 +2835,9 @@
         },
         "DUB - Cell2": {
           "account": "125040593840"
+        },
+        "DUB - Cell3": {
+          "account": "206773313968"
         },
         "FRA": {
           "account": "661687143689"
@@ -2833,6 +2848,9 @@
         "FRA - Cell2": {
           "account": "458922657309"
         },
+        "FRA - Cell3": {
+          "account": "786486573423"
+        },
         "GRU": {
           "account": "029015999262"
         },
@@ -2841,6 +2859,9 @@
         },
         "GRU - Cell2": {
           "account": "649764730746"
+        },
+        "GRU - Cell3": {
+          "account": "648126647475"
         },
         "HKG": {
           "account": "884941116652"
@@ -2863,6 +2884,18 @@
         "IAD - Cell3": {
           "account": "246746169199"
         },
+        "IAD - Cell4": {
+          "account": "293568156222"
+        },
+        "IAD - Cell5": {
+          "account": "653256941548"
+        },
+        "IAD - Cell6": {
+          "account": "344949338921"
+        },
+        "IAD - Cell7": {
+          "account": "922672578837"
+        },
         "ICN": {
           "account": "448766840572"
         },
@@ -2872,6 +2905,9 @@
         "ICN - Cell2": {
           "account": "256194760755"
         },
+        "ICN - Cell3": {
+          "account": "302083188782"
+        },
         "LHR": {
           "account": "735893892429"
         },
@@ -2880,6 +2916,9 @@
         },
         "LHR - Cell2": {
           "account": "031892202758"
+        },
+        "LHR - Cell3": {
+          "account": "313776181113"
         },
         "MXP": {
           "account": "182690974485"
@@ -2899,6 +2938,9 @@
         "NRT - Cell2": {
           "account": "410510665291"
         },
+        "NRT - Cell3": {
+          "account": "085493176739"
+        },
         "PDX": {
           "account": "583090263836"
         },
@@ -2907,6 +2949,9 @@
         },
         "PDX - Cell2": {
           "account": "571996173305"
+        },
+        "PDX - Cell3": {
+          "account": "782022631217"
         },
         "SFO": {
           "account": "924418769215"
@@ -2917,6 +2962,9 @@
         "SFO - Cell2": {
           "account": "548652960811"
         },
+        "SFO - Cell3": {
+          "account": "567442702366"
+        },
         "SIN": {
           "account": "406015739782"
         },
@@ -2925,6 +2973,9 @@
         },
         "SIN - Cell2": {
           "account": "243705942306"
+        },
+        "SIN - Cell3": {
+          "account": "769831240281"
         },
         "SYD": {
           "account": "352487128082"
@@ -2935,6 +2986,9 @@
         "SYD - Cell2": {
           "account": "731997013353"
         },
+        "SYD - Cell3": {
+          "account": "402612293800"
+        },
         "YUL": {
           "account": "280608668128"
         },
@@ -2943,6 +2997,9 @@
         },
         "YUL - Cell2": {
           "account": "872145348394"
+        },
+        "YUL - Cell3": {
+          "account": "159719714165"
         }
       }
     },
@@ -3164,6 +3221,322 @@
         },
         "YUL": {
           "account": "706311624498"
+        }
+      }
+    },
+    "AmplifyHostingImageOptimizer": {
+      "parameters": {
+        "PDX - Beta Cell1": {
+          "account": "973008340916",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ARN - Gamma Cell1": {
+          "account": "826967662746",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BAH - Gamma Cell1": {
+          "account": "505106714138",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BOM - Gamma Cell1": {
+          "account": "476985827895",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CDG - Gamma Cell1": {
+          "account": "882037165328",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CMH - Gamma Cell1": {
+          "account": "505379077540",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "DUB - Gamma Cell1": {
+          "account": "614631150029",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "FRA - Gamma Cell1": {
+          "account": "295536102116",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "GRU - Gamma Cell1": {
+          "account": "672158211857",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "HKG - Gamma Cell1": {
+          "account": "319878526917",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Gamma Cell1": {
+          "account": "076630064198",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ICN - Gamma Cell1": {
+          "account": "676292424519",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "LHR - Gamma Cell1": {
+          "account": "950950817494",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "MXP - Gamma Cell1": {
+          "account": "510316375763",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "NRT - Gamma Cell1": {
+          "account": "817457111989",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "PDX - Gamma Cell1": {
+          "account": "040660781325",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SFO - Gamma Cell1": {
+          "account": "663362506215",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SIN - Gamma Cell1": {
+          "account": "550083737384",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SYD - Gamma Cell1": {
+          "account": "391374614771",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "YUL - Gamma Cell1": {
+          "account": "533277450253",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ARN - Prod Cell1": {
+          "account": "947573580920",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ARN - Prod Cell2": {
+          "account": "449879167594",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ARN - Prod Cell3": {
+          "account": "191045910240",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BAH - Prod Cell1": {
+          "account": "787521425488",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BAH - Prod Cell2": {
+          "account": "993828787059",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BOM - Prod Cell1": {
+          "account": "691591124619",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BOM - Prod Cell2": {
+          "account": "193673746969",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "BOM - Prod Cell3": {
+          "account": "717528404532",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CDG - Prod Cell1": {
+          "account": "302291509655",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CDG - Prod Cell2": {
+          "account": "281366225315",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CDG - Prod Cell3": {
+          "account": "740958913807",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CMH - Prod Cell1": {
+          "account": "714405387466",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CMH - Prod Cell2": {
+          "account": "700783956012",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "CMH - Prod Cell3": {
+          "account": "433682806563",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "DUB - Prod Cell1": {
+          "account": "627206211417",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "DUB - Prod Cell2": {
+          "account": "125040593840",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "DUB - Prod Cell3": {
+          "account": "206773313968",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "FRA - Prod Cell1": {
+          "account": "970688540196",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "FRA - Prod Cell2": {
+          "account": "458922657309",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "FRA - Prod Cell3": {
+          "account": "786486573423",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "GRU - Prod Cell1": {
+          "account": "140988449436",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "GRU - Prod Cell2": {
+          "account": "649764730746",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "GRU - Prod Cell3": {
+          "account": "648126647475",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "HKG - Prod Cell1": {
+          "account": "342470307229",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "HKG - Prod Cell2": {
+          "account": "041247672062",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell1": {
+          "account": "634225504678",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell2": {
+          "account": "911609056400",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell3": {
+          "account": "246746169199",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell4": {
+          "account": "293568156222",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell5": {
+          "account": "653256941548",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell6": {
+          "account": "344949338921",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "IAD - Prod Cell7": {
+          "account": "922672578837",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ICN - Prod Cell1": {
+          "account": "272880359961",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ICN - Prod Cell2": {
+          "account": "256194760755",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "ICN - Prod Cell3": {
+          "account": "302083188782",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "LHR - Prod Cell1": {
+          "account": "735357069816",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "LHR - Prod Cell2": {
+          "account": "031892202758",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "LHR - Prod Cell3": {
+          "account": "313776181113",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "MXP - Prod Cell1": {
+          "account": "333266953404",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "MXP - Prod Cell2": {
+          "account": "036695738573",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "NRT - Prod Cell1": {
+          "account": "122036202445",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "NRT - Prod Cell2": {
+          "account": "410510665291",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "NRT - Prod Cell3": {
+          "account": "085493176739",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "PDX - Prod Cell1": {
+          "account": "586674168778",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "PDX - Prod Cell2": {
+          "account": "571996173305",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "PDX - Prod Cell3": {
+          "account": "782022631217",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SFO - Prod Cell1": {
+          "account": "529144562290",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SFO - Prod Cell2": {
+          "account": "548652960811",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SFO - Prod Cell3": {
+          "account": "567442702366",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SIN - Prod Cell1": {
+          "account": "447859346783",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SIN - Prod Cell2": {
+          "account": "243705942306",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SIN - Prod Cell3": {
+          "account": "769831240281",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SYD - Prod Cell1": {
+          "account": "630291408315",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SYD - Prod Cell2": {
+          "account": "731997013353",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "SYD - Prod Cell3": {
+          "account": "402612293800",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "YUL - Prod Cell1": {
+          "account": "616657649725",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "YUL - Prod Cell2": {
+          "account": "872145348394",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "YUL - Prod Cell3": {
+          "account": "159719714165",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
         }
       }
     }

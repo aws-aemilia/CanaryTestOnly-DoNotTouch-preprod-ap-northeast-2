@@ -35,6 +35,7 @@ const main = async () => {
   let updatedConfig = await generateComputeServiceConfig(godModeConfig);
   updatedConfig = await generateHostingGatewayConfig(godModeConfig);
   updatedConfig = await generateIntegrationTestsConfig(godModeConfig);
+  updatedConfig = await generateAHIOConfig(godModeConfig);
   writeConfig(updatedConfig);
 };
 
@@ -71,6 +72,31 @@ const generateComputeServiceConfig = async (godModeConfig: any) => {
 
   // @ts-ignore
   godModeConfig.services["AmplifyComputeService"] = computeServiceConfig;
+  return godModeConfig;
+};
+
+const generateAHIOConfig = async (godModeConfig: any) => {
+  const cellAccounts = await computeServiceDataPlaneAccounts();
+  const ahioServiceConfig = {
+    parameters: {},
+  } as any;
+
+  cellAccounts.forEach((account) => {
+    const airportCode = account.airportCode.toUpperCase();
+    const stage =
+      account.stage.charAt(0).toUpperCase() + account.stage.slice(1);
+    ahioServiceConfig.parameters[
+      `${airportCode} - ${stage} Cell${account.cellNumber}`
+    ] = {
+      account: account.accountId,
+      // We can add more parameters here for each account to be used in Runbooks, for example,
+      // log group names or dynamodb table names.
+      serviceLogGroup: "/aws/lambda/AmplifyHostingImageOptimizer",
+    };
+  });
+
+  // @ts-ignore
+  godModeConfig.services["AmplifyHostingImageOptimizer"] = ahioServiceConfig;
   return godModeConfig;
 };
 
