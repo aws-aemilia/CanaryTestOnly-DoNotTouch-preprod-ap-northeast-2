@@ -6,6 +6,12 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import { AppDO, AppDOJava } from "../types";
+import {
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "Commons/Isengard";
 
 export class AppDAO {
   private tableName: string;
@@ -22,6 +28,17 @@ export class AppDAO {
       credentials,
     });
     this.client = DynamoDBDocumentClient.from(dynamoDBClient);
+  }
+
+  static async buildDefault(stage: string, region: string): Promise<AppDAO> {
+    return new AppDAO(
+      stage,
+      region,
+      getIsengardCredentialsProvider(
+        (await controlPlaneAccount(stage as Stage, region as Region)).accountId,
+        "FullReadOnly"
+      )
+    );
   }
 
   /**
