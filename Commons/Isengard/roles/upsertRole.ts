@@ -2,6 +2,7 @@ import {
   addPolicyTemplateReferenceForIAMRole,
   attachIAMPolicyToIAMRole,
   createIAMRole,
+  deleteIAMRole,
   deletePolicyTemplateReferenceForIAMRole,
   detachIAMPolicyFromIAMRole,
   getIAMRole,
@@ -65,6 +66,12 @@ const revokeUserPermissionIfExists = withCatchOnErrorMsg(
   "does not exist",
   "User Permission does not exist. Nothing to revoke. Skipping...",
   revokeUserPermission
+);
+
+export const idempotentDeleteIAMRole = withCatchOnErrorMsg(
+  "Unable to Delete IAM role: Role is not found",
+  "Role does not exist. Nothing to delete. Skipping...",
+  deleteIAMRole
 );
 
 type PermissionDiff = {

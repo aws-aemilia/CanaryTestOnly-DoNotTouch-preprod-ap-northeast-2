@@ -16,7 +16,7 @@ const TABLE_NAME = "HostingConfig";
 export class HostingConfigDAO {
   private readonly stage: Stage;
   private readonly region: Region;
-  private readonly role: String;
+  private readonly role: string;
 
   private lazyDDBClient?: DynamoDBDocumentClient;
 
@@ -71,10 +71,7 @@ export class HostingConfigDAO {
 
     const dynamoDBClient = new DynamoDBClient({
       region: acc.region,
-      credentials: getIsengardCredentialsProvider(
-        acc.accountId,
-        "OncallOperator"
-      ),
+      credentials: getIsengardCredentialsProvider(acc.accountId, this.role),
     });
     this.lazyDDBClient = DynamoDBDocumentClient.from(dynamoDBClient);
   }

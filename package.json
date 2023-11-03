@@ -50,7 +50,8 @@
     "s3Janitor": "ts-node OpsTools/s3Janitor.ts",
     "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts",
     "getCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/getCustomerAccountLimit.ts",
-    "adminRoleForIntegrationTests": "ts-node OpsTools/integTests/createOrUpdateAdminRole.ts"
+    "adminRoleForIntegrationTests": "ts-node OpsTools/integTests/createOrUpdateAdminRole.ts",
+    "AHIORollback": "ts-node SingleUseTools/AHIORollback/index.ts"
   },
   "author": "",
   "license": "ISC",
