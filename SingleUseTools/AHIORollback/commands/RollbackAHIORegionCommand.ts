@@ -11,8 +11,11 @@ import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
 import { RollBackAHIOBranchJobCommand } from "./RollBackAHIOBranchJobCommand";
 import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
 import { AmplifyHostingComputeClient } from "@amzn/awsamplifycomputeservice-client";
+import pLimit from "p-limit";
 
 const logger = createLogger();
+
+const ROLLBACK_CONCURRENCY = 10;
 
 /**
  * Roll back all AHIO deployments in a region
@@ -71,12 +74,42 @@ export class RollbackAHIORegionCommand {
       );
 
     // Execute all rollback commands
-    for (const command of rollBackAHIOBranchJobCommands) {
-      // commands could run in parallel, but it's simpler to run them sequentially
-      await command.run();
-    }
+    const limit = pLimit(ROLLBACK_CONCURRENCY);
 
-    logger.info("🎉🎉 All AHIO deployments were rolled back successfully 🎉🎉");
+    const results = await Promise.all(
+      rollBackAHIOBranchJobCommands
+        .map((command) => {
+          return () => command.runWithCatch();
+        })
+        .map(limit)
+    );
+
+    logger.info(results);
+
+    const successfulResults = results.filter((r) => r.success);
+    const failedResults = results.filter((r) => !r.success);
+
+    logger.info(
+      `========= Successful rollbacks: ${successfulResults.length} ==========`
+    );
+    logger.info(JSON.stringify(successfulResults, null, 2));
+    logger.info(
+      `========= Failed rollbacks: ${failedResults.length} ==========`
+    );
+    logger.info(JSON.stringify(failedResults, null, 2));
+
+    if (failedResults.length === 0) {
+      logger.info(
+        "🎉🎉 All AHIO deployments were rolled back successfully 🎉🎉"
+      );
+    } else {
+      logger.info(
+        `❌❌ ${failedResults.length} AHIO deployments failed to roll back ❌❌`
+      );
+      throw new Error(
+        "Some AHIO deployments failed to roll back. See logs above for details"
+      );
+    }
   }
 
   private async getRollbackTargets(): Promise<HostingConfigRow[]> {

@@ -59,6 +59,20 @@ export class RollBackAHIOBranchJobCommand {
     });
   }
 
+  public async runWithCatch() {
+    try {
+      await this.run();
+      return { success: true, params: this.commandParams };
+    } catch (e) {
+      logger.error(e);
+      return {
+        success: false,
+        params: this.commandParams,
+        error: `${(e as Error).name}: ${(e as Error).message}`,
+      };
+    }
+  }
+
   public async run() {
     logger.info(`Rolling back AHIO for ${JSON.stringify(this.commandParams)}`);
 
