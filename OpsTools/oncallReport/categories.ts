@@ -102,7 +102,7 @@ function getSmartCategory(
   }
 
   const extractedTicketId = extractTicketIdIfHasExactlyOneTicketLink(
-    entry.rootCause ?? ""
+    entry.rootCauseText ?? ""
   );
 
   if (
