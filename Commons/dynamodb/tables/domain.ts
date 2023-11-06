@@ -1,12 +1,12 @@
 import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
-import { DomainDO } from "../types";
 import {
   DynamoDBDocumentClient,
   GetCommand,
-  QueryCommand,
   paginateQuery,
   paginateScan,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { DomainDO } from "../types";
 
 /**
  * Checks in the domain table to determine if a domain exists with the
@@ -196,15 +196,16 @@ export const findDomainById = async (
  * @param region i.e. us-west-2
  * @param attributesToGet i.e. ["appId", "domainId"]
  * @param expressionAttributeNames e.g. { "#s": "status" }
- *
+ * @param filterExpression e.g. "attribute_exists(desiredCertificate)
  * @returns Iterator of pages
  */
 export const paginateDomains = (
   documentClient: DynamoDBDocumentClient,
   stage: string,
   region: string,
-  attributesToGet: string[] = ["appId"],
-  expressionAttributeNames?: Record<string, string>
+  attributesToGet?: string[],
+  expressionAttributeNames?: Record<string, string>,
+  filterExpression?: string
 ) => {
   return paginateScan(
     {
@@ -213,8 +214,9 @@ export const paginateDomains = (
     },
     {
       TableName: `${stage}-${region}-Domain`,
-      ProjectionExpression: attributesToGet.join(","),
+      ProjectionExpression: attributesToGet?.join(","),
       ExpressionAttributeNames: expressionAttributeNames,
+      FilterExpression: filterExpression,
     }
   );
 };
