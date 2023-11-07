@@ -51,7 +51,9 @@
     "lambdaJanitor": "ts-node OpsTools/lambdaJanitor.ts",
     "getCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/getCustomerAccountLimit.ts",
     "adminRoleForIntegrationTests": "ts-node OpsTools/integTests/createOrUpdateAdminRole.ts",
-    "AHIORollback": "ts-node SingleUseTools/AHIORollback/index.ts"
+    "AHIORollback": "ts-node SingleUseTools/AHIORollback/index.ts",
+    "CleanUpDesiredCertificate.run": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/cleanUpDesiredCertificate.ts",
+    "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts"
   },
   "author": "",
   "license": "ISC",

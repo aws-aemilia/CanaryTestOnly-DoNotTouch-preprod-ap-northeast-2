@@ -1,28 +1,19 @@
 import { BucketLifecycleConfiguration, S3 } from "@aws-sdk/client-s3";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import {
-  DomainDO,
-  getDynamoDBDocumentClient,
-  paginateDomains,
-} from "Commons/dynamodb";
-import {
-  controlPlaneAccount,
-  getIsengardCredentialsProvider,
-  preflightCAZ,
-  Region,
-  Stage,
-  StandardRoles,
-} from "Commons/Isengard";
-import { createLogger } from "Commons/utils/logger";
+import { DomainDO } from "Commons/dynamodb";
+import { Region, Stage, StandardRoles } from "Commons/Isengard";
+import logger from "Commons/utils/logger";
 import { toRegionName } from "Commons/utils/regions";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import {
+  desiredCertificate,
+  getBucketName,
+  getClients,
+  getDomainsToCleanUp,
+  Prefix,
+} from "./utils";
 
-const logger = createLogger();
-const role = StandardRoles.OncallOperator;
-
-const desiredCertificate = "desiredCertificate";
-const backups = "backups/";
 const LifecycleConfiguration: BucketLifecycleConfiguration = {
   Rules: [
     {
@@ -30,7 +21,7 @@ const LifecycleConfiguration: BucketLifecycleConfiguration = {
       Status: "Enabled",
       Expiration: { Days: 30 },
       Filter: {
-        Prefix: backups,
+        Prefix,
       },
     },
   ],
@@ -44,10 +35,10 @@ async function getArgs() {
     
       Usage:
         # Record the affected table items in beta PDX. Does not perform any updates to the table items.
-        ts-node cleanUpDesiredCertificate.ts --stage beta --region pdx
+        brazil-build CleanUpDesiredCertificate.run -- --stage beta --region pdx
       
         # Record and fix the affected table items in prod PDX.
-        ts-node cleanUpDesiredCertificate.ts --stage prod --region pdx --removeDesiredCertificate true`
+        brazil-build CleanUpDesiredCertificate.run -- --stage prod --region pdx --removeDesiredCertificate true`
     )
     .option("stage", {
       describe: "Stage to clean up.",
@@ -79,16 +70,6 @@ async function getArgs() {
   };
 }
 
-async function getClients(stage: Stage, region: Region) {
-  const account = await controlPlaneAccount(stage, region);
-  await preflightCAZ({ accounts: account, role });
-  const credentials = getIsengardCredentialsProvider(account.accountId, role);
-
-  const documentClient = getDynamoDBDocumentClient(region, credentials);
-  const s3 = new S3({ region, credentials });
-  return { documentClient, s3 };
-}
-
 async function createBucketIfNotExists(s3: S3, Bucket: string) {
   try {
     await s3.headBucket({ Bucket });
@@ -108,34 +89,11 @@ async function createBucketIfNotExists(s3: S3, Bucket: string) {
   });
 }
 
-async function getDomainsToCleanUp(
-  documentClient: DynamoDBDocumentClient,
-  stage: Stage,
-  region: Region
-) {
-  const paginatedDomains = paginateDomains(
-    documentClient,
-    stage,
-    region,
-    undefined,
-    undefined,
-    `attribute_exists(${desiredCertificate})`
-  );
-
-  const domains = [];
-  for await (const page of paginatedDomains) {
-    domains.push(...(page.Items as DomainDO[]));
-  }
-
-  logger.info(`Found ${domains.length} domains to clean up`);
-  return domains;
-}
-
 async function saveDataToS3(s3: S3, Bucket: string, domains: DomainDO[]) {
   const data = JSON.stringify(domains, null, 2) + "\n";
   await s3.putObject({
     Bucket,
-    Key: `${backups}${new Date().toUTCString()}.json`,
+    Key: `${Prefix}${new Date().toUTCString()}.json`,
     Body: data,
   });
   logger.info(`Saved domain data to S3`);
@@ -161,9 +119,13 @@ async function removeDesiredCertificateAttribute(
 
 async function main() {
   let { stage, region, removeDesiredCertificate } = await getArgs();
-  const Bucket = `${stage}-${region}-cleanup-desired-certificate`;
+  const Bucket = getBucketName(stage, region);
 
-  const { documentClient, s3 } = await getClients(stage, region);
+  const { documentClient, s3 } = await getClients(
+    stage,
+    region,
+    StandardRoles.OncallOperator
+  );
   await createBucketIfNotExists(s3, Bucket);
 
   const domains = await getDomainsToCleanUp(documentClient, stage, region);

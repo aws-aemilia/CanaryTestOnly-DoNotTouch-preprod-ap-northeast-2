@@ -106,12 +106,29 @@ export interface DomainDO {
   domainId: string;
   domainType: string;
   version: number;
+  activeCertificate: Certificate | undefined;
+  desiredCertificate: Certificate | undefined;
 }
 
 export interface SubdomainDO {
   domainRecord: string;
   verified: number;
   branch: string;
+}
+
+export interface Certificate {
+  sourceCertificateArn: string;
+  certificateArn: string;
+  verificationRecord: string;
+  type: CertificateType;
+  createTime: Date;
+  statusReason: string;
+  updateTime: Date;
+}
+
+export enum CertificateType {
+  AMPLIFY_MANAGED,
+  CUSTOM,
 }
 
 export interface BranchDO extends BranchDOBase {
