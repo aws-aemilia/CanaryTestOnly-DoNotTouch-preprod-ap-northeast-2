@@ -40,6 +40,12 @@ ROLLING BACK AHIO HAS PERFORMANCE AND BILLING IMPLICATIONS.
       type: "string",
       demandOption: false,
     })
+    .option("onlyForApp", {
+      describe:
+        "If an AppId is provided, it only rolls back AHIO deployments for that App.",
+      type: "string",
+      demandOption: false,
+    })
     .strict()
     .version(false)
     .help().argv;
@@ -47,6 +53,7 @@ ROLLING BACK AHIO HAS PERFORMANCE AND BILLING IMPLICATIONS.
   const stage = args.stage as Stage;
   const region = toRegionName(args.region);
   const onlyForAccount = args.onlyForAccount;
+  const onlyForApp = args.onlyForApp;
 
   if (stage === "prod") {
     const confirmation = await confirm(
@@ -70,7 +77,7 @@ ROLLING BACK AHIO HAS PERFORMANCE AND BILLING IMPLICATIONS.
   const rollbackAHIORegionCommand = new RollbackAHIORegionCommand(
     stage,
     region,
-    { onlyForAccount }
+    { onlyForAccount, onlyForApp }
   );
 
   await rollbackAHIORegionCommand.run();

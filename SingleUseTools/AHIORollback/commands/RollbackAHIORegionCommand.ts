@@ -33,12 +33,15 @@ export class RollbackAHIORegionCommand {
   private readonly edgeConfigDAO: EdgeConfigDAO;
   private readonly hostingConfigDAO: HostingConfigDAO;
 
-  private readonly commandParams: { onlyForAccount?: string };
+  private readonly commandParams: {
+    onlyForAccount?: string;
+    onlyForApp?: string;
+  };
 
   constructor(
     stage: Stage,
     region: Region,
-    commandParams: { onlyForAccount?: string }
+    commandParams: { onlyForAccount?: string; onlyForApp?: string }
   ) {
     this.stage = stage;
     this.region = toRegionName(region);
@@ -132,6 +135,19 @@ export class RollbackAHIORegionCommand {
 
       logger.info(
         `Found ${targetHostingConfigRows.length} hosting config rows for account ${this.commandParams.onlyForAccount}`
+      );
+    }
+
+    if (this.commandParams.onlyForApp) {
+      logger.info(
+        `Only rolling back for app ${this.commandParams.onlyForApp} because onlyForApp parameter was used`
+      );
+      targetHostingConfigRows = targetHostingConfigRows.filter(
+        (row) => row.appId === this.commandParams.onlyForApp
+      );
+
+      logger.info(
+        `Found ${targetHostingConfigRows.length} hosting config rows for app ${this.commandParams.onlyForApp}`
       );
     }
 
