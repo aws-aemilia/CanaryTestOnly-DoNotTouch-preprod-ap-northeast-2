@@ -12,6 +12,8 @@ import { RollBackAHIOBranchJobCommand } from "./RollBackAHIOBranchJobCommand";
 import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
 import { AmplifyHostingComputeClient } from "@amzn/awsamplifycomputeservice-client";
 import pLimit from "p-limit";
+import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
+import { representsActiveJob } from "./commons/representsActiveJob";
 
 const logger = createLogger();
 
@@ -26,6 +28,7 @@ export class RollbackAHIORegionCommand {
   private readonly stage: Stage;
   private readonly region: RegionName;
   private readonly appDAOPromise: Promise<AppDAO>;
+  private readonly branchDAOPromise: Promise<BranchDAO>;
   private readonly computeClientPromise: Promise<AmplifyHostingComputeClient>;
   private readonly edgeConfigDAO: EdgeConfigDAO;
   private readonly hostingConfigDAO: HostingConfigDAO;
@@ -42,13 +45,13 @@ export class RollbackAHIORegionCommand {
     this.edgeConfigDAO = new EdgeConfigDAO(stage, region);
     this.hostingConfigDAO = new HostingConfigDAO(stage, region, "AHIORollback");
     this.appDAOPromise = AppDAO.buildDefault(stage, region);
+    this.branchDAOPromise = BranchDAO.buildDefault(stage, region);
     this.computeClientPromise = getAmplifyHostingComputeClient(
       this.stage,
       this.region
     );
     this.commandParams = commandParams;
   }
-
   public async run() {
     // Gather all the AHIO deployments that need to be rolled back
     const rollbackTargets = await this.getRollbackTargets();
@@ -135,7 +138,15 @@ export class RollbackAHIORegionCommand {
     const activeHostingConfigRows: HostingConfigRow[] = [];
 
     for (const row of targetHostingConfigRows) {
-      if (await this.representsActiveJob(row)) {
+      if (
+        await representsActiveJob(
+          {
+            edgeConfigDAO: this.edgeConfigDAO,
+            branchDAO: await this.branchDAOPromise,
+          },
+          row
+        )
+      ) {
         activeHostingConfigRows.push(row);
       }
     }
@@ -144,37 +155,5 @@ export class RollbackAHIORegionCommand {
       `Found ${activeHostingConfigRows.length} hosting config rows for active jobs`
     );
     return activeHostingConfigRows;
-  }
-
-  private async representsActiveJob(
-    hostingConfigRow: HostingConfigRow
-  ): Promise<boolean> {
-    const edgeConfig =
-      await this.edgeConfigDAO.getLambdaEdgeConfigForAppOrDomain(
-        hostingConfigRow.appId
-      );
-
-    if (!edgeConfig) {
-      logger.info(
-        `No EdgeConfig found for app ${hostingConfigRow.appId}. Most likely it was deleted. Skipping...`
-      );
-      return false;
-    }
-
-    if (
-      edgeConfig.branchConfig?.[hostingConfigRow.branchName]?.activeJobId !==
-      hostingConfigRow.activeJobId
-    ) {
-      logger.info(
-        `HostingConfig ${hostingConfigRow.pk} ${
-          hostingConfigRow.activeJobId
-        } does not match the active Job. activeJob in EdgeConfig is ${
-          edgeConfig.branchConfig?.[hostingConfigRow.branchName]?.activeJobId
-        }. Skipping...`
-      );
-      return false;
-    } else {
-      return true;
-    }
   }
 }

@@ -11,6 +11,9 @@ import { RegionName } from "Commons/Isengard/types";
 import { createLogger } from "Commons/utils/logger";
 import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
 import sleep from "Commons/utils/sleep";
+import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
+import { EdgeConfigDAO } from "Commons/dynamodb/tables/EdgeConfigDAO";
+import { representsActiveJob } from "./commons/representsActiveJob";
 
 const logger = createLogger();
 
@@ -23,6 +26,8 @@ export class RollBackAHIOBranchJobCommand {
   private readonly region: RegionName;
 
   private readonly appDAO: AppDAO;
+  private readonly edgeConfigDAO: EdgeConfigDAO;
+  private readonly branchDAOPromise: Promise<BranchDAO>;
   private readonly computeServiceClient: AmplifyHostingComputeClient;
   private readonly hostingConfigDAO: HostingConfigDAO;
 
@@ -42,6 +47,8 @@ export class RollBackAHIOBranchJobCommand {
     this.computeServiceClient = params.computeServiceClient;
     this.hostingConfigDAO = params.hostingConfigDAO;
     this.commandParams = params.commandParams;
+    this.branchDAOPromise = BranchDAO.buildDefault(this.stage, this.region);
+    this.edgeConfigDAO = new EdgeConfigDAO(this.stage, this.region);
   }
 
   public static async build(
@@ -73,8 +80,24 @@ export class RollBackAHIOBranchJobCommand {
     }
   }
 
-  public async run() {
+  public async run(): Promise<void> {
     logger.info(`Rolling back AHIO for ${JSON.stringify(this.commandParams)}`);
+
+    // Check if the active job is still active
+    if (
+      !(await representsActiveJob(
+        {
+          edgeConfigDAO: this.edgeConfigDAO,
+          branchDAO: await this.branchDAOPromise,
+        },
+        this.commandParams
+      ))
+    ) {
+      logger.info(
+        `${this.commandParams.appId}/${this.commandParams.branchName} job ${this.commandParams.activeJobId} is not the active job. Skipping rollback`
+      );
+      return;
+    }
 
     const appDO = await this.appDAO.getAppById(this.commandParams.appId);
 
@@ -130,7 +153,6 @@ export class RollBackAHIOBranchJobCommand {
       `Successfully rolled back ${JSON.stringify(this.commandParams)}`
     );
   }
-
   private async waitUntilDeploymentIsComplete(
     deploymentSummary: DeploymentSummary
   ): Promise<DeploymentSummary> {

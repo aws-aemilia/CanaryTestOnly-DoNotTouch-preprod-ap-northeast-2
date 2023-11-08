@@ -1,7 +1,17 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, paginateScan } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  paginateScan,
+} from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import { BranchDO, BranchDOJava } from "../types";
+import {
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "Commons/Isengard";
 
 export class BranchDAO {
   private tableName: string;
@@ -19,6 +29,40 @@ export class BranchDAO {
       credentials,
     });
     this.documentClient = DynamoDBDocumentClient.from(this.dynamoDBClient);
+  }
+
+  static async buildDefault(stage: string, region: string): Promise<BranchDAO> {
+    return new BranchDAO(
+      stage,
+      region,
+      getIsengardCredentialsProvider(
+        (await controlPlaneAccount(stage as Stage, region as Region)).accountId,
+        "FullReadOnly"
+      )
+    );
+  }
+
+  public async getBranch({
+    appId,
+    branchName,
+  }: {
+    appId: string;
+    branchName: string;
+  }): Promise<BranchDO | undefined> {
+    const result = await this.documentClient.send(
+      new GetCommand({
+        TableName: this.tableName,
+        Key: {
+          appId,
+          branchName,
+        },
+      })
+    );
+
+    if (!result.Item) {
+      return undefined;
+    }
+    return result.Item as BranchDO;
   }
 
   /**
