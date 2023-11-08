@@ -1,10 +1,20 @@
+import dotenv from "dotenv";
 import yargs from "yargs";
 import { MyAmplifyClient } from "./MyAmplifyClient";
 
+dotenv.config();
+
 async function main() {
   const args = await yargs(process.argv.slice(2))
+    .option("stage", {
+      type: "string",
+      demandOption: true,
+    })
+    .option("region", {
+      type: "string",
+      demandOption: true,
+    })
     .option("appId", {
-      describe: "app Id to delete",
       type: "string",
       demandOption: true,
     })
@@ -12,11 +22,11 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const appId = args.appId;
+  const { stage, region, appId } = args;
 
-  const amplifyClient = new MyAmplifyClient();
-  const res = await amplifyClient.deleteApp(appId);
-  console.info(res);
+  const amplify = new MyAmplifyClient(stage, region);
+  const res = await amplify.deleteApp(appId);
+  console.log("App Deleted ", res);
 }
 
 main().catch((e) => {

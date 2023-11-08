@@ -1,11 +1,14 @@
-import { Amplify } from "@aws-sdk/client-amplify";
+import { Amplify, App } from "@aws-sdk/client-amplify";
 import { getControlPlaneApi } from "./config";
 
 export class MyAmplifyClient {
   private amplify: Amplify;
 
   constructor(stage: string, region: string) {
-    const endpoint = getControlPlaneApi(stage, region);
+    const endpoint =
+      stage === "test"
+        ? process.env.CP_Endpoint
+        : getControlPlaneApi(stage, region);
 
     this.amplify = new Amplify({
       region,
@@ -13,8 +16,17 @@ export class MyAmplifyClient {
     });
   }
 
-  public listApps() {
-    return this.amplify.listApps({ maxResults: 100 });
+  public async listApps() {
+    let nextToken: string | undefined = undefined;
+    let apps: App[] = [];
+    do {
+      const res = await this.amplify.listApps({ maxResults: 100, nextToken });
+      // console.debug(res);
+      nextToken = res.nextToken;
+      apps.push(...res.apps);
+    } while (nextToken!!);
+
+    return apps;
   }
 
   public getApp(appId: string) {

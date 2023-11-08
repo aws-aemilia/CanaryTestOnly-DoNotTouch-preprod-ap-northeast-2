@@ -1,19 +1,43 @@
-import { Amplify } from "@aws-sdk/client-amplify";
 import dotenv from "dotenv";
+import yargs from "yargs";
+import { MyAmplifyClient } from "./MyAmplifyClient";
 
 dotenv.config();
 
-const endpoint = process.env.ENDPOINT_ME;
-const region = process.env.REGION;
-
-const amplify = new Amplify({
-  region,
-  endpoint,
-});
-
 async function main() {
-  const res = await amplify.listApps({});
-  console.log(JSON.stringify(res.apps, undefined, 2));
+  const args = await yargs(process.argv.slice(2))
+    .usage(
+      `Run a batch of CloudWatch LogInsights queries based on the provided QueryConfig.
+    This batch could be across different regions or different time ranges if the 
+    query cannot be completed in 1 hour.
+
+    Make sure you add your query to OpsTools/queries/index.ts and then reference it 
+    in queryId argument
+
+    Usage:
+    npx ts-node OpsTools/batchQuery.ts --cancelRunningQueries=true --queryId="CostBasedThrottlesQuery"
+    `
+    )
+    .option("stage", {
+      type: "string",
+      demandOption: true,
+    })
+    .option("region", {
+      type: "string",
+      demandOption: true,
+    })
+    .strict()
+    .version(false)
+    .help().argv;
+
+  const { stage, region } = args;
+
+  const amplify = new MyAmplifyClient(stage, region);
+  const apps = await amplify.listApps();
+  const appsList = apps.map((a) => a.name).sort();
+  console.log("Found ", appsList.length, "apps");
+  console.log(appsList);
+  // appsList.forEach(console.log);
 }
 
 main().catch((e) => {
