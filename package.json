@@ -52,6 +52,7 @@
     "getCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/getCustomerAccountLimit.ts",
     "adminRoleForIntegrationTests": "ts-node OpsTools/integTests/createOrUpdateAdminRole.ts",
     "AHIORollback": "ts-node SingleUseTools/AHIORollback/index.ts",
+    "ExtendComputeRollback": "ts-node SingleUseTools/ExtendComputeRollback/execute.ts",
     "CleanUpDesiredCertificate.run": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/cleanUpDesiredCertificate.ts",
     "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts"
   },

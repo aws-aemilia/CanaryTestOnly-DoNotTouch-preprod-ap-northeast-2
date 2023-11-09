@@ -257,6 +257,7 @@ export interface RoutingRulesDO {
   appId: string;
   branchName: string;
   activeJobId: string;
+  accountId: string;
   routes: Route[];
 }
 
