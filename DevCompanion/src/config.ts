@@ -1,11 +1,4 @@
-import dotenv from "dotenv";
-
-// Bring in environment variables from .env file
-dotenv.config();
-
-export const stage = process.env.STAGE;
-export const region = process.env.REGION;
-export const controlPlaneEndpoint = process.env.CP_Endpoint;
+export const controlPlaneEndpoint = "https://cpapcsd1lf.execute-api.us-west-2.amazonaws.com/test";
 
 const controlPlaneApiEndpoints = {
   "beta.us-west-2":
