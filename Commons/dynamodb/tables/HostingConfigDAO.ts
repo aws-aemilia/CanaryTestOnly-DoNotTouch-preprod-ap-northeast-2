@@ -4,7 +4,9 @@ import {
   Region,
   Stage,
 } from "Commons/Isengard";
+import { RoutingRulesDO } from "../types";
 import {
+  GetCommand,
   DeleteCommand,
   DynamoDBDocumentClient,
   paginateScan,
@@ -64,6 +66,30 @@ export class HostingConfigDAO {
         TableName: TABLE_NAME,
       })
     );
+  }
+
+  async getRoutingRules(
+    appId: string,
+    branchName: string,
+    activeJobId: string
+  ): Promise<RoutingRulesDO | undefined> {
+    const client = await this.getDdbClient();
+
+    const response = await client.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: {
+          pk: `${appId}/${branchName}`,
+          sk: `${activeJobId}/RoutingRules`,
+        },
+      })
+    );
+
+    if (!response.Item) {
+      return undefined;
+    }
+
+    return response.Item as RoutingRulesDO;
   }
 
   private async init() {

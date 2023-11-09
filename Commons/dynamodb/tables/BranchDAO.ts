@@ -3,6 +3,7 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   paginateScan,
+  paginateQuery,
 } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
 import { BranchDO, BranchDOJava } from "../types";
@@ -88,6 +89,39 @@ export class BranchDAO {
       }
     );
   };
+
+  /**
+   * Returns all branches for a given appId, it paginates until
+   * all branches are fetched.
+   *
+   * @param appId AppId to fetch branches for
+   * @returns List of BranchDOs
+   */
+  public async listBranchesByAppId(appId: string): Promise<BranchDO[]> {
+    const pages = paginateQuery(
+      {
+        client: this.documentClient,
+        pageSize: 1000,
+      },
+      {
+        TableName: this.tableName,
+        KeyConditionExpression: "appId = :appId",
+        ExpressionAttributeValues: {
+          ":appId": appId,
+        },
+      }
+    );
+
+    const branches: BranchDO[] = [];
+
+    for await (const page of pages) {
+      for (const item of page.Items ?? []) {
+        branches.push(item as BranchDO);
+      }
+    }
+
+    return branches;
+  }
 
   /**
    * In DynamoDB BranchDO booleans are stored as numbers but BranchDO in Java

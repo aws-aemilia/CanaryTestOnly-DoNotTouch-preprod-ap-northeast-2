@@ -141,6 +141,7 @@ interface BranchDOBase {
   ttl: string;
   updateTime: string;
   version: number;
+  framework: string;
 }
 
 export interface BranchDOBranchConfig {
@@ -213,4 +214,41 @@ export interface JobStepDO {
   meteredEndTime: string;
   config: any;
   statusCode: string;
+}
+
+export interface ComputeStackDO {
+  computeStackId: string;
+  accountId: string;
+  appId: string;
+  branchName: string;
+  cellAccountId: string;
+  customerRoleArn: string;
+  memory: number;
+  resourcePrefix: string;
+  roleName: string;
+  runtime: ComputeRuntime;
+}
+
+export enum ComputeRuntime {
+  NODEJS_16 = "NODEJS_16",
+  NODEJS_18 = "NODEJS_18",
+}
+
+export interface RoutingRulesDO {
+  pk: string;
+  sk: string;
+  appId: string;
+  branchName: string;
+  activeJobId: string;
+  routes: Route[];
+}
+
+export interface Route {
+  path: string;
+  target: {
+    kind: string;
+  };
+  fallback: {
+    kind: string;
+  };
 }
