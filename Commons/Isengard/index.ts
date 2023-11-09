@@ -6,4 +6,5 @@ export * from "./createAccount";
 export {
   preflightCAZ,
   preflightCAZForAdministrativeIsengardCalls,
+  preflightCAZForAccountRoleCombinations,
 } from "./contingentAuthZ";

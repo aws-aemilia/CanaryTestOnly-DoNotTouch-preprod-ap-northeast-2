@@ -14,6 +14,7 @@ const allowedRoles = [
   "SDCLimitManagement",
   "LambdaInvoker",
   "AHIORollback",
+  "ExtendComputeRollback",
 ];
 
 // Accounts where is safe to assume high risk roles like Admin
