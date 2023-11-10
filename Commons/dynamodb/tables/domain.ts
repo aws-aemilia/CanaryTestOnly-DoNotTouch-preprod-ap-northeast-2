@@ -4,8 +4,11 @@ import {
   GetCommand,
   paginateQuery,
   paginateScan,
+  PutCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { Stage } from "Commons/Isengard";
+import { RegionName } from "Commons/Isengard/types";
 import { DomainDO } from "../types";
 
 /**
@@ -292,3 +295,36 @@ export const findDomainsByAppId = async (
     throw err;
   }
 };
+
+/**
+ * Update a domainDO with optimistic locking. The update will fail with a ConditionalCheckFailedException if the version
+ * of the provided domainDO does not match the current version of the item in DynamoDB.
+ * @param documentClient
+ * @param stage
+ * @param region
+ * @param domainDO
+ */
+export async function updateWithOptimisticLocking(
+  documentClient: DynamoDBDocumentClient,
+  stage: Stage,
+  region: RegionName,
+  domainDO: DomainDO
+) {
+  const expectedVersion = domainDO.version;
+  // When we perform the update, we need to increment the version to take advantage of optimistic locking and avoid
+  // race conditions.
+  domainDO.version += 1;
+  return await documentClient.send(
+    new PutCommand({
+      TableName: `${stage}-${region}-Domain`,
+      Item: domainDO,
+      ConditionExpression: "#version = :expectedVersion",
+      ExpressionAttributeNames: {
+        "#version": "version",
+      },
+      ExpressionAttributeValues: {
+        ":expectedVersion": expectedVersion,
+      },
+    })
+  );
+}

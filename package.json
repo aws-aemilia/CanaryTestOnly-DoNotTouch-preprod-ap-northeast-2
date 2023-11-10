@@ -54,7 +54,8 @@
     "AHIORollback": "ts-node SingleUseTools/AHIORollback/index.ts",
     "ExtendComputeRollback": "ts-node SingleUseTools/ExtendComputeRollback/execute.ts",
     "CleanUpDesiredCertificate.run": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/cleanUpDesiredCertificate.ts",
-    "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts"
+    "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts",
+    "CleanUpDesiredCertificate.rollback": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/rollbackDesiredCertificateChanges.ts"
   },
   "author": "",
   "license": "ISC",

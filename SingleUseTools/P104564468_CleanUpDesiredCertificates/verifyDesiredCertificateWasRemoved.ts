@@ -3,6 +3,7 @@ import { DomainDO, findDomain } from "Commons/dynamodb";
 import { Region, Stage, StandardRoles } from "Commons/Isengard";
 import logger from "Commons/utils/logger";
 import { toRegionName } from "Commons/utils/regions";
+import _ from "lodash";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
@@ -63,15 +64,23 @@ async function compareToCurrentDomains(
       region,
       domainName
     );
-    if (backedUpDomain !== currentDomain) {
-      warningMessage += `⚠️ Verification warning: There is a discrepancy between the backup and the current state of
-      domain ${domainName}. While this can be explained by the customer changing properties on the domain, you may want
-      to manually compare them. \n
-      Backed up domain: ${backedUpDomain} \n
-      Current domain: ${currentDomain} \n`;
+
+    if (currentDomain) {
+      // Set the versions to be equal, since we only care whether all the other fields are the same
+      backedUpDomain.version = currentDomain.version;
+
+      if (!_.isEqual(backedUpDomain, currentDomain)) {
+        warningMessage += `⚠️ Verification warning: There is a discrepancy between the backup and the current state of
+        domain ${domainName}. While this can be explained by the customer changing properties on the domain, you may want
+        to manually compare them. \n
+        Backed up domain: ${JSON.stringify(backedUpDomain)} \n
+        Current domain: ${JSON.stringify(currentDomain)} \n`;
+      }
     }
   }
-  console.warn(warningMessage);
+  if (warningMessage.length > 0) {
+    console.warn(warningMessage);
+  }
 }
 
 async function main() {

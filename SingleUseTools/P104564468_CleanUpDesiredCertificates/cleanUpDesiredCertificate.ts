@@ -12,6 +12,7 @@ import {
   getClients,
   getDomainsToCleanUp,
   Prefix,
+  version,
 } from "./utils";
 
 const LifecycleConfiguration: BucketLifecycleConfiguration = {
@@ -110,7 +111,9 @@ async function removeDesiredCertificateAttribute(
       new UpdateCommand({
         TableName: `${stage}-${region}-Domain`,
         Key: { appId: domain.appId, domainName: domain.domainName },
-        UpdateExpression: `REMOVE ${desiredCertificate}`,
+        // Increment the version number to take advantage of optimistic locking
+        UpdateExpression: `REMOVE ${desiredCertificate} ADD ${version} :one`,
+        ExpressionAttributeValues: { ":one": 1 },
       })
     );
   }

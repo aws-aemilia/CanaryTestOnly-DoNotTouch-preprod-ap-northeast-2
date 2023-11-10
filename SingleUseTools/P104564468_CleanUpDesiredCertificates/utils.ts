@@ -17,6 +17,7 @@ import logger from "Commons/utils/logger";
 
 export const desiredCertificate = "desiredCertificate";
 export const Prefix = "backups/";
+export const version = "version";
 
 export function getBucketName(stage: Stage, region: Region) {
   return `${stage}-${region}-cleanup-desired-certificate`;
