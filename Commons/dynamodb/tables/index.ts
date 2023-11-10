@@ -12,3 +12,4 @@ export * from "./DomainDAO";
 export * from "./AppDAO";
 export * from "./BranchDAO";
 export * from "./ComputeStackDAO";
+export * from "./CloudFrontOperations";
