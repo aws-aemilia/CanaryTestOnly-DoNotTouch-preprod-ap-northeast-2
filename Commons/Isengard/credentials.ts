@@ -20,6 +20,8 @@ const allowedRoles = [
 // Accounts where is safe to assume high risk roles like Admin
 const lowRiskAccountIds = [...integTestAccounts.map((acc) => acc.accountId)];
 
+const credentialsCache = new Map<string, AwsCredentialIdentity>();
+
 const getIsengardCredentials = async (
   accountId: string,
   iamRoleName = "ReadOnly"
@@ -33,15 +35,22 @@ const getIsengardCredentials = async (
     );
   }
 
+  const cachedCred = credentialsCache.get(`${accountId}-${iamRoleName}`);
+  const currentDate = new Date();
+  if (cachedCred && cachedCred.expiration! > currentDate) {
+    return cachedCred;
+  }
   try {
     const creds = await getAssumeRoleCredentials({
       awsAccountID: accountId,
       iamRoleName,
     });
-    return {
+    const res = {
       ...creds,
       expiration: new Date(creds.expiration),
     };
+    credentialsCache.set(`${accountId}-${iamRoleName}`, res);
+    return res;
   } catch (e) {
     const fancyErrorMessage = `
  ┌─────────────────────────────────────────────────────────────────────┐
