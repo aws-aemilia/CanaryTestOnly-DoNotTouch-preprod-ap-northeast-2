@@ -114,6 +114,7 @@ export interface SubdomainDO {
   domainRecord: string;
   verified: number;
   branch: string;
+  prefix: string;
 }
 
 export interface Certificate {

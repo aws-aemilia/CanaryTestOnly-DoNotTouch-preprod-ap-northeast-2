@@ -2,6 +2,13 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { DomainDO } from "../types";
+import {
+  controlPlaneAccount,
+  getIsengardCredentialsProvider,
+  Region,
+  Stage,
+} from "Commons/Isengard";
+import { findDomainsByAppId } from "Commons/dynamodb";
 
 export class DomainDAO {
   private tableName: string;
@@ -18,6 +25,17 @@ export class DomainDAO {
       credentials,
     });
     this.client = DynamoDBDocumentClient.from(dynamoDBClient);
+  }
+
+  static async buildDefault(stage: string, region: string): Promise<DomainDAO> {
+    return new DomainDAO(
+      stage,
+      region,
+      getIsengardCredentialsProvider(
+        (await controlPlaneAccount(stage as Stage, region as Region)).accountId,
+        "FullReadOnly"
+      )
+    );
   }
 
   public async getDomainById(
@@ -37,5 +55,12 @@ export class DomainDAO {
     );
 
     return domainItem.Items as DomainDO[] | undefined;
+  }
+
+  public async findDomainsByAppId(appId: string): Promise<DomainDO[]> {
+    return (
+      (await findDomainsByAppId(this.client, this.stage, this.region, appId)) ??
+      []
+    );
   }
 }
