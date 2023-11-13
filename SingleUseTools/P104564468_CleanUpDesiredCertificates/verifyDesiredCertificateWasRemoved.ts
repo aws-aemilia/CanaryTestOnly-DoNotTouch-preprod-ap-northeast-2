@@ -1,5 +1,5 @@
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { DomainDO, findDomain } from "Commons/dynamodb";
+import { DomainDO, getDomain } from "Commons/dynamodb";
 import { Region, Stage, StandardRoles } from "Commons/Isengard";
 import logger from "Commons/utils/logger";
 import { toRegionName } from "Commons/utils/regions";
@@ -58,10 +58,11 @@ async function compareToCurrentDomains(
     delete backedUpDomain.desiredCertificate;
     const domainName = backedUpDomain.domainName;
 
-    const currentDomain = await findDomain(
+    const currentDomain = await getDomain(
       documentClient,
       stage,
       region,
+      backedUpDomain.appId,
       domainName
     );
 
@@ -71,10 +72,10 @@ async function compareToCurrentDomains(
 
       if (!_.isEqual(backedUpDomain, currentDomain)) {
         warningMessage += `⚠️ Verification warning: There is a discrepancy between the backup and the current state of
-        domain ${domainName}. While this can be explained by the customer changing properties on the domain, you may want
-        to manually compare them. \n
-        Backed up domain: ${JSON.stringify(backedUpDomain)} \n
-        Current domain: ${JSON.stringify(currentDomain)} \n`;
+domain ${domainName}. While this can be explained by the customer changing properties on the domain, you may want
+to manually compare them. \n
+Backed up domain: ${JSON.stringify(backedUpDomain)}
+Current domain: ${JSON.stringify(currentDomain)} \n`;
       }
     }
   }

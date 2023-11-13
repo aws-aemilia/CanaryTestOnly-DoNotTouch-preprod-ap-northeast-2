@@ -77,12 +77,12 @@ async function createBucketIfNotExists(s3: S3, Bucket: string) {
     logger.info(`Bucket already exists: ${Bucket}`);
   } catch (e) {
     await s3.createBucket({ Bucket });
-    await s3.putBucketLifecycleConfiguration({
-      Bucket,
-      LifecycleConfiguration,
-    });
     logger.info(`Created bucket: ${Bucket}`);
   }
+  await s3.putBucketLifecycleConfiguration({
+    Bucket,
+    LifecycleConfiguration,
+  });
   await s3.putObject({
     Bucket,
     Key: "README",
