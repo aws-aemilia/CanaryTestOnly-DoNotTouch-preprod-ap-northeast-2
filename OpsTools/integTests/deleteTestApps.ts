@@ -74,7 +74,7 @@ async function main() {
       region: integTestAccount.region,
       credentials: getIsengardCredentialsProvider(
         integTestAccount.accountId,
-        "OncallOperator"
+        "Admin"
       ),
     });
 
