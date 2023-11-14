@@ -3,6 +3,7 @@ import { createAmplifyAccount } from "./createAmplifyAccount";
 import { computeServiceCellPurposeFn } from "./accountPuporses/computeServiceCell";
 import { Region, Stage } from "../types";
 import { dataPlanePurposeFn } from "./accountPuporses/dataPlane";
+import { aesIntegrationTestPurposeFn } from "./accountPuporses/aesIntegration";
 
 export type CreateAccountFn = (
   stage: Stage,
@@ -18,3 +19,6 @@ export const createComputeServiceCellAccount: CreateAccountFn =
 
 export const createDataPlaneAccount: CreateAccountFn =
   createAmplifyAccount.bind(undefined, dataPlanePurposeFn);
+
+export const createAESIntegTestAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, aesIntegrationTestPurposeFn);

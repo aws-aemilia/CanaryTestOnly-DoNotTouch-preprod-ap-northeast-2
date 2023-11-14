@@ -4,6 +4,7 @@ import {
   computeServiceDataPlaneAccount,
   createComputeServiceCellAccount,
   createComputeServiceControlPlaneAccount,
+  createAESIntegTestAccount,
   createDataPlaneAccount,
   dataPlaneAccount,
   Region,
@@ -21,6 +22,7 @@ import {
 
 // TODO: add this type to the AmplifyAccount type and update Isengard cache
 type AmplifyAccountType =
+  | "aesIntegrationTest"
   | "computeServiceControlPlane"
   | "computeServiceCell"
   | "dataPlane";
@@ -53,12 +55,15 @@ const main = async () => {
 Create an Isengard AWS account
 
 ** Requires mcurl to be installed. install it with https://w.amazon.com/bin/view/NextGenMidway/UserGuide#Client_Environment_Setup_.28for_CLI_or_SSH.29 **
+
+npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --region=us-west-2 (optional for compute cell accounts) --cellNumber=1
 `
     )
     .option("type", {
       describe: "type of account.",
       type: "string",
       choices: [
+        "aesIntegrationTest",
         "computeServiceControlPlane",
         "computeServiceCell",
         "dataPlane",
@@ -119,6 +124,13 @@ Create an Isengard AWS account
       console.log("Refreshing the local account cache...");
       await deleteCache("dataPlaneAccounts");
       await dataPlaneAccount(stage, region);
+      break;
+
+    case "aesIntegrationTest":
+      await createAESIntegTestAccount(stage, region);
+      console.log("SUCCESS");
+      console.log("Refreshing the local account cache...");
+      await deleteCache("aesIntegrationAccounts");
       break;
     default:
       throw new Error("unrecognized account type");
