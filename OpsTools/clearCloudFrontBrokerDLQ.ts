@@ -1,11 +1,4 @@
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBDocumentClient,
-  paginateScan,
-  UpdateCommand,
-  PutCommand,
-} from "@aws-sdk/lib-dynamodb";
 import yargs from "yargs";
 const crypto = require("crypto");
 
@@ -18,7 +11,6 @@ import {
   preflightCAZ,
 } from "Commons/Isengard";
 import logger from "Commons/utils/logger";
-import { BatchIterator } from "Commons/utils/BatchIterator";
 
 import { toRegionName } from "Commons/utils/regions";
 import {
