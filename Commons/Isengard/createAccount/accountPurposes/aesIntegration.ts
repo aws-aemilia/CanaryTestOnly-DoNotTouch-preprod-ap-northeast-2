@@ -1,5 +1,5 @@
+import { toAirportCode } from "Commons/utils/regions";
 import { Region, Stage } from "../../types";
-import { toAirportCode } from "../../../utils/regions";
 import { capitalize } from "../createAmplifyAccount";
 import { AccountPurposeFn } from "./types";
 
@@ -16,4 +16,11 @@ export const aesIntegrationTestPurposeFn: AccountPurposeFn = (
   ).toLowerCase()}@amazon.com`,
   Description: `Amplify Hosting AES Integration Test - ${stage} - ${region}`,
   Group: `Amplify/IntegrationTest/AES/${capitalize(stage)}`,
+  AWSAccountClassification: {
+    IsProduction: false,
+    HasBusinessData: false,
+    HasCustomerData: false,
+    HasCustomerMetadata: false,
+    IsContingentAuthProtected: false,
+  },
 });

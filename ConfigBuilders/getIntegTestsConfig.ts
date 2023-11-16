@@ -1,4 +1,5 @@
 import {
+  aesIntegTestAccounts,
   AmplifyAccount,
   controlPlaneAccounts,
   integTestAccounts,
@@ -62,6 +63,19 @@ const getIntegTestsConfig = async () => {
 
   console.log("//======== integrationTestAccounts =========");
   console.log(toJavaMapBuilderPut(testAccounts));
+
+  const aesIntegTestaccounts = await aesIntegTestAccounts();
+
+  const aesTestAccounts: Record<string, string> = {};
+
+  aesIntegTestaccounts.forEach((account) => {
+    aesTestAccounts[
+      `${account.stage}.${account.region}.aesIntegTestAccountId`
+    ] = account.accountId;
+  });
+
+  console.log("//======== aesIntegrationTestAccounts =========");
+  console.log(toJavaMapBuilderPut(aesTestAccounts));
 
   const controlPlaneAccountIds: Record<string, string> = {};
 

@@ -1,7 +1,7 @@
 import { AccountListItem, listIsengardAccounts } from "@amzn/isengard";
+import { curry, pipe } from "ramda";
 import { toRegionName } from "../utils/regions";
 import { withFileCache } from "./cache";
-import { curry, pipe } from "ramda";
 import { Region, Stage } from "./types";
 
 export type AmplifyAccount = {
@@ -307,6 +307,31 @@ const getUluruAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
+const getAesIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
+  const nameRegex =
+    /aws-mobile-amplify\+aes-integ-tst-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})@amazon.com$/;
+  const allAccounts: AccountListItem[] = await listIsengardAccounts();
+
+  return allAccounts.flatMap((acc) => {
+    const match = acc.Email.match(nameRegex);
+    if (match === null) {
+      return [];
+    }
+
+    const { airportCode, stage } = match.groups!;
+
+    return [
+      {
+        accountId: acc.AWSAccountID,
+        email: acc.Email,
+        airportCode,
+        region: toRegionName(airportCode),
+        stage,
+      },
+    ];
+  });
+};
+
 const withFilterByRegionAndStage = (
   fn: () => Promise<AmplifyAccount[]>
 ): AccountsLookupFn => {
@@ -411,6 +436,19 @@ export const integTestAccount: (
 ) => Promise<AmplifyAccount> = defaultGetAccount(
   getIntegTestAccounts,
   "integTestAccounts"
+);
+
+export const aesIntegTestAccounts: AccountsLookupFn = defaultGetAccounts(
+  getAesIntegTestAccounts,
+  "aesIntegTestAccounts"
+);
+
+export const aesIntegTestAccount: (
+  stage: Stage,
+  region: Region
+) => Promise<AmplifyAccount> = defaultGetAccount(
+  getAesIntegTestAccounts,
+  "aesIntegTestAccounts"
 );
 
 export const consoleAccounts: AccountsLookupFn = defaultGetAccounts(
@@ -540,6 +578,7 @@ export enum AmplifyAccountType {
   kinesisConsumer = "kinesisConsumer",
   metering = "metering",
   domain = "domain",
+  aesIntegTest = "aesIntegTest",
 }
 
 export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
@@ -553,4 +592,5 @@ export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
     kinesisConsumer: kinesisConsumerAccounts,
     metering: meteringAccounts,
     domain: domainAccounts,
+    aesIntegTest: aesIntegTestAccounts,
   };

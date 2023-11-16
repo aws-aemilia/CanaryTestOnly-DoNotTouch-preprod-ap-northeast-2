@@ -3,11 +3,11 @@ import {
   CreateAwsAccountRequest,
   getAwsAccount,
 } from "@amzn/isengard";
-import { Region, Stage } from "../types";
+import { AccountPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/types";
 import { isOptInRegion, toRegionName } from "../../utils/regions";
 import { getRolesForStage } from "../roles/standardRoles";
 import { upsertRole } from "../roles/upsertRole";
-import { AccountPurposeFn } from "./accountPuporses/types";
+import { Region, Stage } from "../types";
 
 const PRIMARY_OWNER = "dcalaver";
 const SECONDARY_OWNER = "snimakom";
@@ -45,21 +45,30 @@ const getOrCreateAccount = async (
   }
 };
 
+/**
+ * Create an Isengard account. The recommended usage of this function is to bind the first two arguments before calling
+ * it:
+ *
+ * `export const createComputeServiceControlPlaneAccount: CreateAccountFn =
+ *   createAmplifyAccount.bind(undefined, computeServiceControlPlanePurposeFn, true);`
+ *
+ * @param purposeFieldsFn A function that, given a region and stage, returns the account's basic information
+ * @param classifyAsProduction Whether to classify prod accounts (when specified in the stage parameter below) as
+ * Isengard production accounts. If you are unsure, set this to false and then manually classify them as production
+ * accounts in the Isengard Web UI.
+ * @param stage The stage of the account
+ * @param region The region of the account
+ * @param cellNumber The cell number of the account
+ */
 export const createAmplifyAccount = async (
   purposeFieldsFn: AccountPurposeFn,
+  classifyAsProduction: boolean,
   stage: Stage,
   region: Region,
   cellNumber?: number
 ) => {
-  const request = {
+  let request = {
     ...purposeFieldsFn(stage, region, cellNumber),
-    AWSAccountClassification: {
-      HasBusinessData: isProd(stage),
-      HasCustomerData: isProd(stage),
-      HasCustomerMetadata: isProd(stage),
-      IsContingentAuthProtected: isProd(stage),
-      IsProduction: isProd(stage),
-    },
     IsPersonal: false,
     OptInRegion: isOptInRegion(region) ? toRegionName(region) : undefined,
     S3PublicAccessSettings: {
@@ -76,6 +85,7 @@ export const createAmplifyAccount = async (
     Type: CTI.Type,
     Item: CTI.Item,
   };
+
   const accountId = await getOrCreateAccount(request);
 
   console.log("Creating default roles...");

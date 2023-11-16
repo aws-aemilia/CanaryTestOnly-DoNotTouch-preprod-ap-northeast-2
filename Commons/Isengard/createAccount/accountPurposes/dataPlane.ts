@@ -1,5 +1,6 @@
+import { toAirportCode } from "Commons/utils/regions";
+import { isProd } from "Commons/utils/stages";
 import { Region, Stage } from "../../types";
-import { toAirportCode } from "../../../utils/regions";
 import { capitalize } from "../createAmplifyAccount";
 import { AccountPurposeFn } from "./types";
 
@@ -14,4 +15,11 @@ export const dataPlanePurposeFn: AccountPurposeFn = (
   Name: `dataplane-${stage}-${toAirportCode(region).toLowerCase()}@amazon.com`,
   Description: `Amplify Hosting Data Plane - ${stage} - ${region}`,
   Group: `Amplify Data Plane/${capitalize(stage)}`,
+  AWSAccountClassification: {
+    IsProduction: isProd(stage),
+    HasBusinessData: isProd(stage),
+    HasCustomerData: isProd(stage),
+    HasCustomerMetadata: isProd(stage),
+    IsContingentAuthProtected: isProd(stage),
+  },
 });

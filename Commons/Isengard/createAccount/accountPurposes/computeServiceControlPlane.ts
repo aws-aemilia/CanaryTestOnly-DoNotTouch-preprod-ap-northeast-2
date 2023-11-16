@@ -1,5 +1,6 @@
+import { toAirportCode } from "Commons/utils/regions";
+import { isProd } from "Commons/utils/stages";
 import { Region, Stage } from "../../types";
-import { toAirportCode } from "../../../utils/regions";
 import { capitalize } from "../createAmplifyAccount";
 import { AccountPurposeFn } from "./types";
 
@@ -18,4 +19,11 @@ export const computeServiceControlPlanePurposeFn: AccountPurposeFn = (
     stage
   )} - ${toAirportCode(region).toUpperCase()}`,
   Group: `Amplify Compute Service/${capitalize(stage)}`,
+  AWSAccountClassification: {
+    IsProduction: isProd(stage),
+    HasBusinessData: isProd(stage),
+    HasCustomerData: isProd(stage),
+    HasCustomerMetadata: isProd(stage),
+    IsContingentAuthProtected: isProd(stage),
+  },
 });

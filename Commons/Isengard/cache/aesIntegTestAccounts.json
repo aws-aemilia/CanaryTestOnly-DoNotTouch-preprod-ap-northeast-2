@@ -1,0 +1,303 @@
+[
+  {
+    "accountId": "904984439936",
+    "email": "aws-mobile-amplify+aes-integ-tst-beta-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "beta"
+  },
+  {
+    "accountId": "612189601014",
+    "email": "aws-mobile-amplify+aes-integ-tst-gamma-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "923120723487",
+    "email": "aws-mobile-amplify+aes-integ-tst-gamma-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "gamma"
+  },
+  {
+    "accountId": "912605649932",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "634005106813",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "627134457544",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "037930163070",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "796449993814",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "782435636830",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "279136958011",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "556952061211",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "535347112038",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "485431326351",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "153655912806",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "368073907327",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-kix@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "021247809086",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "113879523901",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "097168323238",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "460134332100",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "868256031651",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "831533116717",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "663075809631",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "111556921305",
+    "email": "aws-mobile-amplify+aes-integ-tst-preprod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "preprod"
+  },
+  {
+    "accountId": "190064037497",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-arn@amazon.com",
+    "airportCode": "arn",
+    "region": "eu-north-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "671411236752",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-bah@amazon.com",
+    "airportCode": "bah",
+    "region": "me-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "254717030661",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-bom@amazon.com",
+    "airportCode": "bom",
+    "region": "ap-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "969920976054",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-cdg@amazon.com",
+    "airportCode": "cdg",
+    "region": "eu-west-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "159585391761",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-cmh@amazon.com",
+    "airportCode": "cmh",
+    "region": "us-east-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "015931979313",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-dub@amazon.com",
+    "airportCode": "dub",
+    "region": "eu-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "874136404244",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-fra@amazon.com",
+    "airportCode": "fra",
+    "region": "eu-central-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "288278135174",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-gru@amazon.com",
+    "airportCode": "gru",
+    "region": "sa-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "880697893674",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-hkg@amazon.com",
+    "airportCode": "hkg",
+    "region": "ap-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "276112130348",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-iad@amazon.com",
+    "airportCode": "iad",
+    "region": "us-east-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "783007211207",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-icn@amazon.com",
+    "airportCode": "icn",
+    "region": "ap-northeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "337908893855",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-kix@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "prod"
+  },
+  {
+    "accountId": "723429209386",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-lhr@amazon.com",
+    "airportCode": "lhr",
+    "region": "eu-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "271546359879",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-mxp@amazon.com",
+    "airportCode": "mxp",
+    "region": "eu-south-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "097890714401",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-nrt@amazon.com",
+    "airportCode": "nrt",
+    "region": "ap-northeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "481995389109",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-pdx@amazon.com",
+    "airportCode": "pdx",
+    "region": "us-west-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "282783613351",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-sfo@amazon.com",
+    "airportCode": "sfo",
+    "region": "us-west-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "945055062656",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-sin@amazon.com",
+    "airportCode": "sin",
+    "region": "ap-southeast-1",
+    "stage": "prod"
+  },
+  {
+    "accountId": "968756468778",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-syd@amazon.com",
+    "airportCode": "syd",
+    "region": "ap-southeast-2",
+    "stage": "prod"
+  },
+  {
+    "accountId": "739276099161",
+    "email": "aws-mobile-amplify+aes-integ-tst-prod-yul@amazon.com",
+    "airportCode": "yul",
+    "region": "ca-central-1",
+    "stage": "prod"
+  }
+]

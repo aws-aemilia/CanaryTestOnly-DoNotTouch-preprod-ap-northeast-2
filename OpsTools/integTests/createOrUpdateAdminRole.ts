@@ -1,5 +1,3 @@
-import yargs from "yargs";
-import logger from "../../Commons/utils/logger";
 import {
   AttachRolePolicyCommand,
   CreateRoleCommand,
@@ -8,13 +6,13 @@ import {
   Role,
   UpdateAssumeRolePolicyCommand,
 } from "@aws-sdk/client-iam";
+import yargs from "yargs";
 import {
-  integTestAccounts,
+  aesIntegTestAccounts,
   getIsengardCredentialsProvider,
   Stage,
-  Region,
 } from "../../Commons/Isengard";
-import { toRegionName } from "Commons/utils/regions";
+import logger from "../../Commons/utils/logger";
 
 // This role is used by the Integration Tests to create resources in the test accounts.
 // These are low risk accounts so it's ok to have them use an Admin role.
@@ -62,7 +60,7 @@ async function main() {
     .help().argv;
 
   const { stage } = args;
-  const accounts = await integTestAccounts({ stage: stage as Stage });
+  const accounts = await aesIntegTestAccounts({ stage: stage as Stage });
 
   for (const account of accounts) {
     logger.info("=========================================");
@@ -78,18 +76,22 @@ async function main() {
       credentials: creds,
     });
 
-    const role = await iamClient.send(
-      new GetRoleCommand({
-        RoleName: roleName,
-      })
-    );
-
-    if (!role.Role) {
+    try {
+      const role = await iamClient.send(
+        new GetRoleCommand({
+          RoleName: roleName,
+        })
+      );
+      if (role.Role) {
+        logger.info("Role already exists, updating it");
+        await updateRole(iamClient, role.Role);
+      } else {
+        logger.info("Role does not exist");
+        await createRole(iamClient);
+      }
+    } catch (e) {
       logger.info("Role does not exist");
       await createRole(iamClient);
-    } else {
-      logger.info("Role already exists, updating it");
-      await updateRole(iamClient, role.Role);
     }
   }
 }
