@@ -74,6 +74,7 @@
     "@amzn/sim-client": "*",
     "@amzn/tickety-typescript-sdk": "*",
     "@aws-sdk/client-acm": "^3.118.1",
+    "@aws-sdk/client-ecs": "^3.438.0",
     "@aws-sdk/client-amplify": "^3.262.0",
     "@aws-sdk/client-api-gateway": "^3.262.0",
     "@aws-sdk/client-athena": "^3.137.0",
