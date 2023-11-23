@@ -1,0 +1,101 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::548652960811:role/Compute-d9qirzc7ntd8d-9ff2a3fe3befba52ae128edc6adcead9",
+    "computeStackId": "arn:aws:amplify:us-west-1:829122409718:apps/d9qirzc7ntd8d/branches/pr-110",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:548652960811:function:Compute-d9qirzc7ntd8d-9ff2a3fe3befba52ae128edc6adcead9",
+    "memory": 1024,
+    "functionName": "Compute-d9qirzc7ntd8d-9ff2a3fe3befba52ae128edc6adcead9"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d1qfk2l6p9micq-be974dbf9f888cb779b952f5661ef3e8",
+    "computeStackId": "arn:aws:amplify:us-west-1:575935764026:apps/d1qfk2l6p9micq/branches/pr-489",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d1qfk2l6p9micq-be974dbf9f888cb779b952f5661ef3e8",
+    "memory": 1024,
+    "functionName": "Compute-d1qfk2l6p9micq-be974dbf9f888cb779b952f5661ef3e8"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d2ru0xp1ror14f-5aed741bf0640c35f4ac27b5a0151511",
+    "computeStackId": "arn:aws:amplify:us-west-1:575935764026:apps/d2ru0xp1ror14f/branches/pr-492",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d2ru0xp1ror14f-5aed741bf0640c35f4ac27b5a0151511",
+    "memory": 1024,
+    "functionName": "Compute-d2ru0xp1ror14f-5aed741bf0640c35f4ac27b5a0151511"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d2nvob4zr1mb6u-bec83063ec7d9cbe477d8cfe541e549c",
+    "computeStackId": "arn:aws:amplify:us-west-1:245999808048:apps/d2nvob4zr1mb6u/branches/pr-7",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d2nvob4zr1mb6u-bec83063ec7d9cbe477d8cfe541e549c",
+    "memory": 1024,
+    "functionName": "Compute-d2nvob4zr1mb6u-bec83063ec7d9cbe477d8cfe541e549c"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::548652960811:role/Compute-d21d4uw8q22d4n-1936ad61bb50546c17884a78a54c349f",
+    "computeStackId": "arn:aws:amplify:us-west-1:144607226554:apps/d21d4uw8q22d4n/branches/pr-14",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:548652960811:function:Compute-d21d4uw8q22d4n-1936ad61bb50546c17884a78a54c349f",
+    "memory": 1024,
+    "functionName": "Compute-d21d4uw8q22d4n-1936ad61bb50546c17884a78a54c349f"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::548652960811:role/Compute-dhcv64nsaf010-c13fb09ff4d8b1c04c56ab6c9c91b83a",
+    "computeStackId": "arn:aws:amplify:us-west-1:197669357384:apps/dhcv64nsaf010/branches/pr-16",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:548652960811:function:Compute-dhcv64nsaf010-c13fb09ff4d8b1c04c56ab6c9c91b83a",
+    "memory": 1024,
+    "functionName": "Compute-dhcv64nsaf010-c13fb09ff4d8b1c04c56ab6c9c91b83a"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d111111111111111-8a429fee96a66e548a071ff41eb87089",
+    "computeStackId": "IntegrationTest-26aa8aa2-5555-45bf-bd49-c44635656f7b",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d111111111111111-8a429fee96a66e548a071ff41eb87089",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-8a429fee96a66e548a071ff41eb87089"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d111111111111111-c132d9442a5656156ae6346f2a0075b9",
+    "computeStackId": "IntegrationTest-85e1bd4d-c7ef-4698-bf4f-cf1734d9618c",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d111111111111111-c132d9442a5656156ae6346f2a0075b9",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-c132d9442a5656156ae6346f2a0075b9"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::567442702366:role/Compute-d2fzlk58ophks8-eff1c00b63d681317faf74ce3268b2eb",
+    "computeStackId": "arn:aws:amplify:us-west-1:575935764026:apps/d2fzlk58ophks8/branches/pr-82",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.us-west-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:us-west-1:567442702366:function:Compute-d2fzlk58ophks8-eff1c00b63d681317faf74ce3268b2eb",
+    "memory": 1024,
+    "functionName": "Compute-d2fzlk58ophks8-eff1c00b63d681317faf74ce3268b2eb"
+  }
+]

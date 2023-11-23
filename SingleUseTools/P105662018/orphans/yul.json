@@ -1,0 +1,79 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-d367eeb410fa6acc35deaebb68ebb692",
+    "computeStackId": "IntegrationTest-cd168975-e76d-49a4-b8c3-60e06cf0c00c",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-d367eeb410fa6acc35deaebb68ebb692",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-d367eeb410fa6acc35deaebb68ebb692"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-d9399ebdba644c608c6bd9f523db5caf",
+    "computeStackId": "IntegrationTest-9567eb50-0343-4d63-8682-b52b8f6b1824",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-d9399ebdba644c608c6bd9f523db5caf",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-d9399ebdba644c608c6bd9f523db5caf"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-3043335012f238d387fec3ccfcb03cef",
+    "computeStackId": "IntegrationTest-e0fb64df-4045-4945-acc3-30cd365b0b63",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-3043335012f238d387fec3ccfcb03cef",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-3043335012f238d387fec3ccfcb03cef"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-b5d27778c5e727040b5f31ebd7d1879f",
+    "computeStackId": "IntegrationTest-c5095696-8815-4389-8ea5-2bc765cb7a3a",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-b5d27778c5e727040b5f31ebd7d1879f",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-b5d27778c5e727040b5f31ebd7d1879f"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-815fb71a06b6462ffec649e8c9fd843f",
+    "computeStackId": "IntegrationTest-9ff92f86-1a09-4e8f-a34b-9cb90a649132",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-815fb71a06b6462ffec649e8c9fd843f",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-815fb71a06b6462ffec649e8c9fd843f"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::159719714165:role/Compute-d111111111111111-86bc6d97ea2194dbf8e3b933f8cc98ba",
+    "computeStackId": "IntegrationTest-d6bbb729-0fe0-4f15-b0ac-8d5f9d80d842",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:159719714165:function:Compute-d111111111111111-86bc6d97ea2194dbf8e3b933f8cc98ba",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-86bc6d97ea2194dbf8e3b933f8cc98ba"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::872145348394:role/Compute-d2ezcw43zqgo1h-c4ada2b891f589a336b51cc9843e61aa",
+    "computeStackId": "arn:aws:amplify:ca-central-1:237652050010:apps/d2ezcw43zqgo1h/branches/pr-136",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ca-central-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ca-central-1:872145348394:function:Compute-d2ezcw43zqgo1h-c4ada2b891f589a336b51cc9843e61aa",
+    "memory": 1024,
+    "functionName": "Compute-d2ezcw43zqgo1h-c4ada2b891f589a336b51cc9843e61aa"
+  }
+]

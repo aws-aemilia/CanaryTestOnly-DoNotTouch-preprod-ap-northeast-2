@@ -1,0 +1,7 @@
+[
+  {
+    "@timestamp": "2023-03-31 15:14:46.678",
+    "execution_arn": "arn:aws:states:ap-southeast-2:352487128082:execution:ComputeStackDeployer:a231b3b7-9169-43d0-b985-38a9813e932c",
+    "type": "ExecutionFailed"
+  }
+]

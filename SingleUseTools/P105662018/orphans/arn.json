@@ -1,0 +1,57 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::449879167594:role/Compute-d111111111111111-ac19495fd49f6895f4deefed7fb67161",
+    "computeStackId": "IntegrationTest-fb34b0bb-06e0-458f-b321-bcfdc1a2c0a1",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-north-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-north-1:449879167594:function:Compute-d111111111111111-ac19495fd49f6895f4deefed7fb67161",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-ac19495fd49f6895f4deefed7fb67161"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::191045910240:role/Compute-d3rq195jv0kkxw-48c8be09ba81e2242988f6abf87fb936",
+    "computeStackId": "arn:aws:amplify:eu-north-1:528920630725:apps/d3rq195jv0kkxw/branches/pr-88",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-north-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-north-1:191045910240:function:Compute-d3rq195jv0kkxw-48c8be09ba81e2242988f6abf87fb936",
+    "memory": 1024,
+    "functionName": "Compute-d3rq195jv0kkxw-48c8be09ba81e2242988f6abf87fb936"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::947573580920:role/Compute-d111111111111111-c41a6dd570c2feacd4810f4e7fe38f1d",
+    "computeStackId": "IntegrationTest-af9a911d-b5b9-4fb8-a141-0bac68abf512",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-north-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-north-1:947573580920:function:Compute-d111111111111111-c41a6dd570c2feacd4810f4e7fe38f1d",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-c41a6dd570c2feacd4810f4e7fe38f1d"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::191045910240:role/Compute-dtfkxqm9zy4vd-bf5ed457bf073a151e77587059a11aea",
+    "computeStackId": "arn:aws:amplify:eu-north-1:811957425558:apps/dtfkxqm9zy4vd/branches/main",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-north-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-north-1:191045910240:function:Compute-dtfkxqm9zy4vd-bf5ed457bf073a151e77587059a11aea",
+    "memory": 1024,
+    "functionName": "Compute-dtfkxqm9zy4vd-bf5ed457bf073a151e77587059a11aea"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::191045910240:role/Compute-d11dikiqcjv0my-8652c73206ad73ff2914ca518649a8ef",
+    "computeStackId": "arn:aws:amplify:eu-north-1:832865485331:apps/d11dikiqcjv0my/branches/pr-151",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-north-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-north-1:191045910240:function:Compute-d11dikiqcjv0my-8652c73206ad73ff2914ca518649a8ef",
+    "memory": 1024,
+    "functionName": "Compute-d11dikiqcjv0my-8652c73206ad73ff2914ca518649a8ef"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::036695738573:role/Compute-d111111111111111-9945759adb55339b579222b8c307a5f1",
+    "computeStackId": "IntegrationTest-df8629bf-9139-4236-8c4a-9af309122b04",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-south-1:036695738573:function:Compute-d111111111111111-9945759adb55339b579222b8c307a5f1",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-9945759adb55339b579222b8c307a5f1"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::333266953404:role/Compute-d111111111111111-6e5ee4d8626ddc18e1480784ed340d7a",
+    "computeStackId": "IntegrationTest-ebae092f-7c12-4c48-8120-9f60846f9cee",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-south-1:333266953404:function:Compute-d111111111111111-6e5ee4d8626ddc18e1480784ed340d7a",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-6e5ee4d8626ddc18e1480784ed340d7a"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::036695738573:role/Compute-d1mrh0yte4raye-5d317c41856cb8f916f1f0e39d564ec9",
+    "computeStackId": "arn:aws:amplify:eu-south-1:702027316295:apps/d1mrh0yte4raye/branches/main",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-south-1:036695738573:function:Compute-d1mrh0yte4raye-5d317c41856cb8f916f1f0e39d564ec9",
+    "memory": 1024,
+    "functionName": "Compute-d1mrh0yte4raye-5d317c41856cb8f916f1f0e39d564ec9"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::333266953404:role/Compute-d111111111111111-e6e8839d46268bca2e8a5d79c352840e",
+    "computeStackId": "IntegrationTest-0759cb1c-b0e9-4242-84be-f04901aa410d",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.eu-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:eu-south-1:333266953404:function:Compute-d111111111111111-e6e8839d46268bca2e8a5d79c352840e",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-e6e8839d46268bca2e8a5d79c352840e"
+  }
+]

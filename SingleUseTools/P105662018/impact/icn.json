@@ -1,0 +1,42 @@
+[
+  {
+    "@timestamp": "2023-06-22 20:53:19.322",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:85992c78-5df6-4aa7-b1f4-0bb3b48fe0e1",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-06-22 20:52:45.065",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:b3845bb2-8b20-4fb0-a083-df10d9c0c4e6",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-06-22 20:52:11.775",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:555c8dc7-fd68-405f-847a-1b5998ee25f2",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-04-26 18:54:02.509",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:5003f3a6-31a7-4bda-af76-468bc9d9749f",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-04-26 18:53:27.481",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:9280c2b3-6b20-4f25-8191-8e819fef6508",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-04-26 18:52:53.842",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:e97b24cf-9fe5-44df-a855-13c7f801da43",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2022-12-12 08:18:42.909",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:9c16411f-b1d9-4b36-b763-3b9632829f3c",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2022-12-12 08:18:39.626",
+    "execution_arn": "arn:aws:states:ap-northeast-2:448766840572:execution:ComputeStackDeployer:c3d5c5ca-e846-4c12-a7cb-ba6d91c95486",
+    "type": "ExecutionFailed"
+  }
+]

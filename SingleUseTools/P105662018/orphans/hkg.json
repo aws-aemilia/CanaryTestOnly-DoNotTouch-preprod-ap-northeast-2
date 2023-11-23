@@ -1,0 +1,13 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::041247672062:role/Compute-d111111111111111-ad8a938b160c2faf31c61f5eb0088a0b",
+    "computeStackId": "IntegrationTest-a9a5b5e7-658a-4785-bc30-20d18b47b7a5",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.ap-east-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:ap-east-1:041247672062:function:Compute-d111111111111111-ad8a938b160c2faf31c61f5eb0088a0b",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-ad8a938b160c2faf31c61f5eb0088a0b"
+  }
+]

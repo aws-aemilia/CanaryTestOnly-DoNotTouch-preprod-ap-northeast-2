@@ -1,0 +1,12 @@
+[
+  {
+    "@timestamp": "2023-06-06 12:28:01.926",
+    "execution_arn": "arn:aws:states:ca-central-1:280608668128:execution:ComputeStackDeployer:0169cf12-e911-41fd-9ee2-5a197d0626c8",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-05-23 12:42:07.927",
+    "execution_arn": "arn:aws:states:ca-central-1:280608668128:execution:ComputeStackDeployer:087be5ca-5a62-4e6a-a08c-9267290f5d20",
+    "type": "ExecutionFailed"
+  }
+]

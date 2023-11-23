@@ -1,0 +1,17 @@
+[
+  {
+    "@timestamp": "2023-07-17 20:57:39.830",
+    "execution_arn": "arn:aws:states:eu-west-1:721353850853:execution:ComputeStackDeployer:a8816178-b647-4970-b4e2-4100f3a510f4",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-07-17 20:57:05.877",
+    "execution_arn": "arn:aws:states:eu-west-1:721353850853:execution:ComputeStackDeployer:185fc860-3261-4d9b-9494-a41c833ab5f4",
+    "type": "ExecutionFailed"
+  },
+  {
+    "@timestamp": "2023-07-17 20:56:31.769",
+    "execution_arn": "arn:aws:states:eu-west-1:721353850853:execution:ComputeStackDeployer:8ec4f37a-6f91-4caf-9c0d-ccf2dcec53e1",
+    "type": "ExecutionFailed"
+  }
+]

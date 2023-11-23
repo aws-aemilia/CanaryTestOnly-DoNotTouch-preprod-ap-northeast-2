@@ -1,0 +1,35 @@
+[
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::787521425488:role/Compute-d111111111111111-fdf521de85bba28fa33688db3f2642d0",
+    "computeStackId": "IntegrationTest-1a5a3f1f-949c-4500-9e1a-cc689eaf3fc6",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.me-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:me-south-1:787521425488:function:Compute-d111111111111111-fdf521de85bba28fa33688db3f2642d0",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-fdf521de85bba28fa33688db3f2642d0"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::787521425488:role/Compute-d111111111111111-fd1208cbf9437d6e7923987af8ab73d3",
+    "computeStackId": "IntegrationTest-b0082aa9-9966-4738-b7df-c6aac460440f",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.me-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:me-south-1:787521425488:function:Compute-d111111111111111-fd1208cbf9437d6e7923987af8ab73d3",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-fd1208cbf9437d6e7923987af8ab73d3"
+  },
+  {
+    "functionId": "/",
+    "roleArn": "arn:aws:iam::993828787059:role/Compute-d111111111111111-41e25faf302c9c1001c5ca5c8d0efec3",
+    "computeStackId": "IntegrationTest-7179dd45-6ccc-485f-81d2-153e2deb5de0",
+    "runtime": "NODEJS_16",
+    "timeoutInSeconds": 30,
+    "endpointUrl": "https://prod.me-south-1.gateway.amplify.aws.dev",
+    "functionArn": "arn:aws:lambda:me-south-1:993828787059:function:Compute-d111111111111111-41e25faf302c9c1001c5ca5c8d0efec3",
+    "memory": 1024,
+    "functionName": "Compute-d111111111111111-41e25faf302c9c1001c5ca5c8d0efec3"
+  }
+]
