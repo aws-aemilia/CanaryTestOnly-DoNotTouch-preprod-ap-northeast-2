@@ -14,6 +14,7 @@ import {
   preflightCAZ,
 } from "Commons/Isengard";
 import logger from "Commons/utils/logger";
+import { toRegionName } from "Commons/utils/regions";
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
@@ -51,7 +52,7 @@ async function main() {
     .help().argv;
 
   const stage = args.stage as Stage;
-  const region = args.region as Region;
+  const region = toRegionName(args.region);
   const { appId, skipWait } = args;
 
   const account = await controlPlaneAccount(stage, region);
@@ -66,6 +67,7 @@ async function main() {
   const client = new AmplifyCloudFrontBrokerClient({
     endpoint: `https://${stage}.${region}.cfbroker.amplify.aws.dev`,
     credentials,
+    region: toRegionName(region),
   });
 
   const res = await client.send(

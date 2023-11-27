@@ -59,7 +59,7 @@ const categoryMappings: CategoryMapping[] = [
   {
     pattern: "Amplify Compute Service",
     category: Category.ComputeService,
-  }
+  },
 ];
 
 export function getCategory(pageSubject: string): Category {
