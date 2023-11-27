@@ -52,6 +52,14 @@ const categoryMappings: CategoryMapping[] = [
     pattern: "AemiliaWebhookProcessorService",
     category: Category.WebhookProcessor,
   },
+  {
+    pattern: "Amplify CloudFront Broker in",
+    category: Category.CloudFrontBroker,
+  },
+  {
+    pattern: "Amplify Compute Service",
+    category: Category.ComputeService,
+  }
 ];
 
 export function getCategory(pageSubject: string): Category {

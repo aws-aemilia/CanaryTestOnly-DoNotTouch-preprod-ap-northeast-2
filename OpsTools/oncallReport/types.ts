@@ -31,6 +31,7 @@ export enum Category {
   CustomerEscalations = "Customer Escalations",
   Other = "Other",
   WebhookProcessor = "Webhook Processor",
+  CloudFrontBroker = "CloudFront Broker",
 }
 
 export interface EntriesByCategory {
