@@ -56,7 +56,8 @@
     "ExtendComputeRollback": "ts-node SingleUseTools/ExtendComputeRollback/execute.ts",
     "CleanUpDesiredCertificate.run": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/cleanUpDesiredCertificate.ts",
     "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts",
-    "CleanUpDesiredCertificate.rollback": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/rollbackDesiredCertificateChanges.ts"
+    "CleanUpDesiredCertificate.rollback": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/rollbackDesiredCertificateChanges.ts",
+    "migrated-apps-query": "ts-node OpsTools/migrated-apps-query.ts"
   },
   "author": "",
   "license": "ISC",
