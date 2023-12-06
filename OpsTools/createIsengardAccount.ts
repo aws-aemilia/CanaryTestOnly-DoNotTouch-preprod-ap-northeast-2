@@ -5,6 +5,8 @@ import {
   createComputeServiceCellAccount,
   createComputeServiceControlPlaneAccount,
   createAESIntegTestAccount,
+  createKinesisConsumerAccount,
+  createIntegTestAccount,
   createDataPlaneAccount,
   dataPlaneAccount,
   Region,
@@ -22,6 +24,8 @@ import {
 
 // TODO: add this type to the AmplifyAccount type and update Isengard cache
 type AmplifyAccountType =
+  | "kinesisConsumer"
+  | "integrationTest"
   | "aesIntegrationTest"
   | "computeServiceControlPlane"
   | "computeServiceCell"
@@ -63,6 +67,8 @@ npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --re
       describe: "type of account.",
       type: "string",
       choices: [
+        "kinesisConsumer",
+        "integrationTest",
         "aesIntegrationTest",
         "computeServiceControlPlane",
         "computeServiceCell",
@@ -73,7 +79,7 @@ npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --re
     .option("stage", {
       describe: "stage to run the command",
       type: "string",
-      choices: ["beta", "gamma", "prod"],
+      choices: ["beta", "gamma", "preprod", "prod"],
       demandOption: true,
     })
     .option("region", {
@@ -132,6 +138,21 @@ npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --re
       console.log("Refreshing the local account cache...");
       await deleteCache("aesIntegrationAccounts");
       break;
+
+    case "kinesisConsumer":
+      await createKinesisConsumerAccount(stage, region);
+      console.log("SUCCESS");
+      console.log("Refreshing the local account cache...");
+      await deleteCache("kinesisConsumerAccounts");
+      break;
+
+    case "integrationTest":
+      await createIntegTestAccount(stage, region);
+      console.log("SUCCESS");
+      console.log("Refreshing the local account cache...");
+      await deleteCache("integrationTestAccounts");
+      break;
+
     default:
       throw new Error("unrecognized account type");
   }

@@ -1,3 +1,5 @@
+import { kinesisConsumerTestPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/kinesisConsumer";
+import { integrationTestPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/integrationTest";
 import { aesIntegrationTestPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/aesIntegration";
 import { computeServiceCellPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/computeServiceCell";
 import { computeServiceControlPlanePurposeFn } from "Commons/Isengard/createAccount/accountPurposes/computeServiceControlPlane";
@@ -26,3 +28,9 @@ export const createDataPlaneAccount: CreateAccountFn =
 
 export const createAESIntegTestAccount: CreateAccountFn =
   createAmplifyAccount.bind(undefined, aesIntegrationTestPurposeFn, false);
+
+export const createKinesisConsumerAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, kinesisConsumerTestPurposeFn, true);
+
+export const createIntegTestAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, integrationTestPurposeFn, true);
