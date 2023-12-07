@@ -1,9 +1,15 @@
 import yargs from "yargs";
-import { exec } from "../../Commons/utils/exec";
+import { MinervaFacade } from "./lib/MinervaFacade";
+import { Stage } from "Commons/Isengard";
+import { isOptInRegion, toRegionName } from "Commons/utils/regions";
+import logger from "Commons/utils/logger";
 import {
-  updateCommand,
-  prepareMinervaExecution,
-} from "./build-minerva-commands";
+  adjustableLimitsNames,
+  allLimitNames,
+  allLimitsByName,
+} from "./lib/MinervaLimit";
+import { validateLimitUpdateRules } from "./lib/LimitUpdateValidator";
+import { allRuleNames } from "./lib/LimitUpdateRules";
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
@@ -16,7 +22,7 @@ async function main() {
       describe: "Stage to run the command in",
       type: "string",
       default: "prod",
-      choices: ["beta", "gamma", "preprod", "prod"],
+      choices: ["beta", "gamma", "prod"],
       demandOption: true,
     })
     .option("region", {
@@ -33,62 +39,66 @@ async function main() {
       description: "Name of limit to change",
       type: "string",
       demandOption: true,
-      choices: [
-        "BRANCHES_PER_APP_COUNT",
-        "BUILD_ARTIFACT_MAX_SIZE",
-        "CACHE_ARTIFACT_MAX_SIZE",
-        "CONCURRENT_JOBS_COUNT",
-        "CUSTOMER_APP_PER_REGION_COUNT",
-        "DOMAINS_PER_APP_COUNT",
-        "ENVIRONMENT_CACHE_ARTIFACT_MAX_SIZE",
-        "MANUAL_DEPLOY_ARTIFACT_MAX_SIZE",
-        "SUB_DOMAINS_PER_DOMAIN_COUNT",
-        "WEBHOOKS_PER_APP_COUNT",
-        "MAXIMUM_APP_CREATIONS_PER_HOUR",
-      ],
+      choices: allLimitNames,
     })
     .option("value", {
       description: "Value to update limit with",
-      type: "string",
+      type: "number",
       demandOption: true,
+    })
+    .option("rulesToBypass", {
+      description:
+        "validation rules that you want to bypass. Use with caution ",
+      type: "string",
+      choices: allRuleNames,
+      array: true,
+      demandOption: false,
     })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage, region, accountId, limitName, value } = args;
+  const { stage, region, accountId, limitName, value, rulesToBypass } = args;
 
-  const { regionName, ripServiceName, credentials, logger } =
-    await prepareMinervaExecution({
-      stage,
-      region,
-    });
-
-  const minervaCommand = updateCommand({
-    accountId,
-    ripServiceName,
-    regionName,
-    limitName,
-    value,
-  });
-
-  logger.info(`Running limit increase command: ${minervaCommand}`);
-  const { stdout, stderr } = await exec(minervaCommand, credentials);
-
-  if (stderr) {
-    logger.error("An error occurred", stderr);
-  } else {
-    logger.info(
-      `
-***** COPY EVERYTHING BELOW TO PASTE INTO TICKET *****
-Customer limit increased: \n` +
-        "```\n" +
-        `${stdout}` +
-        "```\n" +
-        `Note: The limit is only applicable in the ${regionName} region.  If the customer would like another limit increase please make another request via the [Service Quotas dashboard](https://aws.amazon.com/blogs/mt/introducing-service-quotas-view-and-manage-your-quotas-for-aws-services-from-one-central-location/).
-`
+  if (isOptInRegion(region)) {
+    logger.error(
+      `${region} is an opt-in region and is not supported by this tool because it was not onboarded properly to Minerva.
+See the runbook for next steps: https://w.amazon.com/bin/view/AWS/Mobile/AppHub/Internal/Operations/Runbook/SDC#HSupportedLimitIncreases`
     );
+    process.exit(1);
   }
+
+  const regionName = toRegionName(region);
+
+  const minerva = new MinervaFacade(stage as Stage, regionName);
+
+  const currentLimit = await minerva.getLimit(limitName, accountId);
+
+  try {
+    await validateLimitUpdateRules({
+      minervaLimit: allLimitsByName[limitName],
+      currentValue: currentLimit?.SubjectLimit.Value.SingleValue,
+      newValue: value,
+      rulesToBypass,
+    });
+  } catch (e) {
+    logger.error((e as Error).message);
+    process.exit(1);
+  }
+
+  await minerva.updateLimit(limitName, accountId, value);
+  const newLimit = await minerva.getLimit(limitName, accountId);
+
+  logger.info(
+    `
+***** COPY EVERYTHING BELOW TO PASTE INTO TICKET *****
+Customer limit increased: 
+\`\`\`
+${JSON.stringify(newLimit, null, 2)}
+\`\`\`
+Note: The limit is only applicable in the **${regionName}** region.  If the customer would like another limit increase please make another request via the [Service Quotas dashboard](https://aws.amazon.com/blogs/mt/introducing-service-quotas-view-and-manage-your-quotas-for-aws-services-from-one-central-location/).
+`
+  );
 }
 
 main()

@@ -11,7 +11,7 @@ import { exec } from "../../Commons/utils/exec";
 import confirm from "../../Commons/utils/confirm";
 import sleep from "../../Commons/utils/sleep";
 import { createLogger } from "../../Commons/utils/logger";
-import { updateCommand } from "./build-minerva-commands";
+import { updateCommand } from "./lib/build-minerva-commands";
 import { toRegionName } from "../../Commons/utils/regions";
 import { getArgs } from "./get-args";
 

@@ -1,6 +1,9 @@
 import yargs from "yargs";
-import { exec } from "../../Commons/utils/exec";
-import { getCommand, prepareMinervaExecution } from "./build-minerva-commands";
+import { MinervaFacade } from "./lib/MinervaFacade";
+import { Stage } from "Commons/Isengard";
+import { toRegionName } from "Commons/utils/regions";
+import logger from "Commons/utils/logger";
+import { allLimitNames, allLimitsByName } from "./lib/MinervaLimit";
 
 async function main() {
   const args = await yargs(process.argv.slice(2))
@@ -30,19 +33,7 @@ async function main() {
       description: "Name of limit to change",
       type: "string",
       demandOption: true,
-      choices: [
-        "BRANCHES_PER_APP_COUNT",
-        "BUILD_ARTIFACT_MAX_SIZE",
-        "CACHE_ARTIFACT_MAX_SIZE",
-        "CONCURRENT_JOBS_COUNT",
-        "CUSTOMER_APP_PER_REGION_COUNT",
-        "DOMAINS_PER_APP_COUNT",
-        "ENVIRONMENT_CACHE_ARTIFACT_MAX_SIZE",
-        "MANUAL_DEPLOY_ARTIFACT_MAX_SIZE",
-        "SUB_DOMAINS_PER_DOMAIN_COUNT",
-        "WEBHOOKS_PER_APP_COUNT",
-        "MAXIMUM_APP_CREATIONS_PER_HOUR",
-      ],
+      choices: allLimitNames,
     })
     .strict()
     .version(false)
@@ -50,31 +41,22 @@ async function main() {
 
   const { stage, region, accountId, limitName } = args;
 
-  const { regionName, ripServiceName, credentials, logger } =
-    await prepareMinervaExecution({
-      stage,
-      region,
-    });
+  const minerva = new MinervaFacade(stage as Stage, toRegionName(region));
 
-  const minervaCommand = getCommand({
-    accountId,
-    ripServiceName,
-    regionName,
-    limitName,
-  });
+  const result = await minerva.getLimit(limitName, accountId);
 
-  logger.info(`Running limit increase command: ${minervaCommand}`);
-  const { stdout, stderr } = await exec(minervaCommand, credentials);
-
-  if (stderr) {
-    logger.error("An error occurred", stderr);
-  } else {
+  if (result) {
     logger.info(
-      `
-Current customer limit: \n` +
-        "```\n" +
-        `${stdout}` +
-        "```\n"
+      `Current customer limit: 
+\`\`\`
+${JSON.stringify(result, null, 2)}
+\`\`\`
+`
+    );
+  } else {
+    const limit = allLimitsByName[limitName];
+    logger.info(
+      `No limit override found for ${limitName}, ${accountId}. The default limit value of ${limit.defaultLimit} applies`
     );
   }
 }
