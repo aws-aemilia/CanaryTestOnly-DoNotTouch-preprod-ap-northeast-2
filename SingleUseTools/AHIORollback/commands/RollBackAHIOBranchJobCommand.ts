@@ -1,18 +1,18 @@
-import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
 import {
   AmplifyHostingComputeClient,
   DeploymentSummary,
   GetDeploymentCommand,
   StartDeploymentCommand,
 } from "@amzn/awsamplifycomputeservice-client";
+import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
+import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
+import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
+import { EdgeConfigDAO } from "Commons/dynamodb/tables/EdgeConfigDAO";
 import { HostingConfigDAO } from "Commons/dynamodb/tables/HostingConfigDAO";
 import { Stage } from "Commons/Isengard";
 import { RegionName } from "Commons/Isengard/types";
 import { createLogger } from "Commons/utils/logger";
-import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
 import sleep from "Commons/utils/sleep";
-import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
-import { EdgeConfigDAO } from "Commons/dynamodb/tables/EdgeConfigDAO";
 import { representsActiveJob } from "./commons/representsActiveJob";
 
 const logger = createLogger();
@@ -37,6 +37,7 @@ export class RollBackAHIOBranchJobCommand {
     stage: Stage;
     region: RegionName;
     appDAO: AppDAO;
+    edgeConfigDAO: EdgeConfigDAO;
     computeServiceClient: AmplifyHostingComputeClient;
     hostingConfigDAO: HostingConfigDAO;
     commandParams: RollBackAHIOBranchJobCommandParams;
@@ -44,11 +45,11 @@ export class RollBackAHIOBranchJobCommand {
     this.stage = params.stage;
     this.region = params.region;
     this.appDAO = params.appDAO;
+    this.edgeConfigDAO = params.edgeConfigDAO;
     this.computeServiceClient = params.computeServiceClient;
     this.hostingConfigDAO = params.hostingConfigDAO;
     this.commandParams = params.commandParams;
     this.branchDAOPromise = BranchDAO.buildDefault(this.stage, this.region);
-    this.edgeConfigDAO = new EdgeConfigDAO(this.stage, this.region);
   }
 
   public static async build(
@@ -58,6 +59,7 @@ export class RollBackAHIOBranchJobCommand {
   ): Promise<RollBackAHIOBranchJobCommand> {
     return new RollBackAHIOBranchJobCommand({
       appDAO: await AppDAO.buildDefault(stage, region),
+      edgeConfigDAO: await EdgeConfigDAO.buildDefault(stage, region),
       computeServiceClient: await getAmplifyHostingComputeClient(stage, region),
       hostingConfigDAO: new HostingConfigDAO(stage, region, "OncallOperator"),
       region,

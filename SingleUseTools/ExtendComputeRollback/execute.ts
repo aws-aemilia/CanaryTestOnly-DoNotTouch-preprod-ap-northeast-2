@@ -1,15 +1,15 @@
+import { BranchDAO, EdgeConfigDAO, HostingConfigDAO } from "Commons/dynamodb";
+import { toRegionName } from "Commons/utils/regions";
 import yargs from "yargs";
-import logger from "../../Commons/utils/logger";
 import {
-  Stage,
-  controlPlaneAccount,
   computeServiceControlPlaneAccount,
+  controlPlaneAccount,
   dataPlaneAccount,
   preflightCAZForAccountRoleCombinations,
+  Stage,
 } from "../../Commons/Isengard";
-import { toRegionName } from "Commons/utils/regions";
+import logger from "../../Commons/utils/logger";
 import { RollbackAppCommand, RollbackRegionCommand } from "./lib";
-import { HostingConfigDAO, BranchDAO, EdgeConfigDAO } from "Commons/dynamodb";
 
 /**
  * Script to rollback the relase of the Extending Compute project: MCM-90520740.
@@ -63,7 +63,10 @@ async function main() {
     },
   ]);
 
-  const edgeConfigTable = new EdgeConfigDAO(stageName, regionName);
+  const edgeConfigTable = await EdgeConfigDAO.buildDefault(
+    stageName,
+    regionName
+  );
   const branchTable = await BranchDAO.buildDefault(stage, regionName);
   const hostingConfigTable = new HostingConfigDAO(
     stageName,

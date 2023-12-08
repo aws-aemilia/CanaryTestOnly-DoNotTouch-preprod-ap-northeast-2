@@ -1,5 +1,9 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  paginateQuery,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { DomainDO } from "../types";
 import {
@@ -63,4 +67,27 @@ export class DomainDAO {
       []
     );
   }
+
+  /**
+   * List Domains for a given appId.
+   */
+  paginateDomainsForApp = async (
+    appId: string,
+    attributesToGet: (keyof DomainDO)[] = ["appId", "domainId"]
+  ) => {
+    return paginateQuery(
+      {
+        client: this.client,
+        pageSize: 100,
+      },
+      {
+        TableName: this.tableName,
+        KeyConditionExpression: "appId = :appId",
+        ProjectionExpression: attributesToGet.join(","),
+        ExpressionAttributeValues: {
+          ":appId": appId,
+        },
+      }
+    );
+  };
 }

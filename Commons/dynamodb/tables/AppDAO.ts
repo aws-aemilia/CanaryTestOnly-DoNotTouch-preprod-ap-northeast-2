@@ -52,10 +52,13 @@ export class AppDAO {
    *
    * @returns Iterator of pages
    */
-  public paginate = (attributesToGet: string[] = ["appId"]) => {
+  public paginate = (
+    attributesToGet: string[] = ["appId"],
+    pageSize = 1000
+  ) => {
     return paginateScan(
       {
-        pageSize: 1000,
+        pageSize,
         client: this.client,
       },
       {

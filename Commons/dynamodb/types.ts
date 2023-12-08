@@ -1,5 +1,6 @@
 export interface LambdaEdgeConfig {
   appId: string;
+  accountId: string | undefined;
   customDomainIds: Set<string>;
   customRuleConfigs?: CustomRuleConfig[];
   updateTime: string;

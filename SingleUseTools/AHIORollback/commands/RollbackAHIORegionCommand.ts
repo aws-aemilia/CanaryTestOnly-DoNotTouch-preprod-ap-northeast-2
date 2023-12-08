@@ -1,19 +1,19 @@
-import { Region, Stage } from "Commons/Isengard";
-import { RegionName } from "Commons/Isengard/types";
+import { AmplifyHostingComputeClient } from "@amzn/awsamplifycomputeservice-client";
+import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
+import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
+import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
 import { EdgeConfigDAO } from "Commons/dynamodb/tables/EdgeConfigDAO";
 import {
   HostingConfigDAO,
   HostingConfigRow,
 } from "Commons/dynamodb/tables/HostingConfigDAO";
+import { Region, Stage } from "Commons/Isengard";
+import { RegionName } from "Commons/Isengard/types";
 import { createLogger } from "Commons/utils/logger";
 import { toRegionName } from "Commons/utils/regions";
-import { AppDAO } from "Commons/dynamodb/tables/AppDAO";
-import { RollBackAHIOBranchJobCommand } from "./RollBackAHIOBranchJobCommand";
-import { getAmplifyHostingComputeClient } from "Commons/ComputeService";
-import { AmplifyHostingComputeClient } from "@amzn/awsamplifycomputeservice-client";
 import pLimit from "p-limit";
-import { BranchDAO } from "Commons/dynamodb/tables/BranchDAO";
 import { representsActiveJob } from "./commons/representsActiveJob";
+import { RollBackAHIOBranchJobCommand } from "./RollBackAHIOBranchJobCommand";
 
 const logger = createLogger();
 
@@ -30,7 +30,7 @@ export class RollbackAHIORegionCommand {
   private readonly appDAOPromise: Promise<AppDAO>;
   private readonly branchDAOPromise: Promise<BranchDAO>;
   private readonly computeClientPromise: Promise<AmplifyHostingComputeClient>;
-  private readonly edgeConfigDAO: EdgeConfigDAO;
+  private readonly edgeConfigDAOPromise: Promise<EdgeConfigDAO>;
   private readonly hostingConfigDAO: HostingConfigDAO;
 
   private readonly commandParams: {
@@ -45,7 +45,8 @@ export class RollbackAHIORegionCommand {
   ) {
     this.stage = stage;
     this.region = toRegionName(region);
-    this.edgeConfigDAO = new EdgeConfigDAO(stage, region);
+
+    this.edgeConfigDAOPromise = EdgeConfigDAO.buildDefault(stage, region);
     this.hostingConfigDAO = new HostingConfigDAO(stage, region, "AHIORollback");
     this.appDAOPromise = AppDAO.buildDefault(stage, region);
     this.branchDAOPromise = BranchDAO.buildDefault(stage, region);
@@ -65,12 +66,14 @@ export class RollbackAHIORegionCommand {
 
     // Prepare the rollback commands
     const appDAO = await this.appDAOPromise;
+    const edgeConfigDAO = await this.edgeConfigDAOPromise;
     const amplifyHostingComputeClient = await this.computeClientPromise;
     const rollBackAHIOBranchJobCommands: RollBackAHIOBranchJobCommand[] =
       rollbackTargets.map(
         (rollbackTarget) =>
           new RollBackAHIOBranchJobCommand({
             appDAO,
+            edgeConfigDAO,
             computeServiceClient: amplifyHostingComputeClient,
             hostingConfigDAO: this.hostingConfigDAO,
             region: this.region,
@@ -157,7 +160,7 @@ export class RollbackAHIORegionCommand {
       if (
         await representsActiveJob(
           {
-            edgeConfigDAO: this.edgeConfigDAO,
+            edgeConfigDAO: await this.edgeConfigDAOPromise,
             branchDAO: await this.branchDAOPromise,
           },
           row
