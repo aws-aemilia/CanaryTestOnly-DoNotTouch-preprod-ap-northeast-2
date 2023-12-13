@@ -11,6 +11,7 @@ export type AmplifyAccount = {
   region: string;
   stage: string;
   cellNumber?: string;
+  amplifyAccountType: AmplifyAccountType;
 };
 
 export type AccountsLookupFn = (options?: {
@@ -43,6 +44,7 @@ const getControlPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode: stage === "beta" ? "pdx" : airportCode,
         region: stage === "beta" ? "us-west-2" : toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.controlPlane,
       },
     ];
   });
@@ -68,6 +70,7 @@ const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.integTest,
       },
     ];
   });
@@ -93,6 +96,7 @@ const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.console,
       },
     ];
   });
@@ -120,6 +124,7 @@ const getComputeServiceControlPlaneAccounts = async (): Promise<
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.computeServiceControlPlane,
       },
     ];
   });
@@ -148,6 +153,7 @@ const getComputeServiceDataPlaneAccounts = async (): Promise<
         region: toRegionName(airportCode),
         stage,
         cellNumber,
+        amplifyAccountType: AmplifyAccountType.computeServiceDataPlane,
       },
     ];
   });
@@ -173,6 +179,7 @@ const getDataPlaneAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.dataPlane,
       },
     ];
   });
@@ -198,6 +205,7 @@ const getKinesisConsumerAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.kinesisConsumer,
       },
     ];
   });
@@ -223,6 +231,7 @@ const getMeteringAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.metering,
       },
     ];
   });
@@ -251,6 +260,7 @@ const getDomainAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage: "prod",
+        amplifyAccountType: AmplifyAccountType.domain,
       },
     ];
   });
@@ -266,6 +276,7 @@ const getDomainAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.domain,
       });
     });
   });
@@ -302,6 +313,7 @@ const getUluruAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.uluru,
       },
     ];
   });
@@ -327,6 +339,7 @@ const getAesIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
         airportCode,
         region: toRegionName(airportCode),
         stage,
+        amplifyAccountType: AmplifyAccountType.aesIntegTest,
       },
     ];
   });
@@ -565,6 +578,7 @@ export const rootDomainAccount = (): AmplifyAccount => {
     airportCode: "iad", // irrelevant
     region: "us-east-1", // irrelevant
     stage: "prod", // irrelevant
+    amplifyAccountType: AmplifyAccountType.domain,
   };
 };
 
@@ -579,6 +593,7 @@ export enum AmplifyAccountType {
   metering = "metering",
   domain = "domain",
   aesIntegTest = "aesIntegTest",
+  uluru = "uluru",
 }
 
 export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
@@ -593,4 +608,5 @@ export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
     metering: meteringAccounts,
     domain: domainAccounts,
     aesIntegTest: aesIntegTestAccounts,
+    uluru: uluruAccounts,
   };

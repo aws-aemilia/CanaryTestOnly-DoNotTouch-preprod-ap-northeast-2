@@ -5,7 +5,8 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "beta",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "826967662746",
@@ -13,7 +14,8 @@
     "airportCode": "arn",
     "region": "eu-north-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "505106714138",
@@ -21,7 +23,8 @@
     "airportCode": "bah",
     "region": "me-south-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "476985827895",
@@ -29,7 +32,8 @@
     "airportCode": "bom",
     "region": "ap-south-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "882037165328",
@@ -37,7 +41,8 @@
     "airportCode": "cdg",
     "region": "eu-west-3",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "505379077540",
@@ -45,7 +50,8 @@
     "airportCode": "cmh",
     "region": "us-east-2",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "614631150029",
@@ -53,7 +59,8 @@
     "airportCode": "dub",
     "region": "eu-west-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "295536102116",
@@ -61,7 +68,8 @@
     "airportCode": "fra",
     "region": "eu-central-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "672158211857",
@@ -69,7 +77,8 @@
     "airportCode": "gru",
     "region": "sa-east-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "319878526917",
@@ -77,7 +86,8 @@
     "airportCode": "hkg",
     "region": "ap-east-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "076630064198",
@@ -85,7 +95,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "676292424519",
@@ -93,7 +104,17 @@
     "airportCode": "icn",
     "region": "ap-northeast-2",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
+  },
+  {
+    "accountId": "614933232929",
+    "email": "aws-mobile-amplify+compute-service-gamma-kix-cell1@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "gamma",
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "950950817494",
@@ -101,7 +122,8 @@
     "airportCode": "lhr",
     "region": "eu-west-2",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "510316375763",
@@ -109,7 +131,8 @@
     "airportCode": "mxp",
     "region": "eu-south-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "817457111989",
@@ -117,7 +140,8 @@
     "airportCode": "nrt",
     "region": "ap-northeast-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "040660781325",
@@ -125,7 +149,8 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "663362506215",
@@ -133,7 +158,8 @@
     "airportCode": "sfo",
     "region": "us-west-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "550083737384",
@@ -141,7 +167,8 @@
     "airportCode": "sin",
     "region": "ap-southeast-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "391374614771",
@@ -149,7 +176,8 @@
     "airportCode": "syd",
     "region": "ap-southeast-2",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "533277450253",
@@ -157,7 +185,8 @@
     "airportCode": "yul",
     "region": "ca-central-1",
     "stage": "gamma",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "947573580920",
@@ -165,7 +194,8 @@
     "airportCode": "arn",
     "region": "eu-north-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "449879167594",
@@ -173,7 +203,8 @@
     "airportCode": "arn",
     "region": "eu-north-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "191045910240",
@@ -181,7 +212,8 @@
     "airportCode": "arn",
     "region": "eu-north-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "787521425488",
@@ -189,7 +221,8 @@
     "airportCode": "bah",
     "region": "me-south-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "993828787059",
@@ -197,7 +230,8 @@
     "airportCode": "bah",
     "region": "me-south-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "691591124619",
@@ -205,7 +239,8 @@
     "airportCode": "bom",
     "region": "ap-south-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "193673746969",
@@ -213,7 +248,8 @@
     "airportCode": "bom",
     "region": "ap-south-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "717528404532",
@@ -221,7 +257,8 @@
     "airportCode": "bom",
     "region": "ap-south-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "302291509655",
@@ -229,7 +266,8 @@
     "airportCode": "cdg",
     "region": "eu-west-3",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "281366225315",
@@ -237,7 +275,8 @@
     "airportCode": "cdg",
     "region": "eu-west-3",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "740958913807",
@@ -245,7 +284,8 @@
     "airportCode": "cdg",
     "region": "eu-west-3",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "714405387466",
@@ -253,7 +293,8 @@
     "airportCode": "cmh",
     "region": "us-east-2",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "700783956012",
@@ -261,7 +302,8 @@
     "airportCode": "cmh",
     "region": "us-east-2",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "433682806563",
@@ -269,7 +311,8 @@
     "airportCode": "cmh",
     "region": "us-east-2",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "627206211417",
@@ -277,7 +320,8 @@
     "airportCode": "dub",
     "region": "eu-west-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "125040593840",
@@ -285,7 +329,8 @@
     "airportCode": "dub",
     "region": "eu-west-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "206773313968",
@@ -293,7 +338,8 @@
     "airportCode": "dub",
     "region": "eu-west-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "970688540196",
@@ -301,7 +347,8 @@
     "airportCode": "fra",
     "region": "eu-central-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "458922657309",
@@ -309,7 +356,8 @@
     "airportCode": "fra",
     "region": "eu-central-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "786486573423",
@@ -317,7 +365,8 @@
     "airportCode": "fra",
     "region": "eu-central-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "140988449436",
@@ -325,7 +374,8 @@
     "airportCode": "gru",
     "region": "sa-east-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "649764730746",
@@ -333,7 +383,8 @@
     "airportCode": "gru",
     "region": "sa-east-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "648126647475",
@@ -341,7 +392,8 @@
     "airportCode": "gru",
     "region": "sa-east-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "342470307229",
@@ -349,7 +401,8 @@
     "airportCode": "hkg",
     "region": "ap-east-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "041247672062",
@@ -357,7 +410,8 @@
     "airportCode": "hkg",
     "region": "ap-east-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "634225504678",
@@ -365,7 +419,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "911609056400",
@@ -373,7 +428,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "246746169199",
@@ -381,7 +437,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "293568156222",
@@ -389,7 +446,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "4"
+    "cellNumber": "4",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "653256941548",
@@ -397,7 +455,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "5"
+    "cellNumber": "5",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "344949338921",
@@ -405,7 +464,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "6"
+    "cellNumber": "6",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "922672578837",
@@ -413,7 +473,8 @@
     "airportCode": "iad",
     "region": "us-east-1",
     "stage": "prod",
-    "cellNumber": "7"
+    "cellNumber": "7",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "272880359961",
@@ -421,7 +482,8 @@
     "airportCode": "icn",
     "region": "ap-northeast-2",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "256194760755",
@@ -429,7 +491,8 @@
     "airportCode": "icn",
     "region": "ap-northeast-2",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "302083188782",
@@ -437,7 +500,26 @@
     "airportCode": "icn",
     "region": "ap-northeast-2",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
+  },
+  {
+    "accountId": "770615324502",
+    "email": "aws-mobile-amplify+compute-service-prod-kix-cell1@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "prod",
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
+  },
+  {
+    "accountId": "525622545876",
+    "email": "aws-mobile-amplify+compute-service-prod-kix-cell2@amazon.com",
+    "airportCode": "kix",
+    "region": "ap-northeast-3",
+    "stage": "prod",
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "735357069816",
@@ -445,7 +527,8 @@
     "airportCode": "lhr",
     "region": "eu-west-2",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "031892202758",
@@ -453,7 +536,8 @@
     "airportCode": "lhr",
     "region": "eu-west-2",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "313776181113",
@@ -461,7 +545,8 @@
     "airportCode": "lhr",
     "region": "eu-west-2",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "333266953404",
@@ -469,7 +554,8 @@
     "airportCode": "mxp",
     "region": "eu-south-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "036695738573",
@@ -477,7 +563,8 @@
     "airportCode": "mxp",
     "region": "eu-south-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "122036202445",
@@ -485,7 +572,8 @@
     "airportCode": "nrt",
     "region": "ap-northeast-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "410510665291",
@@ -493,7 +581,8 @@
     "airportCode": "nrt",
     "region": "ap-northeast-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "085493176739",
@@ -501,7 +590,8 @@
     "airportCode": "nrt",
     "region": "ap-northeast-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "586674168778",
@@ -509,7 +599,8 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "571996173305",
@@ -517,7 +608,8 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "782022631217",
@@ -525,7 +617,8 @@
     "airportCode": "pdx",
     "region": "us-west-2",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "529144562290",
@@ -533,7 +626,8 @@
     "airportCode": "sfo",
     "region": "us-west-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "548652960811",
@@ -541,7 +635,8 @@
     "airportCode": "sfo",
     "region": "us-west-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "567442702366",
@@ -549,7 +644,8 @@
     "airportCode": "sfo",
     "region": "us-west-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "447859346783",
@@ -557,7 +653,8 @@
     "airportCode": "sin",
     "region": "ap-southeast-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "243705942306",
@@ -565,7 +662,8 @@
     "airportCode": "sin",
     "region": "ap-southeast-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "769831240281",
@@ -573,7 +671,8 @@
     "airportCode": "sin",
     "region": "ap-southeast-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "630291408315",
@@ -581,7 +680,8 @@
     "airportCode": "syd",
     "region": "ap-southeast-2",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "731997013353",
@@ -589,7 +689,8 @@
     "airportCode": "syd",
     "region": "ap-southeast-2",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "402612293800",
@@ -597,7 +698,8 @@
     "airportCode": "syd",
     "region": "ap-southeast-2",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "616657649725",
@@ -605,7 +707,8 @@
     "airportCode": "yul",
     "region": "ca-central-1",
     "stage": "prod",
-    "cellNumber": "1"
+    "cellNumber": "1",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "872145348394",
@@ -613,7 +716,8 @@
     "airportCode": "yul",
     "region": "ca-central-1",
     "stage": "prod",
-    "cellNumber": "2"
+    "cellNumber": "2",
+    "amplifyAccountType": "computeServiceDataPlane"
   },
   {
     "accountId": "159719714165",
@@ -621,6 +725,7 @@
     "airportCode": "yul",
     "region": "ca-central-1",
     "stage": "prod",
-    "cellNumber": "3"
+    "cellNumber": "3",
+    "amplifyAccountType": "computeServiceDataPlane"
   }
 ]
