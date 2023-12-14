@@ -76,32 +76,6 @@ const getIntegTestAccounts = async (): Promise<AmplifyAccount[]> => {
   });
 };
 
-const getConsoleAccounts = async (): Promise<AmplifyAccount[]> => {
-  const integTestNameRegex =
-    /^aws-mobile-amplify-(?<stage>beta|gamma|preprod|prod)-(?<airportCode>[a-z]{3})-console?@amazon.com$/;
-  const allAccounts: AccountListItem[] = await listIsengardAccounts();
-
-  return allAccounts.flatMap((acc) => {
-    const match = acc.Email.match(integTestNameRegex);
-    if (match === null) {
-      return [];
-    }
-
-    const { airportCode, stage } = match.groups!;
-
-    return [
-      {
-        accountId: acc.AWSAccountID,
-        email: acc.Email,
-        airportCode,
-        region: toRegionName(airportCode),
-        stage,
-        amplifyAccountType: AmplifyAccountType.console,
-      },
-    ];
-  });
-};
-
 const getComputeServiceControlPlaneAccounts = async (): Promise<
   AmplifyAccount[]
 > => {
@@ -464,18 +438,6 @@ export const aesIntegTestAccount: (
   "aesIntegTestAccounts"
 );
 
-export const consoleAccounts: AccountsLookupFn = defaultGetAccounts(
-  getConsoleAccounts,
-  "consoleAccounts"
-);
-export const consoleAccount: (
-  stage: Stage,
-  region: Region
-) => Promise<AmplifyAccount> = defaultGetAccount(
-  getConsoleAccounts,
-  "consoleAccounts"
-);
-
 export const computeServiceControlPlaneAccounts: AccountsLookupFn =
   defaultGetAccounts(
     getComputeServiceControlPlaneAccounts,
@@ -585,7 +547,6 @@ export const rootDomainAccount = (): AmplifyAccount => {
 export enum AmplifyAccountType {
   controlPlane = "controlPlane",
   integTest = "integTest",
-  console = "console",
   computeServiceControlPlane = "computeServiceControlPlane",
   computeServiceDataPlane = "computeServiceDataPlane",
   dataPlane = "dataPlane",
@@ -600,7 +561,6 @@ export const getAccountsLookupFn: Record<AmplifyAccountType, AccountsLookupFn> =
   {
     controlPlane: controlPlaneAccounts,
     integTest: integTestAccounts,
-    console: consoleAccounts,
     computeServiceControlPlane: computeServiceControlPlaneAccounts,
     computeServiceDataPlane: computeServiceDataPlaneAccounts,
     dataPlane: dataPlaneAccounts,
