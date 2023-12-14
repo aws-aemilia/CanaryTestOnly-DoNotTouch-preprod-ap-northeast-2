@@ -89,7 +89,13 @@ export const createAmplifyAccount = async (
   const accountId = await getOrCreateAccount(request);
 
   console.log("Creating default roles...");
-  const defaultRoles = Object.values(getRolesForStage(stage));
+
+  const { Admin, BONESBootstrap, FullReadOnly, LambdaInvoker } =
+    getRolesForStage(stage);
+
+  // Some roles such as OncallOperator and ReadOnly cannot be created alongside the account
+  // since they require a pipeline deployment: https://pipelines.amazon.com/pipelines/AWSAmplifyIsengardIAM
+  const defaultRoles = [Admin, BONESBootstrap, FullReadOnly, LambdaInvoker];
   for (const defaultRole of defaultRoles) {
     await upsertRole(accountId, defaultRole);
   }

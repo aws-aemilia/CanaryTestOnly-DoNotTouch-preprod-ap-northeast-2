@@ -162,11 +162,10 @@ export type AmplifyRole = {
   Description: string;
   ContingentAuth: number;
   Groups?: string[];
-  PolicyARNs?: string[];
+  PolicyARNs?: (string | ((accountId: string) => string))[];
   PolicyTemplateReference?: {
     PolicyTemplateName: string;
     OwnerID: string;
-    IsGroupOwned?: boolean;
   }[];
   FederationTimeOutMin: number;
   Users?: string[];
@@ -199,9 +198,12 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     IAMRoleName: role.IAMRoleName,
   });
 
+  const ResolvedPolicyARNs: string[] =
+    role.PolicyARNs?.map((x) => (typeof x === "string" ? x : x(accountId))) ??
+    [];
   const iamPolicyDiff = computeDiff(
     getIAMRoleResponse.AttachedPolicyList.map((p) => p.PolicyARN),
-    role.PolicyARNs ?? []
+    ResolvedPolicyARNs
   );
 
   for (const iamPolicyToAdd of iamPolicyDiff.add) {
@@ -259,7 +261,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
     await synchronizeIAMRolePolicyWithPolicyTemplate({
       AWSAccountID: accountId,
       IAMRoleName,
-      IsGroupOwned: isenPolicyToSync.IsGroupOwned ?? true,
+      IsGroupOwned: true,
       OwnerID: isenPolicyToSync.OwnerID,
       PolicyTemplateName: isenPolicyToSync.PolicyTemplateName,
     });

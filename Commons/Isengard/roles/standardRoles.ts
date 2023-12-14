@@ -8,13 +8,11 @@ const oncallOperatorRole: AmplifyRole = {
   Description:
     "The OncallOperator role has limited write permissions that cover the usual oncall operations. Do not use this role if you need read-only access",
   ContingentAuth: 1,
-  PolicyTemplateReference: [
-    {
-      OwnerID: "aws-mobile-amplify-oncall",
-      PolicyTemplateName: "AmplifyOncallOperatorPolicy",
-    },
+  PolicyARNs: [
+    "arn:aws:iam::aws:policy/ReadOnlyAccess",
+    (accountId: string) =>
+      `arn:aws:iam::${accountId}:policy/AmplifyIsengard-OncallOperator`,
   ],
-  PolicyARNs: ["arn:aws:iam::aws:policy/ReadOnlyAccess"],
   Groups: [POSIX_GROUP],
   FederationTimeOutMin: 15,
 };
@@ -54,10 +52,10 @@ const readOnlyRole: AmplifyRole = {
       OwnerID: "harp-sec",
       PolicyTemplateName: "StandardAuthorizationRolePolicy",
     },
-    {
-      OwnerID: POSIX_GROUP,
-      PolicyTemplateName: "StandardAuthorizationRolePolicy-Amplify-Extra",
-    },
+  ],
+  PolicyARNs: [
+    (accountId: string) =>
+      `arn:aws:iam::${accountId}:policy/AmplifyIsengard-ReadOnlyExtra`,
   ],
   Groups: [POSIX_GROUP],
   FederationTimeOutMin: 90,
@@ -105,9 +103,8 @@ const bonesBootstrapRole: AmplifyRole = {
   ContingentAuth: 1,
   PolicyTemplateReference: [
     {
-      OwnerID: "ppratik",
+      OwnerID: "isen",
       PolicyTemplateName: "BONESBootstrapUserPolicy",
-      IsGroupOwned: false,
     },
   ],
   PolicyARNs: [],
