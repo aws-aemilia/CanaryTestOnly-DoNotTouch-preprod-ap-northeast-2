@@ -87,7 +87,10 @@ const mobileCoreSupportRole: AmplifyRole = {
   IAMRoleName: "MobileCoreSupport",
   Description: "For mobile core support team to access build logs",
   ContingentAuth: 1,
-  Groups: ["support-ops-mobile-core"], // https://permissions.amazon.com/a/team/aws-support-ops-mobile-core
+  Groups: [
+    "support-ops-mobile-core", // https://permissions.amazon.com/a/team/aws-support-ops-mobile-core
+    "aws-amplify-dxe-team", // https://permissions.amazon.com/a/team/aws-amplify-dxe-team
+  ],
   FederationTimeOutMin: 60,
   PolicyTemplateReference: [
     {
