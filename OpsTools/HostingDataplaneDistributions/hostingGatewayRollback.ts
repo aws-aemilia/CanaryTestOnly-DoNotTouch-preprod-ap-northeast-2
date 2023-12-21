@@ -3,14 +3,17 @@ import { CloudFront } from "@aws-sdk/client-cloudfront";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
+import { WarmResourcesDAO } from "Commons/dynamodb/tables/WarmResourcesDAO";
 import {
   AmplifyAccount,
   controlPlaneAccount,
   getIsengardCredentialsProvider,
-} from "../../Commons/Isengard";
-import { WarmResourcesDAO } from "../../Commons/dynamodb/tables/WarmResourcesDAO";
+  preflightCAZ,
+  StandardRoles,
+} from "Commons/Isengard";
+import { toRegionName } from "Commons/utils/regions";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import confirm from "../../Commons/utils/confirm";
 import {
   GatewayRollbackScriptInput,
@@ -19,6 +22,7 @@ import {
 } from "./distributionsUtils";
 
 const DEV_USER = process.env.USER;
+const role = StandardRoles.OncallOperator;
 
 const main = async () => {
   const args = (await yargs(hideBin(process.argv))
@@ -63,18 +67,12 @@ const main = async () => {
       type: "string",
       demandOption: false,
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: false,
-    })
     .strict()
     .version(false)
     .help().argv) as GatewayRollbackScriptInput;
 
-  const { region, stage, appId, distributionId, devAccountId, ticket } = args;
-
-  process.env.ISENGARD_SIM = ticket;
+  let { region, stage, appId, distributionId, devAccountId } = args;
+  region = toRegionName(region);
 
   let account: AmplifyAccount;
 
@@ -91,10 +89,9 @@ const main = async () => {
   console.info("Initializing credentials and clients...");
 
   const { accountId } = account;
-  const credentials = getIsengardCredentialsProvider(
-    accountId,
-    "OncallOperator"
-  );
+
+  await preflightCAZ({ accounts: account, role });
+  const credentials = getIsengardCredentialsProvider(accountId, role);
 
   const lambdaClient = new LambdaClient({
     credentials,
@@ -131,7 +128,7 @@ const main = async () => {
     cloudFormationClient,
   };
 
-  const rollbackdata = await generateDistributionConfigForMigration(
+  const rollbackData = await generateDistributionConfigForMigration(
     args,
     scriptClients
   );
@@ -141,7 +138,7 @@ const main = async () => {
     originRequestCloneFunctionArn,
     originResponseCloneFunctionArn,
     originAccessIdentity,
-  } = rollbackdata;
+  } = rollbackData;
 
   console.info(
     "Updating Distribution with the following DistributionConfig",
@@ -172,7 +169,7 @@ const main = async () => {
 
     await warmResourcesDAO.updateResourceDistType(appId, "LAMBDA_AT_EDGE");
     console.info(
-      `Updated WarmingPool DistribtuionType for ${appId} to 'LAMBDA_AT_EDGE'...`
+      `Updated WarmingPool DistributionType for ${appId} to 'LAMBDA_AT_EDGE'...`
     );
 
     console.info("Successfully rolled back the distribution", distributionId);
