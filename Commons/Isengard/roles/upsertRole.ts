@@ -161,7 +161,7 @@ export type AmplifyRole = {
   IAMRoleName: string;
   Description: string;
   ContingentAuth: number;
-  Groups?: string[];
+  PosixGroups?: string[];
   PolicyARNs?: (string | ((accountId: string) => string))[];
   PolicyTemplateReference?: {
     PolicyTemplateName: string;
@@ -270,7 +270,7 @@ export const upsertRole = async (accountId: string, role: AmplifyRole) => {
   const permissionDiff = await computePermissionDiff(
     accountId,
     IAMRoleName,
-    role.Groups,
+    role.PosixGroups,
     role.Users
   );
 

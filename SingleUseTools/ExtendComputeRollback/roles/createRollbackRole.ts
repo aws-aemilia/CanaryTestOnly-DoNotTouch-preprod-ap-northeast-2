@@ -1,9 +1,9 @@
-import logger from "Commons/utils/logger";
-import { upsertRole } from "Commons/Isengard/roles/upsertRole";
 import {
   dataPlaneAccounts,
   preflightCAZForAdministrativeIsengardCalls,
 } from "Commons/Isengard";
+import { upsertRole } from "Commons/Isengard/roles/upsertRole";
+import logger from "Commons/utils/logger";
 
 /**
  * One time use script to create the ExtendComputeRollback role
@@ -24,7 +24,7 @@ async function main() {
           PolicyTemplateName: "ExtendComputeRollback",
         },
       ],
-      Groups: ["aws-mobile-amplify-oncall"],
+      PosixGroups: ["aws-mobile-amplify-oncall"],
       FederationTimeOutMin: 60,
     });
   }

@@ -22,7 +22,7 @@ async function main() {
         PolicyTemplateName: "AHIORollback",
       },
     ],
-    Groups: ["aws-mobile-amplify-oncall"],
+    PosixGroups: ["aws-mobile-amplify-oncall"],
     FederationTimeOutMin: 60,
   };
 
