@@ -4,9 +4,11 @@ import {
   getIAMRole,
   RiskLevel,
 } from "@amzn/isengard";
-import { AmplifyAccount } from "./accounts";
 import { EvaluateContingentAuthorizationEntry } from "@amzn/isengard/dist/src/contingent-authorization/types";
+import { spawnSync } from "child_process";
+import { BatchIterator } from "Commons/utils/BatchIterator";
 import confirm from "../utils/confirm";
+import { AmplifyAccount } from "./accounts";
 
 /**
  * Taken from https://code.amazon.com/packages/BenderLibIsengard/blobs/a8494f0efbec05349f301c6c24f7e97640cfdb9d/--/src/isengard/_cli/functions.py#L53
@@ -81,16 +83,17 @@ const preflightCAZFlow = async ({
   await batchEvaluateCAZ(EvaluateContingentAuthorizationEntries);
 };
 
-const batchEvaluateCAZ = async (
+async function evaluateCAZ(
   EvaluateContingentAuthorizationEntries: EvaluateContingentAuthorizationEntry[]
-) => {
+) {
   const batchEvaluateContingentAuthorizationResponse =
     await batchEvaluateContingentAuthorization({
       ContingentAuthorizationVersion: "1.0",
       EvaluateContingentAuthorizationEntries,
     });
 
-  if (batchEvaluateContingentAuthorizationResponse.WorkflowUrl === undefined) {
+  const workflowUrl = batchEvaluateContingentAuthorizationResponse.WorkflowUrl;
+  if (workflowUrl === undefined) {
     // no url is returned when none of the accounts need CAZ
     return;
   }
@@ -101,15 +104,31 @@ const batchEvaluateCAZ = async (
     ).join(", ")}\n`
   );
 
-  console.log(batchEvaluateContingentAuthorizationResponse.WorkflowUrl);
+  console.log(workflowUrl);
   console.log(
     "\nGo to the above URL to provide justification for CAZ. You may skip this step if you have provided CAZ justification for the exact same Accounts and Role in the last hour"
   );
+  spawnSync("open", [workflowUrl]); // Open the workflow URL in the default browser
+
   const confirmed: boolean = await confirm("Are you ready to continue?");
   if (!confirmed) {
     throw new Error(
       "CAZ justification is required to continue. Please provide justification and try again."
     );
+  }
+}
+
+const batchEvaluateCAZ = async (
+  EvaluateContingentAuthorizationEntries: EvaluateContingentAuthorizationEntry[]
+) => {
+  // Isengard can only evaluate up to 100 CAZ entries at once, so we split them up into smaller batches
+  const entryBatches = new BatchIterator(
+    EvaluateContingentAuthorizationEntries,
+    100
+  );
+
+  for (const entryBatch of entryBatches) {
+    await evaluateCAZ(entryBatch);
   }
 };
 
