@@ -1,7 +1,7 @@
 # AWS Amplify Tools
 
 ## Code Organization
-Here is the description of the top-level folders. Please Follow these conventions to keep the code organized and easy to find. 
+Here is the description of the top-level folders. Please follow these conventions to keep the code organized and easy to find. 
 
 *Note: This package was recently reorganized so some files in here may be misclassified. Feel free to move them where they belong.*
 

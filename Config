@@ -35,6 +35,7 @@ package.AWSAmplifyTools = {
             AWSFraudGlobalDataNodeSdk = 2.14;
             TicketyTypeScriptSdk = 1.0;
             AWSAmplifyComputeServiceTypeScriptClient = 1.0;
+            AWSAccountEventsServiceTypeScriptClient = 1.0;
             AWSAmplifyCloudFrontBrokerTypeScriptClient = 1.0;
         };
     };

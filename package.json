@@ -63,6 +63,7 @@
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@amzn/aws-account-event-service-client": "^1.0.0",
     "@amzn/aws-amplify-cloudfrontbroker-typescript-client": "*",
     "@amzn/aws-fraud-api-client": "^2.14.0",
     "@amzn/aws-fraud-global-data-node-sdk": "^2.14.0",
@@ -119,6 +120,7 @@
     "command-line-args": "^5.1.1",
     "console-stamp": "^3.1.1",
     "crypto-js": "^3.1.9-1",
+    "csv-parse": "^5.5.0",
     "csv-stringify": "^6.4.0",
     "csvtojson": "^2.0.10",
     "dayjs": "^1.11.7",

@@ -16,6 +16,7 @@ export const IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ = [
   "AemiliaControlPlaneLambda-AsyncResourceDeletionDLQ",
   "AemiliaControlPlaneLambda-DistributionDeletionDLQ",
   "AccountClosingDeletionDLQ",
+  "AccountClosingDLQ",
 ];
 export const IDEMPOTENT_ASYNC_TASK_METERING_DLQ = [
   "MeteringHostingDataTransferDLQ",
