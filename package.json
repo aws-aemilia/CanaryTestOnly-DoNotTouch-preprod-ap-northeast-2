@@ -42,7 +42,6 @@
     "MeteringBackendOnlyApps.verify": "ts-node SingleUseTools/MeteringBackendOnlyApps/verify.ts",
     "hostingGatewayRollback": "ts-node OpsTools/HostingDataplaneDistributions/hostingGatewayRollback.ts",
     "cancelRunningBuilds": "ts-node OpsTools/buildAbuse/cancelRunningBuilds.ts",
-    "asyncDeletionDLQ": "ts-node OpsTools/ssrv1DeletionDLQ.ts",
     "deleteIntegTestApps": "ts-node OpsTools/integTests/deleteTestApps.ts",
     "uluru-generate-test-accounts-config": "ts-node ConfigBuilders/buildUluruTestAccountsConfig.ts",
     "updateCustomerLimit": "ts-node OpsTools/update-accounts-service-limits/updateCustomerAccountLimit.ts",
@@ -57,7 +56,10 @@
     "CleanUpDesiredCertificate.run": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/cleanUpDesiredCertificate.ts",
     "CleanUpDesiredCertificate.verify": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/verifyDesiredCertificateWasRemoved.ts",
     "CleanUpDesiredCertificate.rollback": "ts-node SingleUseTools/P104564468_CleanUpDesiredCertificates/rollbackDesiredCertificateChanges.ts",
-    "migrated-apps-query": "ts-node OpsTools/migrated-apps-query.ts"
+    "migrated-apps-query": "ts-node OpsTools/migrated-apps-query.ts",
+    "ssrv1DeletionDLQ": "ts-node OpsTools/ssrv1DeletionDLQ.ts",
+    "read": "ts-node OpsTools/dlq/read.ts",
+    "redrive": "ts-node OpsTools/dlq/redrive.ts"
   },
   "author": "",
   "license": "ISC",
