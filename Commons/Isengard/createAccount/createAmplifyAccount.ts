@@ -10,7 +10,7 @@ import { upsertRole } from "../roles/upsertRole";
 import { Region, Stage } from "../types";
 
 const PRIMARY_OWNER = "dcalaver";
-const SECONDARY_OWNER = "snimakom";
+const SECONDARY_OWNERS = ["litwjaco", "nestorba", "plisy"];
 const FINANCIAL_OWNER = "litwjaco";
 const POSIX_GROUP = "aws-mobile-amplify-oncall";
 const CTI = {
@@ -79,7 +79,7 @@ export const createAmplifyAccount = async (
     },
     FinancialOwner: FINANCIAL_OWNER,
     PrimaryOwner: PRIMARY_OWNER,
-    SecondaryOwner: SECONDARY_OWNER,
+    SecondaryOwnerList: SECONDARY_OWNERS,
     PosixGroupOwner: POSIX_GROUP,
     Category: CTI.Category,
     Type: CTI.Type,
