@@ -142,8 +142,8 @@ async function main() {
       continue;
     }
 
-    if (message.payload.AppDO.platform !== "WEB_DYNAMIC") {
-      logger.info("Skipping message. Non WEB_DYNAMIC app");
+    if (message.payload?.AppDO?.platform !== "WEB_DYNAMIC") {
+      logger.info("Skipping message. Not a WEB_DYNAMIC App");
       continue;
     }
 
