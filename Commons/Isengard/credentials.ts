@@ -15,6 +15,7 @@ const allowedRoles = [
   "LambdaInvoker",
   "AHIORollback",
   "ExtendComputeRollback",
+  "ECRPutImageRole",
 ];
 
 // Accounts where is safe to assume high risk roles like Admin
