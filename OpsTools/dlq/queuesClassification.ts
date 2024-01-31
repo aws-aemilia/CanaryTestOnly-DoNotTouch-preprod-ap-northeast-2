@@ -20,6 +20,7 @@ export const IDEMPOTENT_ASYNC_TASK_CONTROL_PLANE_DLQ = [
 ];
 export const IDEMPOTENT_ASYNC_TASK_METERING_DLQ = [
   "MeteringHostingDataTransferDLQ",
+  "MeteringComputeDurationDLQ",
 ];
 
 export const SAFE_TO_READ_QUEUES = [
