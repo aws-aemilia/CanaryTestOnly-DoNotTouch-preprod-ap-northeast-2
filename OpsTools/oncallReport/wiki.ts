@@ -1,9 +1,17 @@
-import { OncallReport, Pain, ReportEntry } from "./types";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { OncallReport, Pain, ReportEntry } from "./types";
 
-export function toWikiSyntax(oncallReport: OncallReport): string {
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+export function toWikiSyntax(
+  oncallReport: OncallReport,
+  timezone: string
+): string {
   const tables = Object.entries(oncallReport.entriesByCategory)
-    .map(([category, entries]) => toWikiTable(category, entries))
+    .map(([category, entries]) => toWikiTable(category, entries, timezone))
     .join("\n\n");
 
   const title = "== Pages Report ==";
@@ -27,7 +35,11 @@ function toWikiSummary(oncallReport: OncallReport): string {
   `;
 }
 
-function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
+function toWikiTable(
+  title: string,
+  reportEntries: ReportEntry[],
+  timezone: string
+): string {
   const tableHeader = [
     `(% class="active" %)|=(% style="width: 10%;" %)Ticket`,
     `|=(% style="width: 40%;" %)Subject`,
@@ -51,7 +63,8 @@ function toWikiTable(title: string, reportEntries: ReportEntry[]): string {
       const subject = toWikiText(e.pageSubject);
       const rootCause = toWikiText(e.rootCauseText);
       const timeWithPainEmoji = `${painEmoji(e.pain)} ${toHumanDate(
-        e.pageTimestamp
+        e.pageTimestamp,
+        timezone
       )}`;
       return toWikiRow([ticketLink, subject, rootCause, timeWithPainEmoji]);
     })
@@ -78,8 +91,8 @@ function toWikiText(text: string) {
   return `{{{${textWithLinksProcessed}}}}`;
 }
 
-function toHumanDate(date: Date) {
-  return dayjs(date).format("YYYY-MM-DD HH:mm");
+function toHumanDate(date: Date, timezone: string) {
+  return dayjs(date).tz(timezone).format("YYYY-MM-DD HH:mm");
 }
 
 function painEmoji(pain: Pain): string {

@@ -1,14 +1,19 @@
-import fs from "fs";
+import { TicketReference } from "@amzn/tickety-typescript-sdk";
+import { PagingClient } from "Commons/paging";
+import { TicketyService } from "Commons/SimT/Tickety";
+import { whoAmI } from "Commons/utils";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import fs from "fs";
 import yargs from "yargs";
 import logger from "../../Commons/utils/logger";
-import { whoAmI } from "../../Commons/utils";
-import { PagingClient } from "../../Commons/paging";
-import { TicketyService } from "../../Commons/SimT/Tickety";
 import { getCategory, groupByCategory } from "./categories";
 import { OncallReport, Pain, ReportEntry } from "./types";
 import { toWikiSyntax } from "./wiki";
-import { TicketReference } from "@amzn/tickety-typescript-sdk";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 async function main() {
   console.log(welcomeMessage());
@@ -27,17 +32,22 @@ async function main() {
       type: "number",
       default: 3,
     })
+    .option("timezone", {
+      describe: "The timezone to use for timestamps and time range counts.",
+      type: "string",
+      default: "America/Los_Angeles",
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { commonRootCauseThreshold } = args;
+  const { commonRootCauseThreshold, timezone } = args;
 
-  const reportEntries = await getReportEntries();
+  const reportEntries = await getReportEntries(timezone);
   const oncallReport = createReport(reportEntries, commonRootCauseThreshold);
 
   logger.info("Generating report in JSON and Wiki formats");
-  const wikiSyntax = toWikiSyntax(oncallReport);
+  const wikiSyntax = toWikiSyntax(oncallReport, timezone);
   const jsonReport = JSON.stringify(oncallReport, null, 2);
 
   logger.info("Writing report to files");
@@ -72,7 +82,7 @@ function createReport(
   };
 }
 
-async function getReportEntries(): Promise<ReportEntry[]> {
+async function getReportEntries(timezone: string): Promise<ReportEntry[]> {
   const today = dayjs().hour(9).minute(0);
   const oneWeekAgo = dayjs(today).subtract(7, "day");
 
@@ -110,7 +120,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
         rootCauseText: "No ticket associated to this page.",
         timeSpentMinutes: 0,
         category: getCategory(page.subject),
-        pain: toPain(page.sentTime),
+        pain: toPain(page.sentTime, timezone),
       });
       continue;
     }
@@ -130,7 +140,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
         rootCauseText: "Unable to fetch root cause",
         timeSpentMinutes: 0,
         category: getCategory(page.subject),
-        pain: toPain(page.sentTime),
+        pain: toPain(page.sentTime, timezone),
       });
       continue;
     }
@@ -144,7 +154,7 @@ async function getReportEntries(): Promise<ReportEntry[]> {
       rootCauseText: getRootCauseText(ticket),
       timeSpentMinutes: ticket.totalTimeSpentInMinutes || 0,
       category: getCategory(page.subject),
-      pain: toPain(page.sentTime),
+      pain: toPain(page.sentTime, timezone),
     });
   }
 
@@ -159,8 +169,8 @@ function writeToFile(content: string, extension: string) {
   logger.info("Report saved at %s", reportName);
 }
 
-function toPain(pageTimestamp: Date): Pain {
-  const pageTime = dayjs(pageTimestamp);
+function toPain(pageTimestamp: Date, timezone: string): Pain {
+  const pageTime = dayjs(pageTimestamp).tz(timezone);
   if (pageTime.hour() >= 8 && pageTime.hour() <= 17) {
     return Pain.WorkingHours;
   } else if (pageTime.hour() > 17 && pageTime.hour() < 22) {
