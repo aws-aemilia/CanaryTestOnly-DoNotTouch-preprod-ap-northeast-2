@@ -18,6 +18,7 @@ import { mapAppIdsToCustomerAccountIds } from "Commons/dynamodb";
 import { preflightCAZForAccountRoleCombinations } from "Commons/Isengard/contingentAuthZ";
 import { AmplifyAccount, controlPlaneAccount } from "Commons/Isengard";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { getInternalAccountIds } from "./internal-accounts";
 
 dayjs.extend(utc);
 const logger = createLogger();
@@ -298,6 +299,8 @@ const getCustomerImpactQueries = async (
 const executeCustomerImpactQuery = async (
   customerImpactQuery: CustomerImpactQuery
 ): Promise<CustomerImpactOutput[]> => {
+  const internalAccounts = await getInternalAccountIds("prod");
+
   const {
     queryString,
     logGroupPrefix,
@@ -323,13 +326,17 @@ const executeCustomerImpactQuery = async (
   }
 
   if (outputType === "accountId") {
-    return logs.map((log) => {
-      return {
-        id: log.accountId,
-        serviceComponent,
-        region,
-      };
-    });
+    return logs
+      .map((log) => {
+        return {
+          id: log.accountId,
+          serviceComponent,
+          region,
+        };
+      })
+      .filter(
+        (customerImpactOutput) => !internalAccounts.has(customerImpactOutput.id)
+      );
   }
 
   if (!dynamodbClient) {
@@ -343,13 +350,17 @@ const executeCustomerImpactQuery = async (
     dynamodbClient
   );
 
-  return accountIds.map((accountId) => {
-    return {
-      id: accountId,
-      serviceComponent,
-      region,
-    };
-  });
+  return accountIds
+    .map((accountId) => {
+      return {
+        id: accountId,
+        serviceComponent,
+        region,
+      };
+    })
+    .filter(
+      (customerImpactOutput) => !internalAccounts.has(customerImpactOutput.id)
+    );
 };
 
 const writeOutput = ({
