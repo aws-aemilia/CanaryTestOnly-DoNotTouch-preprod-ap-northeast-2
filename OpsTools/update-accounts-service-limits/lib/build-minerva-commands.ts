@@ -1,11 +1,13 @@
 export function updateCommand({
-  accountId,
+  subjectId,
+  subjectType,
   limitName,
   ripServiceName,
   regionName,
   value,
 }: {
-  accountId: string;
+  subjectId: string;
+  subjectType: "RESOURCE" | "ACCOUNT";
   limitName: string;
   ripServiceName: string;
   regionName: string;
@@ -16,34 +18,36 @@ export function updateCommand({
     --rip-service-name ${ripServiceName} \\
     --region ${regionName} \\
     --internal-limit-name ${limitName} \\
-    --subject-type ACCOUNT \\
-    --subject-id ${accountId} \\
+    --subject-type ${subjectType} \\
+    --subject-id ${subjectId} \\
     --value LimitType=SINGLE_VALUE,SingleValue=${value}
 
-${getCommand({ accountId, limitName, ripServiceName, regionName })}
+${getCommand({ subjectId, subjectType, limitName, ripServiceName, regionName })}
   `;
 }
 
 export function getCommand({
-  accountId,
+  subjectId,
+  subjectType,
   limitName,
   ripServiceName,
   regionName,
 }: {
-  accountId: string;
+  subjectId: string;
+  subjectType: "RESOURCE" | "ACCOUNT";
   limitName: string;
   ripServiceName: string;
   regionName: string;
 }) {
   return `
-/apollo/env/AWSMinervaCLI/bin/aws-minerva minerva get-subject-limit \\
+    /apollo/env/AWSMinervaCLI/bin/aws-minerva minerva get-subject-limit \\
     --rip-service-name ${ripServiceName} \\
     --region ${regionName} \\
     --internal-limit-name ${limitName} \\
-    --subject-type ACCOUNT \\
-    --subject-id ${accountId} \\
+    --subject-type ${subjectType} \\
+    --subject-id ${subjectId} \\
     --output json
-  `;
+    `;
 }
 
 export function getRipServiceName(stage: string) {

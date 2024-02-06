@@ -103,7 +103,8 @@ async function main() {
     const credentials = await credentialsProvider();
 
     const minervaCommand = updateCommand({
-      accountId: integTestAccountId,
+      subjectId: integTestAccountId,
+      subjectType: "ACCOUNT",
       ripServiceName,
       regionName,
       limitName,

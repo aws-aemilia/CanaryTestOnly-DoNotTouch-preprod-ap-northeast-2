@@ -11,6 +11,8 @@ export interface MinervaLimit {
   displayName: string;
   description: string;
   hardLimit?: number;
+  contextScope?: string;
+  contextScopeType?: string;
 }
 
 export interface AdjustableMinervaLimit extends MinervaLimit {
@@ -54,6 +56,27 @@ const adjustableLimits: AdjustableMinervaLimit[] = [
     displayName: "Concurrent jobs",
     description:
       "The maximum number of concurrent jobs that you can create in this account in the current Region.",
+  },
+  {
+    name: "REQUEST_TOKENS_PER_SECOND",
+    contextScope: "AWS::Amplify::App",
+    contextScopeType: "RESOURCE",
+    defaultLimit: 10_000,
+    hardLimit: 20_000,
+    isAdjustable: true,
+    displayName: "Hosting request tokens refill rate",
+    description: "The refill rate of request tokens per second for the app.",
+  },
+  {
+    name: "REQUEST_TOKENS_BURST_QUOTA",
+    contextScope: "AWS::Amplify::App",
+    contextScopeType: "RESOURCE",
+    defaultLimit: 10_000,
+    hardLimit: 20_000,
+    isAdjustable: true,
+    displayName: "Hosting request tokens bucket size",
+    description:
+      "The maximum number of additional tokens per second (RPS) that the app can consumed in one burst.",
   },
 ];
 
@@ -117,3 +140,7 @@ const allLimits: MinervaLimit[] = [...adjustableLimits, ...nonAdjustableLimits];
 export const allLimitsByName = keyBy(allLimits, "name");
 export const allLimitNames = allLimits.map((l) => l.name);
 export const adjustableLimitsNames = adjustableLimits.map((l) => l.name);
+export const arroyoBasedLimits = [
+  "REQUEST_TOKENS_PER_SECOND",
+  "REQUEST_TOKENS_BURST_QUOTA",
+];

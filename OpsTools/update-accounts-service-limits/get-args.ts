@@ -30,6 +30,8 @@ export async function getArgs(): Promise<GetArgsResponse> {
         "SUB_DOMAINS_PER_DOMAIN_COUNT",
         "WEBHOOKS_PER_APP_COUNT",
         "MAXIMUM_APP_CREATIONS_PER_HOUR",
+        "REQUEST_TOKENS_PER_SECOND",
+        "REQUEST_TOKENS_BURST_QUOTA",
       ],
     })
     .option("value", {

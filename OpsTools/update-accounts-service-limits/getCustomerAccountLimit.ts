@@ -29,8 +29,14 @@ async function main() {
       type: "string",
       demandOption: true,
     })
+    .option("appId", {
+      describe: "App ID for request per second tokens",
+      type: "string",
+      demandOption: false,
+      default: undefined,
+    })
     .option("limitName", {
-      description: "Name of limit to change",
+      description: "Name of limit to read",
       type: "string",
       demandOption: true,
       choices: allLimitNames,
@@ -39,11 +45,11 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { stage, region, accountId, limitName } = args;
+  const { stage, region, accountId, appId, limitName } = args;
 
   const minerva = new MinervaFacade(stage as Stage, toRegionName(region));
 
-  const result = await minerva.getLimit(limitName, accountId);
+  const result = await minerva.getLimit(limitName, accountId, appId);
 
   if (result) {
     logger.info(

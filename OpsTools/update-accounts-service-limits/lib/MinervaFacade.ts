@@ -5,6 +5,7 @@ import {
   Region,
   Stage,
 } from "Commons/Isengard";
+
 import logger from "Commons/utils/logger";
 import { toRegionName } from "Commons/utils/regions";
 import {
@@ -15,6 +16,7 @@ import {
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { RegionName } from "Commons/Isengard/types";
 import { exec, ExecError } from "Commons/utils/exec";
+import { arroyoBasedLimits } from "./MinervaLimit";
 
 type MinervaCLIGetLimitOutput = {
   SubjectLimit: {
@@ -50,10 +52,18 @@ export class MinervaFacade {
 
   public async getLimit(
     limitName: string,
-    accountId: string
+    accountId: string,
+    appId?: string | undefined
   ): Promise<MinervaCLIGetLimitOutput | undefined> {
-    const command = getCommand({
-      accountId,
+    let command: string;
+    if (arroyoBasedLimits.includes(limitName) && !appId) {
+      throw new Error("App ID must be defined when getting RPS Limits");
+    }
+    command = getCommand({
+      subjectId: appId
+        ? `arn:aws:amplify:${this.region}:${accountId}:apps/${appId}`
+        : accountId,
+      subjectType: appId ? "RESOURCE" : "ACCOUNT",
       limitName,
       ripServiceName: getRipServiceName(this.stage),
       regionName: this.region,
@@ -81,7 +91,8 @@ export class MinervaFacade {
     value: number
   ): Promise<void> {
     const minervaCommand = updateCommand({
-      accountId,
+      subjectId: accountId,
+      subjectType: "ACCOUNT",
       ripServiceName: getRipServiceName(this.stage),
       regionName: this.region,
       limitName,
