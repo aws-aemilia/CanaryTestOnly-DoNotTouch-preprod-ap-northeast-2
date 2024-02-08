@@ -60,7 +60,8 @@
     "ssrv1DeletionDLQ": "ts-node OpsTools/ssrv1DeletionDLQ.ts",
     "read": "ts-node OpsTools/dlq/read.ts",
     "redrive": "ts-node OpsTools/dlq/redrive.ts",
-    "rootCauseDlq": "ts-node OpsTools/deploymentProcessor/rootCauseDlq.ts"
+    "rootCauseDlq": "ts-node OpsTools/deploymentProcessor/rootCauseDlq.ts",
+    "cleanupGitHubWebhooks" : "ts-node Dev/cleanupGitHubWebhooks.ts"
   },
   "author": "",
   "license": "ISC",
