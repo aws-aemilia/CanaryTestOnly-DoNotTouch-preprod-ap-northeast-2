@@ -16,6 +16,7 @@ const allowedRoles = [
   "AHIORollback",
   "ExtendComputeRollback",
   "ECRPutImageRole",
+  "AL2023MCMRole",
 ];
 
 // Accounts where is safe to assume high risk roles like Admin

@@ -2,6 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   GetCommand,
+  UpdateCommand,
   paginateScan,
 } from "@aws-sdk/lib-dynamodb";
 import { Credentials, Provider } from "@aws-sdk/types";
@@ -78,6 +79,32 @@ export class AppDAO {
     );
 
     return response.Item as AppDO;
+  };
+
+  public updateAppById = async (
+    appId: string,
+    {
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+      ConditionExpression,
+    }: {
+      UpdateExpression: string;
+      ExpressionAttributeNames?: Record<string, string>;
+      ExpressionAttributeValues?: Record<string, any>;
+      ConditionExpression?: string;
+    }
+  ) => {
+    await this.client.send(
+      new UpdateCommand({
+        TableName: this.tableName,
+        Key: { appId },
+        UpdateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ConditionExpression,
+      })
+    );
   };
 
   /**

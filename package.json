@@ -61,7 +61,10 @@
     "read": "ts-node OpsTools/dlq/read.ts",
     "redrive": "ts-node OpsTools/dlq/redrive.ts",
     "rootCauseDlq": "ts-node OpsTools/deploymentProcessor/rootCauseDlq.ts",
-    "cleanupGitHubWebhooks" : "ts-node Dev/cleanupGitHubWebhooks.ts"
+    "cleanupGitHubWebhooks" : "ts-node Dev/cleanupGitHubWebhooks.ts",
+    "MCM-96985183-execute": "ts-node SingleUseTools/MCM-96985183/execute.ts",
+    "MCM-96985183-verify": "ts-node SingleUseTools/MCM-96985183/verify.ts",
+    "MCM-96985183-rollback": "ts-node SingleUseTools/MCM-96985183/rollback.ts"
   },
   "author": "",
   "license": "ISC",
@@ -118,6 +121,7 @@
     "@octokit/rest": "^19.0.4",
     "@supercharge/promise-pool": "^3.0.0",
     "@types/aws-lambda": "^8.10.115",
+    "async-sema": "^3.1.1",
     "aws-sdk": "2.1203.0",
     "aws4": "^1.12.0",
     "axios": "^0.21.1",
@@ -159,7 +163,7 @@
     "@types/inquirer": "9.0.1",
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.199",
-    "@types/node": "^14.14.35",
+    "@types/node": "^18.19.6",
     "@types/prompt-sync": "4.1.1",
     "@types/ramda": "^0.28.14",
     "@types/yargs": "^17.0.11",
