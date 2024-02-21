@@ -8,11 +8,14 @@ import {
 } from "@aws-sdk/client-iam";
 import yargs from "yargs";
 import {
+  integTestAccounts,
   aesIntegTestAccounts,
   getIsengardCredentialsProvider,
   Stage,
+  RegionName,
 } from "../../Commons/Isengard";
 import logger from "../../Commons/utils/logger";
+import { toRegionName } from "../../Commons/utils/regions";
 
 // This role is used by the Integration Tests to create resources in the test accounts.
 // These are low risk accounts so it's ok to have them use an Admin role.
@@ -46,7 +49,7 @@ async function main() {
       Integration Tests to create resources in the test accounts.
 
       Example usage:
-        brazil-build adminRoleForIntegrationTests -- --stage=gamma
+        brazil-build adminRoleForIntegrationTests -- --stage=preprod --account-type=integ --region=ap-northeast-3
     `
     )
     .option("stage", {
@@ -55,12 +58,33 @@ async function main() {
       default: "prod",
       choices: ["beta", "gamma", "preprod", "prod"],
     })
+    .option("account-type", {
+      describe: "integ test account type to update role", // Aes integ account, or normal integ account
+      type: "string",
+      default: "aes",
+      choices: ["aes", "integ"],
+    })
+    .option("region", {
+      describe: "perform update only for a specific region",
+      type: "string",
+    })
     .strict()
     .version(false)
     .help().argv;
 
-  const { stage } = args;
-  const accounts = await aesIntegTestAccounts({ stage: stage as Stage });
+  const { stage, accountType, region } = args;
+  const accounts = await getAccounts(
+    accountType,
+    stage as Stage,
+    region ? (toRegionName(region) as RegionName) : undefined
+  );
+
+  if (accounts.length === 0) {
+    logger.warn(
+      "Args matched to 0 accounts. Please verify you have specified a valid region and the account exists in that region"
+    );
+    return;
+  }
 
   for (const account of accounts) {
     logger.info("=========================================");
@@ -130,6 +154,26 @@ async function updateRole(iamClient: IAMClient, role: Role) {
       PolicyArn: policyArn,
     })
   );
+}
+
+/*
+  Returns the integration test accounts to update the role in. 
+  Updates integ test accs or AES integ test accounts in all regions, or a specific region when specified
+  */
+async function getAccounts(
+  accountType: String,
+  stage: Stage,
+  region?: RegionName
+) {
+  if (region) {
+    return accountType === "aes"
+      ? await aesIntegTestAccounts({ stage, region })
+      : await integTestAccounts({ stage, region });
+  } else {
+    return accountType === "aes"
+      ? await aesIntegTestAccounts({ stage })
+      : await integTestAccounts({ stage });
+  }
 }
 
 main()
