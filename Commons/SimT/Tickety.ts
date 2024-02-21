@@ -13,6 +13,7 @@ import {
   TicketReference,
   Tickety,
 } from "@amzn/tickety-typescript-sdk";
+import { AwsSigningAlgorithm } from "aws-crt/dist/native/auth";
 
 // Full Tickety documentation can be found in:
 // https://w.amazon.com/bin/view/IssueManagement/SIMTicketing/TicketyAPI/GettingStarted
@@ -130,9 +131,7 @@ export class TicketyService {
       service: "tickety",
       sha256: Sha256,
       applyChecksum: true,
-      signingAlgorithm: 1,
-      // There were issues with importing AwsSigningAlgorithm from @aws-sdk/signature-v4-crt, so we simply use the
-      // enum index of 1. https://amzn-aws.slack.com/archives/C03RW574YQZ/p1688739515862139
+      signingAlgorithm: AwsSigningAlgorithm.SigV4Asymmetric,
     });
 
     return new Tickety({
