@@ -8,6 +8,7 @@ import {
   createKinesisConsumerAccount,
   createIntegTestAccount,
   createDataPlaneAccount,
+  createCfnRegistryAccount,
   dataPlaneAccount,
   Region,
   Stage,
@@ -24,6 +25,7 @@ import {
 
 // TODO: add this type to the AmplifyAccount type and update Isengard cache
 type AmplifyAccountType =
+  | "cfnRegistry"
   | "kinesisConsumer"
   | "integrationTest"
   | "aesIntegrationTest"
@@ -67,6 +69,7 @@ npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --re
       describe: "type of account.",
       type: "string",
       choices: [
+        "cfnRegistry",
         "kinesisConsumer",
         "integrationTest",
         "aesIntegrationTest",
@@ -151,6 +154,13 @@ npx ts-node createIsengardAccount.ts --type=aesIntegrationTest --stage=beta --re
       console.log("SUCCESS");
       console.log("Refreshing the local account cache...");
       await deleteCache("integrationTestAccounts");
+      break;
+
+    case "cfnRegistry":
+      await createCfnRegistryAccount(stage, region);
+      console.log("SUCCESS");
+      console.log("Refreshing the local account cache...");
+      await deleteCache("cfnRegistryAccounts");
       break;
 
     default:

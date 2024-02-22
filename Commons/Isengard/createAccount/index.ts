@@ -3,6 +3,7 @@ import { integrationTestPurposeFn } from "Commons/Isengard/createAccount/account
 import { aesIntegrationTestPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/aesIntegration";
 import { computeServiceCellPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/computeServiceCell";
 import { computeServiceControlPlanePurposeFn } from "Commons/Isengard/createAccount/accountPurposes/computeServiceControlPlane";
+import { cfnRegistryPurposeFn } from "Commons/Isengard/createAccount/accountPurposes/cfnRegistry";
 import { dataPlanePurposeFn } from "Commons/Isengard/createAccount/accountPurposes/dataPlane";
 import { Region, Stage } from "../types";
 import { createAmplifyAccount } from "./createAmplifyAccount";
@@ -34,3 +35,6 @@ export const createKinesisConsumerAccount: CreateAccountFn =
 
 export const createIntegTestAccount: CreateAccountFn =
   createAmplifyAccount.bind(undefined, integrationTestPurposeFn, true);
+
+export const createCfnRegistryAccount: CreateAccountFn =
+  createAmplifyAccount.bind(undefined, cfnRegistryPurposeFn, true);
