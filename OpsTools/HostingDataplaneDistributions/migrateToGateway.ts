@@ -73,6 +73,7 @@ async function main() {
   const res = await client.send(
     new MigrateAppToGatewayCommand({
       appId,
+      runImmediately: true, // For an ops tool, we always want to run the operation immediately
     })
   );
 
