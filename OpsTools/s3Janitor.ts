@@ -55,8 +55,8 @@ async function main() {
     .usage(
       `
       Deletes unused S3 buckets. Can only be run in low risk
-      accounts like integration tests because it needs s3:DeleteObject
-      and s3:DeleteBucket permissions which the standard safe roles
+      accounts like integration tests because it needs S3:DeleteObject
+      and S3:DeleteBucket permissions which the standard safe roles
       don't have.
 
       NOTE: Our integration tests create their buckets in IAD, so one
@@ -65,7 +65,7 @@ async function main() {
       no region is provided this script will run against all regions in the
       provided stage.
       
-      You will need to run this for each region - s3 is a "global"
+      You will need to run this for each region - S3 is a "global"
       service, but buckets are regional. This means list buckets will
       list all buckets globally, but a region must be specified to delete.
       You will see "PermanentRedirect" errors for the buckets that are
@@ -85,9 +85,11 @@ async function main() {
       `
     )
     .option("bucketRegion", {
-      describe: "The region or airport code (i.e. iad, or us-east-1)",
+      describe:
+        "The region or airport code (i.e. iad, or us-east-1); defaults to IAD",
       type: "string",
       demandOption: true,
+      default: "IAD",
     })
     .option("roleName", {
       describe: "IAM role to assume to delete functions",
@@ -110,14 +112,26 @@ async function main() {
       type: "boolean",
       demandOption: false,
     })
+    .option("doNotPrompt", {
+      describe:
+        "Prevent the script from prompting when removing buckets from multiple regions",
+      type: "boolean",
+      demandOption: false,
+    })
     .alias("regions", "accountRegions")
     .alias("stage", "requestedStage")
     .strict()
     .version(false)
     .help().argv;
 
-  const { bucketRegion, roleName, accountRegions, dryRun, requestedStage } =
-    args;
+  const {
+    bucketRegion,
+    roleName,
+    accountRegions,
+    dryRun,
+    requestedStage,
+    doNotPrompt,
+  } = args;
 
   const stage: Stage = requestedStage as Stage;
   const integTestAccounts: AmplifyAccount[] = await getIntegTestAccounts(
@@ -139,16 +153,19 @@ async function main() {
       bucketRegion as Region,
       integTestAccount,
       roleName,
-      dryRun
+      dryRun,
+      doNotPrompt
     );
   }
+  logger.info("Finished deleting buckets.");
 }
 
 async function deleteBuckets(
   bucketRegion: Region,
   testAccount: AmplifyAccount,
   roleName: string,
-  dryRun: boolean | undefined
+  dryRun: boolean | undefined,
+  doNotPrompt: boolean | undefined
 ) {
   const regionName = toRegionName(bucketRegion);
   const s3Client = new S3Client({
@@ -176,7 +193,7 @@ async function deleteBuckets(
   });
 
   logger.info(
-    "Gathering all s3 buckets associated with CloudFront distributions"
+    "Gathering all S3 buckets associated with CloudFront distributions"
   );
 
   // We need to gather buckets from the assigned region AND iad - most of our tests run
@@ -218,9 +235,10 @@ async function deleteBuckets(
         /^amplify-.*?-master-.*?-deployment$/.test(bucketName || "") || // Matches bucket names like: amplify-amplifye93f6aa840164-master-04817-deployment
         /^amplify-.*?-staging-.*?-deployment$/.test(bucketName || "") // Matches bucket names like: amplify-amplifye93f6aa840164-staging-04817-deployment
     );
-
-  logger.info({ bucketsToDelete: bucketNamesToDelete }, "Buckets to delete");
-  logger.info(`${bucketNamesToDelete.length} buckets.`);
+  logger.info(
+    { bucketsToDelete: bucketNamesToDelete },
+    `Deleting ${bucketNamesToDelete.length} buckets:`
+  );
 
   if (dryRun) {
     logger.info("Exiting without deleting buckets");
@@ -231,7 +249,8 @@ async function deleteBuckets(
     bucketNamesToDelete.length > 0 &&
     // TODO: Figure out a good dx flow for not prompting for every test account.
     //       Currently we're previewing the bucket names prior to deleting them.
-    (await confirm("Are you sure you want to delete these buckets?"))
+    (doNotPrompt ||
+      (await confirm("Are you sure you want to delete these buckets?")))
   ) {
     // Delete them in parallel with rate limit
     const deletions = bucketNamesToDelete.map((bucketName) =>
@@ -245,7 +264,6 @@ async function deleteBuckets(
     logger.info(
       `Deleted ${deletedBuckets}/${bucketNamesToDelete.length} buckets`
     );
-    logger.info("Finished deleting buckets");
   }
 }
 
