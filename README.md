@@ -53,7 +53,16 @@ If the above fails due to a package being supposedly not found, on the `AWSAmpli
 set, [merge from live](https://build.amazon.com/merge#{%22destination%22:%22AWSAmplifyTools/development%22,%22options%22:{%22source%22:%22live%22,%22add%22:[]}})
 , then retry the last two commands above.
 
-Tools that cut tickets rely on `kcurl`. If tools fail on macOS due to `kcurl` not being found, install it using `brew install env-improvements`.
+### Adding new dependencies
+
+Dependencies are installed from the [internal NPM registry](https://npmpm.corp.amazon.com/) rather than directly from
+NPM. If the dependency that you're trying to add is not in the internal registry, you may need to add it to the Config
+file first.
+
+```bash
+brazil ws sync --md
+brazil-build install @aws-sdk/client-infinidash
+```
 
 ### Use Prettier for code formatting
 
@@ -65,14 +74,3 @@ project's `node_modules`. Or, run `npx prettier --write .` to reformat your scri
 ```bash
 npx ts-node {script_name}.ts
 ```
-
-### Contingent Authorization
-
-For Isengard contingent authorization you will need to set one of the following environment variables to access accounts marked as production:
-
-- `ISENGARD_MCM` - MCM ID 
-- `ISENGARD_REVIEW_ID` - Consensus Review ID 
-- `ISENGARD_SIM` - SIM Ticket ID
-
-
-
