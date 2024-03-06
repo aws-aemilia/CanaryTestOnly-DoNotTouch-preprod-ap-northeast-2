@@ -36,8 +36,7 @@ const main = async () => {
       when we identify customers who are running into issues with the Hosting Gateway.
       
       Usage:
-      brazil-build hostingGatewayRollback -- --appId=d123456789 --distributionId=E123456789 --stage=test --region=us-west-2 --devAccountId=123456789
-      brazil-build hostingGatewayRollback -- --appId=d123456789 --distributionId=E123456789 --stage=beta --region=us-west-2 --ticket V123456789
+      brazil-build hostingGatewayRollback -- --appId=d2w8as945uxwtu --distributionId=E2RYTTVOSQ8I3V --stage=prod --region=us-east-1
       `
     )
     .option("stage", {
