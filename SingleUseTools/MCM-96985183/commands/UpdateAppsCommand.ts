@@ -65,9 +65,15 @@ export class UpdateAppsCommand {
     this.skippedAppsFile = path.join(this.outDir, SKIPPED_APPS_FILE_NAME);
     this.failedAppsFile = path.join(this.outDir, FAILED_APPS_FILE_NAME);
 
-    this.updatedAppsWriteStream = createWriteStream(this.updatedAppsFile);
-    this.skippedAppsWriteStream = createWriteStream(this.skippedAppsFile);
-    this.failedAppsWriteStream = createWriteStream(this.failedAppsFile);
+    this.updatedAppsWriteStream = createWriteStream(this.updatedAppsFile, {
+      flags: "a",
+    });
+    this.skippedAppsWriteStream = createWriteStream(this.skippedAppsFile, {
+      flags: "a",
+    });
+    this.failedAppsWriteStream = createWriteStream(this.failedAppsFile, {
+      flags: "a",
+    });
   }
 
   public static async buildDefault(
@@ -95,7 +101,12 @@ export class UpdateAppsCommand {
       const processedApps = this.getProcessedApps();
 
       if (appId) {
-        await this.processApp(appId, { processedApps });
+        if (processedApps.has(appId)) {
+          logger.info(`App ${appId} has already been processed.`);
+          return;
+        }
+
+        await this.processApp(appId);
 
         return;
       }
@@ -111,7 +122,10 @@ export class UpdateAppsCommand {
 
       logger.info(`Reading appIds from ${scannedAppsFile}.`);
 
-      const appIds = readFileSync(scannedAppsFile, "utf8").split("\n");
+      const appIds = readFileSync(scannedAppsFile, "utf8")
+        .split("\n")
+        .filter((appId) => appId && !processedApps.has(appId))
+        .sort(() => Math.random() - 0.5);
 
       logger.info(`Found ${appIds.length} appIds to update.`);
 
@@ -130,12 +144,7 @@ export class UpdateAppsCommand {
         try {
           // Acquire a semaphore token to limit concurrency
           await sema.acquire();
-
-          if (!appId) {
-            return;
-          }
-
-          await this.processApp(appId, { processedApps });
+          await this.processApp(appId);
 
           appCount += 1;
 
@@ -171,14 +180,7 @@ export class UpdateAppsCommand {
     }
   }
 
-  private async processApp(
-    appId: string,
-    { processedApps }: { processedApps: Set<string> }
-  ) {
-    if (processedApps.has(appId)) {
-      return;
-    }
-
+  private async processApp(appId: string) {
     try {
       await this.updateApp(appId);
     } catch (err) {

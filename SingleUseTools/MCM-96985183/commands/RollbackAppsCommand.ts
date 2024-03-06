@@ -75,12 +75,23 @@ export class RollbackAppsCommand {
       FAILED_ROLLBACK_APPS_FILE_NAME
     );
 
-    this.rolledBackAppsWriteStream = createWriteStream(this.rolledBackAppsFile);
+    this.rolledBackAppsWriteStream = createWriteStream(
+      this.rolledBackAppsFile,
+      {
+        flags: "a",
+      }
+    );
     this.skippedRollbackAppsWriteStream = createWriteStream(
-      this.skippedRollbackAppsFile
+      this.skippedRollbackAppsFile,
+      {
+        flags: "a",
+      }
     );
     this.failedRollbackAppsStream = createWriteStream(
-      this.failedRollbackAppsFile
+      this.failedRollbackAppsFile,
+      {
+        flags: "a",
+      }
     );
   }
 
@@ -109,9 +120,12 @@ export class RollbackAppsCommand {
       const processedApps = this.getProcessedApps();
 
       if (appId) {
-        await this.processApp(appId, {
-          processedApps,
-        });
+        if (processedApps.has(appId)) {
+          logger.info(`App ${appId} has already been processed.`);
+          return;
+        }
+
+        await this.processApp(appId);
 
         return;
       }
@@ -134,7 +148,10 @@ export class RollbackAppsCommand {
 
       logger.info(`Reading appIds from ${updatedAppsFile}.`);
 
-      const appIds = readFileSync(updatedAppsFile, "utf8").split("\n");
+      const appIds = readFileSync(updatedAppsFile, "utf8")
+        .split("\n")
+        .filter((appId) => appId && !processedApps.has(appId))
+        .sort(() => Math.random() - 0.5);
 
       logger.info(`Found ${appIds.length} appIds to roll back.`);
 
@@ -153,14 +170,7 @@ export class RollbackAppsCommand {
         try {
           // Acquire a semaphore token to limit concurrency
           await sema.acquire();
-
-          if (!appId) {
-            return;
-          }
-
-          await this.processApp(appId, {
-            processedApps,
-          });
+          await this.processApp(appId);
 
           appCount += 1;
 
@@ -196,18 +206,7 @@ export class RollbackAppsCommand {
     }
   }
 
-  private async processApp(
-    appId: string,
-    {
-      processedApps,
-    }: {
-      processedApps: Set<string>;
-    }
-  ) {
-    if (processedApps.has(appId)) {
-      return;
-    }
-
+  private async processApp(appId: string) {
     try {
       await this.rollbackApp(appId);
     } catch (err) {

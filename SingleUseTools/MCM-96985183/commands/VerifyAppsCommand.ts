@@ -61,8 +61,15 @@ export class VerifyAppsCommand {
     this.verifiedAppsFile = path.join(this.outDir, VERIFIED_APPS_FILE_NAME);
     this.unverifiedAppsFile = path.join(this.outDir, UNVERIFIED_APPS_FILE_NAME);
 
-    this.verifiedAppsWriteStream = createWriteStream(this.verifiedAppsFile);
-    this.unverifiedAppsWriteStream = createWriteStream(this.unverifiedAppsFile);
+    this.verifiedAppsWriteStream = createWriteStream(this.verifiedAppsFile, {
+      flags: "a",
+    });
+    this.unverifiedAppsWriteStream = createWriteStream(
+      this.unverifiedAppsFile,
+      {
+        flags: "a",
+      }
+    );
   }
 
   public static async buildDefault(
@@ -90,9 +97,12 @@ export class VerifyAppsCommand {
       const processedApps = this.getProcessedApps();
 
       if (appId) {
-        await this.verifyApp(appId, {
-          processedApps,
-        });
+        if (processedApps.has(appId)) {
+          logger.info(`App ${appId} has already been processed.`);
+          return;
+        }
+
+        await this.verifyApp(appId);
         return;
       }
 
@@ -114,7 +124,10 @@ export class VerifyAppsCommand {
 
       logger.info(`Reading appIds from ${updatedAppsFile}.`);
 
-      const appIds = readFileSync(updatedAppsFile, "utf8").split("\n");
+      const appIds = readFileSync(updatedAppsFile, "utf8")
+        .split("\n")
+        .filter((appId) => appId && !processedApps.has(appId))
+        .sort(() => Math.random() - 0.5);
 
       logger.info(`Found ${appIds.length} appIds to verify.`);
 
@@ -133,14 +146,7 @@ export class VerifyAppsCommand {
         try {
           // Acquire a semaphore token to limit concurrency
           await sema.acquire();
-
-          if (!appId) {
-            return;
-          }
-
-          await this.verifyApp(appId, {
-            processedApps,
-          });
+          await this.verifyApp(appId);
 
           appCount += 1;
 
@@ -174,19 +180,8 @@ export class VerifyAppsCommand {
     }
   }
 
-  private async verifyApp(
-    appId: string,
-    {
-      processedApps,
-    }: {
-      processedApps: Set<string>;
-    }
-  ) {
+  private async verifyApp(appId: string) {
     try {
-      if (processedApps.has(appId)) {
-        return;
-      }
-
       const app = await this.appDAO.getAppById(appId, ["environmentVariables"]);
 
       if (!app) {

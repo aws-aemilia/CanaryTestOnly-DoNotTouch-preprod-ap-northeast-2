@@ -3,6 +3,7 @@ import { hideBin } from "yargs/helpers";
 import { toRegionName } from "Commons/utils/regions";
 import { SmokeTestCommand } from "./commands";
 import { Stage } from "Commons/Isengard";
+import logger from "Commons/utils/logger";
 
 async function main() {
   const args = await yargs(hideBin(process.argv))
@@ -13,14 +14,14 @@ async function main() {
       verify the build logs and the environment variables for the app.
 
       Note: The script uses the AWS credentials from the environment to create the app and run the build. Please ensure that you run
-      \`ada credentials update --account --role\` before running the script.
+      \`ada credentials update --account --role --once\` before running the script.
 
       Example:
       # Smoke test by creating a new app in the pdx region.
-      npx ts-node smokeTest.ts --region pdx --branch main --repository https://github.com/Narrator/BugBash-Nuxt3-ExtendCompute --accessToken <accessToken>
+      brazil-build MCM-96985183-smokeTest -- --stage prod --region pdx --branch main --repository https://github.com/Narrator/BugBash-Nuxt3-ExtendCompute --accessToken <accessToken>
 
       # Smoke test by using an existing app in the pdx region.
-      npx ts-node smokeTest.ts --region pdx --appId d3rbs9i1iy9lcn --branch main
+      brazil-build MCM-96985183-smokeTest -- --stage prod --region pdx --appId d3rbs9i1iy9lcn --branch main
       `
     )
     .option("stage", {
@@ -88,4 +89,7 @@ async function main() {
   await smokeTestCommand.execute(appId);
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  logger.error(err, "The command failed to execute");
+  process.exit(1);
+});

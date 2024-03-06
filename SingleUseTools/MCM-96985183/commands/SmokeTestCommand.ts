@@ -3,9 +3,11 @@ import { Region, Stage } from "Commons/Isengard";
 import logger from "Commons/utils/logger";
 import { GENIE_BASE_URL } from "../lib";
 import { setTimeout } from "timers/promises";
+import { toRegionName } from "Commons/utils/regions";
 
 export class SmokeTestCommand {
   private stage: Stage;
+  private region: Region;
   private amplify: Amplify;
   private branchName: string;
   private repository?: string;
@@ -13,18 +15,21 @@ export class SmokeTestCommand {
 
   constructor({
     stage,
+    region,
     amplify,
     branchName,
     repository,
     accessToken,
   }: {
     stage: Stage;
+    region: Region;
     amplify: Amplify;
     branchName: string;
     repository?: string;
     accessToken?: string;
   }) {
     this.stage = stage;
+    this.region = region;
     this.amplify = amplify;
     this.branchName = branchName;
     this.repository = repository;
@@ -41,6 +46,7 @@ export class SmokeTestCommand {
   ): Promise<SmokeTestCommand> {
     return new SmokeTestCommand({
       stage,
+      region,
       amplify: new Amplify({
         region,
         endpoint,
@@ -78,9 +84,10 @@ export class SmokeTestCommand {
 
     await this.waitForBuildToComplete(appId, jobId);
 
+    const regionName = toRegionName(this.region);
     logger.info(
       "Build completed. Look at the build logs by following this link: " +
-        `${GENIE_BASE_URL}/${this.stage}/app/${appId}/branch/${this.branchName}#Jobs`
+        `${GENIE_BASE_URL}/${this.stage}/${regionName}/${appId}/branch/${this.branchName}#Jobs`
     );
 
     logger.info(

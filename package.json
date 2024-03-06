@@ -64,7 +64,8 @@
     "cleanupGitHubWebhooks" : "ts-node Dev/cleanupGitHubWebhooks.ts",
     "MCM-96985183-execute": "ts-node SingleUseTools/MCM-96985183/execute.ts",
     "MCM-96985183-verify": "ts-node SingleUseTools/MCM-96985183/verify.ts",
-    "MCM-96985183-rollback": "ts-node SingleUseTools/MCM-96985183/rollback.ts"
+    "MCM-96985183-rollback": "ts-node SingleUseTools/MCM-96985183/rollback.ts",
+    "MCM-96985183-smokeTest": "ts-node SingleUseTools/MCM-96985183/smokeTest.ts"
   },
   "author": "",
   "license": "ISC",
