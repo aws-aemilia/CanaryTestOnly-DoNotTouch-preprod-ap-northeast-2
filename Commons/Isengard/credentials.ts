@@ -1,4 +1,5 @@
 import integTestAccounts from "./cache/integTestAccounts.json";
+import toolsAccount from "./cache/toolsAccount.json";
 import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { getAssumeRoleCredentials } from "@amzn/isengard";
 
@@ -20,7 +21,10 @@ const allowedRoles = [
 ];
 
 // Accounts where is safe to assume high risk roles like Admin
-const lowRiskAccountIds = [...integTestAccounts.map((acc) => acc.accountId)];
+const lowRiskAccountIds = [
+  ...integTestAccounts.map((acc) => acc.accountId),
+  toolsAccount.accountId,
+];
 
 const credentialsCache = new Map<string, AwsCredentialIdentity>();
 
