@@ -108,19 +108,12 @@ async function deleteConfigResources(
 
 async function deleteIamRole(iam: IAM, deleteResources: boolean) {
   const RoleName = "AWSServiceRoleForConfig";
-  const role = await iam.getRole({ RoleName });
 
-  if (deleteResources && role.Role != undefined) {
+  if (deleteResources) {
     const deleteRole = await iam.deleteServiceLinkedRole({ RoleName });
-    const DeletionTaskId = deleteRole.DeletionTaskId;
-    const deletionStatus = await iam.getServiceLinkedRoleDeletionStatus({
-      DeletionTaskId,
-    });
     log.info(
-      `Deleting ${RoleName} with task ID ${DeletionTaskId}: ${deletionStatus}`
+      `Deleted ${RoleName} with deletion task ID: ${deleteRole.DeletionTaskId}`
     );
-  } else {
-    log.info(`Found role ${RoleName}, but not deleting`);
   }
 }
 
