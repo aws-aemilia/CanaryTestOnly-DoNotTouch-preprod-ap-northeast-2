@@ -113,7 +113,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-GE5GU5FS8C9O",
             "API-Gateway-Execution-Logs_a3lsdnrs08/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1SVHY07R9J5",
-            "CODETEST-Logs-CodeTestEntities-550167628141-e491e9163f2bec9ab45b3cb55005d800"
+            "CODETEST-Logs-CodeTestEntities-550167628141-e491e9163f2bec9ab45b3cb55005d800",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-ggcfDTcNh5al",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-0CdgjPQBNAwO"
           ]
         },
         "ICN": {
@@ -176,7 +178,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-1JM3P9VF7PFMF",
             "API-Gateway-Execution-Logs_vcvh7pksz4/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-2SSBTYW9NJT1",
-            "CODETEST-Logs-CodeTestEntities-024873182396-6aaa0e66de9b003b46124d38ac7339e0"
+            "CODETEST-Logs-CodeTestEntities-024873182396-6aaa0e66de9b003b46124d38ac7339e0",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-IBmhE8BkG2RK",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-WPO9M6oke5Fj"
           ]
         },
         "BOM": {
@@ -242,7 +246,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-1WIFSVNP78W5U",
             "API-Gateway-Execution-Logs_a5ns16kw30/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1GKHQQ9258P4Q",
-            "CODETEST-Logs-CodeTestEntities-801187164913-26d3719875e15f94a7069866e67fd8cc"
+            "CODETEST-Logs-CodeTestEntities-801187164913-26d3719875e15f94a7069866e67fd8cc",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-OahvO5mivsM8",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-U6vifR37fCgk"
           ]
         },
         "SIN": {
@@ -304,7 +310,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-1NGFVPP0WKW2A",
             "API-Gateway-Execution-Logs_ykifylndqg/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1CTICUN7UMPFN",
-            "CODETEST-Logs-CodeTestEntities-148414518837-400a968ee83af8afa6727f22f86a2c13"
+            "CODETEST-Logs-CodeTestEntities-148414518837-400a968ee83af8afa6727f22f86a2c13",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-gyvxIXwRR12p",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-YitW1yKB8is2"
           ]
         },
         "SYD": {
@@ -377,7 +385,9 @@
             "API-Gateway-Execution-Logs_w7tp35wqn6/Prod",
             "API-Gateway-Execution-Logs_wvk9mtect0/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1KTL5NQIJV6OV",
-            "CODETEST-Logs-CodeTestEntities-711974673587-3d59072240a56d90696a22097da8dfaf"
+            "CODETEST-Logs-CodeTestEntities-711974673587-3d59072240a56d90696a22097da8dfaf",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-Lr90QiCleVGU",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-JI1fkF5B85td"
           ]
         },
         "YUL": {
@@ -439,7 +449,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-HO2DOZTUMD24",
             "API-Gateway-Execution-Logs_16iuwy6tik/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TFURIXKZD630",
-            "CODETEST-Logs-CodeTestEntities-824930503114-4d3e45b2f9bff88ef42bfbfe587c042e"
+            "CODETEST-Logs-CodeTestEntities-824930503114-4d3e45b2f9bff88ef42bfbfe587c042e",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-BCjMB0Ikz3Vu",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-TKW3o0dq6znO"
           ]
         },
         "FRA": {
@@ -501,7 +513,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-59RQ8JSOVWJN",
             "API-Gateway-Execution-Logs_bv6wvxhay9/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1MA0DX7RN2EAN",
-            "CODETEST-Logs-CodeTestEntities-644397351177-5553c56f52f1bdf3a3b26bd40a1cb498"
+            "CODETEST-Logs-CodeTestEntities-644397351177-5553c56f52f1bdf3a3b26bd40a1cb498",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-N6Ql9mrnHUB4",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-RAGtjvTVITwO"
           ]
         },
         "ARN": {
@@ -566,7 +580,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-1PC6ISSJ892AZ",
             "API-Gateway-Execution-Logs_lm7kebzyr0/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1SBIC3KTY1QTD",
-            "CODETEST-Logs-CodeTestEntities-315276288780-642315bde86f6496d521457355f7262d"
+            "CODETEST-Logs-CodeTestEntities-315276288780-642315bde86f6496d521457355f7262d",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-MzlF6STw0VEK",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-QCHW4Q82kwha"
           ]
         },
         "DUB": {
@@ -633,7 +649,9 @@
             "API-Gateway-Execution-Logs_bd9k84izqe/prod",
             "API-Gateway-Execution-Logs_rx7yntjx68/Prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-112C07FWWRE54",
-            "CODETEST-Logs-CodeTestEntities-565036926641-0c5c44af53fc87990ca775d569413aad"
+            "CODETEST-Logs-CodeTestEntities-565036926641-0c5c44af53fc87990ca775d569413aad",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-IorkJ8ILPLrn",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-BxO4ZO1xKcUE"
           ]
         },
         "LHR": {
@@ -696,7 +714,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-NX22PSGSR9UN",
             "API-Gateway-Execution-Logs_ciak2lq4f8/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-A93RX6SU8AOP",
-            "CODETEST-Logs-CodeTestEntities-499901155257-77bc17720901916e261f3b47358b5430"
+            "CODETEST-Logs-CodeTestEntities-499901155257-77bc17720901916e261f3b47358b5430",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-fF9UDcolUtQf",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-i7Hef1V1ZcKW"
           ]
         },
         "CDG": {
@@ -759,7 +779,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-PV6BOVBAMGIL",
             "API-Gateway-Execution-Logs_k6wlf90lv2/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-186X0QAMH0E7C",
-            "CODETEST-Logs-CodeTestEntities-693207358157-c88a10921f2a61947fe3aeb911aac3b1"
+            "CODETEST-Logs-CodeTestEntities-693207358157-c88a10921f2a61947fe3aeb911aac3b1",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-P7g6QrvWMaB3",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-Lr4C4eovOguU"
           ]
         },
         "GRU": {
@@ -821,7 +843,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-PNA2V0P6DPJJ",
             "API-Gateway-Execution-Logs_d05svto9qc/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-JS0R585DAQWZ",
-            "CODETEST-Logs-CodeTestEntities-068675532419-0d1815b341a59d773671e461c4348212"
+            "CODETEST-Logs-CodeTestEntities-068675532419-0d1815b341a59d773671e461c4348212",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-NiGbmDIKnVi6",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-SupgvJ4L3d0m"
           ]
         },
         "IAD": {
@@ -893,7 +917,9 @@
             "API-Gateway-Execution-Logs_n79usow26a/prod",
             "API-Gateway-Execution-Logs_ypj49z6303/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1L7FPE26PHWH9",
-            "CODETEST-Logs-CodeTestEntities-073653171576-73b20281cf6756a2fd90549ae8b0a716"
+            "CODETEST-Logs-CodeTestEntities-073653171576-73b20281cf6756a2fd90549ae8b0a716",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-vjYlQoVd8mKf",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-tjWerNXgt7UF"
           ]
         },
         "CMH": {
@@ -962,7 +988,9 @@
             "API-Gateway-Execution-Logs_fik71wod62/prod",
             "API-Gateway-Execution-Logs_j84z9f8m0d/Prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1S228LSNJFQ6Q",
-            "CODETEST-Logs-CodeTestEntities-264748200621-1584ccd8b3fff3e1e2d6a4cf3ff00a61"
+            "CODETEST-Logs-CodeTestEntities-264748200621-1584ccd8b3fff3e1e2d6a4cf3ff00a61",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-fjWcBac5mJBh",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-3mxKXNHwH6HR"
           ]
         },
         "SFO": {
@@ -1027,7 +1055,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-ECMIWF1P11C4",
             "API-Gateway-Execution-Logs_52nnfsgc4m/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-LEzkAZaftyyv",
-            "CODETEST-Logs-CodeTestEntities-214290359175-bb6acd37a4b6dcf1f602cc80e2e3c6d6"
+            "CODETEST-Logs-CodeTestEntities-214290359175-bb6acd37a4b6dcf1f602cc80e2e3c6d6",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-QF3o4AYmY0pZ",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-jCcWo4fbAnzq"
           ]
         },
         "PDX": {
@@ -1098,7 +1128,9 @@
             "API-Gateway-Execution-Logs_fgzzlu32gb/Prod",
             "API-Gateway-Execution-Logs_l88nrvl6q8/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1LRZLYYO2ABMS",
-            "CODETEST-Logs-CodeTestEntities-395333095307-8bcdc26743c7d2e11526b52eda6f7148"
+            "CODETEST-Logs-CodeTestEntities-395333095307-8bcdc26743c7d2e11526b52eda6f7148",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-2AcEkAqBWTtq",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-hu5wUspCIGqL"
           ]
         },
         "MXP": {
@@ -1162,7 +1194,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-SDZF44FOE8FX",
             "API-Gateway-Execution-Logs_gd2204hdrg/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-QeMlegbwSNWm",
-            "CODETEST-Logs-CodeTestEntities-804516649577-7c2e3ca42cb4a10ef234c2478ec806d3"
+            "CODETEST-Logs-CodeTestEntities-804516649577-7c2e3ca42cb4a10ef234c2478ec806d3",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-tG0udJth3pKj",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-0DXL4Ths2rsK"
           ]
         },
         "HKG": {
@@ -1234,7 +1268,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-BHTLKE3TTAC1",
             "API-Gateway-Execution-Logs_fak6aaboj3/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-8Zy9YEoTl68d",
-            "CODETEST-Logs-CodeTestEntities-574285171994-38144f0b78ac1a2491c25e701b8bfd67"
+            "CODETEST-Logs-CodeTestEntities-574285171994-38144f0b78ac1a2491c25e701b8bfd67",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-NOmUKnMic4wo",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-D3lVSGYoKRD0"
           ]
         },
         "BAH": {
@@ -1303,7 +1339,9 @@
             "/aws/lambda/BastionStack-DogfishLambda-V8GXKOGIATC1",
             "API-Gateway-Execution-Logs_ykw0hmk700/prod",
             "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-TiN4HdbDOKNp",
-            "CODETEST-Logs-CodeTestEntities-183380703454-aebacf18ad9fd60de0b74feed0548381"
+            "CODETEST-Logs-CodeTestEntities-183380703454-aebacf18ad9fd60de0b74feed0548381",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-8CqsMQBp6SXk",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-S7her9LcB7Bs"
           ]
         },
         "PDX - Beta": {
@@ -1407,7 +1445,9 @@
             "BackendProcessorInfrastructureCDK-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1J1VM4G1VUQVV",
             "BackendProcessorInfrastructureCDK-MigratorECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-BFEN5SOIVKZ0",
             "ECSSERVICE-INF-AWSAmplifyDeploymentServiceTaskDefinitionDeploymentContainerLogGroup600521BA-ULOY3ASETPFB",
-            "ECSSERVICE-INF-AmplifyDeploymentFargateServiceQueueProcessingTaskDefQueueProcessingContainerLogGroup7AB5EA4B-18I9GTRPHBGVG"
+            "ECSSERVICE-INF-AmplifyDeploymentFargateServiceQueueProcessingTaskDefQueueProcessingContainerLogGroup7AB5EA4B-18I9GTRPHBGVG",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-rtghCrtklUN2",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-wURUnRgzPnMW"
           ]
         },
         "PDX - Gamma": {
@@ -1475,7 +1515,9 @@
             "API-Gateway-Execution-Logs_5wwpfpy9rh/Prod",
             "API-Gateway-Execution-Logs_e3alza85jk/gamma",
             "API-Gateway-Execution-Logs_j350vax7h4/Prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1C4IU1E9FL2FF"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-1C4IU1E9FL2FF",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-Ztd12MvwQdQ9",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-4r1pr15GaFjY"
           ]
         },
         "IAD - Gamma": {
@@ -1548,68 +1590,90 @@
             "API-Gateway-Execution-Logs_rmkfs7kx6d/Prod",
             "API-Gateway-Execution-Logs_wxystebv04/prod",
             "API-Gateway-Execution-Logs_z75rxy2p60/Prod",
-            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-RWWWE85XDV1O"
+            "AmplifyDeploymentService-ECSSERVICE-ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1-RWWWE85XDV1O",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-49DVqeU5iZQ2",
+            "/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-tEOQiewzVTGO"
           ]
         },
         "ARN - PreProd": {
-          "account": "241572322679"
+          "account": "241572322679",
+          "stage": "preprod"
         },
         "BAH - PreProd": {
-          "account": "905484389639"
+          "account": "905484389639",
+          "stage": "preprod"
         },
         "BOM - PreProd": {
-          "account": "414549345730"
+          "account": "414549345730",
+          "stage": "preprod"
         },
         "CDG - PreProd": {
-          "account": "130362053750"
+          "account": "130362053750",
+          "stage": "preprod"
         },
         "CMH - PreProd": {
-          "account": "795328988917"
+          "account": "795328988917",
+          "stage": "preprod"
         },
         "DUB - PreProd": {
-          "account": "261067636671"
+          "account": "261067636671",
+          "stage": "preprod"
         },
         "FRA - PreProd": {
-          "account": "645662906121"
+          "account": "645662906121",
+          "stage": "preprod"
         },
         "GRU - PreProd": {
-          "account": "250849867218"
+          "account": "250849867218",
+          "stage": "preprod"
         },
         "HKG - PreProd": {
-          "account": "014224714919"
+          "account": "014224714919",
+          "stage": "preprod"
         },
         "IAD - PreProd": {
-          "account": "373263430287"
+          "account": "373263430287",
+          "stage": "preprod"
         },
         "ICN - PreProd": {
-          "account": "664363737505"
+          "account": "664363737505",
+          "stage": "preprod"
         },
         "KIX - PreProd": {
-          "account": "880523927286"
+          "account": "880523927286",
+          "stage": "preprod"
         },
         "LHR - PreProd": {
-          "account": "217549701435"
+          "account": "217549701435",
+          "stage": "preprod"
         },
         "MXP - PreProd": {
-          "account": "105889380570"
+          "account": "105889380570",
+          "stage": "preprod"
         },
         "NRT - PreProd": {
-          "account": "521901182269"
+          "account": "521901182269",
+          "stage": "preprod"
         },
         "PDX - PreProd": {
-          "account": "808545654877"
+          "account": "808545654877",
+          "stage": "preprod"
         },
         "SFO - PreProd": {
-          "account": "652616700988"
+          "account": "652616700988",
+          "stage": "preprod"
         },
         "SIN - PreProd": {
-          "account": "869518299611"
+          "account": "869518299611",
+          "stage": "preprod"
         },
         "SYD - PreProd": {
-          "account": "606839312539"
+          "account": "606839312539",
+          "stage": "preprod"
         },
         "YUL - PreProd": {
-          "account": "968464305406"
+          "account": "968464305406",
+          "stage": "preprod"
         }
       }
     },
@@ -1671,7 +1735,16 @@
         "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-FetchCertificateVerifica-',logGroups),\"~'\")}",
         "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-FetchDeploymentStatusFun-',logGroups),\"~'\")}",
         "${join(prefixSearch('/aws/lambda/AemiliaWebhookProcessorLambda-WebHookHandler-',logGroups),\"~'\")}",
-        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-',logGroups),\"~'\")}"
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-RequestCertificateFuncti-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-',logGroups),\"~'\")}"
+      ]
+    },
+    "CustomDomainStepFunctionCleanUpFunctions.AemiliaControlPlane": {
+      "serviceLogGroup": "${join(serviceLogs,\"~'\")}",
+      "serviceLogs": [
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnErrorFunction-',logGroups),\"~'\")}",
+        "${join(prefixSearch('/aws/lambda/AemiliaControlPlaneLambda-CleanUpOnFaultFunction-',logGroups),\"~'\")}"
       ]
     },
     "AmplifyConsole.AemiliaControlPlane": {
@@ -2908,6 +2981,15 @@
         "ICN - Cell3": {
           "account": "302083188782"
         },
+        "KIX": {
+          "account": "703496102986"
+        },
+        "KIX - Cell1": {
+          "account": "770615324502"
+        },
+        "KIX - Cell2": {
+          "account": "525622545876"
+        },
         "LHR": {
           "account": "735893892429"
         },
@@ -3053,6 +3135,10 @@
           "account": "928596084888",
           "stage": "gamma"
         },
+        "KIX - gamma": {
+          "account": "096210968601",
+          "stage": "gamma"
+        },
         "LHR - gamma": {
           "account": "131603409748",
           "stage": "gamma"
@@ -3129,6 +3215,10 @@
           "account": "069647238838",
           "stage": "prod"
         },
+        "KIX": {
+          "account": "503933775184",
+          "stage": "prod"
+        },
         "LHR": {
           "account": "937636477127",
           "stage": "prod"
@@ -3188,6 +3278,9 @@
         },
         "ICN": {
           "account": "320933843292"
+        },
+        "KIX": {
+          "account": "650492022093"
         },
         "LHR": {
           "account": "592963052495"
@@ -3272,6 +3365,10 @@
         },
         "ICN - Gamma Cell1": {
           "account": "676292424519",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "KIX - Gamma Cell1": {
+          "account": "614933232929",
           "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
         },
         "LHR - Gamma Cell1": {
@@ -3444,6 +3541,14 @@
         },
         "ICN - Prod Cell3": {
           "account": "302083188782",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "KIX - Prod Cell1": {
+          "account": "770615324502",
+          "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
+        },
+        "KIX - Prod Cell2": {
+          "account": "525622545876",
           "serviceLogGroup": "/aws/lambda/AmplifyHostingImageOptimizer"
         },
         "LHR - Prod Cell1": {
