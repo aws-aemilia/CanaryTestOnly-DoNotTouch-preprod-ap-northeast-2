@@ -4,6 +4,8 @@ import {
   getIsengardCredentialsProvider,
   Region,
   Stage,
+  preflightCAZ,
+  StandardRoles,
 } from "../../Commons/Isengard";
 import { doQuery } from "../../Commons/libs/CloudWatch";
 import { getCloudFormationResources } from "../../Commons/utils/cloudFormation";
@@ -77,17 +79,9 @@ fields @timestamp, appId, distributionId
 };
 
 async function createWaf(
-  acc: AmplifyAccount,
-  distributionId: string
+  distributionId: string,
+  wafClient: WAFV2Client
 ): Promise<CreateWebACLCommandOutput> {
-  const wafClient = new WAFV2Client({
-    region: "us-east-1",
-    credentials: getIsengardCredentialsProvider(
-      acc.accountId,
-      "OncallOperator"
-    ),
-  });
-
   const createWebACLCommand = new CreateWebACLCommand({
     DefaultAction: { Allow: {} },
     Name: `DDOS_ACL_${distributionId}`,
@@ -99,24 +93,16 @@ async function createWaf(
     },
     Rules: defaultWafRules,
   });
-
   return await wafClient.send(createWebACLCommand);
 }
 
 async function attachWaf(
-  acc: AmplifyAccount,
   webACLId: string,
-  distributionId: string
+  distributionId: string,
+  cloudFrontClient: CloudFrontClient
 ) {
-  const client = new CloudFrontClient({
-    region: "us-east-1",
-    credentials: getIsengardCredentialsProvider(
-      acc.accountId,
-      "OncallOperator"
-    ),
-  });
   await updateDistribution({
-    cloudFrontClient: client,
+    cloudFrontClient,
     distributionId: distributionId,
     updateDistributionConfigFn: (distributionConfig) => {
       distributionConfig.WebACLId = webACLId;
@@ -149,6 +135,8 @@ async function main() {
         Creates a WAF web ACL and attaches it to the distribution that was hit by a DDoS attack. The web ACL initially
         uses an IP reputation list to block botnet traffic, and a rate-based rule to allow up to 2,000 requests per
         5 minutes.
+        
+        bb ddosWafMitigate -- --region pdx --stage prod --distributionId E123456789
         `
     )
     .option("stage", {
@@ -162,11 +150,6 @@ async function main() {
       type: "string",
       demandOption: true,
     })
-    .option("ticket", {
-      describe: "i.e. D69568945. Used for Contingent Auth",
-      type: "string",
-      demandOption: true,
-    })
     .option("distributionId", {
       describe:
         "Target distributionId. If not provided, will find the distributionId from the logs",
@@ -177,18 +160,22 @@ async function main() {
     .version(false)
     .help().argv;
 
-  const { stage, region, distributionId, ticket } = args;
-
-  process.env.ISENGARD_SIM = ticket;
+  const { stage, region, distributionId } = args;
 
   const acc = await controlPlaneAccount(stage as Stage, region as Region);
+  const role = StandardRoles.OncallOperator;
+  await preflightCAZ({ accounts: acc, role });
+  const credentials = getIsengardCredentialsProvider(acc.accountId, role);
 
+  // creating client with credentials from CAZ
   const cloudFrontClient = new CloudFrontClient({
     region: "us-east-1",
-    credentials: getIsengardCredentialsProvider(
-      acc.accountId,
-      "OncallOperator"
-    ),
+    credentials,
+  });
+
+  const wafClient = new WAFV2Client({
+    region: "us-east-1",
+    credentials,
   });
 
   let targetDistributionId: string;
@@ -230,8 +217,12 @@ async function main() {
   }
 
   logger.info(`Applying WAF to ${targetDistributionId}`);
-  const createWAFOutput = await createWaf(acc, targetDistributionId);
-  await attachWaf(acc, createWAFOutput.Summary!.ARN!, targetDistributionId);
+  const createWAFOutput = await createWaf(targetDistributionId, wafClient);
+  await attachWaf(
+    createWAFOutput.Summary!.ARN!,
+    targetDistributionId,
+    cloudFrontClient
+  );
   logger.info("WAF created and attached to distribution");
   logger.info(createWAFOutput.Summary);
 
