@@ -59,6 +59,7 @@ const main = async () => {
   const controlPlaneAccountRoles = [
     roles.MobileCoreSupport,
     roles.ReleaseCustomDomain,
+    roles.ReadOnlyBuildMetricsCrossTeamRole,
   ];
 
   const accounts: AmplifyAccount[] = accountType

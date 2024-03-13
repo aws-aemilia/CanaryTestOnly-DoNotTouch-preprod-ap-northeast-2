@@ -90,12 +90,30 @@ const mobileCoreSupportRole: AmplifyRole = {
   PosixGroups: [
     "support-ops-mobile-core", // https://permissions.amazon.com/group.mhtml?group=support-ops-mobile-core&group_type=posix
     "aws-amplify-hosting-dxe", // https://permissions.amazon.com/group.mhtml?group=aws-amplify-hosting-dxe&group_type=posix
+    "aws-amplify-backend", // https://permissions.amazon.com/group.mhtml?group=aws-amplify-backend&group_type=posix
   ],
   FederationTimeOutMin: 60,
   PolicyTemplateReference: [
     {
       OwnerID: "aws-mobile-amplify-oncall",
       PolicyTemplateName: "MobileCoreSupport",
+    },
+  ],
+};
+
+const readOnlyBuildMetricsCrossTeamRole: AmplifyRole = {
+  IAMRoleName: "ReadOnlyBuildMetricsCrossTeamRole",
+  Description:
+    " This role is intended for members belonging to the aws-amplify-backend POSIX group to inspect customer build metrics",
+  ContingentAuth: 1,
+  PosixGroups: [
+    "aws-amplify-backend", // https://permissions.amazon.com/group.mhtml?group=aws-amplify-backend&group_type=posix
+  ],
+  FederationTimeOutMin: 60,
+  PolicyTemplateReference: [
+    {
+      OwnerID: "aws-mobile-amplify-oncall",
+      PolicyTemplateName: "AmplifyHostingBuildMetricsCrossTeamPolicy",
     },
   ],
 };
@@ -126,6 +144,7 @@ export const getRolesForStage = (
   MobileCoreSupport: AmplifyRole;
   ReleaseCustomDomain: AmplifyRole;
   BONESBootstrap: AmplifyRole;
+  ReadOnlyBuildMetricsCrossTeamRole: AmplifyRole;
 } => {
   return {
     OncallOperator: oncallOperatorRole,
@@ -136,5 +155,6 @@ export const getRolesForStage = (
     MobileCoreSupport: mobileCoreSupportRole,
     ReleaseCustomDomain: releaseDomainRole,
     BONESBootstrap: bonesBootstrapRole,
+    ReadOnlyBuildMetricsCrossTeamRole: readOnlyBuildMetricsCrossTeamRole,
   };
 };
