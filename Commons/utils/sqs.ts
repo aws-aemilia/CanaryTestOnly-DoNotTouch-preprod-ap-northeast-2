@@ -5,6 +5,7 @@ import {
   ReceiveMessageCommand,
   SQSClient,
 } from "@aws-sdk/client-sqs";
+import { RegionName } from "Commons/Isengard";
 
 /**
  * Polls for messages until reaching the desired message count or
@@ -79,13 +80,13 @@ export async function getQueueUrl(
  */
 export async function getSourceQueueUrl(
   sqsClient: SQSClient,
-  dlqQueue: string
+  dlqUrl: string
 ): Promise<string> {
-  console.log(`Getting source queue URL for ${dlqQueue}`);
+  console.log(`Getting source queue URL for ${dlqUrl}`);
 
   const queueUrls = (
     await sqsClient.send(
-      new ListDeadLetterSourceQueuesCommand({ QueueUrl: dlqQueue })
+      new ListDeadLetterSourceQueuesCommand({ QueueUrl: dlqUrl })
     )
   ).queueUrls?.filter(
     // AccountClosingDeletionDLQ has 2 sources and we don't want to ever redrive into AccountDeferredTerminationQueue
@@ -93,18 +94,30 @@ export async function getSourceQueueUrl(
   );
 
   if (!queueUrls || queueUrls.length === 0) {
-    throw new Error(`No source queue found for ${dlqQueue}`);
+    throw new Error(`No source queue found for ${dlqUrl}`);
   }
 
   if (queueUrls.length > 1) {
     throw new Error(
-      `Multiple source queues found for ${dlqQueue}. This is not expected.\n${queueUrls}`
+      `Multiple source queues found for ${dlqUrl}. This is not expected.\n${queueUrls}`
     );
   }
 
   console.log(`Found source queue URL ${queueUrls[0]}`);
 
   return queueUrls[0];
+}
+
+/**
+ * Convert a SQS queue's URL to its ARN.
+ * @param queueUrl The queue's URL
+ */
+export function toArn(queueUrl: string) {
+  const url = new URL(queueUrl); // https://sqs.us-west-2.amazonaws.com/395333095307/AccountClosingQueue
+  const [, accountId, queueName] = url.pathname.split("/"); // /395333095307/AccountClosingQueue
+  const regionName = url.hostname.split(".")[1] as RegionName; // sqs.us-west-2.amazonaws.com
+
+  return `arn:aws:sqs:${regionName}:${accountId}:${queueName}`; // arn:aws:sqs:us-west-2:395333095307:AccountClosingQueue
 }
 
 /**
