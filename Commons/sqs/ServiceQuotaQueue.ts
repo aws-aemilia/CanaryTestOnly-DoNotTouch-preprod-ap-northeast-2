@@ -1,4 +1,8 @@
-import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+import {
+  SQSClient,
+  SendMessageCommand,
+  MessageAttributeValue,
+} from "@aws-sdk/client-sqs";
 import {
   Region,
   Stage,
@@ -57,6 +61,13 @@ export class ServiceQuotaQueue {
       },
     });
 
+    const messageAttributes = {
+      type: {
+        DataType: "String",
+        StringValue: "UPDATE_LIMIT",
+      },
+    };
+
     if (!this.sqsClient) {
       throw new Error("SQS Client not initialized");
     } else {
@@ -65,6 +76,7 @@ export class ServiceQuotaQueue {
           DelaySeconds: 0,
           MessageBody: messageBody,
           QueueUrl: this.queueUrl,
+          MessageAttributes: messageAttributes,
         })
       );
     }
